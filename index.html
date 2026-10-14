@@ -50,7 +50,7 @@
     /* ---------- Nav bar ---------- */
     :root { --nav-h: 64px; }
 
-    /* Frosted bar across the top; the docked tomato is its logo */
+    /* Bar across the top with no background; the docked tomato is its logo */
     .nav {
       position: fixed;
       top: 0;
@@ -62,11 +62,10 @@
       align-items: center;
       gap: 16px;
       padding: 0 24px;
-      background: rgba(18, 34, 28, 0.3);
-      -webkit-backdrop-filter: blur(18px) saturate(140%);
-      backdrop-filter: blur(18px) saturate(140%);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      pointer-events: none;
     }
+
+    .nav > * { pointer-events: auto; }
 
     /* Invisible hit area over the docked tomato */
     .nav-logo {
@@ -82,25 +81,34 @@
       outline-offset: 3px;
     }
 
+    /* Black pill: next to the logo on desktop, bottom center on phones */
     .clock {
-      display: grid;
-      padding: 5px 10px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      line-height: 1.15;
-    }
-
-    .clock-city {
-      font-size: 10px;
-      letter-spacing: 0.08em;
+      position: fixed;
+      top: calc(var(--nav-h) / 2);
+      left: 84px;
+      z-index: 9;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: #0b0b0b;
+      color: #fff;
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
-      opacity: 0.7;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
 
-    .clock-time {
-      font-size: 14px;
-      font-variant-numeric: tabular-nums;
+    .clock::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
     }
 
     .nav-links {
@@ -111,14 +119,20 @@
     }
 
     .nav-links a {
-      color: rgba(255, 255, 255, 0.72);
+      color: rgba(255, 255, 255, 0.78);
       font-size: 15px;
       text-decoration: none;
-      transition: color 0.2s;
+      text-shadow: 0 1px 8px rgba(0, 20, 40, 0.25);
+      transition: color 0.2s, text-shadow 0.2s;
     }
 
     .nav-links a:hover,
     .nav-links a[aria-current="true"] { color: #fff; }
+
+    /* A link passing over a white project card turns dark */
+    .nav-links a.on-light { color: rgba(17, 17, 17, 0.6); text-shadow: none; }
+    .nav-links a.on-light:hover,
+    .nav-links a.on-light[aria-current="true"] { color: #111; }
 
     /* Keep anchored targets clear of the bar */
     [id] { scroll-margin-top: calc(var(--nav-h) + 12px); }
@@ -330,8 +344,14 @@
       :root { --nav-h: 56px; }
       .nav { gap: 10px; padding: 0 14px; }
       .nav-logo { width: 36px; height: 36px; }
-      .clock { padding: 4px 8px; }
-      .clock-time { font-size: 13px; }
+      .scroll-hint { bottom: 72px; } /* clear of the clock */
+      .clock {
+        top: auto;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+      }
       .nav-links { gap: 14px; }
       .nav-links a { font-size: 13px; }
       .work-intro { padding: 0 12px 20px; }
@@ -364,10 +384,6 @@
 
   <nav class="nav" aria-label="Main">
     <a class="nav-logo" href="#top" aria-label="Back to top"></a>
-    <div class="clock" aria-label="Local time in Madrid">
-      <span class="clock-city">Madrid</span>
-      <time class="clock-time" id="clock">--:--</time>
-    </div>
     <ul class="nav-links">
       <li><a href="#first-project" data-section="work">Work</a></li>
       <li><a href="#about">About</a></li>
@@ -375,6 +391,7 @@
       <li><a href="#room">Room</a></li>
     </ul>
   </nav>
+  <p class="clock" aria-label="Local time in Madrid">Madrid <time id="clock">--- --:--</time></p>
 
   <main id="top">
     <section class="hero" aria-label="dizmar">
@@ -434,10 +451,12 @@
     // ---------- Nav: Madrid clock and current section ----------
     (() => {
       const clock = document.getElementById('clock');
-      const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit' });
+      const opts = { timeZone: 'Europe/Madrid' };
+      const day = new Intl.DateTimeFormat('en-GB', { ...opts, weekday: 'short' });
+      const time = new Intl.DateTimeFormat('en-GB', { ...opts, hour: '2-digit', minute: '2-digit' });
       const tick = () => {
         const now = new Date();
-        clock.textContent = fmt.format(now);
+        clock.textContent = day.format(now) + ' ' + time.format(now);
         clock.dateTime = now.toISOString();
       };
       tick();
@@ -448,6 +467,24 @@
       new IntersectionObserver(([entry]) => {
         workLink.setAttribute('aria-current', entry.isIntersecting);
       }, { rootMargin: '-50% 0px -50% 0px' }).observe(document.getElementById('work'));
+
+      // The bar has no background, so each link checks what is behind it
+      const nav = document.querySelector('.nav');
+      const links = [...document.querySelectorAll('.nav-links a')];
+      let queued = false;
+      function contrast() {
+        queued = false;
+        for (const link of links) {
+          const r = link.getBoundingClientRect();
+          const behind = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2)
+            .find((el) => !nav.contains(el) && el.id !== 'scene');
+          link.classList.toggle('on-light', !!behind && !!behind.closest('.project'));
+        }
+      }
+      const queue = () => { if (!queued) { queued = true; requestAnimationFrame(contrast); } };
+      addEventListener('scroll', queue, { passive: true });
+      addEventListener('resize', queue);
+      contrast();
     })();
 
     // ---------- Collage: green paper with punched holes ----------
