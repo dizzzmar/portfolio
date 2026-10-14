@@ -13,11 +13,25 @@
     body {
       color: #fff;
       font-family: "Helvetica Neue", Arial, sans-serif;
-      /* Sky photo on top; the gradient shows until /assets/sky.webp exists */
-      background:
-        url("/assets/sky.webp") center / cover fixed,
-        linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%) fixed;
       background-color: #8cc0ef;
+    }
+
+    /* Sky photo, oversized so it can drift slowly without showing its edges */
+    .sky {
+      position: fixed;
+      inset: -8%;
+      z-index: -1;
+      background:
+        url("/assets/sky.webp") center / cover,
+        linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
+      animation: drift 40s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    @keyframes drift {
+      0%   { transform: translate(-3%, 1%) scale(1); }
+      50%  { transform: translate(1%, -1.5%) scale(1.04); }
+      100% { transform: translate(3%, 1%) scale(1.02); }
     }
 
     /* The tomato canvas covers the viewport and ignores the pointer */
@@ -75,7 +89,7 @@
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .scroll-hint::after { animation: none; }
+      .scroll-hint::after, .sky { animation: none; }
     }
   </style>
   <script type="importmap">
@@ -88,6 +102,7 @@
   </script>
 </head>
 <body>
+  <div class="sky" aria-hidden="true"></div>
   <canvas id="scene" aria-hidden="true"></canvas>
 
   <main>
