@@ -11,6 +11,7 @@
     html { scroll-behavior: smooth; }
 
     body {
+      overflow-x: clip; /* nothing may widen the page past the screen */
       color: #fff;
       font-family: "Helvetica Neue", Arial, sans-serif;
       background-color: #8cc0ef;
@@ -111,10 +112,20 @@
     .paper {
       position: absolute;
       inset: 0;
-      background: #2c4e37 url("/assets/paper.webp") repeat;
-      background-size: 512px 512px;
+      background: #2c4e37;
       -webkit-mask-size: 100% 100%;
       mask-size: 100% 100%;
+    }
+
+    /* Same film grain as the sky, on the solid green */
+    .paper::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url("/assets/grain.png") repeat;
+      background-size: 128px 128px;
+      mix-blend-mode: overlay;
+      opacity: 0.3;
     }
 
     .work-inner { position: relative; }
@@ -228,6 +239,7 @@
     .fallen {
       position: absolute;
       inset: 0;
+      overflow: hidden;
       pointer-events: none;
     }
 
