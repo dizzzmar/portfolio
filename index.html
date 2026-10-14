@@ -47,6 +47,96 @@
       100% { transform: translate(3%, 1%) scale(1.02); }
     }
 
+    /* ---------- Nav bar ---------- */
+    :root { --nav-h: 64px; }
+
+    /* Bar across the top with no background; the docked tomato is its logo */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9; /* under the tomato canvas, so the tomato sits on the bar */
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 24px;
+      pointer-events: none;
+    }
+
+    .nav > * { pointer-events: auto; }
+
+    /* Invisible hit area over the docked tomato */
+    .nav-logo {
+      flex: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+    }
+
+    .nav-logo:focus-visible,
+    .nav-links a:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
+
+    /* Black pill: next to the logo on desktop, bottom center on phones */
+    .clock {
+      position: fixed;
+      top: calc(var(--nav-h) / 2);
+      left: 84px;
+      z-index: 9;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: #0b0b0b;
+      color: #fff;
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clock::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      margin-left: auto;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 15px;
+      text-decoration: none;
+      text-shadow: 0 1px 8px rgba(0, 20, 40, 0.25);
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a[aria-current="true"] { color: #fff; }
+
+    /* A link passing over a white project card turns dark */
+    .nav-links a.on-light { color: rgba(17, 17, 17, 0.6); text-shadow: none; }
+    .nav-links a.on-light:hover,
+    .nav-links a.on-light[aria-current="true"] { color: #111; }
+
+    /* Keep anchored targets clear of the bar */
+    [id] { scroll-margin-top: calc(var(--nav-h) + 12px); }
+
     /* The tomato canvas covers the viewport and ignores the pointer */
     #scene {
       position: fixed;
@@ -203,7 +293,7 @@
     }
 
     .project-media {
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 16 / 9;
       display: grid;
       place-items: center;
       overflow: hidden;
@@ -211,7 +301,8 @@
       border-radius: 18px;
     }
 
-    .project-media img {
+    .project-media img,
+    .project-media video {
       display: block;
       width: 100%;
       height: 100%;
@@ -251,6 +342,19 @@
     @media (max-width: 700px) {
       .work { padding: 220px 8px 200px; }
       .punch-hint { top: 168px; right: 20px; }
+      :root { --nav-h: 56px; }
+      .nav { gap: 10px; padding: 0 14px; }
+      .nav-logo { width: 36px; height: 36px; }
+      .scroll-hint { bottom: 72px; } /* clear of the clock */
+      .clock {
+        top: auto;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+      }
+      .nav-links { gap: 14px; }
+      .nav-links a { font-size: 13px; }
       .work-intro { padding: 0 12px 20px; }
       .project-grid { grid-template-columns: 1fr; gap: 8px; }
       .project { padding-top: 24px; border-radius: 20px; }
@@ -279,7 +383,18 @@
   <div class="grain" aria-hidden="true"></div>
   <canvas id="scene" aria-hidden="true"></canvas>
 
-  <main>
+  <nav class="nav" aria-label="Main">
+    <a class="nav-logo" href="#top" aria-label="Back to top"></a>
+    <ul class="nav-links">
+      <li><a href="#first-project" data-section="work">Work</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#room">Room</a></li>
+    </ul>
+  </nav>
+  <p class="clock" aria-label="Local time in Madrid">Madrid <time id="clock">--- --:--</time></p>
+
+  <main id="top">
     <section class="hero" aria-label="dizmar">
       <div class="scroll-hint" id="hint">Scroll</div>
     </section>
@@ -295,12 +410,14 @@
 
         <!-- Replace each placeholder with a project title, short description and image. -->
         <div class="project-grid">
-          <article class="project">
+          <article class="project" id="first-project">
             <header class="project-caption">
               <h2>Lexus Electrified</h2>
               <p class="project-description">Film, 2025</p>
             </header>
-            <div class="project-media"><span class="image-placeholder">Film — coming soon</span></div>
+            <div class="project-media">
+              <video src="/assets/lexus-thumb.mp4" poster="/assets/lexus-thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video>
+            </div>
           </article>
           <article class="project">
             <header class="project-caption">
@@ -334,6 +451,50 @@
   </footer>
 
   <script>
+    // Looping project previews stay still for visitors who prefer reduced motion
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.project-media video').forEach((v) => { v.autoplay = false; v.pause(); });
+    }
+
+    // ---------- Nav: Madrid clock and current section ----------
+    (() => {
+      const clock = document.getElementById('clock');
+      const opts = { timeZone: 'Europe/Madrid' };
+      const day = new Intl.DateTimeFormat('en-GB', { ...opts, weekday: 'short' });
+      const time = new Intl.DateTimeFormat('en-GB', { ...opts, hour: '2-digit', minute: '2-digit' });
+      const tick = () => {
+        const now = new Date();
+        clock.textContent = day.format(now) + ' ' + time.format(now);
+        clock.dateTime = now.toISOString();
+      };
+      tick();
+      setInterval(tick, 1000);
+
+      // Highlight "Work" while the work section is on screen
+      const workLink = document.querySelector('[data-section="work"]');
+      new IntersectionObserver(([entry]) => {
+        workLink.setAttribute('aria-current', entry.isIntersecting);
+      }, { rootMargin: '-50% 0px -50% 0px' }).observe(document.getElementById('work'));
+
+      // The bar has no background, so each link checks what is behind it
+      const nav = document.querySelector('.nav');
+      const links = [...document.querySelectorAll('.nav-links a')];
+      let queued = false;
+      function contrast() {
+        queued = false;
+        for (const link of links) {
+          const r = link.getBoundingClientRect();
+          const behind = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2)
+            .find((el) => !nav.contains(el) && el.id !== 'scene');
+          link.classList.toggle('on-light', !!behind && !!behind.closest('.project'));
+        }
+      }
+      const queue = () => { if (!queued) { queued = true; requestAnimationFrame(contrast); } };
+      addEventListener('scroll', queue, { passive: true });
+      addEventListener('resize', queue);
+      contrast();
+    })();
+
     // ---------- Collage: green paper with punched holes ----------
     (() => {
       const work = document.getElementById('work');
@@ -537,13 +698,15 @@
     function layout(progress) {
       const upp = unitsPerPixel();
       const heroPx = Math.min(width, height) * 0.5; // tomato size in the hero
-      const dockPx = width < 640 ? 48 : 60;        // tomato size when docked
-      const margin = width < 640 ? 16 : 28;
+      // Docked, the tomato is the logo at the left of the nav bar
+      const navH = width < 700 ? 56 : 64;
+      const dockPx = width < 700 ? 36 : 44;        // tomato size when docked
+      const margin = width < 700 ? 14 : 24;
 
       const sizePx = THREE.MathUtils.lerp(heroPx, dockPx, progress);
       // Screen position of the tomato's center, in pixels from the top-left
       const xPx = THREE.MathUtils.lerp(width / 2, margin + dockPx / 2, progress);
-      const yPx = THREE.MathUtils.lerp(height / 2, margin + dockPx / 2, progress);
+      const yPx = THREE.MathUtils.lerp(height / 2, navH / 2, progress);
 
       pivot.scale.setScalar(sizePx * upp);
       pivot.position.set((xPx - width / 2) * upp, (height / 2 - yPx) * upp, 0);
