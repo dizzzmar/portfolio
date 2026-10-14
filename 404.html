@@ -40,6 +40,18 @@
       will-change: transform;
     }
 
+    /* Film grain: stays still on top of the moving sky */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: url("/assets/grain.png") repeat;
+      background-size: 128px 128px;
+      mix-blend-mode: overlay;
+      opacity: 0.32;
+    }
+
     @keyframes drift {
       0%   { transform: translate(-3%, 1%) scale(1); }
       50%  { transform: translate(1%, -1.5%) scale(1.04); }
@@ -148,6 +160,7 @@
 </head>
 <body>
   <div class="sky" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
   <main class="terminal" aria-label="404 — Something's cooking. Under construction.">
     <div class="log" id="log" aria-hidden="true"></div>
     <div class="big" id="big" aria-hidden="true"></div>
