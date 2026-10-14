@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 — Under construction · dizmar</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/assets/tomato.webp" type="image/webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --yellow: #ffeb00;
+      --ink: #0a0a0a;
+      --paper: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--yellow);
+      color: var(--ink);
+      font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------- Header ---------- */
+    .bar {
+      position: fixed;
+      inset: 12px 12px auto 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .bar > * { pointer-events: auto; }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      background: var(--paper);
+      padding: 14px 22px;
+      border-radius: 4px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .brand strong {
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .brand span {
+      font-size: 15px;
+      font-stretch: 85%;
+      opacity: 0.6;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--paper);
+      padding: 14px 18px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: 85%;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status i {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e8402a;
+      animation: blink 1.2s steps(2, start) infinite;
+    }
+
+    @keyframes blink { to { visibility: hidden; } }
+
+    /* ---------- Stage ---------- */
+    .stage {
+      position: relative;
+      height: 100vh;
+      height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 96px 16px 120px;
+    }
+
+    .headline {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      font-weight: 900;
+      font-stretch: 62%;
+      text-transform: uppercase;
+      line-height: 0.82;
+      letter-spacing: -0.02em;
+      font-size: clamp(88px, 20vw, 340px);
+      user-select: none;
+    }
+
+    .headline small {
+      display: block;
+      font-size: 0.32em;
+      line-height: 1;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.12em;
+    }
+
+    .cta {
+      position: absolute;
+      left: 50%;
+      bottom: 92px;
+      transform: translateX(-50%);
+      z-index: 15;
+      background: var(--ink);
+      color: var(--paper);
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 500;
+      font-stretch: 85%;
+      padding: 14px 20px;
+      border-radius: 4px;
+      white-space: nowrap;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .cta:hover { background: #e8402a; transform: translateX(-50%) scale(1.04); }
+    .cta:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+
+    /* ---------- Tomatoes ---------- */
+    .tomato {
+      position: absolute;
+      width: var(--s);
+      left: var(--x);
+      top: var(--y);
+      z-index: var(--z, 1);
+      transform: translate(-50%, -50%) rotate(var(--r, 0deg));
+      cursor: grab;
+      touch-action: none;
+      filter: drop-shadow(0 18px 24px rgba(80, 40, 0, 0.18));
+    }
+
+    .tomato img {
+      display: block;
+      width: 100%;
+      height: auto;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      animation: bob var(--d, 6s) ease-in-out var(--delay, 0s) infinite alternate;
+    }
+
+    .tomato.dragging { cursor: grabbing; z-index: 30; }
+    .tomato.dragging img { animation-play-state: paused; }
+
+    @keyframes bob {
+      from { transform: translateY(-10px) rotate(-4deg); }
+      to   { transform: translateY(12px) rotate(5deg); }
+    }
+
+    /* ---------- Caution tape ---------- */
+    .tape {
+      position: fixed;
+      left: -5%;
+      right: -5%;
+      bottom: 22px;
+      z-index: 10;
+      transform: rotate(-1.5deg);
+      background: var(--ink);
+      color: var(--yellow);
+      overflow: hidden;
+      border-block: 6px solid transparent;
+      border-image: repeating-linear-gradient(-45deg, var(--ink) 0 12px, var(--yellow) 12px 24px) 6;
+    }
+
+    .tape-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 28s linear infinite;
+    }
+
+    .tape-track span {
+      padding: 10px 0;
+      font-weight: 800;
+      font-stretch: 75%;
+      font-size: 20px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    @keyframes marquee { to { transform: translateX(-50%); } }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 640px) {
+      .brand { gap: 12px; padding: 12px 14px; }
+      .brand strong { font-size: 18px; }
+      .brand span { display: none; }
+      .headline { font-size: 25vw; }
+      .status { padding: 12px 14px; font-size: 12px; }
+      .cta { bottom: 84px; font-size: 16px; }
+      .tape-track span { font-size: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tomato img, .tape-track, .status i { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="/">
+      <strong>dizmar</strong>
+      <span>Portfolio</span>
+    </a>
+    <div class="status" role="status"><i aria-hidden="true"></i>Under construction</div>
+  </header>
+
+  <main class="stage">
+    <h1 class="headline">
+      <small>Error 404</small>
+      Page not<br>found
+    </h1>
+
+    <!-- Tomatoes: position (x,y), size, rotation, stacking and float timing -->
+    <div class="tomato" style="--x:22%; --y:18%; --s:clamp(110px,16vw,260px); --r:-18deg; --z:3; --d:5.5s"><img src="/assets/tomato.webp" alt=""></div>
+    <div class="tomato" style="--x:84%; --y:28%; --s:clamp(130px,19vw,320px); --r:14deg; --z:3; --d:7s; --delay:-2s"><img src="/assets/tomato.webp" alt=""></div>
+    <div class="tomato" style="--x:52%; --y:52%; --s:clamp(120px,17vw,280px); --r:-8deg; --z:4; --d:6s; --delay:-1s"><img src="/assets/tomato.webp" alt="A low-poly tomato"></div>
+    <div class="tomato" style="--x:8%;  --y:80%; --s:clamp(150px,24vw,400px); --r:22deg; --z:3; --d:8s; --delay:-3s"><img src="/assets/tomato.webp" alt=""></div>
+    <div class="tomato" style="--x:88%; --y:86%; --s:clamp(120px,18vw,300px); --r:-26deg; --z:3; --d:6.5s; --delay:-4s"><img src="/assets/tomato.webp" alt=""></div>
+    <div class="tomato" style="--x:40%; --y:92%; --s:clamp(90px,12vw,190px); --r:40deg; --z:1; --d:5s; --delay:-2.5s"><img src="/assets/tomato.webp" alt=""></div>
+
+    <a class="cta" href="/">Back to Homepage</a>
+  </main>
+
+  <div class="tape" aria-hidden="true">
+    <div class="tape-track">
+      <span>Under construction ● Something is cooking ● 404 ● Under construction ● Something is cooking ● 404 ● </span>
+      <span>Under construction ● Something is cooking ● 404 ● Under construction ● Something is cooking ● 404 ● </span>
+    </div>
+  </div>
+
+  <script>
+    // Drag the tomatoes around with mouse or touch.
+    document.querySelectorAll('.tomato').forEach((el) => {
+      let startX, startY, originX, originY;
+
+      el.addEventListener('pointerdown', (e) => {
+        el.setPointerCapture(e.pointerId);
+        el.classList.add('dragging');
+        startX = e.clientX;
+        startY = e.clientY;
+        originX = el.offsetLeft;
+        originY = el.offsetTop;
+      });
+
+      el.addEventListener('pointermove', (e) => {
+        if (!el.classList.contains('dragging')) return;
+        el.style.left = originX + e.clientX - startX + 'px';
+        el.style.top = originY + e.clientY - startY + 'px';
+      });
+
+      const drop = () => el.classList.remove('dragging');
+      el.addEventListener('pointerup', drop);
+      el.addEventListener('pointercancel', drop);
+    });
+  </script>
+</body>
+</html>
