@@ -8,12 +8,13 @@
   <link rel="icon" href="/assets/tomato.webp" type="image/webp">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <style>
     :root {
-      --yellow: #ffeb00;
-      --ink: #0a0a0a;
-      --paper: #ffffff;
+      --blue: #0018a8;
+      --text: #e8ecff;
+      --dim: #8fa0ff;
+      --accent: #ffeb00;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,124 +22,70 @@
     html, body { height: 100%; }
 
     body {
-      background: var(--yellow);
-      color: var(--ink);
-      font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+      background: var(--blue);
+      color: var(--text);
+      font-family: "VT323", "Courier New", monospace;
       overflow: hidden;
-      -webkit-font-smoothing: antialiased;
     }
 
-    /* ---------- Header ---------- */
-    .bar {
+    /* CRT scanlines + vignette */
+    body::after {
+      content: "";
       position: fixed;
-      inset: 12px 12px auto 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 20;
+      inset: 0;
+      z-index: 40;
       pointer-events: none;
+      background:
+        repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 3px),
+        radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 20, 0.45) 100%);
     }
 
-    .bar > * { pointer-events: auto; }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      background: var(--paper);
-      padding: 14px 22px;
-      border-radius: 4px;
-      text-decoration: none;
-      color: var(--ink);
-    }
-
-    .brand strong {
-      font-weight: 800;
-      font-size: 22px;
-      letter-spacing: -0.03em;
-    }
-
-    .brand span {
-      font-size: 15px;
-      font-stretch: 85%;
-      opacity: 0.6;
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--paper);
-      padding: 14px 18px;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: 600;
-      font-stretch: 85%;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .status i {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #e8402a;
-      animation: blink 1.2s steps(2, start) infinite;
-    }
-
-    @keyframes blink { to { visibility: hidden; } }
-
-    /* ---------- Stage ---------- */
-    .stage {
-      position: relative;
-      height: 100vh;
-      height: 100dvh;
-      display: grid;
-      place-items: center;
-      padding: 96px 16px 120px;
-    }
-
-    .headline {
+    /* ---------- Terminal ---------- */
+    .terminal {
       position: relative;
       z-index: 2;
-      text-align: center;
-      font-weight: 900;
-      font-stretch: 62%;
-      text-transform: uppercase;
-      line-height: 0.82;
-      letter-spacing: -0.02em;
-      font-size: clamp(88px, 20vw, 340px);
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 32px clamp(16px, 6vw, 96px);
+      text-shadow: 0 0 6px rgba(200, 210, 255, 0.45);
       user-select: none;
     }
 
-    .headline small {
-      display: block;
-      font-size: 0.32em;
-      line-height: 1;
-      letter-spacing: 0.02em;
-      margin-bottom: 0.12em;
+    .log {
+      font-size: clamp(18px, 2vw, 26px);
+      line-height: 1.35;
+      color: var(--dim);
+      margin-bottom: 0.8em;
+      white-space: pre-wrap;
+      min-height: 4.05em;
+      overflow-wrap: anywhere;
     }
 
-    .cta {
-      position: absolute;
-      left: 50%;
-      bottom: 92px;
-      transform: translateX(-50%);
-      z-index: 15;
-      background: var(--ink);
-      color: var(--paper);
-      text-decoration: none;
-      font-size: 18px;
-      font-weight: 500;
-      font-stretch: 85%;
-      padding: 14px 20px;
-      border-radius: 4px;
-      white-space: nowrap;
-      transition: transform 0.2s ease, background 0.2s ease;
+    .log .ok { color: var(--accent); }
+
+    .big {
+      font-size: clamp(56px, 11vw, 190px);
+      line-height: 0.9;
+      text-transform: uppercase;
+      color: var(--text);
+      white-space: pre-wrap;
+      min-height: 1.8em;
     }
 
-    .cta:hover { background: #e8402a; transform: translateX(-50%) scale(1.04); }
-    .cta:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+    .cursor {
+      display: inline-block;
+      width: 0.55em;
+      height: 0.85em;
+      margin-left: 0.04em;
+      vertical-align: -0.06em;
+      background: currentColor;
+      animation: blink 1s steps(2, start) infinite;
+    }
+
+    @keyframes blink { to { visibility: hidden; } }
 
     /* ---------- Tomatoes ---------- */
     .tomato {
@@ -150,7 +97,7 @@
       transform: translate(-50%, -50%) rotate(var(--r, 0deg));
       cursor: grab;
       touch-action: none;
-      filter: drop-shadow(0 18px 24px rgba(80, 40, 0, 0.18));
+      filter: drop-shadow(0 18px 24px rgba(0, 0, 30, 0.45));
     }
 
     .tomato img {
@@ -171,89 +118,68 @@
       to   { transform: translateY(12px) rotate(5deg); }
     }
 
-    /* ---------- Caution tape ---------- */
-    .tape {
-      position: fixed;
-      left: -5%;
-      right: -5%;
-      bottom: 22px;
-      z-index: 10;
-      transform: rotate(-1.5deg);
-      background: var(--ink);
-      color: var(--yellow);
-      overflow: hidden;
-      border-block: 6px solid transparent;
-      border-image: repeating-linear-gradient(-45deg, var(--ink) 0 12px, var(--yellow) 12px 24px) 6;
-    }
-
-    .tape-track {
-      display: flex;
-      width: max-content;
-      animation: marquee 28s linear infinite;
-    }
-
-    .tape-track span {
-      padding: 10px 0;
-      font-weight: 800;
-      font-stretch: 75%;
-      font-size: 20px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    @keyframes marquee { to { transform: translateX(-50%); } }
-
-    /* ---------- Responsive ---------- */
     @media (max-width: 640px) {
-      .brand { gap: 12px; padding: 12px 14px; }
-      .brand strong { font-size: 18px; }
-      .brand span { display: none; }
-      .headline { font-size: 25vw; }
-      .status { padding: 12px 14px; font-size: 12px; }
-      .cta { bottom: 84px; font-size: 16px; }
-      .tape-track span { font-size: 16px; }
+      .big { font-size: 15vw; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .tomato img, .tape-track, .status i { animation: none; }
+      .tomato img, .cursor { animation: none; }
     }
   </style>
 </head>
 <body>
-  <header class="bar">
-    <a class="brand" href="/">
-      <strong>dizmar</strong>
-      <span>Portfolio</span>
-    </a>
-    <div class="status" role="status"><i aria-hidden="true"></i>Under construction</div>
-  </header>
-
-  <main class="stage">
-    <h1 class="headline">
-      <small>Error 404</small>
-      Page not<br>found
-    </h1>
-
-    <!-- Tomatoes: position (x,y), size, rotation, stacking and float timing -->
-    <div class="tomato" style="--x:22%; --y:18%; --s:clamp(110px,16vw,260px); --r:-18deg; --z:3; --d:5.5s"><img src="/assets/tomato.webp" alt=""></div>
-    <div class="tomato" style="--x:84%; --y:28%; --s:clamp(130px,19vw,320px); --r:14deg; --z:3; --d:7s; --delay:-2s"><img src="/assets/tomato.webp" alt=""></div>
-    <div class="tomato" style="--x:52%; --y:52%; --s:clamp(120px,17vw,280px); --r:-8deg; --z:4; --d:6s; --delay:-1s"><img src="/assets/tomato.webp" alt="A low-poly tomato"></div>
-    <div class="tomato" style="--x:8%;  --y:80%; --s:clamp(150px,24vw,400px); --r:22deg; --z:3; --d:8s; --delay:-3s"><img src="/assets/tomato.webp" alt=""></div>
-    <div class="tomato" style="--x:88%; --y:86%; --s:clamp(120px,18vw,300px); --r:-26deg; --z:3; --d:6.5s; --delay:-4s"><img src="/assets/tomato.webp" alt=""></div>
-    <div class="tomato" style="--x:40%; --y:92%; --s:clamp(90px,12vw,190px); --r:40deg; --z:1; --d:5s; --delay:-2.5s"><img src="/assets/tomato.webp" alt=""></div>
-
-    <a class="cta" href="/">Back to Homepage</a>
+  <main class="terminal" aria-label="404 — Something's cooking. Under construction.">
+    <div class="log" id="log" aria-hidden="true"></div>
+    <div class="big" id="big" aria-hidden="true"></div>
   </main>
 
-  <div class="tape" aria-hidden="true">
-    <div class="tape-track">
-      <span>Under construction ● Something is cooking ● 404 ● Under construction ● Something is cooking ● 404 ● </span>
-      <span>Under construction ● Something is cooking ● 404 ● Under construction ● Something is cooking ● 404 ● </span>
-    </div>
-  </div>
+  <!-- Tomatoes: position (x,y), size, rotation, stacking and float timing -->
+  <div class="tomato" style="--x:80%; --y:16%; --s:clamp(110px,15vw,240px); --r:-18deg; --d:5.5s"><img src="/assets/tomato.webp" alt=""></div>
+  <div class="tomato" style="--x:92%; --y:58%; --s:clamp(130px,19vw,320px); --r:14deg; --d:7s; --delay:-2s"><img src="/assets/tomato.webp" alt=""></div>
+  <div class="tomato" style="--x:10%; --y:96%; --s:clamp(140px,20vw,340px); --r:22deg; --d:8s; --delay:-3s"><img src="/assets/tomato.webp" alt=""></div>
+  <div class="tomato" style="--x:62%; --y:90%; --s:clamp(90px,12vw,190px); --r:-30deg; --d:6.5s; --delay:-4s"><img src="/assets/tomato.webp" alt=""></div>
+  <div class="tomato" style="--x:6%;  --y:10%; --s:clamp(80px,9vw,150px); --r:40deg; --d:5s; --delay:-2.5s"><img src="/assets/tomato.webp" alt=""></div>
 
   <script>
+    // Terminal typing sequence. Log lines are small; the headline is typed big.
+    const path = location.pathname;
+    const logLines = [
+      { text: `C:\\DIZMAR> cd ${path}` },
+      { text: 'ERROR 404: page not found.' },
+      { text: 'C:\\DIZMAR> status' },
+      { text: '[ OK ] tomatoes loaded', cls: 'ok' },
+    ];
+    const headline = "Something's\ncooking.\nUnder construction";
+
+    const log = document.getElementById('log');
+    const big = document.getElementById('big');
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const wait = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
+
+    async function type(target, text, speed) {
+      target.appendChild(cursor);
+      for (const ch of text) {
+        cursor.before(ch);
+        await wait(speed + Math.random() * speed);
+      }
+    }
+
+    (async () => {
+      await wait(500);
+      for (const line of logLines) {
+        const row = document.createElement('div');
+        if (line.cls) row.className = line.cls;
+        log.appendChild(row);
+        await type(row, line.text, 28);
+        await wait(350);
+      }
+      await wait(400);
+      await type(big, headline, 70);
+    })();
+
     // Drag the tomatoes around with mouse or touch.
     document.querySelectorAll('.tomato').forEach((el) => {
       let startX, startY, originX, originY;
