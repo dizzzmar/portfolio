@@ -94,7 +94,7 @@
 
     /* ---------- Paper ---------- */
     /* The work section is a sheet of green paper that slides up over the sky.
-       Its torn edges and punched holes come from a mask built in the script below. */
+       Its rounded corners and punched holes come from a mask built in the script below. */
     .work {
       position: relative;
       color: #111;
@@ -322,7 +322,7 @@
   </footer>
 
   <script>
-    // ---------- Collage: torn green paper with punched holes ----------
+    // ---------- Collage: green paper with punched holes ----------
     (() => {
       const work = document.getElementById('work');
       const paper = document.getElementById('paper');
@@ -368,16 +368,6 @@
         flower,
       ];
 
-      // Torn edge: a jagged line across the paper, `y` px from the top
-      function tornEdge(w, y, depth, rand) {
-        const pts = [];
-        for (let x = 0; x <= w; x += 6 + rand() * 14) {
-          pts.push(x.toFixed(1) + ',' + (y + (rand() - 0.5) * depth).toFixed(1));
-        }
-        pts.push(w + ',' + y);
-        return pts;
-      }
-
       let holes = [];      // built-in holes: { x (0-1), y (px), size, rot, shape }
       let punched = [];    // holes the visitor punched, same format
 
@@ -415,14 +405,11 @@
           holes = layoutHoles(w, h);
           holes.w = w; holes.h = h;
         }
-        const rand = rng(5);
-        const top = tornEdge(w, 12, 14, rand);
-        const bottom = tornEdge(w, h - 12, 14, rand).reverse();
-        const outline = [...top, ...bottom].join(' ');
+        const radius = innerWidth < 700 ? 20 : 28;
         const cut = [...holes, ...punched].map((hole) => holeMarkup(hole, w)).join('');
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">` +
           `<defs><mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="${w}" height="${h}">` +
-          `<polygon points="${outline}" fill="#fff"/><g fill="#000">${cut}</g></mask></defs>` +
+          `<rect width="${w}" height="${h}" rx="${radius}" fill="#fff"/><g fill="#000">${cut}</g></mask></defs>` +
           `<rect width="${w}" height="${h}" mask="url(#m)"/></svg>`;
         const url = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
         paper.style.webkitMaskImage = url;
