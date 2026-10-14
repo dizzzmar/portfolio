@@ -11,9 +11,9 @@
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <style>
     :root {
-      --blue: #0018a8;
-      --text: #e8ecff;
-      --dim: #8fa0ff;
+      --sky: #3f7fd6;
+      --text: #ffffff;
+      --dim: rgba(255, 255, 255, 0.82);
       --accent: #ffeb00;
     }
 
@@ -22,10 +22,28 @@
     html, body { height: 100%; }
 
     body {
-      background: var(--blue);
+      background: var(--sky);
       color: var(--text);
       font-family: "VT323", "Courier New", monospace;
       overflow: hidden;
+    }
+
+    /* Same drifting sky as the homepage, oversized so its edges never show */
+    .sky {
+      position: fixed;
+      inset: -8%;
+      z-index: -1;
+      background:
+        url("/assets/sky.webp") center / cover,
+        linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
+      animation: drift 40s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    @keyframes drift {
+      0%   { transform: translate(-3%, 1%) scale(1); }
+      50%  { transform: translate(1%, -1.5%) scale(1.04); }
+      100% { transform: translate(3%, 1%) scale(1.02); }
     }
 
     /* CRT scanlines + vignette */
@@ -50,7 +68,8 @@
       flex-direction: column;
       justify-content: center;
       padding: 32px clamp(16px, 6vw, 96px);
-      text-shadow: 0 0 6px rgba(200, 210, 255, 0.45);
+      /* Dark shadow keeps the text readable over white clouds */
+      text-shadow: 0 2px 0 rgba(0, 20, 70, 0.35), 0 0 18px rgba(0, 20, 70, 0.45);
       user-select: none;
     }
 
@@ -123,11 +142,12 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .tomato img, .cursor { animation: none; }
+      .tomato img, .cursor, .sky { animation: none; }
     }
   </style>
 </head>
 <body>
+  <div class="sky" aria-hidden="true"></div>
   <main class="terminal" aria-label="404 — Something's cooking. Under construction.">
     <div class="log" id="log" aria-hidden="true"></div>
     <div class="big" id="big" aria-hidden="true"></div>
