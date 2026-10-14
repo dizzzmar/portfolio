@@ -47,6 +47,82 @@
       100% { transform: translate(3%, 1%) scale(1.02); }
     }
 
+    /* ---------- Nav bar ---------- */
+    :root { --nav-h: 64px; }
+
+    /* Frosted bar across the top; the docked tomato is its logo */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9; /* under the tomato canvas, so the tomato sits on the bar */
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 24px;
+      background: rgba(18, 34, 28, 0.3);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      backdrop-filter: blur(18px) saturate(140%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    /* Invisible hit area over the docked tomato */
+    .nav-logo {
+      flex: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+    }
+
+    .nav-logo:focus-visible,
+    .nav-links a:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
+
+    .clock {
+      display: grid;
+      padding: 5px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      line-height: 1.15;
+    }
+
+    .clock-city {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    .clock-time {
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      margin-left: auto;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 15px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a[aria-current="true"] { color: #fff; }
+
+    /* Keep anchored targets clear of the bar */
+    [id] { scroll-margin-top: calc(var(--nav-h) + 12px); }
+
     /* The tomato canvas covers the viewport and ignores the pointer */
     #scene {
       position: fixed;
@@ -251,6 +327,13 @@
     @media (max-width: 700px) {
       .work { padding: 220px 8px 200px; }
       .punch-hint { top: 168px; right: 20px; }
+      :root { --nav-h: 56px; }
+      .nav { gap: 10px; padding: 0 14px; }
+      .nav-logo { width: 36px; height: 36px; }
+      .clock { padding: 4px 8px; }
+      .clock-time { font-size: 13px; }
+      .nav-links { gap: 14px; }
+      .nav-links a { font-size: 13px; }
       .work-intro { padding: 0 12px 20px; }
       .project-grid { grid-template-columns: 1fr; gap: 8px; }
       .project { padding-top: 24px; border-radius: 20px; }
@@ -279,7 +362,21 @@
   <div class="grain" aria-hidden="true"></div>
   <canvas id="scene" aria-hidden="true"></canvas>
 
-  <main>
+  <nav class="nav" aria-label="Main">
+    <a class="nav-logo" href="#top" aria-label="Back to top"></a>
+    <div class="clock" aria-label="Local time in Madrid">
+      <span class="clock-city">Madrid</span>
+      <time class="clock-time" id="clock">--:--</time>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#first-project" data-section="work">Work</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#room">Room</a></li>
+    </ul>
+  </nav>
+
+  <main id="top">
     <section class="hero" aria-label="dizmar">
       <div class="scroll-hint" id="hint">Scroll</div>
     </section>
@@ -295,7 +392,7 @@
 
         <!-- Replace each placeholder with a project title, short description and image. -->
         <div class="project-grid">
-          <article class="project">
+          <article class="project" id="first-project">
             <header class="project-caption">
               <h2>Lexus Electrified</h2>
               <p class="project-description">Film, 2025</p>
@@ -334,6 +431,25 @@
   </footer>
 
   <script>
+    // ---------- Nav: Madrid clock and current section ----------
+    (() => {
+      const clock = document.getElementById('clock');
+      const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit' });
+      const tick = () => {
+        const now = new Date();
+        clock.textContent = fmt.format(now);
+        clock.dateTime = now.toISOString();
+      };
+      tick();
+      setInterval(tick, 1000);
+
+      // Highlight "Work" while the work section is on screen
+      const workLink = document.querySelector('[data-section="work"]');
+      new IntersectionObserver(([entry]) => {
+        workLink.setAttribute('aria-current', entry.isIntersecting);
+      }, { rootMargin: '-50% 0px -50% 0px' }).observe(document.getElementById('work'));
+    })();
+
     // ---------- Collage: green paper with punched holes ----------
     (() => {
       const work = document.getElementById('work');
@@ -537,13 +653,15 @@
     function layout(progress) {
       const upp = unitsPerPixel();
       const heroPx = Math.min(width, height) * 0.5; // tomato size in the hero
-      const dockPx = width < 640 ? 48 : 60;        // tomato size when docked
-      const margin = width < 640 ? 16 : 28;
+      // Docked, the tomato is the logo at the left of the nav bar
+      const navH = width < 700 ? 56 : 64;
+      const dockPx = width < 700 ? 36 : 44;        // tomato size when docked
+      const margin = width < 700 ? 14 : 24;
 
       const sizePx = THREE.MathUtils.lerp(heroPx, dockPx, progress);
       // Screen position of the tomato's center, in pixels from the top-left
       const xPx = THREE.MathUtils.lerp(width / 2, margin + dockPx / 2, progress);
-      const yPx = THREE.MathUtils.lerp(height / 2, margin + dockPx / 2, progress);
+      const yPx = THREE.MathUtils.lerp(height / 2, navH / 2, progress);
 
       pivot.scale.setScalar(sizePx * upp);
       pivot.position.set((xPx - width / 2) * upp, (height / 2 - yPx) * upp, 0);
