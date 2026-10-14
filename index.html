@@ -92,14 +92,57 @@
       100% { transform: scaleY(1); opacity: 0; }
     }
 
+    /* ---------- Paper ---------- */
+    /* The work section is a sheet of green paper that slides up over the sky.
+       Its torn edges and punched holes come from a mask built in the script below. */
     .work {
       position: relative;
-      background: #eeede9;
       color: #111;
-      padding: 100px 10px 24px;
+      padding: 260px 10px 240px;
+    }
+
+    .paper-shadow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      filter: drop-shadow(2px 6px 6px rgba(0, 25, 10, 0.45));
+    }
+
+    .paper {
+      position: absolute;
+      inset: 0;
+      background: #2c4e37 url("/assets/paper.webp") repeat;
+      background-size: 512px 512px;
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+    }
+
+    .work-inner { position: relative; }
+
+    .punch-hint {
+      position: absolute;
+      top: 196px;
+      right: 30px;
+      color: #cfe0cf;
+      font-family: "Courier New", monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    /* A punched-out piece falling off the page */
+    .piece {
+      position: fixed;
+      z-index: 5;
+      pointer-events: none;
+      filter: drop-shadow(1px 3px 3px rgba(0, 25, 10, 0.35));
     }
 
     .work-inner { max-width: 1800px; margin: 0 auto; }
+
+    .work-intro { color: #e9efe4; }
 
     .work-intro {
       display: flex;
@@ -170,21 +213,39 @@
       letter-spacing: 0.05em;
     }
 
+    /* ---------- Footer: the paper ends and the sky shows again ---------- */
     .footer {
-      padding: 100px 20px 8px;
+      position: relative;
+      min-height: 60vh;
+      display: flex;
+      align-items: flex-end;
+      padding: 120px 30px 24px;
       font-size: 13px;
       line-height: 1.4;
     }
 
+    /* Pieces that were punched out of the paper, lying on the sky */
+    .fallen {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .fallen svg {
+      position: absolute;
+      filter: drop-shadow(1px 3px 3px rgba(0, 25, 10, 0.3));
+    }
+
     @media (max-width: 700px) {
-      .work { padding: 100px 8px 16px; }
+      .work { padding: 220px 8px 200px; }
+      .punch-hint { top: 168px; right: 20px; }
       .work-intro { padding: 0 12px 20px; }
       .project-grid { grid-template-columns: 1fr; gap: 8px; }
       .project { padding-top: 24px; border-radius: 20px; }
       .project-caption { padding: 0 12px 20px; }
       .project-caption h2, .project-description { font-size: clamp(28px, 7vw, 44px); }
       .project-media { border-radius: 14px; }
-      .footer { padding: 64px 12px 8px; }
+      .footer { padding: 96px 20px 16px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -212,6 +273,8 @@
     </section>
 
     <section class="work" id="work" aria-labelledby="work-title">
+      <div class="paper-shadow" aria-hidden="true"><div class="paper" id="paper"></div></div>
+      <p class="punch-hint" aria-hidden="true">Click to punch</p>
       <div class="work-inner">
         <header class="work-intro">
           <h1 id="work-title">Selected work</h1>
@@ -222,10 +285,10 @@
         <div class="project-grid">
           <article class="project">
             <header class="project-caption">
-              <h2>Project title</h2>
-              <p class="project-description">Short project description</p>
+              <h2>Lexus Electrified</h2>
+              <p class="project-description">Film, 2025</p>
             </header>
-            <div class="project-media"><span class="image-placeholder">Project image — 01</span></div>
+            <div class="project-media"><span class="image-placeholder">Film — coming soon</span></div>
           </article>
           <article class="project">
             <header class="project-caption">
@@ -249,11 +312,174 @@
             <div class="project-media"><span class="image-placeholder">Project image — 04</span></div>
           </article>
         </div>
-
-        <footer class="footer">Mario Diz, Madrid</footer>
       </div>
     </section>
   </main>
+
+  <footer class="footer">
+    <div class="fallen" id="fallen" aria-hidden="true"></div>
+    <span>Mario Diz, Madrid</span>
+  </footer>
+
+  <script>
+    // ---------- Collage: torn green paper with punched holes ----------
+    (() => {
+      const work = document.getElementById('work');
+      const paper = document.getElementById('paper');
+      const fallen = document.getElementById('fallen');
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const PAPER = '#2c4e37';
+
+      // Small seeded random so the layout is the same on every visit
+      function rng(seed) {
+        return () => {
+          seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      // Shapes in a 100 x 100 box, as SVG markup
+      function star(points, inner) {
+        const pts = [];
+        for (let i = 0; i < points * 2; i++) {
+          const r = i % 2 ? inner : 50;
+          const a = (Math.PI * i) / points - Math.PI / 2;
+          pts.push((50 + r * Math.cos(a)).toFixed(1) + ',' + (50 + r * Math.sin(a)).toFixed(1));
+        }
+        return `<polygon points="${pts.join(' ')}"/>`;
+      }
+      const flower = () => {
+        let c = '<circle cx="50" cy="50" r="26"/>';
+        for (let i = 0; i < 6; i++) {
+          const a = (Math.PI * i) / 3;
+          c += `<circle cx="${(50 + 26 * Math.cos(a)).toFixed(1)}" cy="${(50 + 26 * Math.sin(a)).toFixed(1)}" r="22"/>`;
+        }
+        return c;
+      };
+      const SHAPES = [
+        () => star(5, 21),                                  // star
+        () => star(4, 13),                                  // sparkle
+        () => star(8, 30),                                  // burst
+        () => '<path d="M50 90C22 68 2 50 10 28 18 8 42 8 50 27 58 8 82 8 90 28 98 50 78 68 50 90Z"/>', // heart
+        () => '<polygon points="62,0 18,56 44,56 32,100 84,38 57,38 72,0"/>', // lightning bolt
+        () => '<circle cx="50" cy="50" r="46"/>',            // circle
+        flower,
+      ];
+
+      // Torn edge: a jagged line across the paper, `y` px from the top
+      function tornEdge(w, y, depth, rand) {
+        const pts = [];
+        for (let x = 0; x <= w; x += 6 + rand() * 14) {
+          pts.push(x.toFixed(1) + ',' + (y + (rand() - 0.5) * depth).toFixed(1));
+        }
+        pts.push(w + ',' + y);
+        return pts;
+      }
+
+      let holes = [];      // built-in holes: { x (0-1), y (px), size, rot, shape }
+      let punched = [];    // holes the visitor punched, same format
+
+      function layoutHoles(w, h) {
+        const rand = rng(11);
+        const list = [];
+        const bands = innerWidth < 700 ? [[24, 150], [h - 170, h - 30]] : [[30, 180], [h - 200, h - 40]];
+        const perBand = Math.max(5, Math.round(w / 110));
+        for (const [top, bottom] of bands) {
+          for (let i = 0; i < perBand; i++) {
+            const size = 36 + rand() * 60;
+            list.push({
+              x: (i + 0.15 + rand() * 0.7) / perBand,
+              y: top + rand() * (bottom - top),
+              size,
+              rot: rand() * 360,
+              shape: Math.floor(rand() * SHAPES.length),
+            });
+          }
+        }
+        return list;
+      }
+
+      function holeMarkup(hole, w) {
+        const s = hole.size / 100;
+        const x = hole.x * w - hole.size / 2;
+        const y = hole.y - hole.size / 2;
+        return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${hole.rot.toFixed(0)} ${hole.size / 2} ${hole.size / 2}) scale(${s.toFixed(3)})">${SHAPES[hole.shape]()}</g>`;
+      }
+
+      function render() {
+        const w = Math.round(work.offsetWidth);
+        const h = Math.round(work.offsetHeight);
+        if (!holes.length || holes.h !== h || holes.w !== w) {
+          holes = layoutHoles(w, h);
+          holes.w = w; holes.h = h;
+        }
+        const rand = rng(5);
+        const top = tornEdge(w, 12, 14, rand);
+        const bottom = tornEdge(w, h - 12, 14, rand).reverse();
+        const outline = [...top, ...bottom].join(' ');
+        const cut = [...holes, ...punched].map((hole) => holeMarkup(hole, w)).join('');
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">` +
+          `<defs><mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="${w}" height="${h}">` +
+          `<polygon points="${outline}" fill="#fff"/><g fill="#000">${cut}</g></mask></defs>` +
+          `<rect width="${w}" height="${h}" mask="url(#m)"/></svg>`;
+        const url = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+        paper.style.webkitMaskImage = url;
+        paper.style.maskImage = url;
+      }
+
+      function shapeSvg(shape, size, rot) {
+        return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" style="transform: rotate(${rot}deg)"><g fill="${PAPER}">${SHAPES[shape]()}</g></svg>`;
+      }
+
+      // Click the paper (not a project) to punch a new hole; the piece falls away
+      work.addEventListener('click', (e) => {
+        if (e.target.closest('.project, a, button')) return;
+        const rect = work.getBoundingClientRect();
+        const hole = {
+          x: (e.clientX - rect.left) / rect.width,
+          y: e.clientY - rect.top,
+          size: 40 + Math.random() * 30,
+          rot: Math.random() * 360,
+          shape: Math.floor(Math.random() * SHAPES.length),
+        };
+        punched.push(hole);
+        render();
+        if (reduced) return;
+
+        const piece = document.createElement('div');
+        piece.className = 'piece';
+        piece.innerHTML = shapeSvg(hole.shape, hole.size, hole.rot);
+        piece.style.left = e.clientX - hole.size / 2 + 'px';
+        piece.style.top = e.clientY - hole.size / 2 + 'px';
+        document.body.appendChild(piece);
+        const drift = (Math.random() - 0.5) * 240;
+        piece.animate(
+          [
+            { transform: 'translate(0, 0) rotate(0deg)' },
+            { transform: `translate(${drift}px, ${innerHeight}px) rotate(${(Math.random() - 0.5) * 720}deg)` },
+          ],
+          { duration: 1600 + Math.random() * 600, easing: 'cubic-bezier(.45,0,.8,.6)' }
+        ).onfinish = () => piece.remove();
+      });
+
+      // A few pieces already lying on the sky in the footer
+      const rand = rng(23);
+      for (let i = 0; i < 9; i++) {
+        const size = 26 + rand() * 34;
+        const el = document.createElement('div');
+        el.innerHTML = shapeSvg(Math.floor(rand() * SHAPES.length), size, Math.round(rand() * 360));
+        const svg = el.firstChild;
+        svg.style.left = 4 + rand() * 88 + '%';
+        svg.style.top = 8 + rand() * 60 + '%';
+        fallen.appendChild(svg);
+      }
+
+      new ResizeObserver(render).observe(work);
+      render();
+    })();
+  </script>
 
   <script type="module">
     import * as THREE from 'three';
