@@ -283,6 +283,8 @@
       document.getElementById('detail-close').focus();
     }
 
+    const sleeves = [];  // materials of the displayed vinyl sleeve, whose glow follows the lamp
+    let lampLevel = 1;   // 0 = lamp off, 1 = fully lit
     new GLTFLoader().load('/assets/room/shelf.glb', gltf => {
       const model = gltf.scene;
       scene.add(model);
@@ -324,20 +326,26 @@
         lampFlicker = { light: lamp, material: tomato.material, intensity: lamp.intensity, glow: tomato.material.emissiveIntensity, start: null };
         if (!reduced) setLamp(0); // starts off, then flickers on once the room is shown
       }
-      // The displayed sleeve shows the cover of the last song I played. If the file is
-      // missing, the sleeve keeps its original art.
+      // The displayed sleeve shows the cover of the last song I played. It has a glow of
+      // its own, which follows the lamp (see setLamp), so while the lamp is still off the
+      // cover is as dark as the rest of the room. If the file is missing, the sleeve
+      // keeps its original art.
+      for (const mesh of meshes) {
+        if (!/^music displayed vinyl sleeve\b/.test(words(mesh.name)) || !/album/i.test(mesh.material.name)) continue;
+        mesh.material = mesh.material.clone();
+        sleeves.push({ material: mesh.material, base: mesh.material.emissiveIntensity });
+        mesh.material.emissiveIntensity = sleeves[sleeves.length - 1].base * lampLevel;
+      }
       new THREE.TextureLoader().load('/assets/room/vinyl-cover.webp', (cover) => {
         cover.colorSpace = THREE.SRGBColorSpace;
         cover.flipY = false; // glTF textures aren't flipped
         cover.anisotropy = renderer.capabilities.getMaxAnisotropy();
-        for (const mesh of meshes) {
-          if (!/^music displayed vinyl sleeve\b/.test(words(mesh.name))) continue;
-          if (!/album/i.test(mesh.material.name)) continue;
-          mesh.material = mesh.material.clone();
-          mesh.material.map = cover;
-          mesh.material.emissiveMap = cover; // the sleeve glows, so the cover is its emissive texture too
-          mesh.material.emissiveIntensity = 0.45; // the old art was dark, so it glowed at 2x; a real cover would blow out
-          mesh.material.needsUpdate = true;
+        for (const sleeve of sleeves) {
+          sleeve.material.map = cover;
+          sleeve.material.emissiveMap = cover; // the sleeve glows, so the cover is its emissive texture too
+          sleeve.base = 0.45; // the old art was dark, so it glowed at 2x; a real cover would blow out
+          sleeve.material.emissiveIntensity = sleeve.base * lampLevel;
+          sleeve.material.needsUpdate = true;
         }
       });
       const bounds = new THREE.Box3().setFromObject(model);
@@ -476,8 +484,10 @@
       [0.68, 1], [0.74, 0.3], [0.9, 0.3], [0.95, 0.95], [1.02, 0.55], [1.12, 1], [1.6, 1]];
     let lampFlicker = null;
     function setLamp(level) {
+      lampLevel = level;
       lampFlicker.light.intensity = lampFlicker.intensity * level;
       lampFlicker.material.emissiveIntensity = lampFlicker.glow * level;
+      for (const sleeve of sleeves) sleeve.material.emissiveIntensity = sleeve.base * level;
     }
     function flickerLevel(t) {
       for (let i = 1; i < FLICKER.length; i++) {
