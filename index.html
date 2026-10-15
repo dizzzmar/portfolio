@@ -81,36 +81,6 @@
       outline-offset: 3px;
     }
 
-    /* Black pill: next to the logo on desktop, bottom center on phones */
-    .clock {
-      position: fixed;
-      top: calc(var(--nav-h) / 2);
-      left: 84px;
-      z-index: 9;
-      transform: translateY(-50%);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      border-radius: 8px;
-      background: #0b0b0b;
-      color: #fff;
-      font-family: "Courier New", monospace;
-      font-size: 13px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      white-space: nowrap;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .clock::before {
-      content: "";
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #4ade80;
-    }
-
     .nav-links {
       display: flex;
       gap: 32px;
@@ -345,14 +315,6 @@
       :root { --nav-h: 56px; }
       .nav { gap: 10px; padding: 0 14px; }
       .nav-logo { width: 36px; height: 36px; }
-      .scroll-hint { bottom: 72px; } /* clear of the clock */
-      .clock {
-        top: auto;
-        bottom: calc(16px + env(safe-area-inset-bottom));
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 12px;
-      }
       .nav-links { gap: 14px; }
       .nav-links a { font-size: 13px; }
       .work-intro { padding: 0 12px 20px; }
@@ -392,7 +354,6 @@
       <li><a href="#room">Room</a></li>
     </ul>
   </nav>
-  <p class="clock" aria-label="Local time in Madrid">Madrid <time id="clock">--- --:--</time></p>
 
   <main id="top">
     <section class="hero" aria-label="dizmar">
@@ -456,20 +417,8 @@
       document.querySelectorAll('.project-media video').forEach((v) => { v.autoplay = false; v.pause(); });
     }
 
-    // ---------- Nav: Madrid clock and current section ----------
+    // ---------- Nav: current section and link contrast ----------
     (() => {
-      const clock = document.getElementById('clock');
-      const opts = { timeZone: 'Europe/Madrid' };
-      const day = new Intl.DateTimeFormat('en-GB', { ...opts, weekday: 'short' });
-      const time = new Intl.DateTimeFormat('en-GB', { ...opts, hour: '2-digit', minute: '2-digit' });
-      const tick = () => {
-        const now = new Date();
-        clock.textContent = day.format(now) + ' ' + time.format(now);
-        clock.dateTime = now.toISOString();
-      };
-      tick();
-      setInterval(tick, 1000);
-
       // Highlight "Work" while the work section is on screen
       const workLink = document.querySelector('[data-section="work"]');
       new IntersectionObserver(([entry]) => {
