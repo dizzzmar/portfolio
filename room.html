@@ -215,12 +215,17 @@
         if (/^room\b/.test(words(object.name))) return;
         if (/^lamp tomato diffuser\b/.test(words(object.name))) {
           tomato = object;
-          object.material = object.material.clone();
-          object.material.color.set('#df4532');
-          object.material.emissive.set('#ff4a1c');
-          object.material.emissiveIntensity = 1.1; // strong enough to glow, low enough to stay red
+          // Deep red, lit from inside, under a glossy lacquer coat that catches the room
+          object.material = new THREE.MeshPhysicalMaterial({
+            color: '#c80000',
+            emissive: '#ff0000',
+            emissiveIntensity: 0.22, // low on purpose: AgX desaturates bright colours, so a dimmer glow stays redder
+            roughness: 0.3,
+            clearcoat: 1,
+            clearcoatRoughness: 0.06,
+            envMapIntensity: 0.25,   // enough for gloss; more turns the red pink
+          });
           object.castShadow = false; // the light sits inside it
-          object.material.roughness = .42;
         }
         meshes.push(object);
       });
@@ -234,6 +239,8 @@
         lamp.shadow.bias = -0.002;
         lamp.shadow.radius = 6;
         scene.add(lamp);
+        lampFlicker = { light: lamp, material: tomato.material, intensity: lamp.intensity, glow: tomato.material.emissiveIntensity, start: null };
+        if (!reduced) setLamp(0); // starts off, then flickers on once the room is shown
       }
       const bounds = new THREE.Box3().setFromObject(model);
       const size = bounds.getSize(new THREE.Vector3());
@@ -282,12 +289,46 @@
     }
     addEventListener('resize', resize);
     resize();
+    // ---------- Lamp flicker on load ----------
+    // Brightness keyframes [seconds, 0..1]: sputters a few times, then stays on
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const FLICKER = [[0, 0], [0.25, 0], [0.3, 0.9], [0.36, 0.05], [0.5, 0.05], [0.55, 0.6], [0.6, 0.15],
+      [0.68, 1], [0.74, 0.3], [0.9, 0.3], [0.95, 0.95], [1.02, 0.55], [1.12, 1], [1.6, 1]];
+    let lampFlicker = null;
+    function setLamp(level) {
+      lampFlicker.light.intensity = lampFlicker.intensity * level;
+      lampFlicker.material.emissiveIntensity = lampFlicker.glow * level;
+    }
+    function flickerLevel(t) {
+      for (let i = 1; i < FLICKER.length; i++) {
+        const [t1, v1] = FLICKER[i];
+        if (t <= t1) {
+          const [t0, v0] = FLICKER[i - 1];
+          const base = v0 + (v1 - v0) * ((t - t0) / (t1 - t0));
+          return Math.max(0, Math.min(1, base + (Math.random() - 0.5) * 0.12 * base)); // a little buzz
+        }
+      }
+      return 1;
+    }
+
+    let lastFrame = performance.now();
     function frame() {
+      const now = performance.now();
+      // Advance at most 50ms per frame, so a slow first frame (shaders, shadows)
+      // doesn't skip the flicker: it just plays a little slower.
+      const dt = Math.min((now - lastFrame) / 1000, 0.05);
+      lastFrame = now;
+      if (lampFlicker && !reduced && lampFlicker.start !== false) {
+        lampFlicker.t = lampFlicker.start === null ? 0 : lampFlicker.t + dt;
+        lampFlicker.start = true;
+        setLamp(flickerLevel(lampFlicker.t));
+        if (lampFlicker.t > FLICKER[FLICKER.length - 1][0]) { setLamp(1); lampFlicker.start = false; }
+      }
       controls.update();
       composer.render();
       requestAnimationFrame(frame);
     }
-    frame();
+    requestAnimationFrame(frame);
   </script>
 </body>
 </html>
