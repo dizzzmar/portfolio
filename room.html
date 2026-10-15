@@ -162,9 +162,9 @@
     // turns "Music / vinyl collection" into "Music__vinyl_collection".
     const destinations = [
       // Both are outlined, but the camera looks at the collection on the lower shelf
-      { label: 'Vinyls', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, href: null },
-      { label: 'Mimikyu', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
-      { label: 'Volver poster', key: 'volver-poster', match: /^wall upper left poster\b/, href: null },
+      { label: 'Now playing', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, href: null },
+      { label: 'Pokemon', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
+      { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, href: null },
       // The camera frames just the tomato, not the cord that runs down to the floor
       { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, focus: /^lamp (tomato diffuser|green calyx)\b/, href: null },
       { label: 'Plant', key: 'plant', match: /^plants (eucalyptus|fluted vase)\b/, href: null },
