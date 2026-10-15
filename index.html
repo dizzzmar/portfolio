@@ -6,6 +6,9 @@
   <title>dizmar</title>
   <link rel="icon" href="/assets/tomato.webp" type="image/webp">
   <style>
+    /* Cross-fade between pages of the site, where the browser supports it */
+    @view-transition { navigation: auto; }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html { scroll-behavior: smooth; }
@@ -342,6 +345,10 @@
 </head>
 <body>
   <div class="sky" aria-hidden="true"></div>
+  <script>
+    // Start the 80s drift cycle from the clock, so the sky is in the same place on every page
+    document.querySelector('.sky').style.animationDelay = -(Date.now() / 1000 % 80) + 's';
+  </script>
   <div class="grain" aria-hidden="true"></div>
   <canvas id="scene" aria-hidden="true"></canvas>
 
@@ -685,6 +692,16 @@
       return visibleHeight / height;
     }
 
+    // Where the tomato is on screen, so the next page can fly it in from here
+    let tomatoOnScreen = null;
+    addEventListener('click', (e) => {
+      const link = e.target.closest('a[href^="/"]');
+      if (!link || !tomatoOnScreen) return;
+      try {
+        sessionStorage.setItem('tomato-from', JSON.stringify({ ...tomatoOnScreen, t: Date.now() }));
+      } catch (err) {}
+    });
+
     function layout(progress) {
       const upp = unitsPerPixel();
       const heroPx = Math.min(width, height) * 0.5; // tomato size in the hero
@@ -700,6 +717,7 @@
 
       pivot.scale.setScalar(sizePx * upp);
       pivot.position.set((xPx - width / 2) * upp, (height / 2 - yPx) * upp, 0);
+      tomatoOnScreen = { x: xPx, y: yPx, size: sizePx };
     }
 
     // ---------- Animation ----------
