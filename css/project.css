@@ -1,3 +1,7 @@
+/* PÁGINAS DE PROYECTO — estilos compartidos por todo lo que hay en /project/*.
+   Si cambias algo aquí, cambia en todos los proyectos a la vez.
+   Orden: base · cabecera (marca, nombre, etiquetas) · galería · carrusel · footer · móvil. */
+
 * { box-sizing: border-box; }
 :root { color-scheme: light; }
 html { scroll-behavior: smooth; }
@@ -15,12 +19,14 @@ figure { margin: 0; }
 .project-intro h1 { margin: 0 0 0 -.045em; font-size: clamp(48px, 9vw, 92px); font-weight: 700; letter-spacing: -.06em; line-height: .88; text-transform: uppercase; }
 .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
 .project-tags li { padding: 5px 11px 4px; border: 1px solid #171717; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .06em; line-height: 1.2; text-transform: uppercase; }
+.project-tags .project-year { margin-left: auto; padding: 0; border: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 14px; font-weight: 400; letter-spacing: -.02em; font-variant-numeric: lining-nums; transform: translateY(2.5px); }
 .project-description { margin: 20px 0 0; max-width: 61ch; font-size: 17px; line-height: 1.6; }
 .project-gallery { display: grid; gap: 20px; }
 .image-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
 .project-end { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 60px 24px; font-size: 14px; }
-.site-footer { display: flex; justify-content: center; padding: 56px 24px; background: #91bce0 url('/assets/sky.webp') center 65% / cover; color: #173a31; font-size: 13px; }
-/* Image stack: the front image leaves sideways and the next one comes forward */
+.site-footer { display: flex; justify-content: center; padding: 56px 24px; background: #91bce0 url('/assets/images/sky.webp') center 65% / cover; color: #173a31; font-size: 13px; }
+/* ---------- Carrusel de imágenes (pila) ----------
+   La imagen de delante sale hacia un lado y pasa la siguiente. Lo mueve js/project-stack.js */
 .stack { margin: 0; }
 .stack-deck { display: grid; gap: 20px; }
 .stack.is-live { margin-top: 36px; }

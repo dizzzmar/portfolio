@@ -1,0 +1,111 @@
+<!doctype html>
+<!--
+  ============================================================================
+  PLANTILLA DE PROYECTO  —  duplícame para crear un proyecto nuevo
+  ============================================================================
+
+  CÓMO CREAR UN PROYECTO NUEVO (5 pasos)
+    1. Duplica la carpeta  templates/project-template  y muévela a  project/
+       con el nombre del proyecto en minúsculas y con guiones:
+         project/nombre-del-proyecto/index.html
+       (la URL será  www.dizmar.xyz/project/nombre-del-proyecto/ )
+    2. Crea la carpeta de imágenes  assets/projects/nombre-del-proyecto/
+       y sube ahí tus imágenes (mejor .webp; 1600 px de ancho como máximo).
+    3. En este archivo, busca los textos que empiezan por  EDITA:  y cámbialos.
+       Con Ctrl+F (o Cmd+F) buscando "EDITA" los encuentras todos.
+    4. Añade una card en la home (index.html → "LISTA DE PROYECTOS"); hay un
+       trozo listo para copiar en  templates/project-card.html.
+    5. Cuando esté listo para publicarse, BORRA la línea  <meta name="robots" ...>
+       de aquí abajo (mientras esté, Google no indexa la página).
+
+  El diseño (tipografías, márgenes, colores) está en /css/project.css y es
+  común a todos los proyectos: no hace falta tocarlo.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- EDITA: título de la pestaña del navegador y descripción para buscadores -->
+<title>MARCA — Nombre del proyecto · Mario Diz</title>
+<meta name="description" content="EDITA: una frase corta sobre el proyecto. Selected work by Mario Diz.">
+
+<!-- BORRA esta línea cuando el proyecto esté listo para publicarse -->
+<meta name="robots" content="noindex">
+
+<link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
+<link rel="stylesheet" href="/css/project.css">
+</head>
+<body>
+
+<!-- Botón × de arriba a la derecha. EDITA: cambia ID-DE-LA-CARD por el id de la card en la home
+     (por ejemplo /#soap-and-glory) para que al cerrar vuelva justo a esa card. -->
+<a class="close-project" href="/#ID-DE-LA-CARD" aria-label="Close project and return to selected work">×</a>
+
+<main class="project-page" id="top">
+
+<!-- ======================= 1. IMAGEN PRINCIPAL =======================
+     Aquí hay un CARRUSEL en pila: las imágenes se van pasando solas y se pueden arrastrar.
+     - Cada <figure class="stack-card"> es una imagen. Mínimo 3, puedes poner las que quieras.
+     - EDITA en cada una: src (ruta de la imagen), width/height (tamaño real en píxeles)
+       y alt (descripción corta de lo que se ve, para accesibilidad).
+     - ¿Prefieres UNA sola imagen grande? Borra todo el <section class="stack"> y el
+       <script> del final de la página, y usa en su lugar:
+         <figure><img class="project-image" src="/assets/projects/nombre/imagen-1.webp" width="1600" height="1600" alt="Descripción"></figure>
+-->
+<section class="stack" id="stack" aria-roledescription="carousel" aria-label="Project images">
+<div class="stack-deck" id="stack-deck">
+<figure class="stack-card"><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción de la imagen 1" decoding="async" draggable="false"></figure>
+<figure class="stack-card"><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción de la imagen 2" loading="lazy" decoding="async" draggable="false"></figure>
+<figure class="stack-card"><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción de la imagen 3" loading="lazy" decoding="async" draggable="false"></figure>
+</div>
+<!-- Botones ← → y contador (los activa el script; no los toques) -->
+<div class="stack-ui" hidden>
+<button type="button" class="stack-btn" data-dir="-1" aria-label="Previous image">←</button>
+<span class="stack-count" aria-live="polite"><b>1</b> / 3</span> <!-- EDITA: el "3" = número total de imágenes -->
+<button type="button" class="stack-btn" data-dir="1" aria-label="Next image">→</button>
+</div>
+</section>
+
+<!-- ======================= 2. CABECERA Y TEXTO ======================= -->
+<header class="project-intro">
+<p class="project-brand">Marca</p>                         <!-- EDITA: la marca / cliente (serif pequeño) -->
+<h1>Nombre del proyecto</h1>                               <!-- EDITA: nombre del proyecto (sans grande) -->
+<ul class="project-tags" aria-label="Project type">
+<li>Tipo de proyecto</li>                                  <!-- EDITA: etiqueta (Audiovisual, Key visuals…). Copia la línea para añadir más -->
+<li class="project-year">2025</li>                         <!-- EDITA: año (o borra esta línea) -->
+</ul>
+<p class="project-description">EDITA: describe el proyecto en dos o tres frases: qué era el encargo, qué hiciste y con quién.</p>
+</header>
+
+<!-- ======================= 3. GALERÍA =======================
+     Imágenes que van debajo del texto, una detrás de otra.
+     Hay dos tipos de bloque; copia y pega los que necesites, en el orden que quieras:
+       A) una imagen a ancho completo:  <figure> … </figure>
+       B) dos imágenes lado a lado:     <div class="image-pair"> <figure>…</figure> <figure>…</figure> </div>
+     Borra este bloque entero si el proyecto no tiene galería.
+-->
+<section class="project-gallery" aria-label="Project images">
+
+<!-- A) Imagen a ancho completo -->
+<figure><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción" loading="lazy" decoding="async"></figure>
+
+<!-- B) Dos imágenes lado a lado -->
+<div class="image-pair">
+<figure><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción" loading="lazy" decoding="async"></figure>
+<figure><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción" loading="lazy" decoding="async"></figure>
+</div>
+
+</section>
+
+<!-- ======================= 4. ENLACES DEL FINAL ======================= -->
+<nav class="project-end" aria-label="Project navigation"><a href="/#first-project">← All projects</a><a href="#top">Back to top ↑</a></nav>
+</main>
+
+<footer class="site-footer">Mario Diz, Madrid</footer>
+
+<!-- Script del carrusel de la imagen principal (bórralo si quitas el carrusel) -->
+<script src="/js/project-stack.js" defer></script>
+</body>
+</html>

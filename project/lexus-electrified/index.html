@@ -1,0 +1,55 @@
+<!doctype html>
+<!--
+  PROYECTO: Lexus — Electrified  ·  www.dizmar.xyz/project/lexus-electrified/
+  Página en construcción: de momento solo tiene el vídeo de la card y textos de ejemplo.
+  Mientras tenga la línea <meta name="robots" content="noindex"> no aparece en Google;
+  la card de la home tampoco enlaza aquí todavía (ver index.html, "Proyecto 1").
+  Para crear otro proyecto copia templates/project-template (ahí están explicados todos los pasos).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- EDITA: título de la pestaña del navegador y descripción para buscadores -->
+<title>Lexus — Electrified · Mario Diz</title>
+<meta name="description" content="Lexus Electrified. Audiovisual project. Selected work by Mario Diz.">
+
+<!-- BORRA esta línea cuando el proyecto esté listo para publicarse -->
+<meta name="robots" content="noindex">
+
+<link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
+<link rel="stylesheet" href="/css/project.css">
+</head>
+<body>
+
+<!-- Botón × de arriba a la derecha. EDITA: cambia ID-DE-LA-CARD por el id de la card en la home
+     (por ejemplo /#soap-and-glory) para que al cerrar vuelva justo a esa card. -->
+<a class="close-project" href="/#first-project" aria-label="Close project and return to selected work">×</a>
+
+<main class="project-page" id="top">
+
+<!-- ======================= 1. VÍDEO PRINCIPAL =======================
+     Vídeo corto en bucle y sin sonido (el mismo de la card de la home).
+     Para cambiarlo, sustituye los archivos de /assets/projects/lexus-electrified/ -->
+<figure><video class="project-image" src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video></figure>
+
+<!-- ======================= 2. CABECERA Y TEXTO ======================= -->
+<header class="project-intro">
+<p class="project-brand">Lexus</p>                         <!-- EDITA: la marca / cliente (serif pequeño) -->
+<h1>Electrified</h1>                               <!-- EDITA: nombre del proyecto (sans grande) -->
+<ul class="project-tags" aria-label="Project type">
+<li>Audiovisual</li>                                  <!-- EDITA: etiqueta (Audiovisual, Key visuals…). Copia la línea para añadir más -->
+<li class="project-year">2025</li>                         <!-- EDITA: año (o borra esta línea) -->
+</ul>
+<p class="project-description">EDITA: texto del proyecto pendiente de escribir.</p>
+</header>
+
+<!-- ======================= 3. ENLACES DEL FINAL ======================= -->
+<nav class="project-end" aria-label="Project navigation"><a href="/#first-project">← All projects</a><a href="#top">Back to top ↑</a></nav>
+</main>
+
+<footer class="site-footer">Mario Diz, Madrid</footer>
+
+</body>
+</html>

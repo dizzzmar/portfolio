@@ -1,0 +1,469 @@
+// THE ROOM · la habitación 3D (three.js): carga assets/room/shelf.glb, los objetos seleccionables (array `destinations`),
+// la cámara que se acerca al pasar por la lista de la izquierda, la lámpara que parpadea y la pegatina "Now playing".
+// Para cambiar la canción de la pegatina edita el objeto `nowPlaying` (y la imagen assets/room/now-playing-sticker.webp).
+
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const canvas = document.getElementById('room');
+const label = document.getElementById('label');
+const status = document.getElementById('status');
+const nav = document.getElementById('object-nav');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+// AgX is Blender's default view transform, so colours roll off like the Blender render
+renderer.toneMapping = THREE.AgXToneMapping;
+renderer.toneMappingExposure = 1;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+// Cozy evening: dim warm ambience, a soft warm key from the front left,
+// a faint cool rim, and the tomato lamp doing most of the work (added on load).
+scene.background = new THREE.Color('#140d09');
+const reflections = new THREE.PMREMGenerator(renderer);
+scene.environment = reflections.fromScene(new RoomEnvironment(renderer)).texture;
+reflections.dispose();
+// three 0.160 has no scene.environmentIntensity, so the reflections are dimmed per material on load
+const ENV_INTENSITY = 0.06;
+scene.add(new THREE.HemisphereLight(0xffe2c4, 0x2a1a12, 0.13));
+const key = new THREE.DirectionalLight(0xffc89a, 0.25);
+key.position.set(-4, 5, 6);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.bias = -0.0004;
+key.shadow.normalBias = 0.02;
+key.shadow.radius = 4;
+scene.add(key);
+scene.add(key.target);
+const rim = new THREE.DirectionalLight(0x8fb4ff, 0.18);
+rim.position.set(4, 3, -2);
+scene.add(rim);
+const camera = new THREE.PerspectiveCamera(35, 1, .1, 1000);
+// The visitor doesn't orbit the shelf: the camera eases between an overview and a
+// closer look at whichever object is hovered in the list on the left.
+const view = { pos: new THREE.Vector3(), target: new THREE.Vector3(), ready: false };
+const goal = { pos: new THREE.Vector3(), target: new THREE.Vector3() };
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const outline = new OutlinePass(new THREE.Vector2(1, 1), scene, camera);
+outline.edgeStrength = 4;
+outline.edgeGlow = 0.8;
+outline.edgeThickness = 2;
+outline.visibleEdgeColor.set('#ffe6c4');
+outline.hiddenEdgeColor.set('#7a4a2a');
+composer.addPass(outline);
+// Soft glow around the brightest things (the lamp), like Blender's bloom
+// High threshold: only the emissive lamp is bright enough to bloom, not the lit wall
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.35, 0.4, 2.2);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+// Only these five things in the room can be selected. Add an href to one when
+// its section exists; until then it opens its own detail state.
+// Matched against object names reduced to lowercase words, because the loader
+// turns "Music / vinyl collection" into "Music__vinyl_collection".
+// The last song I played on Spotify. Update the file and these lines to change it.
+const nowPlaying = {
+  title: 'Bug',
+  artist: 'Fontaines D.C.',
+  album: 'Romance',
+};
+
+const destinations = [
+  // Both are outlined, but the camera looks at the collection on the lower shelf
+  { label: 'Now playing', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, track: nowPlaying, href: null },
+  { label: 'Pokemon', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
+  { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, href: null },
+  // The camera frames just the tomato, not the cord that runs down to the floor
+  { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, focus: /^lamp (tomato diffuser|green calyx)\b/, href: null },
+  { label: 'Plant', key: 'plant', match: /^plants (eucalyptus|fluted vase)\b/, href: null },
+];
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+let meshes = [];
+let hovered = null;
+let down = null;
+const detail = document.getElementById('detail');
+const detailTitle = document.getElementById('detail-title');
+document.getElementById('detail-close').addEventListener('click', () => {
+  detail.hidden = true;
+  history.replaceState(null, '', location.pathname);
+});
+
+// The selectable thing a mesh (or any of its parents) belongs to, or null for the rest of the room
+const words = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+function destinationFor(object) {
+  for (let current = object; current && current !== scene; current = current.parent) {
+    const name = words(current.name);
+    const found = destinations.find((item) => item.match.test(name));
+    if (found) return found;
+  }
+  return null;
+}
+
+function pick(event) {
+  const rect = canvas.getBoundingClientRect();
+  pointer.set((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1);
+  raycaster.setFromCamera(pointer, camera);
+  const hit = raycaster.intersectObjects(meshes, false)[0];
+  if (!hit) return null;
+  const item = destinationFor(hit.object);
+  return item ? { item, object: hit.object } : null;
+}
+
+// ---------- Now-playing bumper sticker ----------
+// A vintage bumper sticker with the song, artist and album. Hovering the record
+// slaps it on; moving away peels it off from the bottom-right corner.
+function stickerCard(track) {
+  const el = (tag, cls, text) => Object.assign(document.createElement(tag), { className: cls, textContent: text || '' });
+  const sticker = el('div', 'sticker');
+  const face = el('div', 'sticker-face');
+  const artwork = document.createElement('img');
+  artwork.className = 'sticker-art';
+  artwork.src = '/assets/room/now-playing-sticker.webp';
+  artwork.alt = track.title + ' by ' + track.artist + ' — ' + track.album;
+  artwork.width = 1600;
+  artwork.height = 567;
+  artwork.draggable = false;
+  face.append(artwork);
+  sticker.append(face, el('div', 'sticker-flap'));
+  return sticker;
+}
+
+const trackEl = document.getElementById('track');
+let stickerState = 'off'; // off, on or peeling
+let stickerAnims = [];
+const stopSticker = () => { stickerAnims.forEach((a) => a.cancel()); stickerAnims = []; };
+function showSticker(track) {
+  if (stickerState === 'on') return;
+  stopSticker();
+  trackEl.replaceChildren(stickerCard(track));
+  trackEl.hidden = false;
+  stickerState = 'on';
+  if (reduced) return;
+  // Slapped on: drops in big and tilted, overshoots a little, settles
+  stickerAnims = [trackEl.firstChild.animate([
+    { transform: 'translateY(-1.5em) rotate(-14deg) scale(1.3)', opacity: 0 },
+    { transform: 'rotate(-1deg) scale(.96)', opacity: 1, offset: .65 },
+    { transform: 'rotate(-3.5deg) scale(1.01)', offset: .85 },
+    { transform: 'rotate(-3deg) scale(1)' },
+  ], { duration: 460, easing: 'cubic-bezier(.2,.8,.3,1)' })];
+}
+function hideSticker() {
+  if (stickerState !== 'on') return;
+  if (reduced) { trackEl.hidden = true; stickerState = 'off'; return; }
+  stopSticker();
+  stickerState = 'peeling';
+  const sticker = trackEl.firstChild;
+  const face = sticker.querySelector('.sticker-face');
+  const flap = sticker.querySelector('.sticker-flap');
+  const w = face.offsetWidth, h = face.offsetHeight, c = Math.round(h * .75);
+  const cut = (k) => `polygon(0px 0px, ${w}px 0px, ${w}px ${h - k}px, ${w - k}px ${h}px, 0px ${h}px)`;
+  // 1. the bottom-right corner lifts and folds back
+  const peel = { duration: 380, easing: 'cubic-bezier(.4,0,.6,1)', fill: 'forwards' };
+  stickerAnims = [
+    face.animate([{ clipPath: cut(0) }, { clipPath: cut(c) }], peel),
+    flap.animate([{ width: '0px', height: '0px' }, { width: c + 'px', height: c + 'px' }], peel),
+  ];
+  // 2. then the whole sticker comes away
+  const off = sticker.animate([
+    { transform: 'rotate(-3deg)', opacity: 1 },
+    { transform: 'translate(-2.5em, -3em) rotate(-16deg) scale(.92)', opacity: 0 },
+  ], { duration: 320, delay: 330, easing: 'cubic-bezier(.5,0,.8,.4)', fill: 'forwards' });
+  stickerAnims.push(off);
+  off.onfinish = () => { stopSticker(); trackEl.hidden = true; trackEl.replaceChildren(); stickerState = 'off'; };
+}
+
+function highlight(selection) {
+  hovered = selection;
+  outline.selectedObjects = selection
+    ? meshes.filter(mesh => destinationFor(mesh)?.key === selection.item.key)
+    : [];
+  const track = selection?.item.track;
+  label.hidden = !selection || !!track;
+  if (track) showSticker(track); else hideSticker();
+  for (const button of nav.querySelectorAll('button')) button.classList.toggle('active', !!selection && button.textContent === selection.item.label);
+  if (selection && !track) label.textContent = selection.item.label + ' +';
+  canvas.style.cursor = selection ? 'pointer' : 'default';
+}
+
+canvas.addEventListener('pointermove', event => {
+  highlight(pick(event));
+});
+canvas.addEventListener('pointerleave', () => highlight(null));
+canvas.addEventListener('pointerdown', event => { down = [event.clientX, event.clientY]; });
+canvas.addEventListener('pointerup', event => {
+  if (!down) return;
+  const moved = Math.hypot(event.clientX - down[0], event.clientY - down[1]);
+  down = null;
+  if (moved < 8) {
+    const selection = pick(event);
+    if (selection) openItem(selection.item);
+  }
+});
+canvas.addEventListener('pointercancel', () => { down = null; });
+
+function openItem(item) {
+  if (item.track) return; // the record only has its sticker: clicking opens nothing more
+  if (item.href) {
+    location.href = item.href;
+    return;
+  }
+  detailTitle.textContent = item.label;
+  const copy = document.getElementById('detail-copy');
+  copy.textContent = 'This part of the room is being prepared.';
+  detail.hidden = false;
+  location.hash = item.key;
+  document.getElementById('detail-close').focus();
+}
+
+const sleeves = [];  // materials of the displayed vinyl sleeve, whose glow follows the lamp
+let lampLevel = 1;   // 0 = lamp off, 1 = fully lit
+new GLTFLoader().load('/assets/room/shelf.glb', gltf => {
+  const model = gltf.scene;
+  scene.add(model);
+  model.updateMatrixWorld(true); // world positions are needed below to place the lamp light
+  let tomato = null;
+  model.traverse(object => {
+    if (!object.isMesh) return;
+    object.castShadow = true;
+    object.receiveShadow = true;
+    for (const material of [].concat(object.material)) material.envMapIntensity = ENV_INTENSITY;
+    if (/^footwear\b/.test(words(object.name))) { object.visible = false; return; }
+    if (/^room\b/.test(words(object.name))) return;
+    if (/^lamp tomato diffuser\b/.test(words(object.name))) {
+      tomato = object;
+      // Deep red, lit from inside, under a glossy lacquer coat that catches the room
+      object.material = new THREE.MeshPhysicalMaterial({
+        color: '#c80000',
+        emissive: '#ff0000',
+        emissiveIntensity: 0.22, // low on purpose: AgX desaturates bright colours, so a dimmer glow stays redder
+        roughness: 0.3,
+        clearcoat: 1,
+        clearcoatRoughness: 0.06,
+        envMapIntensity: 0.25,   // enough for gloss; more turns the red pink
+      });
+      object.castShadow = false; // the light sits inside it
+    }
+    meshes.push(object);
+  });
+  if (tomato) {
+    const center = new THREE.Box3().setFromObject(tomato).getCenter(new THREE.Vector3());
+    // The lamp lights the wall and shelf in a warm pool, like the Blender render
+    const lamp = new THREE.PointLight(0xff9a5c, 3.8, 0, 2);
+    lamp.position.copy(center).add(new THREE.Vector3(0, .02, .12));
+    lamp.castShadow = true;
+    lamp.shadow.mapSize.set(1024, 1024);
+    lamp.shadow.bias = -0.002;
+    lamp.shadow.radius = 6;
+    scene.add(lamp);
+    lampFlicker = { light: lamp, material: tomato.material, intensity: lamp.intensity, glow: tomato.material.emissiveIntensity, start: null };
+    if (!reduced) setLamp(0); // starts off, then flickers on once the room is shown
+  }
+  // The displayed sleeve shows the cover of the last song I played. It has a glow of
+  // its own, which follows the lamp (see setLamp), so while the lamp is still off the
+  // cover is as dark as the rest of the room. If the file is missing, the sleeve
+  // keeps its original art.
+  for (const mesh of meshes) {
+    if (!/^music displayed vinyl sleeve\b/.test(words(mesh.name)) || !/album/i.test(mesh.material.name)) continue;
+    mesh.material = mesh.material.clone();
+    sleeves.push({ material: mesh.material, base: mesh.material.emissiveIntensity });
+    mesh.material.emissiveIntensity = sleeves[sleeves.length - 1].base * lampLevel;
+  }
+  new THREE.TextureLoader().load('/assets/room/vinyl-cover.webp', (cover) => {
+    cover.colorSpace = THREE.SRGBColorSpace;
+    cover.flipY = false; // glTF textures aren't flipped
+    cover.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    for (const sleeve of sleeves) {
+      sleeve.material.map = cover;
+      sleeve.material.emissiveMap = cover; // the sleeve glows, so the cover is its emissive texture too
+      sleeve.base = 0.45; // the old art was dark, so it glowed at 2x; a real cover would blow out
+      sleeve.material.emissiveIntensity = sleeve.base * lampLevel;
+      sleeve.material.needsUpdate = true;
+    }
+  });
+  const bounds = new THREE.Box3().setFromObject(model);
+  const size = bounds.getSize(new THREE.Vector3());
+  const center = bounds.getCenter(new THREE.Vector3());
+  const radius = Math.max(size.x, size.y * 1.5, size.z * 2);
+  key.target.position.copy(center);
+  roomFrame = { size, center };
+  frameRoom();
+  status.remove();
+  destinations.forEach(item => {
+    if (!meshes.some(mesh => destinationFor(mesh) === item)) return;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = item.label;
+    button.addEventListener('focus', () => {
+      const mesh = meshes.find(candidate => destinationFor(candidate) === item);
+      highlight({ item, object: mesh });
+    });
+    button.addEventListener('focus', () => focusOn(item));
+    button.addEventListener('blur', () => { highlight(null); focusOn(null); });
+    button.addEventListener('mouseenter', () => {
+      const mesh = meshes.find(candidate => destinationFor(candidate) === item);
+      highlight({ item, object: mesh });
+      focusOn(item);
+    });
+    button.addEventListener('mouseleave', () => { highlight(null); focusOn(null); });
+    button.addEventListener('click', () => {
+      openItem(item);
+    });
+    nav.append(button);
+  });
+  resize(); // the list now has its final size, so frame the room around it
+}, undefined, () => {
+  status.replaceChildren('The interactive shelf needs its web export. ', Object.assign(document.createElement('a'), {
+    href: 'https://drive.google.com/file/d/1pM-4ozLStYv0whfZXHpRl56-pnqiBQid/view',
+    textContent: 'View the Blender file in Drive ↗'
+  }));
+});
+
+// ---------- Framing ----------
+// The free area for the room: right of the left column on desktop; between the
+// title and the object list on narrow screens. The camera keeps its three-quarter
+// angle and stands just far enough back for the room to fill that area.
+let roomFrame = null;
+function freeArea() {
+  const width = innerWidth, height = innerHeight;
+  const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 64;
+  const panel = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--panel')) || 0;
+  if (panel) return { left: panel, top: navH, right: 0, bottom: 24 };
+  const intro = document.querySelector('.intro-head').getBoundingClientRect();
+  const list = document.getElementById('object-nav').getBoundingClientRect();
+  return { left: 0, top: intro.bottom + 8, right: 0, bottom: list.height ? height - list.top + 8 : 24 };
+}
+const VIEW_DIR = new THREE.Vector3(-0.29, 0.1, 0.95).normalize(); // three-quarter, from front left, a little above
+// Closest distance (along VIEW_DIR) at which a box's 8 corners land inside the
+// free area, scaled by `share` (1 = fill it, 0.5 = half of it), with a 6% margin.
+function fitDistance(center, half, share) {
+  const area = freeArea();
+  const w = innerWidth - area.left - area.right, h = innerHeight - area.top - area.bottom;
+  const probe = new THREE.PerspectiveCamera(camera.fov, innerWidth / innerHeight, 0.01, 1000);
+  const limX = (w / innerWidth) * 0.94 * share, limY = (h / innerHeight) * 0.94 * share;
+  const corner = new THREE.Vector3();
+  const fits = (d) => {
+    probe.position.copy(center).addScaledVector(VIEW_DIR, d);
+    probe.lookAt(center);
+    probe.updateMatrixWorld();
+    for (let i = 0; i < 8; i++) {
+      corner.set(i & 1 ? half.x : -half.x, i & 2 ? half.y : -half.y, i & 4 ? half.z : -half.z).add(center).project(probe);
+      if (corner.z > 1 || Math.abs(corner.x) > limX || Math.abs(corner.y) > limY) return false;
+    }
+    return true;
+  };
+  let lo = half.length() * 0.2, hi = half.length() * 60;
+  for (let i = 0; i < 30; i++) { const mid = (lo + hi) / 2; if (fits(mid)) hi = mid; else lo = mid; }
+  return hi;
+}
+
+let overview = null;
+let focused = null;
+const focusViews = new Map();
+function frameRoom() {
+  if (!roomFrame) return;
+  const { size, center } = roomFrame;
+  const dist = fitDistance(center, size.clone().multiplyScalar(0.5), 1);
+  overview = { target: center.clone(), pos: center.clone().addScaledVector(VIEW_DIR, dist), dist };
+  focusViews.clear();
+  focusOn(focused);
+  if (!view.ready) { view.pos.copy(goal.pos); view.target.copy(goal.target); view.ready = true; }
+}
+
+// A closer look: aim most of the way at the object and come 70% of the way in
+// towards a framing where it fills 60% of the free area. Closer, not a close-up.
+function focusOn(item) {
+  focused = item;
+  if (!overview) return;
+  if (!item) { goal.pos.copy(overview.pos); goal.target.copy(overview.target); return; }
+  if (!focusViews.has(item)) {
+    const box = new THREE.Box3();
+    for (const mesh of meshes) {
+      if (!mesh.visible || destinationFor(mesh) !== item) continue;
+      if (item.focus && !item.focus.test(words(mesh.name))) continue;
+      box.expandByObject(mesh);
+    }
+    const center = box.getCenter(new THREE.Vector3());
+    const half = box.getSize(new THREE.Vector3()).multiplyScalar(0.5);
+    const target = overview.target.clone().lerp(center, 0.8);
+    const dist = THREE.MathUtils.lerp(overview.dist, fitDistance(center, half, 0.6), 0.7);
+    focusViews.set(item, { target, pos: target.clone().addScaledVector(VIEW_DIR, dist) });
+  }
+  const v = focusViews.get(item);
+  goal.pos.copy(v.pos);
+  goal.target.copy(v.target);
+}
+
+function resize() {
+  const width = innerWidth, height = innerHeight;
+  renderer.setSize(width, height, false);
+  composer.setSize(width, height);
+  bloom.setSize(width, height);
+  camera.aspect = width / height;
+  // Shift the picture so the room is centred in the free area, not the whole screen
+  const area = freeArea();
+  const dx = (area.left - area.right) / 2, dy = (area.top - area.bottom) / 2;
+  if (dx || dy) camera.setViewOffset(width, height, -dx, -dy, width, height);
+  else camera.clearViewOffset();
+  camera.updateProjectionMatrix();
+  frameRoom();
+}
+addEventListener('resize', resize);
+resize();
+// ---------- Lamp flicker on load ----------
+// Brightness keyframes [seconds, 0..1]: sputters a few times, then stays on
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FLICKER = [[0, 0], [0.25, 0], [0.3, 0.9], [0.36, 0.05], [0.5, 0.05], [0.55, 0.6], [0.6, 0.15],
+  [0.68, 1], [0.74, 0.3], [0.9, 0.3], [0.95, 0.95], [1.02, 0.55], [1.12, 1], [1.6, 1]];
+let lampFlicker = null;
+function setLamp(level) {
+  lampLevel = level;
+  lampFlicker.light.intensity = lampFlicker.intensity * level;
+  lampFlicker.material.emissiveIntensity = lampFlicker.glow * level;
+  for (const sleeve of sleeves) sleeve.material.emissiveIntensity = sleeve.base * level;
+}
+function flickerLevel(t) {
+  for (let i = 1; i < FLICKER.length; i++) {
+    const [t1, v1] = FLICKER[i];
+    if (t <= t1) {
+      const [t0, v0] = FLICKER[i - 1];
+      const base = v0 + (v1 - v0) * ((t - t0) / (t1 - t0));
+      return Math.max(0, Math.min(1, base + (Math.random() - 0.5) * 0.12 * base)); // a little buzz
+    }
+  }
+  return 1;
+}
+
+let lastFrame = performance.now();
+function frame() {
+  const now = performance.now();
+  // Advance at most 50ms per frame, so a slow first frame (shaders, shadows)
+  // doesn't skip the flicker: it just plays a little slower.
+  const dt = Math.min((now - lastFrame) / 1000, 0.05);
+  lastFrame = now;
+  if (lampFlicker && !reduced && lampFlicker.start !== false) {
+    lampFlicker.t = lampFlicker.start === null ? 0 : lampFlicker.t + dt;
+    lampFlicker.start = true;
+    setLamp(flickerLevel(lampFlicker.t));
+    if (lampFlicker.t > FLICKER[FLICKER.length - 1][0]) { setLamp(1); lampFlicker.start = false; }
+  }
+  // Ease the camera towards its goal (overview or a focused object)
+  const ease = reduced ? 1 : 1 - Math.exp(-dt * 4);
+  view.pos.lerp(goal.pos, ease);
+  view.target.lerp(goal.target, ease);
+  camera.position.copy(view.pos);
+  camera.lookAt(view.target);
+  composer.render();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);

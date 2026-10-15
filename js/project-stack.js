@@ -1,4 +1,6 @@
-// Image stack: auto-advances, and can be swiped, dragged, clicked or stepped with the buttons / arrow keys.
+// PÁGINAS DE PROYECTO · carrusel en pila (#stack): se anima solo, y se puede arrastrar, hacer clic, usar botones o flechas.
+// Se usa en cualquier proyecto que tenga <section class="stack" id="stack"> (ver templates/project-template).
+
 (() => {
   const root = document.getElementById('stack');
   const deck = document.getElementById('stack-deck');
