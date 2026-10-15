@@ -281,6 +281,22 @@
         lampFlicker = { light: lamp, material: tomato.material, intensity: lamp.intensity, glow: tomato.material.emissiveIntensity, start: null };
         if (!reduced) setLamp(0); // starts off, then flickers on once the room is shown
       }
+      // The displayed sleeve shows the cover of the last song I played. If the file is
+      // missing, the sleeve keeps its original art.
+      new THREE.TextureLoader().load('/assets/room/vinyl-cover.webp', (cover) => {
+        cover.colorSpace = THREE.SRGBColorSpace;
+        cover.flipY = false; // glTF textures aren't flipped
+        cover.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        for (const mesh of meshes) {
+          if (!/^music displayed vinyl sleeve\b/.test(words(mesh.name))) continue;
+          if (!/album/i.test(mesh.material.name)) continue;
+          mesh.material = mesh.material.clone();
+          mesh.material.map = cover;
+          mesh.material.emissiveMap = cover; // the sleeve glows, so the cover is its emissive texture too
+          mesh.material.emissiveIntensity = 0.45; // the old art was dark, so it glowed at 2x; a real cover would blow out
+          mesh.material.needsUpdate = true;
+        }
+      });
       const bounds = new THREE.Box3().setFromObject(model);
       const size = bounds.getSize(new THREE.Vector3());
       const center = bounds.getCenter(new THREE.Vector3());
