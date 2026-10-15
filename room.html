@@ -24,15 +24,14 @@
 
     /* ---------- Left column: title and the five objects; the room fills the rest ---------- */
     .intro { position: fixed; z-index: 2; top: calc(var(--nav-h) + 48px); left: 24px; width: calc(var(--panel) - 48px); pointer-events: none; }
-    .intro h1 { font-size: clamp(40px, 4.4vw, 72px); font-weight: 700; letter-spacing: -0.055em; line-height: 0.95; text-transform: uppercase; }
-    .intro .lede { margin-top: 6px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(22px, 2vw, 32px); letter-spacing: -0.04em; line-height: 1; text-transform: uppercase; color: #e9b48e; }
-    .object-nav { margin-top: 40px; display: flex; flex-direction: column; align-items: start; gap: 2px; pointer-events: auto; }
-    .object-nav button { appearance: none; border: 0; background: transparent; color: rgba(243, 240, 223, 0.72); font: inherit; font-size: 22px; letter-spacing: -0.02em; cursor: pointer; padding: 4px 0; transition: color 0.2s, transform 0.2s; }
-    .object-nav button { position: relative; }
-    .object-nav button::before { content: "→"; position: absolute; left: -1.1em; opacity: 0; transition: opacity 0.2s; }
-    .object-nav button:hover, .object-nav button:focus-visible, .object-nav button.active { color: #ffc28f; }
-    .object-nav button:hover::before, .object-nav button:focus-visible::before, .object-nav button.active::before { opacity: 1; }
-    .object-nav button:focus-visible { outline: 2px solid #ffc28f; outline-offset: 4px; }
+    /* Small labels like the landing page's "Selected work", then the objects
+       set like its project titles: bold, uppercase, tight */
+    .intro-head { display: flex; justify-content: space-between; gap: 16px; }
+    .intro h1, .intro .lede { font-size: 12px; font-weight: 400; line-height: 1.4; color: #e9efe4; }
+    .object-nav { margin-top: 28px; display: flex; flex-direction: column; align-items: start; gap: 6px; pointer-events: auto; }
+    .object-nav button { appearance: none; border: 0; background: transparent; padding: 0; cursor: pointer; text-align: left; color: rgba(243, 240, 223, 0.5); font: inherit; font-size: clamp(25px, 2.5vw, 44px); font-weight: 700; letter-spacing: -0.055em; line-height: 0.95; text-transform: uppercase; transition: color 0.2s; }
+    .object-nav button:hover, .object-nav button:focus-visible, .object-nav button.active { color: #f3f0df; }
+    .object-nav button:focus-visible { outline: 2px solid #f3f0df; outline-offset: 4px; }
     .instructions { position: fixed; bottom: 24px; left: 24px; z-index: 2; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; line-height: 1.5; opacity: 0.7; pointer-events: none; }
     .label { position: fixed; z-index: 3; left: calc(50% + var(--panel) / 2); bottom: 24px; transform: translateX(-50%); background: #f3f0df; color: #1a120c; box-shadow: 0 10px 30px #00000055, 0 0 24px #ffb27a44; padding: 10px 18px; font-size: 13px; border-radius: 999px; pointer-events: none; white-space: nowrap; }
     .label[hidden], .detail[hidden] { display: none; }
@@ -46,11 +45,8 @@
     @media (max-width: 900px) {
       :root { --panel: 0px; }
       .intro { top: calc(var(--nav-h) + 16px); left: 14px; right: 14px; width: auto; }
-      .intro h1 { font-size: 40px; }
-      .intro .lede { font-size: 20px; }
       .object-nav { position: fixed; left: 14px; right: 14px; bottom: 16px; margin: 0; flex-direction: row; flex-wrap: wrap; gap: 4px 16px; }
-      .object-nav button { font-size: 16px; }
-      .object-nav button::before { display: none; }
+      .object-nav button { font-size: 20px; }
       .instructions { display: none; }
       .label { bottom: 96px; }
       .detail { bottom: 96px; }
@@ -83,11 +79,13 @@
     </ul>
   </nav>
   <section class="intro" aria-labelledby="room-title">
-    <h1 id="room-title">The room</h1>
-    <p class="lede">Things I live with</p>
+    <header class="intro-head">
+      <h1 id="room-title">The room</h1>
+      <p class="lede">Things I live with</p>
+    </header>
     <div class="object-nav" id="object-nav" aria-label="Objects in the room"></div>
   </section>
-  <p class="instructions">Hover or click an object<br>Drag to look around</p>
+  <p class="instructions">Hover a name to look closer<br>Click to open</p>
   <div class="label" id="label" hidden></div>
   <aside class="detail" id="detail" hidden aria-live="polite">
     <button type="button" id="detail-close">Close ×</button>
@@ -98,7 +96,6 @@
   <script type="module">
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
     import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
@@ -142,15 +139,10 @@
     rim.position.set(4, 3, -2);
     scene.add(rim);
     const camera = new THREE.PerspectiveCamera(35, 1, .1, 1000);
-    const controls = new OrbitControls(camera, canvas);
-    controls.enablePan = false;
-    controls.enableDamping = true;
-    controls.minAzimuthAngle = -.28;
-    controls.maxAzimuthAngle = .28;
-    controls.minPolarAngle = Math.PI / 2 - .2;
-    controls.maxPolarAngle = Math.PI / 2 + .2;
-    controls.minDistance = 1;
-    controls.maxDistance = 10;
+    // The visitor doesn't orbit the shelf: the camera eases between an overview and a
+    // closer look at whichever object is hovered in the list on the left.
+    const view = { pos: new THREE.Vector3(), target: new THREE.Vector3(), ready: false };
+    const goal = { pos: new THREE.Vector3(), target: new THREE.Vector3() };
 
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
@@ -172,10 +164,12 @@
     // Matched against object names reduced to lowercase words, because the loader
     // turns "Music / vinyl collection" into "Music__vinyl_collection".
     const destinations = [
-      { label: 'Vinyls', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, href: null },
+      // Both are outlined, but the camera looks at the collection on the lower shelf
+      { label: 'Vinyls', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, href: null },
       { label: 'Mimikyu', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
       { label: 'Volver poster', key: 'volver-poster', match: /^wall upper left poster\b/, href: null },
-      { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, href: null },
+      // The camera frames just the tomato, not the cord that runs down to the floor
+      { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, focus: /^lamp (tomato diffuser|green calyx)\b/, href: null },
       { label: 'Plant', key: 'plant', match: /^plants (eucalyptus|fluted vase)\b/, href: null },
     ];
     const raycaster = new THREE.Raycaster();
@@ -219,7 +213,7 @@
       label.hidden = !selection;
       for (const button of nav.querySelectorAll('button')) button.classList.toggle('active', !!selection && button.textContent === selection.item.label);
       if (selection) label.textContent = selection.item.label + ' +';
-      canvas.style.cursor = selection ? 'pointer' : 'grab';
+      canvas.style.cursor = selection ? 'pointer' : 'default';
     }
 
     canvas.addEventListener('pointermove', event => {
@@ -295,13 +289,8 @@
       const center = bounds.getCenter(new THREE.Vector3());
       const radius = Math.max(size.x, size.y * 1.5, size.z * 2);
       key.target.position.copy(center);
-      controls.target.copy(center);
       roomFrame = { size, center };
       frameRoom();
-      // Let the view swing a little further so the three-quarter angle is in range
-      controls.minAzimuthAngle = -.45;
-      controls.maxAzimuthAngle = .3;
-      controls.update();
       status.remove();
       destinations.forEach(item => {
         if (!meshes.some(mesh => destinationFor(mesh) === item)) return;
@@ -312,12 +301,14 @@
           const mesh = meshes.find(candidate => destinationFor(candidate) === item);
           highlight({ item, object: mesh });
         });
-        button.addEventListener('blur', () => highlight(null));
+        button.addEventListener('focus', () => focusOn(item));
+        button.addEventListener('blur', () => { highlight(null); focusOn(null); });
         button.addEventListener('mouseenter', () => {
           const mesh = meshes.find(candidate => destinationFor(candidate) === item);
           highlight({ item, object: mesh });
+          focusOn(item);
         });
-        button.addEventListener('mouseleave', () => highlight(null));
+        button.addEventListener('mouseleave', () => { highlight(null); focusOn(null); });
         button.addEventListener('click', () => {
           openItem(item);
         });
@@ -345,35 +336,65 @@
       const list = document.getElementById('object-nav').getBoundingClientRect();
       return { left: 0, top: intro.bottom + 8, right: 0, bottom: list.height ? height - list.top + 8 : 24 };
     }
-    function frameRoom() {
-      if (!roomFrame) return;
-      const { size, center } = roomFrame;
+    const VIEW_DIR = new THREE.Vector3(-0.29, 0.1, 0.95).normalize(); // three-quarter, from front left, a little above
+    // Closest distance (along VIEW_DIR) at which a box's 8 corners land inside the
+    // free area, scaled by `share` (1 = fill it, 0.5 = half of it), with a 6% margin.
+    function fitDistance(center, half, share) {
       const area = freeArea();
       const w = innerWidth - area.left - area.right, h = innerHeight - area.top - area.bottom;
-      // Find the closest distance at which all 8 corners of the room's box land inside
-      // the free area (with a 6% margin), by projecting them with a plain copy of the camera.
-      const dir = new THREE.Vector3(-0.29, 0.1, 0.95).normalize(); // three-quarter, from front left, a little above
       const probe = new THREE.PerspectiveCamera(camera.fov, innerWidth / innerHeight, 0.01, 1000);
-      const limX = (w / innerWidth) * 0.94, limY = (h / innerHeight) * 0.94;
-      const half = size.clone().multiplyScalar(0.5);
+      const limX = (w / innerWidth) * 0.94 * share, limY = (h / innerHeight) * 0.94 * share;
       const corner = new THREE.Vector3();
       const fits = (d) => {
-        probe.position.copy(center).addScaledVector(dir, d);
+        probe.position.copy(center).addScaledVector(VIEW_DIR, d);
         probe.lookAt(center);
         probe.updateMatrixWorld();
         for (let i = 0; i < 8; i++) {
           corner.set(i & 1 ? half.x : -half.x, i & 2 ? half.y : -half.y, i & 4 ? half.z : -half.z).add(center).project(probe);
-          if (Math.abs(corner.x) > limX || Math.abs(corner.y) > limY) return false;
+          if (corner.z > 1 || Math.abs(corner.x) > limX || Math.abs(corner.y) > limY) return false;
         }
         return true;
       };
-      let lo = size.length() * 0.2, hi = size.length() * 20;
+      let lo = half.length() * 0.2, hi = half.length() * 60;
       for (let i = 0; i < 30; i++) { const mid = (lo + hi) / 2; if (fits(mid)) hi = mid; else lo = mid; }
-      const fit = hi;
-      camera.position.copy(center).addScaledVector(dir, fit);
-      controls.minDistance = fit * 0.85;
-      controls.maxDistance = fit * 1.6;
-      controls.update();
+      return hi;
+    }
+
+    let overview = null;
+    let focused = null;
+    const focusViews = new Map();
+    function frameRoom() {
+      if (!roomFrame) return;
+      const { size, center } = roomFrame;
+      const dist = fitDistance(center, size.clone().multiplyScalar(0.5), 1);
+      overview = { target: center.clone(), pos: center.clone().addScaledVector(VIEW_DIR, dist), dist };
+      focusViews.clear();
+      focusOn(focused);
+      if (!view.ready) { view.pos.copy(goal.pos); view.target.copy(goal.target); view.ready = true; }
+    }
+
+    // A closer look: aim most of the way at the object and come 70% of the way in
+    // towards a framing where it fills 60% of the free area. Closer, not a close-up.
+    function focusOn(item) {
+      focused = item;
+      if (!overview) return;
+      if (!item) { goal.pos.copy(overview.pos); goal.target.copy(overview.target); return; }
+      if (!focusViews.has(item)) {
+        const box = new THREE.Box3();
+        for (const mesh of meshes) {
+          if (!mesh.visible || destinationFor(mesh) !== item) continue;
+          if (item.focus && !item.focus.test(words(mesh.name))) continue;
+          box.expandByObject(mesh);
+        }
+        const center = box.getCenter(new THREE.Vector3());
+        const half = box.getSize(new THREE.Vector3()).multiplyScalar(0.5);
+        const target = overview.target.clone().lerp(center, 0.8);
+        const dist = THREE.MathUtils.lerp(overview.dist, fitDistance(center, half, 0.6), 0.7);
+        focusViews.set(item, { target, pos: target.clone().addScaledVector(VIEW_DIR, dist) });
+      }
+      const v = focusViews.get(item);
+      goal.pos.copy(v.pos);
+      goal.target.copy(v.target);
     }
 
     function resize() {
@@ -427,7 +448,12 @@
         setLamp(flickerLevel(lampFlicker.t));
         if (lampFlicker.t > FLICKER[FLICKER.length - 1][0]) { setLamp(1); lampFlicker.start = false; }
       }
-      controls.update();
+      // Ease the camera towards its goal (overview or a focused object)
+      const ease = reduced ? 1 : 1 - Math.exp(-dt * 4);
+      view.pos.lerp(goal.pos, ease);
+      view.target.lerp(goal.target, ease);
+      camera.position.copy(view.pos);
+      camera.lookAt(view.target);
       composer.render();
       requestAnimationFrame(frame);
     }
