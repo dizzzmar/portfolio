@@ -37,26 +37,21 @@
 
     /* ---------- Now-playing bumper sticker ---------- */
     @font-face { font-family: "Anton"; src: url("/assets/fonts/anton.woff2") format("woff2"); font-display: swap; }
-    @font-face { font-family: "Bowlby One"; src: url("/assets/fonts/bowlby-one.woff2") format("woff2"); font-display: swap; }
-    @font-face { font-family: "UnifrakturMaguntia"; src: url("/assets/fonts/unifrakturmaguntia.woff2") format("woff2"); font-display: swap; }
 
     /* Sizes are in em, so the whole sticker scales from one font-size */
     .sticker-slot.floating { position: fixed; z-index: 3; left: calc(50% + var(--panel) / 2); bottom: 26px; transform: translateX(-50%); pointer-events: none; font-size: 15px; }
     .sticker { position: relative; transform: rotate(-3deg); filter: drop-shadow(0 .5em .7em #00000080) drop-shadow(0 .1em .15em #00000066); }
-    .sticker-face { position: relative; display: grid; grid-template-columns: auto auto; align-items: center; gap: .1em .9em; padding: .7em 1.1em .45em .8em; background: #ffd21f; color: #111; border: .35em solid #fbf6e8; border-radius: .35em; overflow: hidden; }
+    .sticker-face { position: relative; display: grid; justify-items: center; gap: .25em; padding: .2em 1em .75em; background: #ddfb3c; color: #111; border: .3em solid #fbf6e8; border-radius: .25em; overflow: hidden; text-transform: uppercase; white-space: nowrap; font-family: "Anton", Impact, "Arial Narrow Bold", sans-serif; }
     /* worn, printed look: the site's grain multiplied over the ink */
-    .sticker-face::after { content: ""; position: absolute; inset: 0; background: url("/assets/grain.png") repeat; background-size: 128px 128px; mix-blend-mode: multiply; opacity: .35; pointer-events: none; }
-    .sticker-record { width: 6.4em; height: 6.4em; grid-row: 1 / 3; transform: rotate(-12deg); }
-    .sticker-text { display: grid; justify-items: start; line-height: .9; text-transform: uppercase; white-space: nowrap; }
-    .sticker-tag { font-family: "Anton", Impact, sans-serif; font-size: .95em; letter-spacing: .04em; color: #ffd21f; background: #111; padding: .12em .45em .08em; border-radius: .2em; }
-    .sticker-title { margin-top: .08em; font-family: "Bowlby One", "Arial Black", sans-serif; font-size: 3.5em; line-height: .95; color: #e8262b; -webkit-text-stroke: .045em #111; paint-order: stroke fill; text-shadow: .06em .06em 0 #111; letter-spacing: .01em; }
-    .sticker-artist { font-family: "Anton", Impact, sans-serif; font-size: 2em; letter-spacing: .01em; }
-    .sticker-album { margin-top: .05em; font-family: "UnifrakturMaguntia", "Old English Text MT", serif; font-size: 1.75em; text-transform: none; color: #fbf6e8; -webkit-text-stroke: .08em #111; paint-order: stroke fill; text-shadow: .05em .05em 0 #111; }
-    .sticker-fine { grid-column: 1 / -1; margin-top: .35em; font-family: "Anton", Impact, sans-serif; font-size: .52em; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+    .sticker-face::after { content: ""; position: absolute; inset: 0; background: url("/assets/grain.png") repeat; background-size: 128px 128px; mix-blend-mode: multiply; opacity: .28; pointer-events: none; }
+    /* One huge condensed line; the record stands in for the O, like the tulip for the I */
+    .sticker-big { display: flex; align-items: center; font-size: 5.6em; line-height: 1.12; letter-spacing: -.005em; }
+    .sticker-o { display: block; width: .74em; height: .74em; margin: 0 .015em; transform: translateY(.02em); }
+    .sticker-o .spin { transform-box: fill-box; transform-origin: center; animation: spin 2.4s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .sticker-box { font-size: 1.35em; letter-spacing: .025em; color: #d6261c; border: .14em solid #d6261c; padding: .12em .7em .08em; }
     /* The corner that folds back while peeling: the sticker's paper back, shaded at the fold */
     .sticker-flap { position: absolute; right: 0; bottom: 0; width: 0; height: 0; background: linear-gradient(to bottom right, #fffaf0 0%, #ece3cc 38%, #c4b99f 49.5%, transparent 50%); pointer-events: none; }
-    /* In the (cream) detail panel it just sits there, smaller */
-    .detail .sticker-slot { margin-top: 18px; font-size: 10.5px; }
     .detail { position: fixed; z-index: 4; inset: auto clamp(16px, 3vw, 48px) 24px auto; width: min(360px, calc(100vw - 32px)); padding: 24px; background: #f3f0df; color: #102f2b; box-shadow: 0 18px 45px #061c1a66; }
     .detail h2 { margin: 28px 0 8px; font-size: 30px; font-weight: 400; letter-spacing: -.05em; }
     .detail .detail-copy { font-size: 14px; line-height: 1.4; }
@@ -80,7 +75,7 @@
       .nav-links { gap: 14px; }
       .nav-links a { font-size: 13px; }
     }
-    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } .sticker-o .spin { animation: none; } }
   </style>
   <script type="importmap">
     {"imports": {
@@ -236,25 +231,30 @@
     // ---------- Now-playing bumper sticker ----------
     // A vintage bumper sticker with the song, artist and album. Hovering the record
     // slaps it on; moving away peels it off from the bottom-right corner.
-    const RECORD_SVG = `<svg class="sticker-record" viewBox="0 0 100 100" aria-hidden="true">
-      <circle cx="50" cy="50" r="48" fill="#111"/>
-      <g fill="none" stroke="#3a3a3a" stroke-width="1">
-        <circle cx="50" cy="50" r="42"/><circle cx="50" cy="50" r="37"/><circle cx="50" cy="50" r="32"/><circle cx="50" cy="50" r="27"/>
+    // The record that stands in for the O of "NOW": it spins; its shine doesn't
+    const RECORD_SVG = `<svg class="sticker-o" viewBox="0 0 100 100" aria-hidden="true">
+      <g class="spin">
+        <circle cx="50" cy="50" r="49" fill="#111"/>
+        <g fill="none" stroke="#3a3a3a" stroke-width="1.2">
+          <circle cx="50" cy="50" r="42"/><circle cx="50" cy="50" r="36"/><circle cx="50" cy="50" r="30"/>
+        </g>
+        <circle cx="50" cy="50" r="19" fill="#d6261c"/>
+        <path d="M50 59.5 C42 53.5 39 49 42 45 C44.5 42 48 43 50 46 C52 43 55.5 42 58 45 C61 49 58 53.5 50 59.5 Z" fill="#ddfb3c"/>
+        <circle cx="50" cy="50" r="2" fill="#111"/>
       </g>
-      <path d="M22 30 A34 34 0 0 1 42 17" stroke="#ffffff55" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <circle cx="50" cy="50" r="17" fill="#ff4f9a" stroke="#111" stroke-width="1.5"/>
-      <path d="M50 59 C42 53 39 49 42 45 C44.5 42 48 43 50 46 C52 43 55.5 42 58 45 C61 49 58 53 50 59 Z" fill="#fbf6e8" stroke="#111" stroke-width="1.2"/>
-      <circle cx="50" cy="50" r="1.8" fill="#111"/>
+      <path d="M20 32 A35 35 0 0 1 40 16" stroke="#ffffff59" stroke-width="3.5" fill="none" stroke-linecap="round"/>
     </svg>`;
     function stickerCard(track) {
       const el = (tag, cls, text) => Object.assign(document.createElement(tag), { className: cls, textContent: text || '' });
       const sticker = el('div', 'sticker');
       const face = el('div', 'sticker-face');
-      face.insertAdjacentHTML('beforeend', RECORD_SVG);
-      const text = el('div', 'sticker-text');
-      text.append(el('span', 'sticker-tag', 'Now playing'), el('span', 'sticker-title', track.title), el('span', 'sticker-artist', track.artist));
-      if (track.album) text.append(el('span', 'sticker-album', track.album));
-      face.append(text, el('span', 'sticker-fine', '©' + new Date().getFullYear() + ' last spun in Mario’s room · crafted with love · based in Madrid'));
+      const big = el('div', 'sticker-big');
+      big.setAttribute('aria-label', 'Now playing');
+      big.append('N');
+      big.insertAdjacentHTML('beforeend', RECORD_SVG);
+      big.append('W playing');
+      const details = [track.title, track.artist, track.album].filter(Boolean).join('  —  ');
+      face.append(big, el('div', 'sticker-box', details));
       sticker.append(face, el('div', 'sticker-flap'));
       return sticker;
     }
@@ -333,19 +333,14 @@
     canvas.addEventListener('pointercancel', () => { down = null; });
 
     function openItem(item) {
+      if (item.track) return; // the record only has its sticker: clicking opens nothing more
       if (item.href) {
         location.href = item.href;
         return;
       }
       detailTitle.textContent = item.label;
       const copy = document.getElementById('detail-copy');
-      if (item.track) {
-        const slot = Object.assign(document.createElement('div'), { className: 'sticker-slot' });
-        slot.append(stickerCard(item.track));
-        copy.replaceChildren(slot);
-      } else {
-        copy.textContent = 'This part of the room is being prepared.';
-      }
+      copy.textContent = 'This part of the room is being prepared.';
       detail.hidden = false;
       location.hash = item.key;
       document.getElementById('detail-close').focus();
