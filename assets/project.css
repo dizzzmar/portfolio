@@ -10,9 +10,12 @@ a:focus-visible { outline: 3px solid #175cff; outline-offset: 5px; }
 figure { margin: 0; }
 .project-image { display: block; width: 100%; height: auto; border-radius: 18px; background: #eee9df; }
 .project-intro { padding: 28px 24px 64px; }
-.project-intro h1 { margin: 0; font-size: clamp(28px, 4vw, 40px); line-height: .98; letter-spacing: -.055em; text-transform: uppercase; }
-.project-subtitle { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(28px, 4vw, 40px); line-height: 1.05; letter-spacing: -.045em; text-transform: uppercase; }
-.project-description { margin: 24px 0 0; max-width: 61ch; font-size: 17px; line-height: 1.6; }
+.project-intro { display: grid; gap: 4px; }
+.project-brand { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(18px, 2vw, 26px); letter-spacing: -.035em; line-height: 1; text-transform: uppercase; }
+.project-intro h1 { margin: 0 0 0 -.045em; font-size: clamp(48px, 9vw, 92px); font-weight: 700; letter-spacing: -.06em; line-height: .88; text-transform: uppercase; }
+.project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
+.project-tags li { padding: 5px 11px 4px; border: 1px solid #171717; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .06em; line-height: 1.2; text-transform: uppercase; }
+.project-description { margin: 20px 0 0; max-width: 61ch; font-size: 17px; line-height: 1.6; }
 .project-gallery { display: grid; gap: 20px; }
 .image-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
 .project-end { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 60px 24px; font-size: 14px; }
@@ -42,6 +45,8 @@ figure { margin: 0; }
  .close-project { top: 12px; right: 12px; width: 44px; height: 44px; }
  .project-page { width: calc(100% - 24px); margin-top: 72px; }
  .project-intro { padding: 24px 8px 40px; }
+ .project-intro h1 { font-size: clamp(44px, 14vw, 64px); }
+ .project-brand { font-size: 18px; }
  .project-description { font-size: 16px; }
  .project-gallery, .image-pair { gap: 12px; }
  .image-pair { grid-template-columns: 1fr; }
