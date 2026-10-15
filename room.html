@@ -33,10 +33,26 @@
     .object-nav button:hover, .object-nav button:focus-visible, .object-nav button.active { color: #f3f0df; }
     .object-nav button:focus-visible { outline: 2px solid #f3f0df; outline-offset: 4px; }
     .label { position: fixed; z-index: 3; left: calc(50% + var(--panel) / 2); bottom: 24px; transform: translateX(-50%); background: #f3f0df; color: #1a120c; box-shadow: 0 10px 30px #00000055, 0 0 24px #ffb27a44; padding: 10px 18px; font-size: 13px; border-radius: 999px; pointer-events: none; white-space: nowrap; }
-    .label[hidden], .detail[hidden] { display: none; }
+    .label[hidden], .detail[hidden], .track[hidden] { display: none; }
+
+    /* Spotify-style "now playing" card for the record */
+    .track { display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 10px; background: #181818; color: #fff; border-radius: 10px; box-shadow: 0 14px 36px #000000aa, 0 0 0 1px #ffffff14; font-size: 14px; line-height: 1.25; }
+    .track.floating { position: fixed; z-index: 3; left: calc(50% + var(--panel) / 2); bottom: 24px; transform: translateX(-50%); pointer-events: none; }
+    .track img { display: block; width: 56px; height: 56px; border-radius: 4px; object-fit: cover; }
+    .track-text { display: grid; gap: 2px; min-width: 0; }
+    .track-cap { white-space: nowrap; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #b3b3b3; }
+    .track-title { font-weight: 700; color: #fff; white-space: nowrap; }
+    .track-artist { font-size: 12px; color: #b3b3b3; white-space: nowrap; }
+    .track-eq { display: flex; align-items: flex-end; gap: 2px; height: 16px; margin-left: 10px; }
+    .track-eq i { display: block; width: 3px; height: 100%; background: #1ed760; border-radius: 1px; transform-origin: bottom; animation: eq 0.9s ease-in-out infinite; }
+    .track-eq i:nth-child(2) { animation-delay: -0.3s; animation-duration: 1.1s; }
+    .track-eq i:nth-child(3) { animation-delay: -0.6s; animation-duration: 0.8s; }
+    @keyframes eq { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
+    .detail .track { margin-top: 16px; }
+    .detail .open-spotify { display: inline-block; margin-top: 14px; font-size: 14px; color: inherit; text-underline-offset: 4px; }
     .detail { position: fixed; z-index: 4; inset: auto clamp(16px, 3vw, 48px) 24px auto; width: min(360px, calc(100vw - 32px)); padding: 24px; background: #f3f0df; color: #102f2b; box-shadow: 0 18px 45px #061c1a66; }
     .detail h2 { margin: 28px 0 8px; font-size: 30px; font-weight: 400; letter-spacing: -.05em; }
-    .detail p { font-size: 14px; line-height: 1.4; }
+    .detail .detail-copy { font-size: 14px; line-height: 1.4; }
     .detail button { border: 0; padding: 0; background: none; color: inherit; font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
     .status { position: fixed; z-index: 2; top: 50%; left: calc(50% + var(--panel) / 2); transform: translate(-50%, -50%); text-align: center; max-width: 32ch; line-height: 1.4; }
     .status a { color: #ffc28f; text-underline-offset: 4px; }
@@ -46,7 +62,7 @@
       .intro { top: calc(var(--nav-h) + 16px); left: 14px; right: 14px; width: auto; }
       .object-nav { position: fixed; left: 14px; right: 14px; bottom: 16px; margin: 0; flex-direction: row; flex-wrap: wrap; gap: 4px 16px; }
       .object-nav button { font-size: 20px; }
-      .label { bottom: 96px; }
+      .label, .track.floating { bottom: 96px; }
       .detail { bottom: 96px; }
     }
     @media (max-width: 700px) {
@@ -56,7 +72,7 @@
       .nav-links { gap: 14px; }
       .nav-links a { font-size: 13px; }
     }
-    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } .track-eq i { animation: none; transform: scaleY(0.6); } }
   </style>
   <script type="importmap">
     {"imports": {
@@ -84,10 +100,11 @@
     <div class="object-nav" id="object-nav" aria-label="Objects in the room"></div>
   </section>
   <div class="label" id="label" hidden></div>
+  <div class="track floating" id="track" hidden aria-hidden="true"></div>
   <aside class="detail" id="detail" hidden aria-live="polite">
     <button type="button" id="detail-close">Close ×</button>
     <h2 id="detail-title"></h2>
-    <p id="detail-copy">This part of the room is being prepared.</p>
+    <div id="detail-copy" class="detail-copy">This part of the room is being prepared.</div>
   </aside>
   <p class="status" id="status" role="status">Loading the room…</p>
   <script type="module">
@@ -160,9 +177,18 @@
     // its section exists; until then it opens its own detail state.
     // Matched against object names reduced to lowercase words, because the loader
     // turns "Music / vinyl collection" into "Music__vinyl_collection".
+    // The last song I played on Spotify. Update the file and these lines to change it.
+    const nowPlaying = {
+      title: 'Bug',
+      artist: 'Fontaines D.C.',
+      album: 'Romance',
+      cover: '/assets/room/vinyl-cover.webp',
+      url: 'https://open.spotify.com/track/0MXmiqd7zoXxv6Gqn9ahhQ',
+    };
+
     const destinations = [
       // Both are outlined, but the camera looks at the collection on the lower shelf
-      { label: 'Now playing', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, href: null },
+      { label: 'Now playing', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, track: nowPlaying, href: null },
       { label: 'Pokemon', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
       { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, href: null },
       // The camera frames just the tomato, not the cord that runs down to the floor
@@ -202,14 +228,37 @@
       return item ? { item, object: hit.object } : null;
     }
 
+    // Builds the "now playing" card (cover, song, artist, a little equaliser)
+    function trackCard(track, into) {
+      const cover = Object.assign(document.createElement('img'), { src: track.cover, alt: '' });
+      const text = document.createElement('div');
+      text.className = 'track-text';
+      for (const [cls, value] of [['track-cap', 'Last played on Spotify'], ['track-title', track.title], ['track-artist', track.artist + ' · ' + track.album]]) {
+        const line = document.createElement('span');
+        line.className = cls;
+        line.textContent = value;
+        text.append(line);
+      }
+      const eq = document.createElement('span');
+      eq.className = 'track-eq';
+      eq.setAttribute('aria-hidden', 'true');
+      eq.innerHTML = '<i></i><i></i><i></i>';
+      into.replaceChildren(cover, text, eq);
+      return into;
+    }
+    const trackEl = document.getElementById('track');
+
     function highlight(selection) {
       hovered = selection;
       outline.selectedObjects = selection
         ? meshes.filter(mesh => destinationFor(mesh)?.key === selection.item.key)
         : [];
-      label.hidden = !selection;
+      const track = selection?.item.track;
+      label.hidden = !selection || !!track;
+      trackEl.hidden = !track;
+      if (track) trackCard(track, trackEl);
       for (const button of nav.querySelectorAll('button')) button.classList.toggle('active', !!selection && button.textContent === selection.item.label);
-      if (selection) label.textContent = selection.item.label + ' +';
+      if (selection && !track) label.textContent = selection.item.label + ' +';
       canvas.style.cursor = selection ? 'pointer' : 'default';
     }
 
@@ -235,6 +284,15 @@
         return;
       }
       detailTitle.textContent = item.label;
+      const copy = document.getElementById('detail-copy');
+      if (item.track) {
+        const card = trackCard(item.track, document.createElement('div'));
+        card.className = 'track';
+        const link = Object.assign(document.createElement('a'), { href: item.track.url, target: '_blank', rel: 'noopener', textContent: 'Open in Spotify ↗', className: 'open-spotify' });
+        copy.replaceChildren(card, link);
+      } else {
+        copy.textContent = 'This part of the room is being prepared.';
+      }
       detail.hidden = false;
       location.hash = item.key;
       document.getElementById('detail-close').focus();
