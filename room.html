@@ -8,14 +8,14 @@
   <style>
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
-    body { background: #102f2b; color: #f3f0df; font-family: "Helvetica Neue", Arial, sans-serif; }
+    body { background: #140d09; color: #f3f0df; font-family: "Helvetica Neue", Arial, sans-serif; }
     #room { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
     .topbar { position: fixed; z-index: 2; inset: 0 0 auto; display: flex; justify-content: space-between; align-items: start; padding: 22px clamp(16px, 3vw, 48px); pointer-events: none; }
     .topbar a { color: inherit; text-decoration: none; pointer-events: auto; }
     .topbar a:hover, .topbar a:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
     .topbar span, .instructions { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
     .instructions { position: fixed; bottom: 24px; left: clamp(16px, 3vw, 48px); z-index: 2; line-height: 1.5; pointer-events: none; }
-    .label { position: fixed; z-index: 3; left: 50%; bottom: 24px; transform: translateX(-50%); background: #0d2434; color: #d5efff; border: 1px solid #83caff; box-shadow: 0 0 18px #399bff99, inset 0 0 12px #399bff33; padding: 12px 18px; font-size: 13px; border-radius: 2px; pointer-events: none; white-space: nowrap; }
+    .label { position: fixed; z-index: 3; left: 50%; bottom: 24px; transform: translateX(-50%); background: #f3f0df; color: #1a120c; box-shadow: 0 10px 30px #00000055, 0 0 24px #ffb27a44; padding: 10px 18px; font-size: 13px; border-radius: 999px; pointer-events: none; white-space: nowrap; }
     .label[hidden], .detail[hidden] { display: none; }
     .detail { position: fixed; z-index: 4; inset: auto clamp(16px, 3vw, 48px) 24px auto; width: min(360px, calc(100vw - 32px)); padding: 24px; background: #f3f0df; color: #102f2b; box-shadow: 0 18px 45px #061c1a66; }
     .detail h2 { margin: 28px 0 8px; font-size: 30px; font-weight: 400; letter-spacing: -.05em; }
@@ -25,7 +25,7 @@
     .status a { color: #91c9ff; text-underline-offset: 4px; }
     .object-nav { position: fixed; z-index: 2; right: clamp(16px, 3vw, 48px); bottom: 24px; display: flex; flex-direction: column; align-items: end; gap: 4px; }
     .object-nav button { appearance: none; border: 0; background: transparent; color: #f3f0df; font: inherit; font-size: 12px; cursor: pointer; padding: 5px; }
-    .object-nav button:hover, .object-nav button:focus-visible { color: #91c9ff; outline: 2px solid #91c9ff; outline-offset: 2px; }
+    .object-nav button:hover, .object-nav button:focus-visible { color: #ffc28f; outline: 2px solid #ffc28f; outline-offset: 2px; }
     @media (max-width: 700px) { .instructions { bottom: 16px; max-width: 42%; } .object-nav { bottom: 16px; } .label { bottom: 150px; } .detail { bottom: 150px; } }
     @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
   </style>
@@ -56,6 +56,7 @@
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
     import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
     import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
     import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
     const canvas = document.getElementById('room');
@@ -65,22 +66,33 @@
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    // AgX is Blender's default view transform, so colours roll off like the Blender render
+    renderer.toneMapping = THREE.AgXToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#102520');
+    // Cozy evening: dim warm ambience, a soft warm key from the front left,
+    // a faint cool rim, and the tomato lamp doing most of the work (added on load).
+    scene.background = new THREE.Color('#140d09');
     const reflections = new THREE.PMREMGenerator(renderer);
     scene.environment = reflections.fromScene(new RoomEnvironment(renderer)).texture;
     reflections.dispose();
-    scene.environmentIntensity = 0.75;
-    scene.add(new THREE.HemisphereLight(0xe2edff, 0x4a4235, 1.2));
-    const key = new THREE.DirectionalLight(0xffdbb1, 1.45);
-    key.position.set(-3, 5, 6);
+    scene.environmentIntensity = 0.28;
+    scene.add(new THREE.HemisphereLight(0xffe2c4, 0x2a1a12, 0.55));
+    const key = new THREE.DirectionalLight(0xffc89a, 0.9);
+    key.position.set(-4, 5, 6);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.bias = -0.0004;
+    key.shadow.normalBias = 0.02;
+    key.shadow.radius = 4;
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0x9bc1e5, 0.55);
-    fill.position.set(3, 2, 1);
-    scene.add(fill);
+    scene.add(key.target);
+    const rim = new THREE.DirectionalLight(0x8fb4ff, 0.18);
+    rim.position.set(4, 3, -2);
+    scene.add(rim);
     const camera = new THREE.PerspectiveCamera(35, 1, .1, 1000);
     const controls = new OrbitControls(camera, canvas);
     controls.enablePan = false;
@@ -95,24 +107,27 @@
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
     const outline = new OutlinePass(new THREE.Vector2(1, 1), scene, camera);
-    outline.edgeStrength = 8;
-    outline.edgeGlow = 1.25;
-    outline.edgeThickness = 3;
-    outline.visibleEdgeColor.set('#87d0ff');
-    outline.hiddenEdgeColor.set('#2978dd');
+    outline.edgeStrength = 4;
+    outline.edgeGlow = 0.8;
+    outline.edgeThickness = 2;
+    outline.visibleEdgeColor.set('#ffe6c4');
+    outline.hiddenEdgeColor.set('#7a4a2a');
     composer.addPass(outline);
+    // Soft glow around the brightest things (the lamp), like Blender's bloom
+    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.55, 0.6, 0.82);
+    composer.addPass(bloom);
     composer.addPass(new OutputPass());
 
-    // Add an href when the section exists. Until then, each object opens its own
-    // addressable detail state instead of sending visitors to an unrelated page.
+    // Only these five things in the room can be selected. Add an href to one when
+    // its section exists; until then it opens its own detail state.
+    // Matched against object names reduced to lowercase words, because the loader
+    // turns "Music / vinyl collection" into "Music__vinyl_collection".
     const destinations = [
-      { label: 'Music', match: /^Music\//i, href: null },
-      { label: 'The tomato', match: /^Lamp\//i, href: null },
-      { label: 'Mimikyu', match: /Mimikyu|MIMIKYU/i, href: null },
-      { label: 'Books & objects', match: /^Collectibles\//i, href: null },
-      { label: 'Plants', match: /^Plants\//i, href: null },
-      { label: 'Photographs', match: /^Wall\//i, href: null },
-      { label: 'The shelf', match: /^Shelf\//i, href: null }
+      { label: 'Vinyls', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, href: null },
+      { label: 'Mimikyu', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
+      { label: 'Volver poster', key: 'volver-poster', match: /^wall upper left poster\b/, href: null },
+      { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, href: null },
+      { label: 'Plant', key: 'plant', match: /^plants (eucalyptus|fluted vase)\b/, href: null },
     ];
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
@@ -126,27 +141,15 @@
       history.replaceState(null, '', location.pathname);
     });
 
+    // The selectable thing a mesh (or any of its parents) belongs to, or null for the rest of the room
+    const words = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
     function destinationFor(object) {
-      // Parts of the plush and lamp share a single hit area and detail state.
       for (let current = object; current && current !== scene; current = current.parent) {
-        if (/^MIMIKYU_PLUSH_ROOT$/i.test(current.name))
-          return { label: 'Mimikyu', name: 'Mimikyu', key: 'mimikyu', href: null };
+        const name = words(current.name);
+        const found = destinations.find((item) => item.match.test(name));
+        if (found) return found;
       }
-      if (/^Lamp\//i.test(object.name))
-        return { label: 'The tomato', name: 'Tomato lamp', key: 'tomato-lamp', href: null };
-      for (let current = object; current && current !== scene; current = current.parent) {
-        const normalized = current.name.replaceAll('_', ' ');
-        const found = destinations.find(item => item.match.test(normalized));
-        if (found) {
-          const part = normalized.split('|')[0].trim();
-          const name = part.includes('/') ? part.split('/').slice(1).join('/').trim() : found.label;
-          const key = part.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          return { ...found, name, key };
-        }
-      }
-      // Uncatalogued pieces remain explorable as their own room objects.
-      const name = object.name.replaceAll('_', ' ').split('|')[0].trim() || 'Object';
-      return { label: 'Objects', name, key: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'), href: null };
+      return null;
     }
 
     function pick(event) {
@@ -165,7 +168,7 @@
         ? meshes.filter(mesh => destinationFor(mesh)?.key === selection.item.key)
         : [];
       label.hidden = !selection;
-      if (selection) label.textContent = selection.item.name + ' +';
+      if (selection) label.textContent = selection.item.label + ' +';
       canvas.style.cursor = selection ? 'pointer' : 'grab';
     }
 
@@ -190,7 +193,7 @@
         location.href = item.href;
         return;
       }
-      detailTitle.textContent = item.name;
+      detailTitle.textContent = item.label;
       detail.hidden = false;
       location.hash = item.key;
       document.getElementById('detail-close').focus();
@@ -202,47 +205,59 @@
       let tomato = null;
       model.traverse(object => {
         if (!object.isMesh) return;
-        if (/^Footwear\//i.test(object.name)) { object.visible = false; return; }
-        if (/^Room\//i.test(object.name)) return;
-        if (/^Lamp \/ tomato diffuser/i.test(object.name)) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+        if (/^footwear\b/.test(words(object.name))) { object.visible = false; return; }
+        if (/^room\b/.test(words(object.name))) return;
+        if (/^lamp tomato diffuser\b/.test(words(object.name))) {
           tomato = object;
           object.material = object.material.clone();
           object.material.color.set('#df4532');
-          object.material.emissive.set('#ff8650');
-          object.material.emissiveIntensity = 1.7;
+          object.material.emissive.set('#ff7a3d');
+          object.material.emissiveIntensity = 2.6;
+          object.castShadow = false; // the light sits inside it
           object.material.roughness = .42;
         }
         meshes.push(object);
       });
       if (tomato) {
         const center = new THREE.Box3().setFromObject(tomato).getCenter(new THREE.Vector3());
-        const lamp = new THREE.PointLight(0xffa76d, 4.5, 1.7, 2);
-        lamp.position.copy(center).add(new THREE.Vector3(0, .1, .18));
+        // The lamp lights the wall and shelf in a warm pool, like the Blender render
+        const lamp = new THREE.PointLight(0xff9a5c, 9, 0, 2);
+        lamp.position.copy(center).add(new THREE.Vector3(0, .02, .12));
+        lamp.castShadow = true;
+        lamp.shadow.mapSize.set(1024, 1024);
+        lamp.shadow.bias = -0.002;
+        lamp.shadow.radius = 6;
         scene.add(lamp);
       }
       const bounds = new THREE.Box3().setFromObject(model);
       const size = bounds.getSize(new THREE.Vector3());
       const center = bounds.getCenter(new THREE.Vector3());
       const radius = Math.max(size.x, size.y * 1.5, size.z * 2);
-      camera.position.set(center.x, center.y + radius * .08, center.z + radius * 1.9);
+      // Three-quarter view from the front left and a little above, framed tighter
+      key.target.position.copy(center);
+      camera.position.set(center.x - radius * .42, center.y + radius * .18, center.z + radius * 1.45);
       controls.target.copy(center);
-      controls.minDistance = radius * 1.15;
-      controls.maxDistance = radius * 2.35;
+      controls.minDistance = radius * 1.05;
+      controls.maxDistance = radius * 2.1;
+      // Let the view swing a little further so the three-quarter angle is in range
+      controls.minAzimuthAngle = -.45;
+      controls.maxAzimuthAngle = .3;
       controls.update();
       status.remove();
       destinations.forEach(item => {
-        if (!meshes.some(mesh => destinationFor(mesh)?.label === item.label)) return;
+        if (!meshes.some(mesh => destinationFor(mesh) === item)) return;
         const button = document.createElement('button');
         button.type = 'button';
         button.textContent = item.label;
         button.addEventListener('focus', () => {
-          const mesh = meshes.find(candidate => destinationFor(candidate)?.label === item.label);
-          highlight({ item: destinationFor(mesh), object: mesh });
+          const mesh = meshes.find(candidate => destinationFor(candidate) === item);
+          highlight({ item, object: mesh });
         });
         button.addEventListener('blur', () => highlight(null));
         button.addEventListener('click', () => {
-          const mesh = meshes.find(candidate => destinationFor(candidate)?.label === item.label);
-          openItem(destinationFor(mesh));
+          openItem(item);
         });
         nav.append(button);
       });
@@ -257,6 +272,7 @@
       const width = innerWidth, height = innerHeight;
       renderer.setSize(width, height, false);
       composer.setSize(width, height);
+      bloom.setSize(width, height);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
     }
