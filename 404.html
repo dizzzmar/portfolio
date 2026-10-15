@@ -70,14 +70,16 @@
       line-height: 1;
       letter-spacing: -0.04em;
       text-shadow: 0 6px 30px rgba(0, 30, 80, 0.25);
+      margin-bottom: 0.08em; /* room for the tomato, which hangs below the 4s */
       user-select: none;
     }
 
     .zero {
       position: relative;
-      width: 1em;  /* a bit taller than the 4s so the tomato leads */
-      height: 1em;
-      margin: 0 0.01em;
+      z-index: 1;
+      width: 1.2em;  /* bigger than the 4s, and overlapping them */
+      height: 1.2em;
+      margin: 0 -0.2em;
     }
 
     /* The canvas is larger than the slot so the wobble never clips */
