@@ -15,7 +15,7 @@
     .topbar a:hover, .topbar a:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
     .topbar span, .instructions { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
     .instructions { position: fixed; bottom: 24px; left: clamp(16px, 3vw, 48px); z-index: 2; line-height: 1.5; pointer-events: none; }
-    .label { position: fixed; z-index: 3; left: 50%; bottom: 24px; transform: translateX(-50%); background: #111; color: #fff; padding: 12px 18px; font-size: 13px; border-radius: 2px; pointer-events: none; white-space: nowrap; }
+    .label { position: fixed; z-index: 3; left: 50%; bottom: 24px; transform: translateX(-50%); background: #0d2434; color: #d5efff; border: 1px solid #83caff; box-shadow: 0 0 18px #399bff99, inset 0 0 12px #399bff33; padding: 12px 18px; font-size: 13px; border-radius: 2px; pointer-events: none; white-space: nowrap; }
     .label[hidden], .detail[hidden] { display: none; }
     .detail { position: fixed; z-index: 4; inset: auto clamp(16px, 3vw, 48px) 24px auto; width: min(360px, calc(100vw - 32px)); padding: 24px; background: #f3f0df; color: #102f2b; box-shadow: 0 18px 45px #061c1a66; }
     .detail h2 { margin: 28px 0 8px; font-size: 30px; font-weight: 400; letter-spacing: -.05em; }
@@ -56,6 +56,7 @@
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
     import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
     import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
     const canvas = document.getElementById('room');
     const label = document.getElementById('label');
@@ -65,14 +66,21 @@
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.05;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#102f2b');
-    scene.add(new THREE.HemisphereLight(0xe9f0ff, 0x344639, 2.4));
-    const key = new THREE.DirectionalLight(0xffe4ba, 2.3);
+    scene.background = new THREE.Color('#102520');
+    const reflections = new THREE.PMREMGenerator(renderer);
+    scene.environment = reflections.fromScene(new RoomEnvironment(renderer)).texture;
+    reflections.dispose();
+    scene.environmentIntensity = 0.75;
+    scene.add(new THREE.HemisphereLight(0xe2edff, 0x4a4235, 1.2));
+    const key = new THREE.DirectionalLight(0xffdbb1, 1.45);
     key.position.set(-3, 5, 6);
     scene.add(key);
+    const fill = new THREE.DirectionalLight(0x9bc1e5, 0.55);
+    fill.position.set(3, 2, 1);
+    scene.add(fill);
     const camera = new THREE.PerspectiveCamera(35, 1, .1, 1000);
     const controls = new OrbitControls(camera, canvas);
     controls.enablePan = false;
@@ -87,11 +95,11 @@
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
     const outline = new OutlinePass(new THREE.Vector2(1, 1), scene, camera);
-    outline.edgeStrength = 5;
-    outline.edgeGlow = .6;
-    outline.edgeThickness = 2;
-    outline.visibleEdgeColor.set('#62b9ff');
-    outline.hiddenEdgeColor.set('#2365b2');
+    outline.edgeStrength = 8;
+    outline.edgeGlow = 1.25;
+    outline.edgeThickness = 3;
+    outline.visibleEdgeColor.set('#87d0ff');
+    outline.hiddenEdgeColor.set('#2978dd');
     composer.addPass(outline);
     composer.addPass(new OutputPass());
 
@@ -103,7 +111,6 @@
       { label: 'Mimikyu', match: /Mimikyu|MIMIKYU/i, href: null },
       { label: 'Books & objects', match: /^Collectibles\//i, href: null },
       { label: 'Plants', match: /^Plants\//i, href: null },
-      { label: 'Footwear', match: /^Footwear\//i, href: null },
       { label: 'Photographs', match: /^Wall\//i, href: null },
       { label: 'The shelf', match: /^Shelf\//i, href: null }
     ];
@@ -120,6 +127,13 @@
     });
 
     function destinationFor(object) {
+      // Parts of the plush and lamp share a single hit area and detail state.
+      for (let current = object; current && current !== scene; current = current.parent) {
+        if (/^MIMIKYU_PLUSH_ROOT$/i.test(current.name))
+          return { label: 'Mimikyu', name: 'Mimikyu', key: 'mimikyu', href: null };
+      }
+      if (/^Lamp\//i.test(object.name))
+        return { label: 'The tomato', name: 'Tomato lamp', key: 'tomato-lamp', href: null };
       for (let current = object; current && current !== scene; current = current.parent) {
         const normalized = current.name.replaceAll('_', ' ');
         const found = destinations.find(item => item.match.test(normalized));
@@ -185,7 +199,27 @@
     new GLTFLoader().load('/assets/room/shelf.glb', gltf => {
       const model = gltf.scene;
       scene.add(model);
-      model.traverse(object => { if (object.isMesh) meshes.push(object); });
+      let tomato = null;
+      model.traverse(object => {
+        if (!object.isMesh) return;
+        if (/^Footwear\//i.test(object.name)) { object.visible = false; return; }
+        if (/^Room\//i.test(object.name)) return;
+        if (/^Lamp \/ tomato diffuser/i.test(object.name)) {
+          tomato = object;
+          object.material = object.material.clone();
+          object.material.color.set('#df4532');
+          object.material.emissive.set('#ff8650');
+          object.material.emissiveIntensity = 1.7;
+          object.material.roughness = .42;
+        }
+        meshes.push(object);
+      });
+      if (tomato) {
+        const center = new THREE.Box3().setFromObject(tomato).getCenter(new THREE.Vector3());
+        const lamp = new THREE.PointLight(0xffa76d, 4.5, 1.7, 2);
+        lamp.position.copy(center).add(new THREE.Vector3(0, .1, .18));
+        scene.add(lamp);
+      }
       const bounds = new THREE.Box3().setFromObject(model);
       const size = bounds.getSize(new THREE.Vector3());
       const center = bounds.getCenter(new THREE.Vector3());
