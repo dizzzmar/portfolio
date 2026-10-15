@@ -42,11 +42,11 @@
     .track span { display: block; white-space: nowrap; text-transform: uppercase; }
     .track-title { font-size: clamp(44px, 5vw, 76px); font-weight: 700; letter-spacing: -.06em; line-height: .86; }
     .track-artist { font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 3.4vw, 52px); letter-spacing: -.05em; line-height: .9; }
-    .track-meta { margin-top: 18px; font-size: clamp(16px, 1.5vw, 22px); font-weight: 700; letter-spacing: -.04em; line-height: 1.1; }
+    .track-meta { margin-bottom: 12px; font-size: clamp(16px, 1.5vw, 22px); font-weight: 700; letter-spacing: -.04em; line-height: 1.1; }
     .track-meta mark { padding: 0 .12em; background: #0e8a5f; color: #b6ff7a; text-shadow: none; }
-    .track-album { font-family: Georgia, "Times New Roman", serif; font-size: clamp(16px, 1.5vw, 22px); letter-spacing: -.04em; line-height: .95; }
     /* In the (cream) detail panel: same stack in dark ink, no shadow */
     .detail .track { --ink: #1a120c; margin-top: 14px; text-shadow: none; }
+    .detail .track-meta { display: none; } /* the panel's heading already says "Now playing" */
     .detail .track-title { font-size: 52px; }
     .detail .track-artist { font-size: 32px; }
     .detail .open-spotify { display: inline-block; margin-top: 18px; font-size: 13px; font-weight: 700; letter-spacing: -.02em; text-transform: uppercase; color: inherit; text-decoration: none; }
@@ -182,7 +182,6 @@
     const nowPlaying = {
       title: 'Bug',
       artist: 'Fontaines D.C.',
-      album: 'Romance',
       url: 'https://open.spotify.com/track/0MXmiqd7zoXxv6Gqn9ahhQ',
     };
 
@@ -228,13 +227,12 @@
       return item ? { item, object: hit.object } : null;
     }
 
-    // Builds the "now playing" card: song, artist, "last played" with a highlighted
-    // "on Spotify", and the album
+    // Builds the "now playing" card: "Now playing" (with a highlighted "playing"), the song, the artist
     function trackCard(track, into) {
       const line = (cls, text) => Object.assign(document.createElement('span'), { className: cls, textContent: text });
-      const meta = line('track-meta', 'Last played ');
-      meta.append(Object.assign(document.createElement('mark'), { textContent: 'on Spotify' }));
-      into.replaceChildren(line('track-title', track.title), line('track-artist', track.artist), meta, line('track-album', track.album));
+      const meta = line('track-meta', 'Now ');
+      meta.append(Object.assign(document.createElement('mark'), { textContent: 'playing' }));
+      into.replaceChildren(meta, line('track-title', track.title), line('track-artist', track.artist));
       return into;
     }
     const trackEl = document.getElementById('track');
