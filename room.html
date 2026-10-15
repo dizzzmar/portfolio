@@ -215,12 +215,17 @@
         if (/^room\b/.test(words(object.name))) return;
         if (/^lamp tomato diffuser\b/.test(words(object.name))) {
           tomato = object;
-          object.material = object.material.clone();
-          object.material.color.set('#df4532');
-          object.material.emissive.set('#ff4a1c');
-          object.material.emissiveIntensity = 1.1; // strong enough to glow, low enough to stay red
+          // Deep red, lit from inside, under a glossy lacquer coat that catches the room
+          object.material = new THREE.MeshPhysicalMaterial({
+            color: '#a80c06',
+            emissive: '#e01200',
+            emissiveIntensity: 0.45, // glows but stays red rather than washing out
+            roughness: 0.3,
+            clearcoat: 1,
+            clearcoatRoughness: 0.06,
+            envMapIntensity: 0.45,   // enough for gloss; more turns the red pink
+          });
           object.castShadow = false; // the light sits inside it
-          object.material.roughness = .42;
         }
         meshes.push(object);
       });
