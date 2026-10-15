@@ -33,10 +33,25 @@
     .object-nav button:hover, .object-nav button:focus-visible, .object-nav button.active { color: #f3f0df; }
     .object-nav button:focus-visible { outline: 2px solid #f3f0df; outline-offset: 4px; }
     .label { position: fixed; z-index: 3; left: calc(50% + var(--panel) / 2); bottom: 24px; transform: translateX(-50%); background: #f3f0df; color: #1a120c; box-shadow: 0 10px 30px #00000055, 0 0 24px #ffb27a44; padding: 10px 18px; font-size: 13px; border-radius: 999px; pointer-events: none; white-space: nowrap; }
-    .label[hidden], .detail[hidden] { display: none; }
+    .label[hidden], .detail[hidden], .track[hidden] { display: none; }
+
+    /* Now-playing card for the record: typography only, no box. Two voices stacked
+       tight, a heavy sans and a display serif, with one green highlighted phrase. */
+    .track { --ink: #fff; display: grid; justify-items: start; color: var(--ink); text-shadow: 0 2px 24px #000000cc, 0 0 6px #00000066; }
+    .track.floating { position: fixed; z-index: 3; left: calc(50% + var(--panel) / 2); bottom: 28px; transform: translateX(-50%); pointer-events: none; }
+    .track span { display: block; white-space: nowrap; text-transform: uppercase; }
+    .track-title { font-size: clamp(44px, 5vw, 76px); font-weight: 700; letter-spacing: -.06em; line-height: .86; }
+    .track-artist { font-family: Georgia, "Times New Roman", serif; font-size: clamp(20px, 2.1vw, 32px); letter-spacing: -.05em; line-height: .95; margin-top: 4px; }
+    .track-meta { margin-bottom: 10px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(12px, 1vw, 15px); font-weight: 400; letter-spacing: -.02em; line-height: 1.2; }
+    .track-meta mark { padding: 0 .12em; background: #0e8a5f; color: #b6ff7a; text-shadow: none; }
+    /* In the (cream) detail panel: same stack in dark ink, no shadow */
+    .detail .track { --ink: #1a120c; margin-top: 14px; text-shadow: none; }
+    .detail .track-meta { display: none; } /* the panel's heading already says "Now playing" */
+    .detail .track-title { font-size: 52px; }
+    .detail .track-artist { font-size: 22px; }
     .detail { position: fixed; z-index: 4; inset: auto clamp(16px, 3vw, 48px) 24px auto; width: min(360px, calc(100vw - 32px)); padding: 24px; background: #f3f0df; color: #102f2b; box-shadow: 0 18px 45px #061c1a66; }
     .detail h2 { margin: 28px 0 8px; font-size: 30px; font-weight: 400; letter-spacing: -.05em; }
-    .detail p { font-size: 14px; line-height: 1.4; }
+    .detail .detail-copy { font-size: 14px; line-height: 1.4; }
     .detail button { border: 0; padding: 0; background: none; color: inherit; font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
     .status { position: fixed; z-index: 2; top: 50%; left: calc(50% + var(--panel) / 2); transform: translate(-50%, -50%); text-align: center; max-width: 32ch; line-height: 1.4; }
     .status a { color: #ffc28f; text-underline-offset: 4px; }
@@ -46,7 +61,7 @@
       .intro { top: calc(var(--nav-h) + 16px); left: 14px; right: 14px; width: auto; }
       .object-nav { position: fixed; left: 14px; right: 14px; bottom: 16px; margin: 0; flex-direction: row; flex-wrap: wrap; gap: 4px 16px; }
       .object-nav button { font-size: 20px; }
-      .label { bottom: 96px; }
+      .label, .track.floating { bottom: 96px; }
       .detail { bottom: 96px; }
     }
     @media (max-width: 700px) {
@@ -84,10 +99,11 @@
     <div class="object-nav" id="object-nav" aria-label="Objects in the room"></div>
   </section>
   <div class="label" id="label" hidden></div>
+  <div class="track floating" id="track" hidden aria-hidden="true"></div>
   <aside class="detail" id="detail" hidden aria-live="polite">
     <button type="button" id="detail-close">Close ×</button>
     <h2 id="detail-title"></h2>
-    <p id="detail-copy">This part of the room is being prepared.</p>
+    <div id="detail-copy" class="detail-copy">This part of the room is being prepared.</div>
   </aside>
   <p class="status" id="status" role="status">Loading the room…</p>
   <script type="module">
@@ -160,9 +176,15 @@
     // its section exists; until then it opens its own detail state.
     // Matched against object names reduced to lowercase words, because the loader
     // turns "Music / vinyl collection" into "Music__vinyl_collection".
+    // The last song I played on Spotify. Update the file and these lines to change it.
+    const nowPlaying = {
+      title: 'Bug',
+      artist: 'Fontaines D.C.',
+    };
+
     const destinations = [
       // Both are outlined, but the camera looks at the collection on the lower shelf
-      { label: 'Now playing', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, href: null },
+      { label: 'Now playing', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, track: nowPlaying, href: null },
       { label: 'Pokemon', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
       { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, href: null },
       // The camera frames just the tomato, not the cord that runs down to the floor
@@ -202,14 +224,27 @@
       return item ? { item, object: hit.object } : null;
     }
 
+    // Builds the "now playing" card: "Now playing" (with a highlighted "playing"), the song, the artist
+    function trackCard(track, into) {
+      const line = (cls, text) => Object.assign(document.createElement('span'), { className: cls, textContent: text });
+      const meta = line('track-meta', 'Now ');
+      meta.append(Object.assign(document.createElement('mark'), { textContent: 'playing' }));
+      into.replaceChildren(meta, line('track-title', track.title), line('track-artist', track.artist));
+      return into;
+    }
+    const trackEl = document.getElementById('track');
+
     function highlight(selection) {
       hovered = selection;
       outline.selectedObjects = selection
         ? meshes.filter(mesh => destinationFor(mesh)?.key === selection.item.key)
         : [];
-      label.hidden = !selection;
+      const track = selection?.item.track;
+      label.hidden = !selection || !!track;
+      trackEl.hidden = !track;
+      if (track) trackCard(track, trackEl);
       for (const button of nav.querySelectorAll('button')) button.classList.toggle('active', !!selection && button.textContent === selection.item.label);
-      if (selection) label.textContent = selection.item.label + ' +';
+      if (selection && !track) label.textContent = selection.item.label + ' +';
       canvas.style.cursor = selection ? 'pointer' : 'default';
     }
 
@@ -235,6 +270,14 @@
         return;
       }
       detailTitle.textContent = item.label;
+      const copy = document.getElementById('detail-copy');
+      if (item.track) {
+        const card = trackCard(item.track, document.createElement('div'));
+        card.className = 'track';
+        copy.replaceChildren(card);
+      } else {
+        copy.textContent = 'This part of the room is being prepared.';
+      }
       detail.hidden = false;
       location.hash = item.key;
       document.getElementById('detail-close').focus();
@@ -281,6 +324,22 @@
         lampFlicker = { light: lamp, material: tomato.material, intensity: lamp.intensity, glow: tomato.material.emissiveIntensity, start: null };
         if (!reduced) setLamp(0); // starts off, then flickers on once the room is shown
       }
+      // The displayed sleeve shows the cover of the last song I played. If the file is
+      // missing, the sleeve keeps its original art.
+      new THREE.TextureLoader().load('/assets/room/vinyl-cover.webp', (cover) => {
+        cover.colorSpace = THREE.SRGBColorSpace;
+        cover.flipY = false; // glTF textures aren't flipped
+        cover.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        for (const mesh of meshes) {
+          if (!/^music displayed vinyl sleeve\b/.test(words(mesh.name))) continue;
+          if (!/album/i.test(mesh.material.name)) continue;
+          mesh.material = mesh.material.clone();
+          mesh.material.map = cover;
+          mesh.material.emissiveMap = cover; // the sleeve glows, so the cover is its emissive texture too
+          mesh.material.emissiveIntensity = 0.45; // the old art was dark, so it glowed at 2x; a real cover would blow out
+          mesh.material.needsUpdate = true;
+        }
+      });
       const bounds = new THREE.Box3().setFromObject(model);
       const size = bounds.getSize(new THREE.Vector3());
       const center = bounds.getCenter(new THREE.Vector3());
