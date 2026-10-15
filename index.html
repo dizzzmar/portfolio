@@ -613,32 +613,20 @@
     scene.add(pivot);
 
     // ---------- Name ring ----------
-    // "MARIO DIZ" printed around an open cylinder that circles the tomato.
+    // "MARIO DIZ", once, printed on an open cylinder that circles the tomato.
     // It spins the opposite way; its far side shows faintly through.
     function nameTexture() {
+      // The canvas is as wide (relative to its height) as the ring is around,
+      // so the letters keep their proportions once wrapped.
       const c = document.createElement('canvas');
-      c.width = 4096;
+      c.width = 3200;
       c.height = 128;
       const g = c.getContext('2d');
       g.fillStyle = '#fff';
       g.font = '700 92px "Helvetica Neue", Arial, sans-serif';
+      g.textAlign = 'center';
       g.textBaseline = 'middle';
-      const word = 'MARIO DIZ';
-      const repeats = 4;
-      const slot = c.width / repeats;
-      for (let i = 0; i < repeats; i++) {
-        const x = i * slot;
-        g.fillText(word, x + 40, c.height / 2 + 4);
-        // small four-point star between the names
-        const sx = x + slot - 70, sy = c.height / 2, r = 22;
-        g.beginPath();
-        g.moveTo(sx, sy - r);
-        g.quadraticCurveTo(sx, sy, sx + r, sy);
-        g.quadraticCurveTo(sx, sy, sx, sy + r);
-        g.quadraticCurveTo(sx, sy, sx - r, sy);
-        g.quadraticCurveTo(sx, sy, sx, sy - r);
-        g.fill();
-      }
+      g.fillText('MARIO DIZ', c.width / 2, c.height / 2 + 4);
       const tex = new THREE.CanvasTexture(c);
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
@@ -652,7 +640,8 @@
     pivot.add(ringTilt);
 
     const ringTex = nameTexture();
-    const ringGeo = new THREE.CylinderGeometry(0.86, 0.86, 0.17, 128, 1, true);
+    // Radius 0.6: just outside the tomato, whose body reaches 0.47 from its axis
+    const ringGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.15, 128, 1, true);
     const ringBack = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
       map: ringTex, side: THREE.BackSide, transparent: true, opacity: 0.35, depthWrite: false,
     }));
