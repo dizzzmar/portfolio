@@ -17,6 +17,27 @@ figure { margin: 0; }
 .image-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
 .project-end { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 60px 24px; font-size: 14px; }
 .site-footer { display: flex; justify-content: center; padding: 56px 24px; background: #91bce0 url('/assets/sky.webp') center 65% / cover; color: #173a31; font-size: 13px; }
+/* Image stack: the front image leaves sideways and the next one comes forward */
+.stack { margin: 0; }
+.stack-deck { display: grid; gap: 20px; }
+.stack.is-live { margin-top: 36px; }
+.stack-ui { display: flex; justify-content: center; align-items: center; gap: 18px; margin-top: 18px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.stack-btn { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: #eeede8; color: inherit; font: inherit; font-size: 18px; cursor: pointer; transition: background .2s; }
+.stack-btn:hover { background: #deded6; }
+.stack-btn:focus-visible { outline: 3px solid #175cff; outline-offset: 3px; }
+.stack.is-live .stack-deck { position: relative; display: block; aspect-ratio: 1; touch-action: pan-y; user-select: none; cursor: grab; margin-bottom: 14px; }
+.stack.is-live .stack-deck.dragging { cursor: grabbing; }
+.stack.is-live .stack-card { position: absolute; inset: 0; transform-origin: 50% 100%; transition: transform .6s cubic-bezier(.2,.8,.2,1), opacity .5s; box-shadow: 0 14px 34px rgba(60,40,10,.16); border-radius: 18px; }
+.stack.is-live .stack-card[data-pos="0"] { z-index: 4; }
+.stack.is-live .stack-card[data-pos="1"] { z-index: 3; transform: translateY(-3.5%) scale(.95); }
+.stack.is-live .stack-card[data-pos="2"] { z-index: 2; transform: translateY(-7%) scale(.9); }
+.stack.is-live .stack-card[data-pos="hidden"] { z-index: 1; opacity: 0; transform: translateY(-7%) scale(.9); pointer-events: none; }
+.stack.is-live .stack-card.out { transform: translateX(var(--out, 110%)) rotate(var(--rot, 8deg)); opacity: 0; z-index: 5; transition: transform .45s cubic-bezier(.5,0,.8,.4), opacity .45s; }
+.stack.is-live .stack-card.snap { transition: none; }
+.stack.is-live .stack-card.drag { transition: none; z-index: 5; }
+.stack.is-live .stack-ui { margin-top: 0; }
+@media (max-width: 640px) { .stack-deck { gap: 12px; } .stack.is-live .stack-card { border-radius: 12px; } }
+@media (prefers-reduced-motion: reduce) { .stack.is-live .stack-card, .stack.is-live .stack-card.out { transition: none; } }
 @media (max-width: 640px) {
  .close-project { top: 12px; right: 12px; width: 44px; height: 44px; }
  .project-page { width: calc(100% - 24px); margin-top: 72px; }
