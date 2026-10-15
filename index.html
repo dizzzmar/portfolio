@@ -237,7 +237,7 @@
 
     .project {
       min-width: 0;
-      padding: 28px 8px 8px;
+      padding: 12px;
       background: #fff;
       border-radius: 24px;
       overflow: hidden;
@@ -249,13 +249,16 @@
 
     /* Caption: the brand in a small serif above the project name in a big sans, then
        the project type as little markers */
-    .project-caption { display: grid; gap: 10px; padding: 0 20px 26px; }
+    /* The caption shares its left and right edges with the image, and the card's inset is
+       the same on every side. Spacing is measured ink to ink (see the optical-margin script). */
+    .project-caption { display: grid; gap: 4px; padding: 0 0 18px; }
 
     .project-brand {
       font-family: Georgia, 'Times New Roman', serif;
       font-size: clamp(17px, 1.5vw, 24px);
       letter-spacing: -0.035em;
       line-height: 1;
+      margin-top: -0.18em; /* the line box leaves a gap above the capitals; trim it so the ink sits on the inset */
       text-transform: uppercase;
     }
 
@@ -264,6 +267,7 @@
       font-weight: 700;
       letter-spacing: -0.06em;
       line-height: 0.88;
+      margin-left: -0.045em; /* cancel the glyph's left side bearing so the ink lines up with the brand and pills */
       text-transform: uppercase;
     }
 
@@ -272,7 +276,7 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 6px;
-      margin-top: 6px;
+      margin-top: 2px;
       list-style: none;
     }
 
@@ -296,6 +300,8 @@
       font-family: Georgia, 'Times New Roman', serif;
       font-size: 14px;
       font-weight: 400;
+      transform: translateY(2.5px); /* centre the year on the pills' text */
+      font-variant-numeric: lining-nums; /* Georgia's default old-style figures sag below the baseline */
       letter-spacing: -0.02em;
     }
 
@@ -374,12 +380,11 @@
       .nav-links a { font-size: 13px; }
       .work-intro { padding: 0 12px 20px; }
       .project-grid { grid-template-columns: 1fr; gap: 8px; }
-      .project { padding-top: 24px; border-radius: 20px; }
+      .project { border-radius: 20px; }
       .project-link { display: block; color: #171717; text-decoration: none; }
     .project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
     .project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 
-    .project-caption { padding: 0 12px 20px; }
       .project-caption h2 { font-size: clamp(40px, 12vw, 60px); }
       .project-brand { font-size: 18px; }
       .project-media { border-radius: 14px; }
