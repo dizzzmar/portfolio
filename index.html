@@ -247,23 +247,56 @@
     .project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
     .project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 
-    .project-caption { padding: 0 20px 24px; }
+    /* Caption: the brand in a small serif above the project name in a big sans, then
+       the project type as little markers */
+    .project-caption { display: grid; gap: 10px; padding: 0 20px 26px; }
 
-    .project-caption h2 {
-      font-size: clamp(25px, 2.5vw, 44px);
-      font-weight: 700;
-      letter-spacing: -0.055em;
-      line-height: 0.95;
+    .project-brand {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(17px, 1.5vw, 24px);
+      letter-spacing: -0.035em;
+      line-height: 1;
       text-transform: uppercase;
     }
 
-    .project-description {
-      max-width: 25ch;
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(25px, 2.5vw, 44px);
-      letter-spacing: -0.055em;
-      line-height: 0.98;
+    .project-caption h2 {
+      font-size: clamp(40px, 4.6vw, 78px);
+      font-weight: 700;
+      letter-spacing: -0.06em;
+      line-height: 0.88;
       text-transform: uppercase;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      list-style: none;
+    }
+
+    .project-tags li {
+      padding: 5px 11px 4px;
+      border: 1px solid #171717;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      line-height: 1.2;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* The year, when there is one, sits at the end of the row */
+    .project-tags .project-year {
+      margin-left: auto;
+      padding: 0;
+      border: 0;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
     }
 
     .project-media {
@@ -347,7 +380,8 @@
     .project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 
     .project-caption { padding: 0 12px 20px; }
-      .project-caption h2, .project-description { font-size: clamp(28px, 7vw, 44px); }
+      .project-caption h2 { font-size: clamp(40px, 12vw, 60px); }
+      .project-brand { font-size: 18px; }
       .project-media { border-radius: 14px; }
       .room-entry { min-height: 210px; margin: 64px 8px 0; padding: 20px; }
       .footer { padding: 96px 20px 16px; }
@@ -399,8 +433,12 @@
         <div class="project-grid">
           <article class="project" id="first-project">
             <header class="project-caption">
-              <h2>Lexus Electrified</h2>
-              <p class="project-description">Film, 2025</p>
+              <p class="project-brand">Lexus</p>
+              <h2>Electrified</h2>
+              <ul class="project-tags" aria-label="Project type">
+                <li>Audiovisual</li>
+                <li class="project-year">2025</li>
+              </ul>
             </header>
             <div class="project-media">
               <video src="/assets/lexus-thumb.mp4" poster="/assets/lexus-thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video>
@@ -409,23 +447,32 @@
           <article class="project" id="soap-and-glory">
             <a class="project-link" href="/project/soap-and-glory-vanilla/">
               <header class="project-caption">
-                <h2>Soap &amp; Glory</h2>
-                <p class="project-description">Vanilla</p>
+                <p class="project-brand">Soap &amp; Glory</p>
+                <h2>Vanilla</h2>
+                <ul class="project-tags" aria-label="Project type">
+                  <li>Key visuals</li>
+                </ul>
               </header>
               <div class="project-media"><img src="/assets/projects/soap-and-glory-vanilla/sg1-800.webp" width="800" height="800" loading="lazy" decoding="async" alt="Soap &amp; Glory Vanilla collection on golden petals"></div>
             </a>
           </article>
           <article class="project">
             <header class="project-caption">
-              <h2>Project title</h2>
-              <p class="project-description">Short project description</p>
+              <p class="project-brand">Brand</p>
+              <h2>Project name</h2>
+              <ul class="project-tags" aria-label="Project type">
+                <li>Project type</li>
+              </ul>
             </header>
             <div class="project-media"><span class="image-placeholder">Project image — 03</span></div>
           </article>
           <article class="project">
             <header class="project-caption">
-              <h2>Project title</h2>
-              <p class="project-description">Short project description</p>
+              <p class="project-brand">Brand</p>
+              <h2>Project name</h2>
+              <ul class="project-tags" aria-label="Project type">
+                <li>Project type</li>
+              </ul>
             </header>
             <div class="project-media"><span class="image-placeholder">Project image — 04</span></div>
           </article>
