@@ -1,402 +1,23 @@
 <!doctype html>
+<!--
+  HOME  ·  www.dizmar.xyz
+
+  Qué hay en este archivo (de arriba abajo):
+    1. Barra de navegación  (Work · About · Contact · Room)
+    2. Hero con el tomate 3D sobre el cielo
+    3. "Selected work": papel verde con la LISTA DE PROYECTOS  <- aquí editas textos
+    4. Footer
+
+  El diseño está en  /css/home.css  y el comportamiento en  /js/home-*.js
+  (ver README.md para la guía completa).
+-->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>dizmar</title>
-  <link rel="icon" href="/assets/tomato.webp" type="image/webp">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      overflow-x: clip; /* nothing may widen the page past the screen */
-      color: #fff;
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      background-color: #8cc0ef;
-    }
-
-    /* Sky photo, oversized so it can drift slowly without showing its edges */
-    .sky {
-      position: fixed;
-      inset: -8%;
-      z-index: -1;
-      background:
-        url("/assets/sky.webp") center / cover,
-        linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
-      animation: drift 40s ease-in-out infinite alternate;
-      will-change: transform;
-    }
-
-    /* Film grain: stays still on top of the moving sky */
-    .grain {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background: url("/assets/grain.png") repeat;
-      background-size: 128px 128px;
-      mix-blend-mode: overlay;
-      opacity: 0.32;
-    }
-
-    @keyframes drift {
-      0%   { transform: translate(-3%, 1%) scale(1); }
-      50%  { transform: translate(1%, -1.5%) scale(1.04); }
-      100% { transform: translate(3%, 1%) scale(1.02); }
-    }
-
-    /* ---------- Nav bar ---------- */
-    :root { --nav-h: 64px; }
-
-    /* Bar across the top with no background; the docked tomato is its logo */
-    .nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 9; /* under the tomato canvas, so the tomato sits on the bar */
-      height: var(--nav-h);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 0 24px;
-      pointer-events: none;
-    }
-
-    .nav > * { pointer-events: auto; }
-
-    /* Invisible hit area over the docked tomato */
-    .nav-logo {
-      flex: none;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-    }
-
-    .nav-logo:focus-visible,
-    .nav-links a:focus-visible {
-      outline: 2px solid #fff;
-      outline-offset: 3px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 32px;
-      margin-left: auto;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: rgba(255, 255, 255, 0.78);
-      font-size: 15px;
-      text-decoration: none;
-      text-shadow: 0 1px 8px rgba(0, 20, 40, 0.25);
-      transition: color 0.2s, text-shadow 0.2s;
-    }
-
-    .nav-links a:hover,
-    .nav-links a[aria-current="true"] { color: #fff; }
-
-    /* A link passing over a white project card turns dark */
-    .nav-links a.on-light { color: rgba(17, 17, 17, 0.6); text-shadow: none; }
-    .nav-links a.on-light:hover,
-    .nav-links a.on-light[aria-current="true"] { color: #111; }
-
-    /* Keep anchored targets clear of the bar */
-    [id] { scroll-margin-top: calc(var(--nav-h) + 12px); }
-
-    /* The tomato canvas covers the viewport and ignores the pointer */
-    #scene {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 10;
-      pointer-events: none;
-    }
-
-    /* ---------- Page ---------- */
-    .hero {
-      height: 100vh;
-      height: 100dvh;
-      position: relative;
-    }
-
-    .scroll-hint {
-      position: absolute;
-      left: 50%;
-      bottom: 28px;
-      transform: translateX(-50%);
-      font-size: 13px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      opacity: 0.85;
-      transition: opacity 0.3s;
-    }
-
-    .scroll-hint::after {
-      content: "";
-      display: block;
-      width: 1px;
-      height: 32px;
-      margin: 10px auto 0;
-      background: currentColor;
-      animation: drip 1.6s ease-in-out infinite;
-      transform-origin: top;
-    }
-
-    @keyframes drip {
-      0%   { transform: scaleY(0); }
-      50%  { transform: scaleY(1); }
-      100% { transform: scaleY(1); opacity: 0; }
-    }
-
-    /* ---------- Paper ---------- */
-    /* The work section is a sheet of green paper that slides up over the sky.
-       Its rounded corners and punched holes come from a mask built in the script below. */
-    .work {
-      position: relative;
-      color: #111;
-      padding: 260px 10px 240px;
-    }
-
-    .paper-shadow {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      filter: drop-shadow(2px 6px 6px rgba(0, 25, 10, 0.45));
-    }
-
-    .paper {
-      position: absolute;
-      inset: 0;
-      background: #2c4e37;
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
-    }
-
-    /* Same film grain as the sky, on the solid green */
-    .paper::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: url("/assets/grain.png") repeat;
-      background-size: 128px 128px;
-      mix-blend-mode: overlay;
-      opacity: 0.3;
-    }
-
-    .work-inner { position: relative; }
-
-    .punch-hint {
-      position: absolute;
-      top: 196px;
-      right: 30px;
-      color: #cfe0cf;
-      font-family: "Courier New", monospace;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      opacity: 0.75;
-      pointer-events: none;
-    }
-
-    /* A punched-out piece falling off the page */
-    .piece {
-      position: fixed;
-      z-index: 5;
-      pointer-events: none;
-      filter: drop-shadow(1px 3px 3px rgba(0, 25, 10, 0.35));
-    }
-
-    .work-inner { max-width: 1800px; margin: 0 auto; }
-
-    .work-intro { color: #e9efe4; }
-
-    .work-intro {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      padding: 0 20px 24px;
-      gap: 20px;
-    }
-
-    .work h1, .work-intro p {
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 1.4;
-    }
-
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .project {
-      min-width: 0;
-      padding: 12px;
-      background: #fff;
-      border-radius: 24px;
-      overflow: hidden;
-    }
-
-    .project-link { display: block; color: #171717; text-decoration: none; }
-    .project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
-    .project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
-
-    /* Caption: the brand in a small serif above the project name in a big sans, then
-       the project type as little markers */
-    /* The caption shares its left and right edges with the image, and the card's inset is
-       the same on every side. Spacing is measured ink to ink (see the optical-margin script). */
-    .project-caption { display: grid; gap: 4px; padding: 0 0 18px; }
-
-    .project-brand {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(17px, 1.5vw, 24px);
-      letter-spacing: -0.035em;
-      line-height: 1;
-      margin-top: -0.18em; /* the line box leaves a gap above the capitals; trim it so the ink sits on the inset */
-      text-transform: uppercase;
-    }
-
-    .project-caption h2 {
-      font-size: clamp(40px, 4.6vw, 78px);
-      font-weight: 700;
-      letter-spacing: -0.06em;
-      line-height: 0.88;
-      margin-left: -0.045em; /* cancel the glyph's left side bearing so the ink lines up with the brand and pills */
-      text-transform: uppercase;
-    }
-
-    .project-tags {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-      margin-top: 2px;
-      list-style: none;
-    }
-
-    .project-tags li {
-      padding: 5px 11px 4px;
-      border: 1px solid #171717;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      line-height: 1.2;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    /* The year, when there is one, sits at the end of the row */
-    .project-tags .project-year {
-      margin-left: auto;
-      padding: 0;
-      border: 0;
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 14px;
-      font-weight: 400;
-      transform: translateY(2.5px); /* centre the year on the pills' text */
-      font-variant-numeric: lining-nums; /* Georgia's default old-style figures sag below the baseline */
-      letter-spacing: -0.02em;
-    }
-
-    .project-media {
-      aspect-ratio: 16 / 9;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      background: #f2f2ef;
-      border-radius: 18px;
-    }
-
-    .project-media img,
-    .project-media video {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .image-placeholder {
-      color: #8b8b83;
-      font-size: 11px;
-      letter-spacing: 0.05em;
-    }
-
-    .room-entry {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 24px;
-      min-height: 270px;
-      margin: 80px 10px 0;
-      padding: 28px;
-      border: 1px solid rgba(233, 239, 228, 0.7);
-      color: #e9efe4;
-      text-decoration: none;
-      transition: background 0.2s, box-shadow 0.2s;
-    }
-    .room-entry span { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
-    .room-entry strong { display: block; margin-top: 12px; font-size: clamp(42px, 8vw, 120px); line-height: .85; font-weight: 400; letter-spacing: -.07em; }
-    .room-entry .room-arrow { font-size: clamp(28px, 5vw, 64px); line-height: 1; }
-    .room-entry:hover, .room-entry:focus-visible { background: rgba(233, 239, 228, .08); box-shadow: 0 0 0 3px #91c9ff, 0 0 25px #62b9ff77; outline: none; }
-
-    /* ---------- Footer: the paper ends and the sky shows again ---------- */
-    .footer {
-      position: relative;
-      min-height: 60vh;
-      display: flex;
-      align-items: flex-end;
-      padding: 120px 30px 24px;
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    /* Pieces that were punched out of the paper, lying on the sky */
-    .fallen {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .fallen svg {
-      position: absolute;
-      filter: drop-shadow(1px 3px 3px rgba(0, 25, 10, 0.3));
-    }
-
-    @media (max-width: 700px) {
-      .work { padding: 220px 8px 200px; }
-      .punch-hint { top: 168px; right: 20px; }
-      :root { --nav-h: 56px; }
-      .nav { gap: 10px; padding: 0 14px; }
-      .nav-logo { width: 36px; height: 36px; }
-      .nav-links { gap: 14px; }
-      .nav-links a { font-size: 13px; }
-      .work-intro { padding: 0 12px 20px; }
-      .project-grid { grid-template-columns: 1fr; gap: 8px; }
-      .project { border-radius: 20px; }
-      .project-link { display: block; color: #171717; text-decoration: none; }
-    .project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
-    .project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
-
-      .project-caption h2 { font-size: clamp(40px, 12vw, 60px); }
-      .project-brand { font-size: 18px; }
-      .project-media { border-radius: 14px; }
-      .room-entry { min-height: 210px; margin: 64px 8px 0; padding: 20px; }
-      .footer { padding: 96px 20px 16px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .scroll-hint::after, .sky { animation: none; }
-    }
-  </style>
+  <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
+  <link rel="stylesheet" href="/css/home.css">
   <script type="importmap">
     {
       "imports": {
@@ -409,8 +30,10 @@
 <body>
   <div class="sky" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
+  <!-- Lienzo del tomate 3D (lo dibuja /js/home-tomato.js) -->
   <canvas id="scene" aria-hidden="true"></canvas>
 
+  <!-- ========== 1. Navegación ========== -->
   <nav class="nav" aria-label="Main">
     <a class="nav-logo" href="#top" aria-label="Back to top"></a>
     <ul class="nav-links">
@@ -422,20 +45,36 @@
   </nav>
 
   <main id="top">
+    <!-- ========== 2. Hero: el tomate (canvas de arriba) flota aquí ========== -->
     <section class="hero" aria-label="dizmar">
       <div class="scroll-hint" id="hint">Scroll</div>
     </section>
 
+    <!-- ========== 3. Selected work (papel verde) ========== -->
     <section class="work" id="work" aria-labelledby="work-title">
       <div class="paper-shadow" aria-hidden="true"><div class="paper" id="paper"></div></div>
       <div class="work-inner">
         <header class="work-intro">
+          <!-- Título y subtítulo de la sección -->
           <h1 id="work-title">Selected work</h1>
           <p>Art direction &amp; visual design</p>
         </header>
 
-        <!-- Replace each placeholder with a project title, short description and image. -->
+        <!-- ==========================================================================
+             LISTA DE PROYECTOS  (las "cards" blancas de la home)
+
+             - Para CAMBIAR un texto: edita el <p class="project-brand"> (marca),
+               el <h2> (nombre del proyecto) o los <li> (etiquetas / año).
+             - Para AÑADIR un proyecto: copia una <article class="project"> entera
+               (o la plantilla templates/project-card.html) y pégala donde quieras
+               que aparezca. El orden en el código es el orden en la página.
+             - Para que la card ABRA la página del proyecto: envuelve el contenido
+               en <a class="project-link" href="/project/NOMBRE-DEL-PROYECTO/"> como
+               en la card de Soap & Glory.
+             ========================================================================== -->
         <div class="project-grid">
+
+          <!-- ===== Proyecto 1: Lexus · Electrified (con vídeo; aún sin enlace) ===== -->
           <article class="project" id="first-project">
             <header class="project-caption">
               <p class="project-brand">Lexus</p>
@@ -446,9 +85,11 @@
               </ul>
             </header>
             <div class="project-media">
-              <video src="/assets/lexus-thumb.mp4" poster="/assets/lexus-thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video>
+              <video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video>
             </div>
           </article>
+
+          <!-- ===== Proyecto 2: Soap & Glory · Vanilla (con enlace a su página) ===== -->
           <article class="project" id="soap-and-glory">
             <a class="project-link" href="/project/soap-and-glory-vanilla/">
               <header class="project-caption">
@@ -461,6 +102,8 @@
               <div class="project-media"><img src="/assets/projects/soap-and-glory-vanilla/sg1-800.webp" width="800" height="800" loading="lazy" decoding="async" alt="Soap &amp; Glory Vanilla collection on golden petals"></div>
             </a>
           </article>
+
+          <!-- ===== Proyecto 3: hueco libre (sustituye "Brand", "Project name" y la imagen) ===== -->
           <article class="project">
             <header class="project-caption">
               <p class="project-brand">Brand</p>
@@ -471,6 +114,8 @@
             </header>
             <div class="project-media"><span class="image-placeholder">Project image — 03</span></div>
           </article>
+
+          <!-- ===== Proyecto 4: hueco libre ===== -->
           <article class="project">
             <header class="project-caption">
               <p class="project-brand">Brand</p>
@@ -481,7 +126,10 @@
             </header>
             <div class="project-media"><span class="image-placeholder">Project image — 04</span></div>
           </article>
+
         </div>
+
+        <!-- Banner grande que lleva a la página "The room" -->
         <a class="room-entry" href="/room.html" aria-label="Explore the room: personal interests">
           <div><span>Personal interests</span><strong>The room</strong></div>
           <span class="room-arrow" aria-hidden="true">↗</span>
@@ -490,349 +138,16 @@
     </section>
   </main>
 
+  <!-- ========== 4. Footer ========== -->
   <footer class="footer">
     <div class="fallen" id="fallen" aria-hidden="true"></div>
-    <span>Mario Diz, Madrid</span>
+    <span>Mario Diz, Madrid</span> <!-- texto del footer -->
   </footer>
 
-  <script>
-    // Looping project previews stay still for visitors who prefer reduced motion
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.querySelectorAll('.project-media video').forEach((v) => { v.autoplay = false; v.pause(); });
-    }
+  <!-- Scripts: nav (enlace activo y contraste) · papel con agujeros · tomate 3D -->
+  <script src="/js/home-nav.js"></script>
+  <script src="/js/home-paper.js"></script>
 
-    // ---------- Nav: current section and link contrast ----------
-    (() => {
-      // Highlight "Work" while the work section is on screen
-      const workLink = document.querySelector('[data-section="work"]');
-      new IntersectionObserver(([entry]) => {
-        workLink.setAttribute('aria-current', entry.isIntersecting);
-      }, { rootMargin: '-50% 0px -50% 0px' }).observe(document.getElementById('work'));
-
-      // The bar has no background, so each link checks what is behind it
-      const nav = document.querySelector('.nav');
-      const links = [...document.querySelectorAll('.nav-links a')];
-      let queued = false;
-      function contrast() {
-        queued = false;
-        for (const link of links) {
-          const r = link.getBoundingClientRect();
-          const behind = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2)
-            .find((el) => !nav.contains(el) && el.id !== 'scene');
-          link.classList.toggle('on-light', !!behind && !!behind.closest('.project'));
-        }
-      }
-      const queue = () => { if (!queued) { queued = true; requestAnimationFrame(contrast); } };
-      addEventListener('scroll', queue, { passive: true });
-      addEventListener('resize', queue);
-      contrast();
-    })();
-
-    // ---------- Collage: green paper with punched holes ----------
-    (() => {
-      const work = document.getElementById('work');
-      const paper = document.getElementById('paper');
-      const fallen = document.getElementById('fallen');
-      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const PAPER = '#2c4e37';
-
-      // Small seeded random so the layout is the same on every visit
-      function rng(seed) {
-        return () => {
-          seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
-          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-        };
-      }
-
-      // Shapes in a 100 x 100 box, as SVG markup
-      function star(points, inner) {
-        const pts = [];
-        for (let i = 0; i < points * 2; i++) {
-          const r = i % 2 ? inner : 50;
-          const a = (Math.PI * i) / points - Math.PI / 2;
-          pts.push((50 + r * Math.cos(a)).toFixed(1) + ',' + (50 + r * Math.sin(a)).toFixed(1));
-        }
-        return `<polygon points="${pts.join(' ')}"/>`;
-      }
-      const flower = () => {
-        let c = '<circle cx="50" cy="50" r="26"/>';
-        for (let i = 0; i < 6; i++) {
-          const a = (Math.PI * i) / 3;
-          c += `<circle cx="${(50 + 26 * Math.cos(a)).toFixed(1)}" cy="${(50 + 26 * Math.sin(a)).toFixed(1)}" r="22"/>`;
-        }
-        return c;
-      };
-      const SHAPES = [
-        () => star(5, 21),                                  // star
-        () => star(4, 13),                                  // sparkle
-        () => star(8, 30),                                  // burst
-        () => '<path d="M50 90C22 68 2 50 10 28 18 8 42 8 50 27 58 8 82 8 90 28 98 50 78 68 50 90Z"/>', // heart
-        () => '<polygon points="62,0 18,56 44,56 32,100 84,38 57,38 72,0"/>', // lightning bolt
-        () => '<circle cx="50" cy="50" r="46"/>',            // circle
-        flower,
-      ];
-
-      let holes = [];      // built-in holes: { x (0-1), y (px), size, rot, shape }
-      let punched = [];    // holes the visitor punched, same format
-
-      function layoutHoles(w, h) {
-        const rand = rng(11);
-        const list = [];
-        const bands = innerWidth < 700 ? [[24, 150], [h - 170, h - 30]] : [[30, 180], [h - 200, h - 40]];
-        const perBand = Math.max(5, Math.round(w / 110));
-        for (const [top, bottom] of bands) {
-          for (let i = 0; i < perBand; i++) {
-            const size = 36 + rand() * 60;
-            list.push({
-              x: (i + 0.15 + rand() * 0.7) / perBand,
-              y: top + rand() * (bottom - top),
-              size,
-              rot: rand() * 360,
-              shape: Math.floor(rand() * SHAPES.length),
-            });
-          }
-        }
-        return list;
-      }
-
-      function holeMarkup(hole, w) {
-        const s = hole.size / 100;
-        const x = hole.x * w - hole.size / 2;
-        const y = hole.y - hole.size / 2;
-        return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${hole.rot.toFixed(0)} ${hole.size / 2} ${hole.size / 2}) scale(${s.toFixed(3)})">${SHAPES[hole.shape]()}</g>`;
-      }
-
-      function render() {
-        const w = Math.round(work.offsetWidth);
-        const h = Math.round(work.offsetHeight);
-        if (!holes.length || holes.h !== h || holes.w !== w) {
-          holes = layoutHoles(w, h);
-          holes.w = w; holes.h = h;
-        }
-        const radius = innerWidth < 700 ? 20 : 28;
-        const cut = [...holes, ...punched].map((hole) => holeMarkup(hole, w)).join('');
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">` +
-          `<defs><mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="${w}" height="${h}">` +
-          `<rect width="${w}" height="${h}" rx="${radius}" fill="#fff"/><g fill="#000">${cut}</g></mask></defs>` +
-          `<rect width="${w}" height="${h}" mask="url(#m)"/></svg>`;
-        const url = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
-        paper.style.webkitMaskImage = url;
-        paper.style.maskImage = url;
-      }
-
-      function shapeSvg(shape, size, rot) {
-        return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" style="transform: rotate(${rot}deg)"><g fill="${PAPER}">${SHAPES[shape]()}</g></svg>`;
-      }
-
-      // Click the paper (not a project) to punch a new hole; the piece falls away
-      work.addEventListener('click', (e) => {
-        if (e.target.closest('.project, a, button')) return;
-        const rect = work.getBoundingClientRect();
-        const hole = {
-          x: (e.clientX - rect.left) / rect.width,
-          y: e.clientY - rect.top,
-          size: 40 + Math.random() * 30,
-          rot: Math.random() * 360,
-          shape: Math.floor(Math.random() * SHAPES.length),
-        };
-        punched.push(hole);
-        render();
-        if (reduced) return;
-
-        const piece = document.createElement('div');
-        piece.className = 'piece';
-        piece.innerHTML = shapeSvg(hole.shape, hole.size, hole.rot);
-        piece.style.left = e.clientX - hole.size / 2 + 'px';
-        piece.style.top = e.clientY - hole.size / 2 + 'px';
-        document.body.appendChild(piece);
-        const drift = (Math.random() - 0.5) * 240;
-        piece.animate(
-          [
-            { transform: 'translate(0, 0) rotate(0deg)' },
-            { transform: `translate(${drift}px, ${innerHeight}px) rotate(${(Math.random() - 0.5) * 720}deg)` },
-          ],
-          { duration: 1600 + Math.random() * 600, easing: 'cubic-bezier(.45,0,.8,.6)' }
-        ).onfinish = () => piece.remove();
-      });
-
-      // A few pieces already lying on the sky in the footer
-      const rand = rng(23);
-      for (let i = 0; i < 9; i++) {
-        const size = 26 + rand() * 34;
-        const el = document.createElement('div');
-        el.innerHTML = shapeSvg(Math.floor(rand() * SHAPES.length), size, Math.round(rand() * 360));
-        const svg = el.firstChild;
-        svg.style.left = 4 + rand() * 88 + '%';
-        svg.style.top = 8 + rand() * 60 + '%';
-        fallen.appendChild(svg);
-      }
-
-      new ResizeObserver(render).observe(work);
-      render();
-    })();
-  </script>
-
-  <script type="module">
-    import * as THREE from 'three';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-    const canvas = document.getElementById('scene');
-    const hint = document.getElementById('hint');
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-    camera.position.set(0, 0, 10);
-
-    // The model uses an unlit baked texture, so it needs no lights.
-    const pivot = new THREE.Group(); // moved around the screen
-    const spinner = new THREE.Group(); // rotates in place
-    pivot.add(spinner);
-    scene.add(pivot);
-
-    // ---------- Name ring ----------
-    // "MARIO DIZ", once, printed on an open cylinder that circles the tomato.
-    // It spins the opposite way; its far side shows faintly through.
-    function nameTexture() {
-      // The canvas is as wide (relative to its height) as the ring is around,
-      // so the letters keep their proportions once wrapped.
-      const c = document.createElement('canvas');
-      c.width = 3200;
-      c.height = 128;
-      const g = c.getContext('2d');
-      g.fillStyle = '#fff';
-      g.font = '700 92px "Helvetica Neue", Arial, sans-serif';
-      g.textAlign = 'center';
-      g.textBaseline = 'middle';
-      g.fillText('MARIO DIZ', c.width / 2, c.height / 2 + 4);
-      const tex = new THREE.CanvasTexture(c);
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      return tex;
-    }
-
-    const ringTilt = new THREE.Group(); // fixed tilt so the ring reads as an ellipse
-    ringTilt.rotation.set(0.32, 0, -0.12);
-    const ring = new THREE.Group();     // spins
-    ringTilt.add(ring);
-    pivot.add(ringTilt);
-
-    const ringTex = nameTexture();
-    // Radius 0.6: just outside the tomato, whose body reaches 0.47 from its axis
-    const ringGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.15, 128, 1, true);
-    const ringBack = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
-      map: ringTex, side: THREE.BackSide, transparent: true, opacity: 0.35, depthWrite: false,
-    }));
-    const ringFront = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
-      map: ringTex, side: THREE.FrontSide, transparent: true, depthWrite: false,
-    }));
-    ringBack.renderOrder = 0;
-    ringFront.renderOrder = 2;
-    ring.add(ringBack, ringFront);
-
-    new GLTFLoader().load('/assets/tomato.glb', (gltf) => {
-      const model = gltf.scene;
-      // Center the model and normalize it to a height of 1 unit
-      const box = new THREE.Box3().setFromObject(model);
-      const size = box.getSize(new THREE.Vector3());
-      model.position.sub(box.getCenter(new THREE.Vector3()));
-      const holder = new THREE.Group();
-      holder.add(model);
-      holder.scale.setScalar(1 / Math.max(size.x, size.y, size.z));
-      holder.traverse((o) => { o.renderOrder = 1; });
-      spinner.add(holder);
-    });
-
-    // ---------- Layout ----------
-    // Hero: centered and large. Docked: small, in the top-left corner.
-    let width = 0, height = 0;
-
-    function resize() {
-      width = innerWidth;
-      height = innerHeight;
-      renderer.setSize(width, height, false);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-    }
-    addEventListener('resize', resize);
-    resize();
-
-    // World units visible per pixel at the z = 0 plane
-    function unitsPerPixel() {
-      const visibleHeight = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
-      return visibleHeight / height;
-    }
-
-    // The stem puts the model's center above the body: the body sits 9% of the
-    // tomato's size below it. Measured from renders on desktop and phone.
-    const BODY_OFFSET = 0.09;
-    const firstNavLink = document.querySelector('.nav-links a');
-
-    function layout(progress) {
-      const upp = unitsPerPixel();
-      const heroPx = Math.min(width, height) * 0.5; // tomato size in the hero
-      // Docked, the tomato is the logo at the left of the nav bar
-      const dockPx = width < 700 ? 36 : 44;        // tomato size when docked
-      const margin = width < 700 ? 14 : 24;
-
-      const sizePx = THREE.MathUtils.lerp(heroPx, dockPx, progress);
-      // Screen position of the tomato's center, in pixels from the top-left
-      const xPx = THREE.MathUtils.lerp(width / 2, margin + dockPx / 2, progress);
-      // Docked, the body's center lines up with the middle of the nav links
-      const r = firstNavLink.getBoundingClientRect();
-      const dockY = (r.top + r.bottom) / 2 - dockPx * BODY_OFFSET;
-      const yPx = THREE.MathUtils.lerp(height / 2, dockY, progress);
-
-      pivot.scale.setScalar(sizePx * upp);
-      pivot.position.set((xPx - width / 2) * upp, (height / 2 - yPx) * upp, 0);
-    }
-
-    // ---------- Animation ----------
-    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-    let shown = 0; // 0 = big in the center, 1 = docked in the nav
-    const DOCK_TIME = 0.7; // seconds for the trip between the two
-    const clock = new THREE.Clock();
-
-    function frame() {
-      const dt = Math.min(clock.getDelta(), 0.05);
-      const t = clock.elapsedTime;
-
-      // As soon as the page leaves the top, the tomato goes straight to the nav in
-      // one move (and back when the page returns to the top). It never parks halfway.
-      const target = scrollY > 4 ? 1 : 0;
-      const step = reduced ? 1 : dt / DOCK_TIME;
-      shown = target > shown ? Math.min(target, shown + step) : Math.max(target, shown - step);
-      layout(ease(shown));
-
-      // Keep spinning, with a gentle flying wobble
-      spinner.rotation.y += dt * (reduced ? 0.3 : 0.9);
-      ring.rotation.y -= dt * (reduced ? 0.2 : 0.55);
-
-      // The ring floats on its own rhythm and fades out as the tomato docks in the nav
-      const ringOpacity = Math.max(0, 1 - ease(shown) * 1.6);
-      ringFront.material.opacity = ringOpacity;
-      ringBack.material.opacity = ringOpacity * 0.35;
-      ringTilt.visible = ringOpacity > 0.01;
-      if (!reduced) ringTilt.position.y = Math.sin(t * 1.1 + 1.3) * 0.05;
-      if (!reduced) {
-        // Wobble while flying; settle down when docked so it stays level with the links
-        const calm = 1 - ease(shown);
-        spinner.rotation.x = Math.sin(t * 0.8) * 0.18 * calm;
-        spinner.rotation.z = Math.sin(t * 0.6) * 0.12 * calm;
-        spinner.position.y = Math.sin(t * 1.4) * 0.06 * calm;
-      }
-
-      hint.style.opacity = shown > 0.05 ? 0 : 0.85;
-      renderer.render(scene, camera);
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  </script>
+  <script type="module" src="/js/home-tomato.js"></script>
 </body>
 </html>

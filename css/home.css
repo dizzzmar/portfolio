@@ -1,0 +1,395 @@
+/* HOME — estilos de index.html.
+   Orden: base y cielo · barra de navegación · hero · papel verde · cards de proyecto · footer · móvil.
+   Los colores y tamaños importantes están aquí; busca la clase que ves en el HTML (por ejemplo .project-brand). */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  overflow-x: clip; /* que nada ensanche la página más allá de la pantalla */
+  color: #fff;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #8cc0ef;
+}
+
+/* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes */
+.sky {
+  position: fixed;
+  inset: -8%;
+  z-index: -1;
+  background:
+    url("/assets/images/sky.webp") center / cover,
+    linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
+  animation: drift 40s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Grano de película: se queda quieto encima del cielo en movimiento */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url("/assets/images/grain.png") repeat;
+  background-size: 128px 128px;
+  mix-blend-mode: overlay;
+  opacity: 0.32;
+}
+
+@keyframes drift {
+  0%   { transform: translate(-3%, 1%) scale(1); }
+  50%  { transform: translate(1%, -1.5%) scale(1.04); }
+  100% { transform: translate(3%, 1%) scale(1.02); }
+}
+
+/* ---------- Barra de navegación ---------- */
+:root { --nav-h: 64px; }
+
+/* Barra superior sin fondo; el tomate, ya acoplado, hace de logo */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9; /* por debajo del lienzo del tomate, para que el tomate quede encima de la barra */
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  pointer-events: none;
+}
+
+.nav > * { pointer-events: auto; }
+
+/* Zona clicable invisible sobre el tomate acoplado */
+.nav-logo {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.nav-logo:focus-visible,
+.nav-links a:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  margin-left: auto;
+  list-style: none;
+}
+
+.nav-links a {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 15px;
+  text-decoration: none;
+  text-shadow: 0 1px 8px rgba(0, 20, 40, 0.25);
+  transition: color 0.2s, text-shadow 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a[aria-current="true"] { color: #fff; }
+
+/* Un enlace que pasa por encima de una card blanca se oscurece */
+.nav-links a.on-light { color: rgba(17, 17, 17, 0.6); text-shadow: none; }
+.nav-links a.on-light:hover,
+.nav-links a.on-light[aria-current="true"] { color: #111; }
+
+/* Al saltar a un ancla (#work…) deja espacio para que no quede tapada por la barra */
+[id] { scroll-margin-top: calc(var(--nav-h) + 12px); }
+
+/* El lienzo del tomate cubre toda la pantalla y deja pasar los clics */
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ---------- Página: hero ---------- */
+.hero {
+  height: 100vh;
+  height: 100dvh;
+  position: relative;
+}
+
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  transition: opacity 0.3s;
+}
+
+.scroll-hint::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 32px;
+  margin: 10px auto 0;
+  background: currentColor;
+  animation: drip 1.6s ease-in-out infinite;
+  transform-origin: top;
+}
+
+@keyframes drip {
+  0%   { transform: scaleY(0); }
+  50%  { transform: scaleY(1); }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* ---------- Papel verde (sección "Selected work") ---------- */
+/* La sección es una hoja de papel verde que sube por encima del cielo.
+   Sus esquinas redondeadas y los agujeros salen de una máscara que crea js/home-paper.js. */
+.work {
+  position: relative;
+  color: #111;
+  padding: 260px 10px 240px;
+}
+
+.paper-shadow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  filter: drop-shadow(2px 6px 6px rgba(0, 25, 10, 0.45));
+}
+
+.paper {
+  position: absolute;
+  inset: 0;
+  background: #2c4e37;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* El mismo grano que el cielo, sobre el verde liso */
+.paper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/assets/images/grain.png") repeat;
+  background-size: 128px 128px;
+  mix-blend-mode: overlay;
+  opacity: 0.3;
+}
+
+.work-inner { position: relative; }
+
+.punch-hint {
+  position: absolute;
+  top: 196px;
+  right: 30px;
+  color: #cfe0cf;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* Un trozo recortado que cae de la página */
+.piece {
+  position: fixed;
+  z-index: 5;
+  pointer-events: none;
+  filter: drop-shadow(1px 3px 3px rgba(0, 25, 10, 0.35));
+}
+
+.work-inner { max-width: 1800px; margin: 0 auto; }
+
+.work-intro { color: #e9efe4; }
+
+.work-intro {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 20px 24px;
+  gap: 20px;
+}
+
+.work h1, .work-intro p {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.project {
+  min-width: 0;
+  padding: 12px;
+  background: #fff;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.project-link { display: block; color: #171717; text-decoration: none; }
+.project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
+.project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+
+/* ---------- Cards de proyecto ---------- */
+/* Texto de la card: la marca en serif pequeño encima del nombre del proyecto en sans grande,
+   y debajo las etiquetas del tipo de proyecto.
+   El texto comparte bordes izquierdo y derecho con la imagen, y el margen de la card es igual
+   por todos los lados. Los espacios están medidos de tinta a tinta (alineación óptica). */
+.project-caption { display: grid; gap: 4px; padding: 0 0 18px; }
+
+.project-brand {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(17px, 1.5vw, 24px);
+  letter-spacing: -0.035em;
+  line-height: 1;
+  margin-top: -0.18em; /* la caja de texto deja un hueco sobre las mayúsculas; lo recortamos para que la tinta quede a la distancia correcta */
+  text-transform: uppercase;
+}
+
+.project-caption h2 {
+  font-size: clamp(40px, 4.6vw, 78px);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 0.88;
+  margin-left: -0.045em; /* compensa el hueco lateral de la letra para que la tinta se alinee con la marca y las etiquetas */
+  text-transform: uppercase;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  list-style: none;
+}
+
+.project-tags li {
+  padding: 5px 11px 4px;
+  border: 1px solid #171717;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* El año, si lo hay, va al final de la fila */
+.project-tags .project-year {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+  font-weight: 400;
+  transform: translateY(2.5px); /* centra el año con el texto de las etiquetas */
+  font-variant-numeric: lining-nums; /* los números por defecto de Georgia bajan de la línea base */
+  letter-spacing: -0.02em;
+}
+
+.project-media {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #f2f2ef;
+  border-radius: 18px;
+}
+
+.project-media img,
+.project-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-placeholder {
+  color: #8b8b83;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.room-entry {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 270px;
+  margin: 80px 10px 0;
+  padding: 28px;
+  border: 1px solid rgba(233, 239, 228, 0.7);
+  color: #e9efe4;
+  text-decoration: none;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.room-entry span { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.room-entry strong { display: block; margin-top: 12px; font-size: clamp(42px, 8vw, 120px); line-height: .85; font-weight: 400; letter-spacing: -.07em; }
+.room-entry .room-arrow { font-size: clamp(28px, 5vw, 64px); line-height: 1; }
+.room-entry:hover, .room-entry:focus-visible { background: rgba(233, 239, 228, .08); box-shadow: 0 0 0 3px #91c9ff, 0 0 25px #62b9ff77; outline: none; }
+
+/* ---------- Footer: acaba el papel y vuelve a verse el cielo ---------- */
+.footer {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: flex-end;
+  padding: 120px 30px 24px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Trozos recortados del papel, tirados sobre el cielo */
+.fallen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fallen svg {
+  position: absolute;
+  filter: drop-shadow(1px 3px 3px rgba(0, 25, 10, 0.3));
+}
+
+@media (max-width: 700px) {
+  .work { padding: 220px 8px 200px; }
+  .punch-hint { top: 168px; right: 20px; }
+  :root { --nav-h: 56px; }
+  .nav { gap: 10px; padding: 0 14px; }
+  .nav-logo { width: 36px; height: 36px; }
+  .nav-links { gap: 14px; }
+  .nav-links a { font-size: 13px; }
+  .work-intro { padding: 0 12px 20px; }
+  .project-grid { grid-template-columns: 1fr; gap: 8px; }
+  .project { border-radius: 20px; }
+  .project-link { display: block; color: #171717; text-decoration: none; }
+.project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
+.project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+
+  .project-caption h2 { font-size: clamp(40px, 12vw, 60px); }
+  .project-brand { font-size: 18px; }
+  .project-media { border-radius: 14px; }
+  .room-entry { min-height: 210px; margin: 64px 8px 0; padding: 20px; }
+  .footer { padding: 96px 20px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .scroll-hint::after, .sky { animation: none; }
+}

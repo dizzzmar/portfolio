@@ -1,170 +1,17 @@
 <!doctype html>
+<!--
+  404  ·  Página "no encontrada" (GitHub Pages la muestra cuando una URL no existe).
+  Estilos en /css/not-found.css, tomate 3D en /js/not-found-tomato.js.
+  Para cambiar el texto: edita <p class="message"> más abajo.
+-->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>404 — Page not found · dizmar</title>
   <meta name="robots" content="noindex">
-  <link rel="icon" href="/assets/tomato.webp" type="image/webp">
-  <style>
-    /* Cross-fade between pages of the site, where the browser supports it */
-    @view-transition { navigation: auto; }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body { height: 100%; }
-
-    body {
-      overflow: hidden;
-      color: #fff;
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      background-color: #3f7fd6;
-    }
-
-    /* Same drifting sky as the homepage, oversized so its edges never show */
-    .sky {
-      position: fixed;
-      inset: -8%;
-      z-index: -1;
-      background:
-        url("/assets/sky.webp") center / cover,
-        linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
-      animation: drift 40s ease-in-out infinite alternate;
-      will-change: transform;
-    }
-
-    /* Film grain: stays still on top of the moving sky */
-    .grain {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background: url("/assets/grain.png") repeat;
-      background-size: 128px 128px;
-      mix-blend-mode: overlay;
-      opacity: 0.32;
-    }
-
-    @keyframes drift {
-      0%   { transform: translate(-3%, 1%) scale(1); }
-      50%  { transform: translate(1%, -1.5%) scale(1.04); }
-      100% { transform: translate(3%, 1%) scale(1.02); }
-    }
-
-    /* ---------- Page ---------- */
-    .stage {
-      height: 100vh;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 28px;
-      padding: 24px 16px;
-      text-align: center;
-    }
-
-    /* "4 [tomato] 4": the tomato stands in for the 0 */
-    .code {
-      display: flex;
-      align-items: center;
-      font-size: clamp(110px, min(32vw, 46vh), 440px); /* also fits short, wide screens */
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: -0.04em;
-      text-shadow: 0 6px 30px rgba(0, 30, 80, 0.25);
-      margin-bottom: 0.08em; /* room for the tomato, which hangs below the 4s */
-      user-select: none;
-    }
-
-    .zero {
-      position: relative;
-      z-index: 1;
-      width: 1.2em;  /* bigger than the 4s, and overlapping them */
-      height: 1.2em;
-      margin: 0 -0.2em;
-    }
-
-    /* The canvas is larger than the slot so the wobble never clips */
-    .zero canvas,
-    .zero img {
-      position: absolute;
-      inset: -20%;
-      width: 140%;
-      height: 140%;
-    }
-
-    .zero img {
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      filter: drop-shadow(0 12px 24px rgba(0, 30, 80, 0.3));
-      transition: opacity 0.4s;
-    }
-
-    .zero.ready img { opacity: 0; }
-
-    .message {
-      max-width: 40ch;
-      font-size: clamp(16px, 1.6vw, 20px);
-      line-height: 1.4;
-      text-shadow: 0 1px 10px rgba(0, 30, 80, 0.3);
-    }
-
-    .home {
-      padding: 12px 22px;
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      border-radius: 999px;
-      color: #fff;
-      font-size: 15px;
-      text-decoration: none;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .home:hover {
-      background: #fff;
-      color: #1f4f9a;
-    }
-
-    .home:focus-visible {
-      outline: 2px solid #fff;
-      outline-offset: 3px;
-    }
-
-    /* ---------- Entrance ---------- */
-    /* The tomato flies in from where it was on the previous page (set by the script
-       below), or pops in if there's no previous page; then the rest follows. */
-    .play .zero {
-      animation: tomato-in 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-    }
-
-    @keyframes tomato-in {
-      from {
-        opacity: var(--from-o, 0);
-        transform: translate(var(--from-x, 0), var(--from-y, 30px)) scale(var(--from-s, 0.4)) rotate(-20deg);
-      }
-    }
-
-    .play .digit,
-    .play .message,
-    .play .home {
-      animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-    }
-
-    .play .digit:first-child { animation-delay: 0.45s; }
-    .play .digit:last-child { animation-delay: 0.55s; }
-    .play .message { animation-delay: 0.75s; }
-    .play .home { animation-delay: 0.85s; }
-
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(24px); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .sky { animation: none; }
-    }
-  </style>
+  <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
+  <link rel="stylesheet" href="/css/not-found.css">
   <script type="importmap">
     {
       "imports": {
@@ -176,10 +23,7 @@
 </head>
 <body>
   <div class="sky" aria-hidden="true"></div>
-  <script>
-    // Start the 80s drift cycle from the clock, so the sky is in the same place on every page
-    document.querySelector('.sky').style.animationDelay = -(Date.now() / 1000 % 80) + 's';
-  </script>
+  <script src="/js/not-found-sky.js"></script>
   <div class="grain" aria-hidden="true"></div>
 
   <main class="stage">
@@ -187,7 +31,7 @@
       <span class="digit" aria-hidden="true">4</span>
       <span class="zero" id="zero" aria-hidden="true">
         <!-- Shown until the 3D tomato is ready, or if WebGL isn't available -->
-        <img src="/assets/tomato.webp" alt="">
+        <img src="/assets/images/tomato.webp" alt="">
         <canvas id="tomato"></canvas>
       </span>
       <span class="digit" aria-hidden="true">4</span>
@@ -196,84 +40,8 @@
     <a class="home" href="/">Back to home</a>
   </main>
 
-  <script>
-    // Entrance: runs before the first paint so nothing flashes in its final place.
-    (() => {
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      const slot = document.getElementById('zero');
-      let from = null;
-      try {
-        from = JSON.parse(sessionStorage.getItem('tomato-from'));
-        sessionStorage.removeItem('tomato-from');
-      } catch (e) {}
-      if (from && Date.now() - from.t < 5000) {
-        // Start exactly where (and as big as) the tomato was on the page we came from
-        const r = slot.getBoundingClientRect();
-        slot.style.setProperty('--from-x', from.x - (r.left + r.width / 2) + 'px');
-        slot.style.setProperty('--from-y', from.y - (r.top + r.height / 2) + 'px');
-        slot.style.setProperty('--from-s', from.size / r.height);
-        slot.style.setProperty('--from-o', 1);
-      }
-      document.documentElement.classList.add('play');
-    })();
-  </script>
+  <script src="/js/not-found-entrance.js"></script>
 
-  <script type="module">
-    import * as THREE from 'three';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-    const slot = document.getElementById('zero');
-    const canvas = document.getElementById('tomato');
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-    // The canvas spans 1.4x the slot; frame the camera so a 1-unit tomato fills the slot
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-    camera.position.z = 0.7 / Math.tan(THREE.MathUtils.degToRad(15));
-
-    const spinner = new THREE.Group();
-    scene.add(spinner);
-
-    new GLTFLoader().load('/assets/tomato.glb', (gltf) => {
-      const model = gltf.scene;
-      // Center the model and normalize it to 1 unit (the model is unlit, so no lights)
-      const box = new THREE.Box3().setFromObject(model);
-      const size = box.getSize(new THREE.Vector3());
-      model.position.sub(box.getCenter(new THREE.Vector3()));
-      const holder = new THREE.Group();
-      holder.add(model);
-      holder.scale.setScalar(1 / Math.max(size.x, size.y, size.z));
-      spinner.add(holder);
-      slot.classList.add('ready');
-    });
-
-    function resize() {
-      const { width, height } = canvas.getBoundingClientRect();
-      renderer.setSize(width, height, false);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-    }
-    new ResizeObserver(resize).observe(slot);
-    resize();
-
-    const clock = new THREE.Clock();
-    function frame() {
-      const dt = Math.min(clock.getDelta(), 0.05);
-      const t = clock.elapsedTime;
-      spinner.rotation.y += dt * (reduced ? 0.3 : 0.9);
-      if (!reduced) {
-        spinner.rotation.x = Math.sin(t * 0.8) * 0.15;
-        spinner.rotation.z = Math.sin(t * 0.6) * 0.1;
-        spinner.position.y = Math.sin(t * 1.4) * 0.04;
-      }
-      renderer.render(scene, camera);
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  </script>
+  <script type="module" src="/js/not-found-tomato.js"></script>
 </body>
 </html>

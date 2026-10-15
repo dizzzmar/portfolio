@@ -1,0 +1,23 @@
+<!--
+  CARD DE PROYECTO PARA LA HOME
+  Copia todo este bloque dentro de <div class="project-grid"> en index.html
+  (sección "LISTA DE PROYECTOS"). El orden en el código = el orden en la página.
+
+  EDITA: marca, nombre, etiquetas, año, ruta de la imagen, id y enlace.
+  Tamaño recomendado de la imagen de la card: cuadrada o 16:9, 800 px de ancho (.webp).
+-->
+<article class="project" id="nombre-del-proyecto">  <!-- EDITA: id (el mismo que pongas en el botón × de la página del proyecto) -->
+  <a class="project-link" href="/project/nombre-del-proyecto/">  <!-- EDITA: ruta de la página del proyecto. Si aún no tiene página, borra este <a> y su </a> -->
+    <header class="project-caption">
+      <p class="project-brand">Marca</p>                         <!-- marca / cliente -->
+      <h2>Nombre del proyecto</h2>                               <!-- nombre del proyecto -->
+      <ul class="project-tags" aria-label="Project type">
+        <li>Tipo de proyecto</li>                                <!-- etiquetas; copia la línea para añadir más -->
+        <li class="project-year">2025</li>                       <!-- año (opcional) -->
+      </ul>
+    </header>
+    <div class="project-media">
+      <img src="/assets/projects/nombre-del-proyecto/imagen-card.webp" width="800" height="800" loading="lazy" decoding="async" alt="EDITA: descripción de la imagen">
+    </div>
+  </a>
+</article>
