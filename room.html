@@ -44,11 +44,8 @@
     .sticker-face { position: relative; display: grid; justify-items: center; gap: .25em; padding: .2em 1em .75em; background: #ddfb3c; color: #111; border: .3em solid #fbf6e8; border-radius: .25em; overflow: hidden; text-transform: uppercase; white-space: nowrap; font-family: "Anton", Impact, "Arial Narrow Bold", sans-serif; }
     /* worn, printed look: the site's grain multiplied over the ink */
     .sticker-face::after { content: ""; position: absolute; inset: 0; background: url("/assets/grain.png") repeat; background-size: 128px 128px; mix-blend-mode: multiply; opacity: .28; pointer-events: none; }
-    /* One huge condensed line; the record stands in for the O, like the tulip for the I */
-    .sticker-big { display: flex; align-items: center; font-size: 5.6em; line-height: 1.12; letter-spacing: -.005em; }
-    .sticker-o { display: block; width: .74em; height: .74em; margin: 0 .015em; transform: translateY(.02em); }
-    .sticker-o .spin { transform-box: fill-box; transform-origin: center; animation: spin 2.4s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* One huge condensed line: the song and the artist */
+    .sticker-big { font-size: 4.2em; line-height: 1.12; letter-spacing: -.005em; }
     .sticker-box { font-size: 1.35em; letter-spacing: .025em; color: #d6261c; border: .14em solid #d6261c; padding: .12em .7em .08em; }
     /* The corner that folds back while peeling: the sticker's paper back, shaded at the fold */
     .sticker-flap { position: absolute; right: 0; bottom: 0; width: 0; height: 0; background: linear-gradient(to bottom right, #fffaf0 0%, #ece3cc 38%, #c4b99f 49.5%, transparent 50%); pointer-events: none; }
@@ -65,7 +62,7 @@
       .object-nav { position: fixed; left: 14px; right: 14px; bottom: 16px; margin: 0; flex-direction: row; flex-wrap: wrap; gap: 4px 16px; }
       .object-nav button { font-size: 20px; }
       .label, .sticker-slot.floating { bottom: 96px; }
-      .sticker-slot.floating { font-size: 11px; }
+      .sticker-slot.floating { font-size: 9.5px; }
       .detail { bottom: 96px; }
     }
     @media (max-width: 700px) {
@@ -75,7 +72,7 @@
       .nav-links { gap: 14px; }
       .nav-links a { font-size: 13px; }
     }
-    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } .sticker-o .spin { animation: none; } }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
   </style>
   <script type="importmap">
     {"imports": {
@@ -231,29 +228,12 @@
     // ---------- Now-playing bumper sticker ----------
     // A vintage bumper sticker with the song, artist and album. Hovering the record
     // slaps it on; moving away peels it off from the bottom-right corner.
-    // The record that stands in for the O of "NOW": it spins; its shine doesn't
-    const RECORD_SVG = `<svg class="sticker-o" viewBox="0 0 100 100" aria-hidden="true">
-      <g class="spin">
-        <circle cx="50" cy="50" r="49" fill="#111"/>
-        <g fill="none" stroke="#3a3a3a" stroke-width="1.2">
-          <circle cx="50" cy="50" r="42"/><circle cx="50" cy="50" r="36"/><circle cx="50" cy="50" r="30"/>
-        </g>
-        <circle cx="50" cy="50" r="19" fill="#d6261c"/>
-        <path d="M50 59.5 C42 53.5 39 49 42 45 C44.5 42 48 43 50 46 C52 43 55.5 42 58 45 C61 49 58 53.5 50 59.5 Z" fill="#ddfb3c"/>
-        <circle cx="50" cy="50" r="2" fill="#111"/>
-      </g>
-      <path d="M20 32 A35 35 0 0 1 40 16" stroke="#ffffff59" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-    </svg>`;
     function stickerCard(track) {
       const el = (tag, cls, text) => Object.assign(document.createElement(tag), { className: cls, textContent: text || '' });
       const sticker = el('div', 'sticker');
       const face = el('div', 'sticker-face');
-      const big = el('div', 'sticker-big');
-      big.setAttribute('aria-label', 'Now playing');
-      big.append('N');
-      big.insertAdjacentHTML('beforeend', RECORD_SVG);
-      big.append('W playing');
-      const details = [track.title, track.artist, track.album].filter(Boolean).join('  —  ');
+      const big = el('div', 'sticker-big', track.title + ' by ' + track.artist);
+      const details = 'Now playing' + (track.album ? '  —  from ' + track.album : '');
       face.append(big, el('div', 'sticker-box', details));
       sticker.append(face, el('div', 'sticker-flap'));
       return sticker;
