@@ -612,6 +612,46 @@
     pivot.add(spinner);
     scene.add(pivot);
 
+    // ---------- Name ring ----------
+    // "MARIO DIZ", once, printed on an open cylinder that circles the tomato.
+    // It spins the opposite way; its far side shows faintly through.
+    function nameTexture() {
+      // The canvas is as wide (relative to its height) as the ring is around,
+      // so the letters keep their proportions once wrapped.
+      const c = document.createElement('canvas');
+      c.width = 3200;
+      c.height = 128;
+      const g = c.getContext('2d');
+      g.fillStyle = '#fff';
+      g.font = '700 92px "Helvetica Neue", Arial, sans-serif';
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      g.fillText('MARIO DIZ', c.width / 2, c.height / 2 + 4);
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      return tex;
+    }
+
+    const ringTilt = new THREE.Group(); // fixed tilt so the ring reads as an ellipse
+    ringTilt.rotation.set(0.32, 0, -0.12);
+    const ring = new THREE.Group();     // spins
+    ringTilt.add(ring);
+    pivot.add(ringTilt);
+
+    const ringTex = nameTexture();
+    // Radius 0.6: just outside the tomato, whose body reaches 0.47 from its axis
+    const ringGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.15, 128, 1, true);
+    const ringBack = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
+      map: ringTex, side: THREE.BackSide, transparent: true, opacity: 0.35, depthWrite: false,
+    }));
+    const ringFront = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
+      map: ringTex, side: THREE.FrontSide, transparent: true, depthWrite: false,
+    }));
+    ringBack.renderOrder = 0;
+    ringFront.renderOrder = 2;
+    ring.add(ringBack, ringFront);
+
     new GLTFLoader().load('/assets/tomato.glb', (gltf) => {
       const model = gltf.scene;
       // Center the model and normalize it to a height of 1 unit
@@ -621,6 +661,7 @@
       const holder = new THREE.Group();
       holder.add(model);
       holder.scale.setScalar(1 / Math.max(size.x, size.y, size.z));
+      holder.traverse((o) => { o.renderOrder = 1; });
       spinner.add(holder);
     });
 
@@ -677,6 +718,14 @@
 
       // Keep spinning, with a gentle flying wobble
       spinner.rotation.y += dt * (reduced ? 0.3 : 0.9);
+      ring.rotation.y -= dt * (reduced ? 0.2 : 0.55);
+
+      // The ring floats on its own rhythm and fades out as the tomato docks in the nav
+      const ringOpacity = Math.max(0, 1 - ease(shown) * 1.6);
+      ringFront.material.opacity = ringOpacity;
+      ringBack.material.opacity = ringOpacity * 0.35;
+      ringTilt.visible = ringOpacity > 0.01;
+      if (!reduced) ringTilt.position.y = Math.sin(t * 1.1 + 1.3) * 0.05;
       if (!reduced) {
         spinner.rotation.x = Math.sin(t * 0.8) * 0.18;
         spinner.rotation.z = Math.sin(t * 0.6) * 0.12;
