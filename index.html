@@ -243,6 +243,10 @@
       overflow: hidden;
     }
 
+    .project-link { display: block; color: #171717; text-decoration: none; }
+    .project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
+    .project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+
     .project-caption { padding: 0 20px 24px; }
 
     .project-caption h2 {
@@ -338,7 +342,11 @@
       .work-intro { padding: 0 12px 20px; }
       .project-grid { grid-template-columns: 1fr; gap: 8px; }
       .project { padding-top: 24px; border-radius: 20px; }
-      .project-caption { padding: 0 12px 20px; }
+      .project-link { display: block; color: #171717; text-decoration: none; }
+    .project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
+    .project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+
+    .project-caption { padding: 0 12px 20px; }
       .project-caption h2, .project-description { font-size: clamp(28px, 7vw, 44px); }
       .project-media { border-radius: 14px; }
       .room-entry { min-height: 210px; margin: 64px 8px 0; padding: 20px; }
@@ -398,12 +406,14 @@
               <video src="/assets/lexus-thumb.mp4" poster="/assets/lexus-thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video>
             </div>
           </article>
-          <article class="project">
-            <header class="project-caption">
-              <h2>Project title</h2>
-              <p class="project-description">Short project description</p>
-            </header>
-            <div class="project-media"><span class="image-placeholder">Project image — 02</span></div>
+          <article class="project" id="soap-and-glory">
+            <a class="project-link" href="/project/soap-and-glory-vanilla/">
+              <header class="project-caption">
+                <h2>Soap &amp; Glory</h2>
+                <p class="project-description">Vanilla</p>
+              </header>
+              <div class="project-media"><img src="/assets/projects/soap-and-glory-vanilla/sg1-800.webp" width="800" height="800" loading="lazy" decoding="async" alt="Soap &amp; Glory Vanilla collection on golden petals"></div>
+            </a>
           </article>
           <article class="project">
             <header class="project-caption">

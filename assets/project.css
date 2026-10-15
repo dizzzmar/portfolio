@@ -1,0 +1,30 @@
+* { box-sizing: border-box; }
+:root { color-scheme: light; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: #faf9f6; color: #20221d; font-family: 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-underline-offset: 4px; }
+a:focus-visible { outline: 3px solid #175cff; outline-offset: 5px; }
+.close-project { position: fixed; z-index: 2; top: 20px; right: 20px; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #eeede8; text-decoration: none; font-size: 30px; line-height: 1; transition: background .2s; }
+.close-project:hover { background: #deded6; }
+.project-page { width: min(840px, calc(100% - 160px)); margin: 24px auto 0; }
+figure { margin: 0; }
+.project-image { display: block; width: 100%; height: auto; border-radius: 18px; background: #eee9df; }
+.project-intro { padding: 28px 24px 64px; }
+.project-intro h1 { margin: 0; font-size: clamp(28px, 4vw, 40px); line-height: .98; letter-spacing: -.055em; text-transform: uppercase; }
+.project-subtitle { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(28px, 4vw, 40px); line-height: 1.05; letter-spacing: -.045em; text-transform: uppercase; }
+.project-description { margin: 24px 0 0; max-width: 61ch; font-size: 17px; line-height: 1.6; }
+.project-gallery { display: grid; gap: 20px; }
+.image-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+.project-end { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 60px 24px; font-size: 14px; }
+.site-footer { display: flex; justify-content: center; padding: 56px 24px; background: #91bce0 url('/assets/sky.webp') center 65% / cover; color: #173a31; font-size: 13px; }
+@media (max-width: 640px) {
+ .close-project { top: 12px; right: 12px; width: 44px; height: 44px; }
+ .project-page { width: calc(100% - 24px); margin-top: 72px; }
+ .project-intro { padding: 24px 8px 40px; }
+ .project-description { font-size: 16px; }
+ .project-gallery, .image-pair { gap: 12px; }
+ .image-pair { grid-template-columns: 1fr; }
+ .project-image { border-radius: 12px; }
+ .project-end { padding: 40px 8px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .close-project { transition: none; } }
