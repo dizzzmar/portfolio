@@ -6,9 +6,6 @@
   <title>dizmar</title>
   <link rel="icon" href="/assets/tomato.webp" type="image/webp">
   <style>
-    /* Cross-fade between pages of the site, where the browser supports it */
-    @view-transition { navigation: auto; }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html { scroll-behavior: smooth; }
@@ -288,6 +285,24 @@
       letter-spacing: 0.05em;
     }
 
+    .room-entry {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      min-height: 270px;
+      margin: 80px 10px 0;
+      padding: 28px;
+      border: 1px solid rgba(233, 239, 228, 0.7);
+      color: #e9efe4;
+      text-decoration: none;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .room-entry span { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+    .room-entry strong { display: block; margin-top: 12px; font-size: clamp(42px, 8vw, 120px); line-height: .85; font-weight: 400; letter-spacing: -.07em; }
+    .room-entry .room-arrow { font-size: clamp(28px, 5vw, 64px); line-height: 1; }
+    .room-entry:hover, .room-entry:focus-visible { background: rgba(233, 239, 228, .08); box-shadow: 0 0 0 3px #91c9ff, 0 0 25px #62b9ff77; outline: none; }
+
     /* ---------- Footer: the paper ends and the sky shows again ---------- */
     .footer {
       position: relative;
@@ -326,6 +341,7 @@
       .project-caption { padding: 0 12px 20px; }
       .project-caption h2, .project-description { font-size: clamp(28px, 7vw, 44px); }
       .project-media { border-radius: 14px; }
+      .room-entry { min-height: 210px; margin: 64px 8px 0; padding: 20px; }
       .footer { padding: 96px 20px 16px; }
     }
 
@@ -345,10 +361,6 @@
 </head>
 <body>
   <div class="sky" aria-hidden="true"></div>
-  <script>
-    // Start the 80s drift cycle from the clock, so the sky is in the same place on every page
-    document.querySelector('.sky').style.animationDelay = -(Date.now() / 1000 % 80) + 's';
-  </script>
   <div class="grain" aria-hidden="true"></div>
   <canvas id="scene" aria-hidden="true"></canvas>
 
@@ -356,9 +368,9 @@
     <a class="nav-logo" href="#top" aria-label="Back to top"></a>
     <ul class="nav-links">
       <li><a href="#first-project" data-section="work">Work</a></li>
-      <li><a href="/about">About</a></li>
-      <li><a href="/contact">Contact</a></li>
-      <li><a href="/room">Room</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="/room.html">Room</a></li>
     </ul>
   </nav>
 
@@ -409,6 +421,10 @@
             <div class="project-media"><span class="image-placeholder">Project image — 04</span></div>
           </article>
         </div>
+        <a class="room-entry" href="/room.html" aria-label="Explore the room: personal interests">
+          <div><span>Personal interests</span><strong>The room</strong></div>
+          <span class="room-arrow" aria-hidden="true">↗</span>
+        </a>
       </div>
     </section>
   </main>
@@ -692,16 +708,6 @@
       return visibleHeight / height;
     }
 
-    // Where the tomato is on screen, so the next page can fly it in from here
-    let tomatoOnScreen = null;
-    addEventListener('click', (e) => {
-      const link = e.target.closest('a[href^="/"]');
-      if (!link || !tomatoOnScreen) return;
-      try {
-        sessionStorage.setItem('tomato-from', JSON.stringify({ ...tomatoOnScreen, t: Date.now() }));
-      } catch (err) {}
-    });
-
     function layout(progress) {
       const upp = unitsPerPixel();
       const heroPx = Math.min(width, height) * 0.5; // tomato size in the hero
@@ -717,7 +723,6 @@
 
       pivot.scale.setScalar(sizePx * upp);
       pivot.position.set((xPx - width / 2) * upp, (height / 2 - yPx) * upp, 0);
-      tomatoOnScreen = { x: xPx, y: yPx, size: sizePx };
     }
 
     // ---------- Animation ----------
