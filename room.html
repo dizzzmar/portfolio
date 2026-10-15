@@ -68,7 +68,7 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     // AgX is Blender's default view transform, so colours roll off like the Blender render
     renderer.toneMapping = THREE.AgXToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -114,7 +114,8 @@
     outline.hiddenEdgeColor.set('#7a4a2a');
     composer.addPass(outline);
     // Soft glow around the brightest things (the lamp), like Blender's bloom
-    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.55, 0.6, 0.82);
+    // High threshold: only the emissive lamp is bright enough to bloom, not the lit wall
+    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.35, 0.4, 2.2);
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
 
@@ -213,8 +214,8 @@
           tomato = object;
           object.material = object.material.clone();
           object.material.color.set('#df4532');
-          object.material.emissive.set('#ff7a3d');
-          object.material.emissiveIntensity = 2.6;
+          object.material.emissive.set('#ff4a1c');
+          object.material.emissiveIntensity = 1.1; // strong enough to glow, low enough to stay red
           object.castShadow = false; // the light sits inside it
           object.material.roughness = .42;
         }
@@ -223,7 +224,7 @@
       if (tomato) {
         const center = new THREE.Box3().setFromObject(tomato).getCenter(new THREE.Vector3());
         // The lamp lights the wall and shelf in a warm pool, like the Blender render
-        const lamp = new THREE.PointLight(0xff9a5c, 9, 0, 2);
+        const lamp = new THREE.PointLight(0xff9a5c, 3, 0, 2);
         lamp.position.copy(center).add(new THREE.Vector3(0, .02, .12));
         lamp.castShadow = true;
         lamp.shadow.mapSize.set(1024, 1024);
