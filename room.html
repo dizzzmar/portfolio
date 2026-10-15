@@ -79,9 +79,10 @@
     const reflections = new THREE.PMREMGenerator(renderer);
     scene.environment = reflections.fromScene(new RoomEnvironment(renderer)).texture;
     reflections.dispose();
-    scene.environmentIntensity = 0.28;
-    scene.add(new THREE.HemisphereLight(0xffe2c4, 0x2a1a12, 0.55));
-    const key = new THREE.DirectionalLight(0xffc89a, 0.9);
+    // three 0.160 has no scene.environmentIntensity, so the reflections are dimmed per material on load
+    const ENV_INTENSITY = 0.06;
+    scene.add(new THREE.HemisphereLight(0xffe2c4, 0x2a1a12, 0.13));
+    const key = new THREE.DirectionalLight(0xffc89a, 0.25);
     key.position.set(-4, 5, 6);
     key.castShadow = true;
     key.shadow.mapSize.set(2048, 2048);
@@ -203,11 +204,13 @@
     new GLTFLoader().load('/assets/room/shelf.glb', gltf => {
       const model = gltf.scene;
       scene.add(model);
+      model.updateMatrixWorld(true); // world positions are needed below to place the lamp light
       let tomato = null;
       model.traverse(object => {
         if (!object.isMesh) return;
         object.castShadow = true;
         object.receiveShadow = true;
+        for (const material of [].concat(object.material)) material.envMapIntensity = ENV_INTENSITY;
         if (/^footwear\b/.test(words(object.name))) { object.visible = false; return; }
         if (/^room\b/.test(words(object.name))) return;
         if (/^lamp tomato diffuser\b/.test(words(object.name))) {
@@ -224,7 +227,7 @@
       if (tomato) {
         const center = new THREE.Box3().setFromObject(tomato).getCenter(new THREE.Vector3());
         // The lamp lights the wall and shelf in a warm pool, like the Blender render
-        const lamp = new THREE.PointLight(0xff9a5c, 3, 0, 2);
+        const lamp = new THREE.PointLight(0xff9a5c, 3.8, 0, 2);
         lamp.position.copy(center).add(new THREE.Vector3(0, .02, .12));
         lamp.castShadow = true;
         lamp.shadow.mapSize.set(1024, 1024);
