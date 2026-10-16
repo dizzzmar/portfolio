@@ -1,7 +1,6 @@
 // HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con la cartela "Mario Diz"
 // y viaja a la esquina superior izquierda (logo de la barra) al hacer scroll.
-// En la barra, al pasar el ratón por encima sigue al cursor con un muelle: se desplaza, gira y madura
-// (más verde hacia la izquierda, rojo intenso hacia la derecha).
+// En la barra solo gira; para que pese poco, el lienzo se encoge a un recuadro alrededor del tomate.
 // Para cambiar el texto del anillo sustituye la imagen assets/images/name-cartela.webp
 
 import * as THREE from 'three';
@@ -21,10 +20,8 @@ camera.position.set(0, 0, 10);
 
 // The model uses an unlit baked texture, so it needs no lights.
 const pivot = new THREE.Group(); // moved around the screen
-const hoverGroup = new THREE.Group(); // leans and turns with the cursor when docked
 const spinner = new THREE.Group(); // rotates in place
-pivot.add(hoverGroup);
-hoverGroup.add(spinner);
+pivot.add(spinner);
 scene.add(pivot);
 
 // ---------- Name ring ----------
@@ -71,39 +68,8 @@ ringBack.renderOrder = 0;
 ringFront.renderOrder = 2;
 ring.add(ringBack, ringFront);
 
-// Ripeness uniform shared by every tomato material (driven by the hover spring):
-// -1 = unripe (orange going green), 0 = as modelled, 1 = very ripe (deep red).
-// Only the red skin changes; the green stem stays as it is.
-const ripe = { value: 0 };
-function addRipeness(material) {
-  material.onBeforeCompile = (shader) => {
-    shader.uniforms.uRipe = ripe;
-    shader.fragmentShader = shader.fragmentShader
-      .replace('void main() {', `uniform float uRipe;
-vec3 hueShift(vec3 c, float a) {
-  const vec3 k = vec3(0.57735);
-  float ca = cos(a);
-  return c * ca + cross(k, c) * sin(a) + k * dot(k, c) * (1.0 - ca);
-}
-vec3 ripen(vec3 c, float r) {
-  float skin = smoothstep(0.08, 0.3, (c.r - max(c.g, c.b)) / (c.r + 0.001)); // reddish, lit or in shade
-  float gray = dot(c, vec3(0.299, 0.587, 0.114));
-  vec3 unripe = hueShift(c, 1.15) * 1.1;
-  unripe = mix(vec3(gray), unripe, 0.8);
-  vec3 ripe = mix(vec3(gray), c, 1.45) * vec3(0.95, 0.72, 0.72);
-  vec3 target = r < 0.0 ? mix(c, unripe, -r) : mix(c, ripe, r);
-  return mix(c, max(target, 0.0), skin);
-}
-void main() {`)
-      .replace('#include <map_fragment>', `#include <map_fragment>
-diffuseColor.rgb = ripen(diffuseColor.rgb, uRipe);`);
-  };
-  material.needsUpdate = true;
-}
-
 new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
   const model = gltf.scene;
-  model.traverse((o) => { if (o.isMesh) [].concat(o.material).forEach(addRipeness); });
   // Center the model and normalize it to a height of 1 unit
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
@@ -159,31 +125,30 @@ function layout(progress) {
   pivot.position.set((xPx - width / 2) * upp, (height / 2 - yPx) * upp, 0);
 }
 
-// ---------- Hover in the nav ----------
-// Like motion.dev's "Three.js: Motion values" example: one spring follows the
-// cursor across the logo and drives the shift, the turn and the ripeness together.
-function spring(stiffness, damping) {
-  return {
-    value: 0, velocity: 0, target: 0,
-    step(dt) {
-      const force = -stiffness * (this.value - this.target) - damping * this.velocity;
-      this.velocity += force * dt;
-      this.value += this.velocity * dt;
-    },
-  };
+// ---------- Small canvas while docked ----------
+// In the nav the tomato is only 44px, so the canvas shrinks to a box around it
+// instead of redrawing the whole screen every frame. The camera's view offset
+// renders exactly that part of the full-screen picture, so it looks the same.
+let cropped = false;
+function setCrop(on) {
+  if (on) {
+    const dockPx = width < 700 ? 36 : 44;
+    const margin = width < 700 ? 14 : 24;
+    const r = firstNavLink.getBoundingClientRect();
+    const box = Math.ceil(dockPx * 2);
+    const left = Math.round(margin + dockPx / 2 - box / 2);
+    const top = Math.round((r.top + r.bottom) / 2 - dockPx * BODY_OFFSET - box / 2);
+    Object.assign(canvas.style, { inset: 'auto', left: left + 'px', top: top + 'px', width: box + 'px', height: box + 'px' });
+    renderer.setSize(box, box, false);
+    camera.setViewOffset(width, height, left, top, box, box);
+  } else {
+    Object.assign(canvas.style, { inset: '', left: '', top: '', width: '', height: '' });
+    camera.clearViewOffset();
+    renderer.setSize(width, height, false);
+  }
+  cropped = on;
 }
-const hoverX = spring(160, 20);   // -1.5 … 1.5, where the cursor is across the logo
-const hoverIn = spring(200, 18);  // 0 … 1, whether the cursor is over it
-const logo = document.querySelector('.nav-logo');
-let docked = false;
-
-logo.addEventListener('pointermove', (e) => {
-  if (e.pointerType !== 'mouse' || !docked || reduced) return;
-  const r = logo.getBoundingClientRect();
-  hoverX.target = Math.max(-1.5, Math.min(1.5, ((e.clientX - r.left) / r.width - 0.5) * 3));
-  hoverIn.target = 1;
-});
-logo.addEventListener('pointerleave', () => { hoverX.target = 0; hoverIn.target = 0; });
+addEventListener('resize', () => { if (cropped) setCrop(true); });
 
 // ---------- Animation ----------
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -202,18 +167,8 @@ function frame() {
   shown = target > shown ? Math.min(target, shown + step) : Math.max(target, shown - step);
   layout(ease(shown));
 
-  // Hover springs (only once the tomato sits in the nav)
-  docked = shown >= 1;
-  if (!docked) { hoverX.target = 0; hoverIn.target = 0; }
-  // Small fixed sub-steps keep the springs stable when a frame runs long
-  for (let i = 0; i < 4; i++) { hoverX.step(dt / 4); hoverIn.step(dt / 4); }
-  const hx = hoverX.value;
-  const dockPx = width < 700 ? 36 : 44;
-  pivot.position.x += hx * dockPx * 0.12 * unitsPerPixel(); // shifts toward the cursor
-  pivot.scale.multiplyScalar(1 + hoverIn.value * 0.18);       // grows a little
-  hoverGroup.rotation.y = THREE.MathUtils.degToRad(hx * 40);  // turns with it
-  hoverGroup.rotation.z = -hx * 0.18;                         // and leans
-  ripe.value = Math.max(-1, Math.min(1, hx / 1.5));          // ripens: greener left, deeper red right
+  // Docked and settled: draw only the small box around the tomato
+  if ((shown >= 1) !== cropped) setCrop(shown >= 1);
 
   // Keep spinning, with a gentle flying wobble
   spinner.rotation.y += dt * (reduced ? 0.3 : 0.9);
@@ -233,7 +188,8 @@ function frame() {
     spinner.position.y = Math.sin(t * 1.4) * 0.06 * calm;
   }
 
-  hint.style.opacity = shown > 0.05 ? 0 : 0.85;
+  const hintOpacity = shown > 0.05 ? '0' : '0.85';
+  if (hint.style.opacity !== hintOpacity) hint.style.opacity = hintOpacity;
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
 }
