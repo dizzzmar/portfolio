@@ -24,6 +24,7 @@ css/                       Diseño (colores, tipografías, tamaños)
 js/                        Comportamiento (animaciones, tomate 3D, carrusel…)
   home-*.js · room.js · not-found-*.js
   project-stack.js         Carrusel de imágenes de los proyectos
+  project-grid.js          Galería en cuadrícula infinita (hero de Soap & Glory)
 
 assets/                    Imágenes, vídeos y modelos 3D
   images/                  cielo, grano, tomate, imagen de relleno
