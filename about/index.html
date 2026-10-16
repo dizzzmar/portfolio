@@ -1,0 +1,125 @@
+<!doctype html>
+<!--
+  ABOUT  ·  www.dizmar.xyz/about
+  Estructura inspirada en letude.group/info, con el aspecto de la web: el cielo de fondo y
+  una sola columna con margen amplio (también en escritorio).
+  Cada bloque tiene una etiqueta vertical a la izquierda y su contenido a la derecha.
+  Los textos marcados con EDITA son de ejemplo. Estilos en /css/about.css
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About · Mario Diz</title>
+<meta name="description" content="Mario Diz, art director and visual designer based in Madrid.">
+<meta name="robots" content="noindex"> <!-- Borra esta línea cuando los textos sean los definitivos -->
+<link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
+<link rel="stylesheet" href="/css/about.css">
+</head>
+<body>
+<div class="sky" aria-hidden="true"></div>
+
+<!-- Barra de navegación (igual que la del resto de la web) -->
+<nav class="nav" aria-label="Main">
+  <a class="nav-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" alt=""></a>
+  <ul class="nav-links">
+    <li><a href="/#first-project">Work</a></li>
+    <li><a href="/about" aria-current="page">About</a></li>
+    <li><a href="/contact">Contact</a></li>
+    <li><a href="/room.html">Room</a></li>
+  </ul>
+</nav>
+
+<main class="about">
+
+  <!-- 1. Título y presentación -->
+  <header class="about-intro">
+    <p class="about-kicker">Mario Diz</p>
+    <h1>About</h1>
+  </header>
+
+  <!-- 2. Bloques. Para quitar uno, borra su <section> entera -->
+  <section class="block" aria-labelledby="b-about">
+    <h2 class="block-label" id="b-about">About</h2>
+    <div class="block-body">
+      <!-- EDITA: tu presentación, 2-3 frases -->
+      <p class="about-text">Art director and visual designer based in Madrid. I build campaigns, key visuals and films for brands, from the first idea to the last frame. Placeholder text: two or three lines about how you work and what you care about.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="b-capabilities">
+    <h2 class="block-label" id="b-capabilities">Capabilities</h2>
+    <div class="block-body">
+      <!-- EDITA: una <li> por capacidad -->
+      <ul class="pills">
+        <li>Art direction</li>
+        <li>Visual design</li>
+        <li>Key visuals</li>
+        <li>Audiovisual</li>
+        <li>3D &amp; CGI</li>
+        <li>Branding</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="b-clients">
+    <h2 class="block-label" id="b-clients">Selected clients</h2>
+    <div class="block-body">
+      <!-- EDITA: un <li> por cliente -->
+      <ul class="clients">
+        <li>Lexus</li>
+        <li>Soap &amp; Glory</li>
+        <li>Client name</li>
+        <li>Client name</li>
+        <li>Client name</li>
+        <li>Client name</li>
+        <li>Client name</li>
+        <li>Client name</li>
+        <li>Client name</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="b-distinctions">
+    <h2 class="block-label" id="b-distinctions">Distinctions</h2>
+    <div class="block-body">
+      <!-- EDITA: premio · año (o borra este bloque) -->
+      <ul class="list">
+        <li><span>Award name</span><span>2025</span></li>
+        <li><span>Award name</span><span>2024</span></li>
+        <li><span>Award name</span><span>2023</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="b-email">
+    <h2 class="block-label" id="b-email">Email</h2>
+    <div class="block-body">
+      <a class="email" href="mailto:hello@dizmar.xyz">hello@dizmar.xyz</a> <!-- EDITA: tu email (en los dos sitios) -->
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="b-socials">
+    <h2 class="block-label" id="b-socials">Socials</h2>
+    <div class="block-body">
+      <!-- EDITA: los enlaces a tus perfiles -->
+      <ul class="pills pills-links">
+        <li><a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram ↗</a></li>
+        <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn ↗</a></li>
+        <li><a href="https://vimeo.com/" target="_blank" rel="noopener">Vimeo ↗</a></li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<!-- 3. El nombre en grande (la misma cartela del anillo del tomate) y el pie -->
+<footer class="about-footer">
+  <img class="wordmark" src="/assets/images/name-cartela.webp" width="1400" height="183" alt="Mario Diz">
+  <div class="footer-row">
+    <span>Mario Diz, Madrid</span>
+    <a href="/">Selected work ↗</a>
+  </div>
+</footer>
+</body>
+</html>

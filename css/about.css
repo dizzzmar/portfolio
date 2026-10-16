@@ -1,0 +1,206 @@
+/* ABOUT — estilos de about/index.html.
+   Orden: base y cielo · barra · columna y bloques · contenidos de cada bloque · pie · móvil.
+   Todo va sobre el cielo, en blanco. La columna es estrecha también en escritorio, con mucho aire alrededor. */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --nav-h: 64px;
+  --col: 600px;                       /* ancho de la columna de contenido */
+  --line: rgba(255, 255, 255, 0.55);  /* líneas finas entre bloques */
+  --shadow: 0 1px 10px rgba(0, 20, 40, 0.22); /* sombra suave para que el texto se lea sobre las nubes */
+}
+
+body {
+  overflow-x: clip;
+  color: #fff;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #8cc0ef;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+a:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+
+/* El mismo cielo que la home, con el grano mezclado en la propia capa y moviéndose despacio */
+.sky {
+  position: fixed;
+  inset: -8%;
+  z-index: -1;
+  background:
+    url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat,
+    url("/assets/images/sky.webp") center / cover,
+    linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
+  background-blend-mode: overlay, normal, normal;
+  animation: drift 40s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes drift {
+  0%   { transform: translate(-3%, 1%) scale(1); }
+  50%  { transform: translate(1%, -1.5%) scale(1.04); }
+  100% { transform: translate(3%, 1%) scale(1.02); }
+}
+
+/* ---------- Barra de navegación (como en la home, con el tomate como imagen) ---------- */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+}
+.nav-logo { flex: none; width: 44px; height: 44px; }
+.nav-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.nav-links { display: flex; align-self: stretch; margin: 0 -16px 0 auto; list-style: none; }
+.nav-links a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 16px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 15px;
+  text-decoration: none;
+  text-shadow: var(--shadow);
+  transition: color 0.2s;
+}
+.nav-links a:hover, .nav-links a[aria-current="page"] { color: #fff; }
+
+/* ---------- Columna y bloques ---------- */
+.about {
+  width: min(var(--col), calc(100% - 48px));
+  margin: 0 auto;
+  padding-top: calc(var(--nav-h) + 120px);
+  text-shadow: var(--shadow);
+}
+
+/* Cabecera: el nombre en serif pequeño encima de "ABOUT" en sans grande, como las cards de proyecto */
+.about-intro { display: grid; gap: 6px; padding-bottom: 56px; }
+.about-kicker {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(18px, 2vw, 24px);
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.about-intro h1 {
+  margin-left: -0.045em;
+  font-size: clamp(64px, 13vw, 132px);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 0.85;
+  text-transform: uppercase;
+}
+
+/* Cada bloque: etiqueta en vertical a la izquierda y el contenido a la derecha */
+.block {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 20px;
+  padding: 28px 0 40px;
+  border-top: 1px solid var(--line);
+}
+.block-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  justify-self: start;
+  align-self: start;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.block-body { min-width: 0; padding-top: 2px; }
+
+/* ---------- Contenido de cada bloque ---------- */
+.about-text { font-size: clamp(19px, 2.1vw, 23px); line-height: 1.42; letter-spacing: -0.01em; }
+
+/* Etiquetas en píldora, como las de los proyectos (aquí en blanco sobre el cielo) */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; }
+.pills li, .pills a {
+  display: inline-block;
+  padding: 7px 14px 6px;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  text-shadow: none;
+}
+.pills-links li { padding: 0; border: 0; }
+.pills-links a { text-decoration: none; transition: background 0.2s, color 0.2s; }
+.pills-links a:hover { background: #fff; color: #1d5fc4; }
+
+/* Clientes: la marca en serif en mayúsculas, como en las cards de proyecto */
+.clients {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 16px;
+  list-style: none;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(16px, 1.7vw, 20px);
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+/* Premios: nombre a la izquierda, año en serif a la derecha */
+.list { list-style: none; }
+.list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0 9px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 15px;
+}
+.list li:first-child { padding-top: 0; }
+.list li span:last-child { font-family: Georgia, "Times New Roman", serif; font-variant-numeric: lining-nums; }
+
+/* Email en grande, como un título de proyecto */
+.email {
+  display: inline-block;
+  font-size: clamp(28px, 5.4vw, 52px);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  text-decoration: none;
+  word-break: break-word;
+}
+.email:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; }
+
+/* ---------- Pie: la cartela "Mario Diz" ocupando todo el ancho ---------- */
+.about-footer { padding: 140px 24px 24px; }
+.wordmark { display: block; width: 100%; height: auto; filter: drop-shadow(0 2px 14px rgba(0, 20, 40, 0.22)); }
+.footer-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  font-size: 13px;
+  text-shadow: var(--shadow);
+}
+.footer-row a { text-decoration: none; }
+.footer-row a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* ---------- Móvil ---------- */
+@media (max-width: 700px) {
+  :root { --nav-h: 56px; }
+  .nav { padding: 0 14px; }
+  .nav-logo { width: 36px; height: 36px; }
+  .nav-links { margin-right: -7px; }
+  .nav-links a { padding: 0 7px; font-size: 13px; }
+  .about { width: calc(100% - 32px); padding-top: calc(var(--nav-h) + 72px); }
+  .about-intro { padding-bottom: 40px; }
+  .block { grid-template-columns: 22px 1fr; gap: 14px; padding: 22px 0 32px; }
+  .clients { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .about-footer { padding: 100px 16px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) { .sky { animation: none; } }

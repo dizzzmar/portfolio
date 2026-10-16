@@ -7,6 +7,7 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 ```
 index.html                 La home (tomate, papel verde con los proyectos, footer)
 room.html                  La página "The room" (habitación 3D)
+about/index.html           La página "About" (sobre el cielo; estilos en css/about.css)
 404.html                   Página de "no encontrada"
 
 project/                   Una carpeta por proyecto  →  www.dizmar.xyz/project/<nombre>/
