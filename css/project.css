@@ -30,6 +30,10 @@ figure { margin: 0; }
    y nunca más alto que la pantalla (deja 80px libres) para que siempre se vea entero. */
 .project-video { width: min(100%, calc((100vh - 80px) * 9 / 16)); width: min(100%, calc((100svh - 80px) * 9 / 16)); margin: 0 auto; aspect-ratio: 9 / 16; border-radius: 18px; overflow: hidden; background: #171717; }
 .project-video video, .project-video iframe { display: block; width: 100%; height: 100%; border: 0; object-fit: cover; }
+/* Post de Instagram incrustado (película): centrado y con el ancho de la columna */
+.project-embed { display: flex; justify-content: center; }
+.project-embed .instagram-media { width: 100% !important; max-width: 100% !important; min-width: 0 !important; margin: 0 !important; border-radius: 18px !important; overflow: hidden; }
+.project-embed blockquote.instagram-media { padding: 24px; background: #eee9df; text-align: center; font-size: 14px; }
 .image-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
 .project-end { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 60px 24px; font-size: 14px; }
 .site-footer { display: flex; justify-content: center; padding: 56px 24px; background: #91bce0 url('/assets/images/sky.webp') center 65% / cover; color: #173a31; font-size: 13px; }
