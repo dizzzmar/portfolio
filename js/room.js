@@ -1,6 +1,6 @@
 // THE ROOM · la habitación 3D (three.js): carga assets/room/shelf.glb, los objetos seleccionables (array `destinations`),
 // la cámara que se acerca al pasar por la lista de la izquierda, la lámpara que parpadea y la pegatina "Now playing".
-// Para cambiar la canción de la pegatina edita el objeto `nowPlaying` (y la imagen assets/room/now-playing-sticker.webp).
+// Para cambiar las pegatinas edita los objetos `nowPlaying` y `lastWatched` (y sus imágenes en assets/room/).
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -71,18 +71,24 @@ composer.addPass(new OutputPass());
 // its section exists; until then it opens its own detail state.
 // Matched against object names reduced to lowercase words, because the loader
 // turns "Music / vinyl collection" into "Music__vinyl_collection".
-// The last song I played on Spotify. Update the file and these lines to change it.
+// Stickers that slap on when hovering an object. Swap the image (same 1600×567 size)
+// and the alt text to change them.
+// The last song I played on Spotify.
 const nowPlaying = {
-  title: 'Bug',
-  artist: 'Fontaines D.C.',
-  album: 'Romance',
+  image: '/assets/room/now-playing-sticker.webp',
+  alt: 'Now playing: Bug by Fontaines D.C. — Romance',
+};
+// The last film I watched.
+const lastWatched = {
+  image: '/assets/room/last-watched-sticker.webp',
+  alt: 'Last loved: La Bola Negra',
 };
 
 const destinations = [
   // Both are outlined, but the camera looks at the collection on the lower shelf
   { label: 'Now playing', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, track: nowPlaying, href: null },
   { label: 'Pokemon', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
-  { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, href: null },
+  { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, track: lastWatched, href: null },
   // The camera frames just the tomato, not the cord that runs down to the floor
   { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, focus: /^lamp (tomato diffuser|green calyx)\b/, href: null },
   { label: 'Plant', key: 'plant', match: /^plants (eucalyptus|fluted vase)\b/, href: null },
@@ -120,8 +126,8 @@ function pick(event) {
   return item ? { item, object: hit.object } : null;
 }
 
-// ---------- Now-playing bumper sticker ----------
-// A vintage bumper sticker with the song, artist and album. Hovering the record
+// ---------- Bumper stickers (now playing, last watched) ----------
+// A vintage bumper sticker. Hovering the record or the poster
 // slaps it on; moving away peels it off from the bottom-right corner.
 function stickerCard(track) {
   const el = (tag, cls, text) => Object.assign(document.createElement(tag), { className: cls, textContent: text || '' });
@@ -129,8 +135,8 @@ function stickerCard(track) {
   const face = el('div', 'sticker-face');
   const artwork = document.createElement('img');
   artwork.className = 'sticker-art';
-  artwork.src = '/assets/room/now-playing-sticker.webp';
-  artwork.alt = track.title + ' by ' + track.artist + ' — ' + track.album;
+  artwork.src = track.image;
+  artwork.alt = track.alt;
   artwork.width = 1600;
   artwork.height = 567;
   artwork.draggable = false;
@@ -141,11 +147,13 @@ function stickerCard(track) {
 
 const trackEl = document.getElementById('track');
 let stickerState = 'off'; // off, on or peeling
+let stickerTrack = null;   // which sticker is on
 let stickerAnims = [];
 const stopSticker = () => { stickerAnims.forEach((a) => a.cancel()); stickerAnims = []; };
 function showSticker(track) {
-  if (stickerState === 'on') return;
+  if (stickerState === 'on' && stickerTrack === track) return;
   stopSticker();
+  stickerTrack = track;
   trackEl.replaceChildren(stickerCard(track));
   trackEl.hidden = false;
   stickerState = 'on';
@@ -213,7 +221,7 @@ canvas.addEventListener('pointerup', event => {
 canvas.addEventListener('pointercancel', () => { down = null; });
 
 function openItem(item) {
-  if (item.track) return; // the record only has its sticker: clicking opens nothing more
+  if (item.track) return; // the record and the poster only have their sticker: clicking opens nothing more
   if (item.href) {
     location.href = item.href;
     return;
