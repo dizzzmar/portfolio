@@ -153,7 +153,15 @@ addEventListener('resize', () => { if (cropped) setCrop(true); });
 
 // ---------- Animation ----------
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-let shown = scrollY > 4 ? 1 : 0; // 0 = big in the center, 1 = docked in the nav (already docked if the page opens scrolled down)
+let shown = scrollY > 4 ? 1 : 0; // 0 = big in the center, 1 = docked in the nav
+
+// The tomato only flies when the visitor scrolls. If the page moves on its own before
+// they touch anything (coming back to a card, the back button restoring the position),
+// it just appears where it belongs.
+let userMoved = false;
+for (const type of ['wheel', 'touchstart', 'keydown', 'pointerdown']) {
+  addEventListener(type, () => { userMoved = true; }, { once: true, passive: true, capture: true });
+}
 const DOCK_TIME = 0.7; // seconds for the trip between the two
 const clock = new THREE.Clock();
 
@@ -171,7 +179,7 @@ function frame(now) {
   // As soon as the page leaves the top, the tomato goes straight to the nav in
   // one move (and back when the page returns to the top). It never parks halfway.
   const target = scrollY > 4 ? 1 : 0;
-  const step = reduced ? 1 : dt / DOCK_TIME;
+  const step = reduced || !userMoved ? 1 : dt / DOCK_TIME;
   shown = target > shown ? Math.min(target, shown + step) : Math.max(target, shown - step);
   layout(ease(shown));
 
