@@ -1,5 +1,6 @@
 // HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con la cartela "Mario Diz"
 // y viaja a la esquina superior izquierda (logo de la barra) al hacer scroll.
+// En la barra, al pasar el ratón por encima sigue al cursor con un muelle: se desplaza, gira y cambia de tono.
 // Para cambiar el texto del anillo sustituye la imagen assets/images/name-cartela.webp
 
 import * as THREE from 'three';
@@ -19,8 +20,10 @@ camera.position.set(0, 0, 10);
 
 // The model uses an unlit baked texture, so it needs no lights.
 const pivot = new THREE.Group(); // moved around the screen
+const hoverGroup = new THREE.Group(); // leans and turns with the cursor when docked
 const spinner = new THREE.Group(); // rotates in place
-pivot.add(spinner);
+pivot.add(hoverGroup);
+hoverGroup.add(spinner);
 scene.add(pivot);
 
 // ---------- Name ring ----------
@@ -67,8 +70,28 @@ ringBack.renderOrder = 0;
 ringFront.renderOrder = 2;
 ring.add(ringBack, ringFront);
 
+// Hue shift uniform shared by every tomato material (driven by the hover spring)
+const hue = { value: 0 };
+function addHueShift(material) {
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.uHue = hue;
+    shader.fragmentShader = shader.fragmentShader
+      .replace('void main() {', `uniform float uHue;
+vec3 hueShift(vec3 c, float a) {
+  const vec3 k = vec3(0.57735);
+  float ca = cos(a);
+  return c * ca + cross(k, c) * sin(a) + k * dot(k, c) * (1.0 - ca);
+}
+void main() {`)
+      .replace('#include <map_fragment>', `#include <map_fragment>
+diffuseColor.rgb = hueShift(diffuseColor.rgb, uHue);`);
+  };
+  material.needsUpdate = true;
+}
+
 new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
   const model = gltf.scene;
+  model.traverse((o) => { if (o.isMesh) [].concat(o.material).forEach(addHueShift); });
   // Center the model and normalize it to a height of 1 unit
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
@@ -124,38 +147,31 @@ function layout(progress) {
   pivot.position.set((xPx - width / 2) * upp, (height / 2 - yPx) * upp, 0);
 }
 
-// ---------- Hover on the docked tomato ----------
-// When the tomato is the logo in the nav, hovering it makes it grow a little, lean
-// towards the cursor and spin faster. Every value follows the cursor through a spring,
-// so it moves with a bit of bounce and settles back smoothly when the cursor leaves.
-const hoverRig = new THREE.Group(); // sits between pivot and spinner, only for the hover
-pivot.remove(spinner);
-hoverRig.add(spinner);
-pivot.add(hoverRig);
-
-const logo = document.querySelector('.nav-logo');
-const pointer = { over: false, x: 0, y: 0 }; // x, y: -1 to 1 across the logo
-logo.addEventListener('pointerenter', () => { pointer.over = true; });
-logo.addEventListener('pointerleave', () => { pointer.over = false; pointer.x = pointer.y = 0; });
-logo.addEventListener('pointermove', (e) => {
-  const r = logo.getBoundingClientRect();
-  pointer.x = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width) * 2 - 1));
-  pointer.y = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height) * 2 - 1));
-});
-
-// A damped spring: value chases target with some overshoot
+// ---------- Hover in the nav ----------
+// Like motion.dev's "Three.js: Motion values" example: one spring follows the
+// cursor across the logo and drives the shift, the turn and the hue together.
 function spring(stiffness, damping) {
-  return { value: 0, velocity: 0, stiffness, damping };
+  return {
+    value: 0, velocity: 0, target: 0,
+    step(dt) {
+      const force = -stiffness * (this.value - this.target) - damping * this.velocity;
+      this.velocity += force * dt;
+      this.value += this.velocity * dt;
+    },
+  };
 }
-function stepSpring(s, target, dt) {
-  const force = (target - s.value) * s.stiffness - s.velocity * s.damping;
-  s.velocity += force * dt;
-  s.value += s.velocity * dt;
-}
-const hoverGrow = spring(320, 14); // 0 → 1 while hovered
-const tiltX = spring(220, 16);
-const tiltY = spring(220, 16);
-const spinBoost = spring(60, 12);
+const hoverX = spring(160, 20);   // -1.5 … 1.5, where the cursor is across the logo
+const hoverIn = spring(200, 18);  // 0 … 1, whether the cursor is over it
+const logo = document.querySelector('.nav-logo');
+let docked = false;
+
+logo.addEventListener('pointermove', (e) => {
+  if (e.pointerType !== 'mouse' || !docked || reduced) return;
+  const r = logo.getBoundingClientRect();
+  hoverX.target = Math.max(-1.5, Math.min(1.5, ((e.clientX - r.left) / r.width - 0.5) * 3));
+  hoverIn.target = 1;
+});
+logo.addEventListener('pointerleave', () => { hoverX.target = 0; hoverIn.target = 0; });
 
 // ---------- Animation ----------
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -174,6 +190,19 @@ function frame() {
   shown = target > shown ? Math.min(target, shown + step) : Math.max(target, shown - step);
   layout(ease(shown));
 
+  // Hover springs (only once the tomato sits in the nav)
+  docked = shown >= 1;
+  if (!docked) { hoverX.target = 0; hoverIn.target = 0; }
+  // Small fixed sub-steps keep the springs stable when a frame runs long
+  for (let i = 0; i < 4; i++) { hoverX.step(dt / 4); hoverIn.step(dt / 4); }
+  const hx = hoverX.value;
+  const dockPx = width < 700 ? 36 : 44;
+  pivot.position.x += hx * dockPx * 0.12 * unitsPerPixel(); // shifts toward the cursor
+  pivot.scale.multiplyScalar(1 + hoverIn.value * 0.18);       // grows a little
+  hoverGroup.rotation.y = THREE.MathUtils.degToRad(hx * 40);  // turns with it
+  hoverGroup.rotation.z = -hx * 0.18;                         // and leans
+  hue.value = hx * 0.55;                                      // shifts its hue: pinker left, golden right
+
   // Keep spinning, with a gentle flying wobble
   spinner.rotation.y += dt * (reduced ? 0.3 : 0.9);
   ring.rotation.y -= dt * (reduced ? 0.2 : 0.55);
@@ -191,22 +220,6 @@ function frame() {
     spinner.rotation.z = Math.sin(t * 0.6) * 0.12 * calm;
     spinner.position.y = Math.sin(t * 1.4) * 0.06 * calm;
   }
-
-  // Hover springs (only while docked, so the big hero tomato is never affected)
-  const hovering = pointer.over && shown > 0.95 && !reduced;
-  const sdt = Math.min(dt, 1 / 60); // small steps keep the springs stable
-  for (let left = dt; left > 0; left -= sdt) {
-    const h = Math.min(sdt, left);
-    stepSpring(hoverGrow, hovering ? 1 : 0, h);
-    stepSpring(tiltX, hovering ? pointer.y * 0.6 : 0, h);
-    stepSpring(tiltY, hovering ? pointer.x * 0.8 : 0, h);
-    stepSpring(spinBoost, hovering ? 1 : 0, h);
-  }
-  hoverRig.scale.setScalar(1 + hoverGrow.value * 0.35);
-  hoverRig.rotation.x = tiltX.value;
-  hoverRig.rotation.z = -tiltY.value * 0.5;
-  hoverRig.position.y = hoverGrow.value * 0.04;
-  spinner.rotation.y += dt * spinBoost.value * 5;
 
   hint.style.opacity = shown > 0.05 ? 0 : 0.85;
   renderer.render(scene, camera);
