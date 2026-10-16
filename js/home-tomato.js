@@ -30,7 +30,7 @@ function nameTexture() {
   // The canvas is as wide (relative to its height) as the ring is around,
   // so the artwork keeps its proportions once wrapped.
   // The artwork is the white "Mario Diz" label from assets/images/name-cartela.webp,
-  // drawn about as wide as the old "MARIO DIZ" text was (its letters take the same room).
+  // drawn a bit larger than the old "MARIO DIZ" text.
   const c = document.createElement('canvas');
   c.width = 6400;
   c.height = 256;
@@ -39,7 +39,7 @@ function nameTexture() {
   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
   const art = new Image();
   art.onload = () => {
-    const w = 1160;
+    const w = 1500; // ancho de la cartela en la textura (más grande = más grande alrededor del tomate; máx. ~1900 para que quepa en alto)
     const h = w * art.naturalHeight / art.naturalWidth;
     c.getContext('2d').drawImage(art, (c.width - w) / 2, (c.height - h) / 2, w, h);
     tex.needsUpdate = true;
