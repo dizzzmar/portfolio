@@ -52,10 +52,9 @@ body {
   align-items: center;
   gap: 16px;
   padding: 0 24px;
-  pointer-events: none;
+  /* La barra entera recoge los toques: así un toque que cae entre dos enlaces (o un poco
+     por encima o por debajo) no atraviesa la barra y abre la card que pasa por debajo */
 }
-
-.nav > * { pointer-events: auto; }
 
 /* Zona clicable invisible sobre el tomate acoplado */
 .nav-logo {
@@ -73,12 +72,18 @@ body {
 
 .nav-links {
   display: flex;
-  gap: 32px;
-  margin-left: auto;
+  align-self: stretch;
+  margin: 0 -16px 0 auto; /* compensa el relleno del último enlace para que el texto quede donde estaba */
   list-style: none;
 }
 
+/* Cada enlace ocupa toda la altura de la barra y el hueco entre enlaces (32px) es parte
+   de su zona pulsable, así es fácil acertar con el dedo */
 .nav-links a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 16px;
   color: rgba(255, 255, 255, 0.78);
   font-size: 15px;
   text-decoration: none;
@@ -363,7 +368,8 @@ body {
   :root { --nav-h: 56px; }
   .nav { gap: 10px; padding: 0 14px; }
   .nav-logo { width: 36px; height: 36px; }
-  .nav-links { gap: 14px; }
+  .nav-links { margin-right: -7px; }
+  .nav-links a { padding: 0 7px; }
   .nav-links a { font-size: 13px; }
   .work-intro { padding: 0 12px 20px; }
   .project-grid { grid-template-columns: 1fr; gap: 8px; }
