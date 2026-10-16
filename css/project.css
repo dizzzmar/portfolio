@@ -10,7 +10,7 @@ a { color: inherit; text-underline-offset: 4px; }
 a:focus-visible { outline: 3px solid #175cff; outline-offset: 5px; }
 .close-project { position: fixed; z-index: 2; top: 20px; right: 20px; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #eeede8; text-decoration: none; font-size: 30px; line-height: 1; transition: background .2s; }
 .close-project:hover { background: #deded6; }
-.project-page { width: min(840px, calc(100% - 160px)); margin: 24px auto 0; }
+.project-page { width: min(620px, calc(100% - 160px)); margin: 24px auto 0; }
 figure { margin: 0; }
 .project-image { display: block; width: 100%; height: auto; border-radius: 18px; background: #eee9df; }
 .project-intro { padding: 28px 24px 64px; }
@@ -22,8 +22,9 @@ figure { margin: 0; }
 .project-tags .project-year { margin-left: auto; padding: 0; border: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 14px; font-weight: 400; letter-spacing: -.02em; font-variant-numeric: lining-nums; transform: translateY(2.5px); }
 .project-description { margin: 20px 0 0; max-width: 61ch; font-size: 17px; line-height: 1.6; }
 .project-gallery { display: grid; gap: 20px; }
-/* Vídeo vertical (YouTube Short) incrustado: mismo ancho que una imagen, proporción 9:16 */
-.project-video { width: 100%; margin: 0; aspect-ratio: 9 / 16; border-radius: 18px; overflow: hidden; background: #171717; }
+/* Vídeo vertical (YouTube Short) incrustado: proporción 9:16. Como mucho el ancho de una imagen,
+   y nunca más alto que la pantalla (deja 80px libres) para que siempre se vea entero. */
+.project-video { width: min(100%, calc((100vh - 80px) * 9 / 16)); width: min(100%, calc((100svh - 80px) * 9 / 16)); margin: 0 auto; aspect-ratio: 9 / 16; border-radius: 18px; overflow: hidden; background: #171717; }
 .project-video iframe { display: block; width: 100%; height: 100%; border: 0; }
 .image-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
 .project-end { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 60px 24px; font-size: 14px; }
