@@ -20,7 +20,7 @@ figure { margin: 0; }
 .project-intro { padding: 28px 24px 64px; }
 .project-intro { display: grid; gap: 4px; }
 .project-brand { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(18px, 2vw, 26px); letter-spacing: -.035em; line-height: 1; text-transform: uppercase; }
-.project-intro h1 { margin: 0 0 0 -.045em; font-size: clamp(48px, 9vw, 92px); font-weight: 700; letter-spacing: -.06em; line-height: .88; text-transform: uppercase; }
+.project-intro h1 { margin: 0 0 0 -.045em; font-size: clamp(40px, 9vw, 76px); font-weight: 700; letter-spacing: -.06em; line-height: .88; text-transform: uppercase; }
 .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
 .project-tags li { padding: 5px 11px 4px; border: 1px solid #171717; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .06em; line-height: 1.2; text-transform: uppercase; }
 .project-tags .project-year { margin-left: auto; padding: 0; border: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 14px; font-weight: 400; letter-spacing: -.02em; font-variant-numeric: lining-nums; transform: translateY(2.5px); }
@@ -75,7 +75,7 @@ figure { margin: 0; }
  .back-link { top: 14px; left: 12px; }
  .project-page { width: calc(100% - 24px); margin-top: 72px; }
  .project-intro { padding: 24px 8px 40px; }
- .project-intro h1 { font-size: clamp(44px, 14vw, 64px); }
+ .project-intro h1 { font-size: clamp(32px, 11.5vw, 64px); }
  .project-brand { font-size: 18px; }
  .project-description { font-size: 16px; }
  .project-gallery, .image-pair { gap: 12px; }

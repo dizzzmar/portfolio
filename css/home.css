@@ -383,7 +383,7 @@ body {
 .project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
 .project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 
-  .project-caption h2 { font-size: clamp(40px, 12vw, 60px); }
+  .project-caption h2 { font-size: clamp(32px, 11vw, 60px); }
   .project-brand { font-size: 18px; }
   .project-media { border-radius: 14px; }
   .room-entry { min-height: 210px; margin: 64px 8px 0; padding: 20px; }
