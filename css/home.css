@@ -246,9 +246,9 @@ body {
 /* ---------- Cards de proyecto ---------- */
 /* Texto de la card: la marca en serif pequeño encima del nombre del proyecto en sans grande,
    y debajo las etiquetas del tipo de proyecto.
-   El texto comparte bordes izquierdo y derecho con la imagen, y el margen de la card es igual
-   por todos los lados. Los espacios están medidos de tinta a tinta (alineación óptica). */
-.project-caption { display: grid; gap: 4px; padding: 0 0 18px; }
+   El texto tiene su propio margen dentro de la card (más aire que la imagen), y los
+   ajustes de la marca y el título compensan los huecos de las letras (alineación óptica). */
+.project-caption { display: grid; gap: 6px; padding: 20px 12px 30px; } /* aire alrededor del texto: arriba, a los lados y antes de la imagen */
 
 .project-brand {
   font-family: Georgia, 'Times New Roman', serif;
@@ -378,6 +378,7 @@ body {
   .work-intro { padding: 0 12px 20px; }
   .project-grid { grid-template-columns: 1fr; gap: 8px; }
   .project { border-radius: 20px; }
+  .project-caption { padding: 14px 8px 22px; }
   .project-link { display: block; color: #171717; text-decoration: none; }
 .project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
 .project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
