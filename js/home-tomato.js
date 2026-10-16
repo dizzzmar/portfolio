@@ -1,6 +1,6 @@
-// HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con el nombre "MARIO DIZ"
+// HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con la cartela "Mario Diz"
 // y viaja a la esquina superior izquierda (logo de la barra) al hacer scroll.
-// Para cambiar el texto del anillo busca  fillText('MARIO DIZ' ...
+// Para cambiar el texto del anillo sustituye la imagen assets/images/name-cartela.webp
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -24,23 +24,27 @@ pivot.add(spinner);
 scene.add(pivot);
 
 // ---------- Name ring ----------
-// "MARIO DIZ", once, printed on an open cylinder that circles the tomato.
+// The "Mario Diz" label, once, printed on an open cylinder that circles the tomato.
 // It spins the opposite way; its far side shows faintly through.
 function nameTexture() {
   // The canvas is as wide (relative to its height) as the ring is around,
-  // so the letters keep their proportions once wrapped.
+  // so the artwork keeps its proportions once wrapped.
+  // The artwork is the white "Mario Diz" label from assets/images/name-cartela.webp,
+  // drawn about as wide as the old "MARIO DIZ" text was (its letters take the same room).
   const c = document.createElement('canvas');
-  c.width = 3200;
-  c.height = 128;
-  const g = c.getContext('2d');
-  g.fillStyle = '#fff';
-  g.font = '700 92px "Helvetica Neue", Arial, sans-serif';
-  g.textAlign = 'center';
-  g.textBaseline = 'middle';
-  g.fillText('MARIO DIZ', c.width / 2, c.height / 2 + 4);
+  c.width = 6400;
+  c.height = 256;
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const art = new Image();
+  art.onload = () => {
+    const w = 1160;
+    const h = w * art.naturalHeight / art.naturalWidth;
+    c.getContext('2d').drawImage(art, (c.width - w) / 2, (c.height - h) / 2, w, h);
+    tex.needsUpdate = true;
+  };
+  art.src = '/assets/images/name-cartela.webp';
   return tex;
 }
 
