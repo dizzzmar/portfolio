@@ -1,6 +1,7 @@
 // HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con la cartela "Mario Diz"
 // y viaja a la esquina superior izquierda (logo de la barra) al hacer scroll.
-// En la barra, al pasar el ratón por encima sigue al cursor con un muelle: se desplaza, gira y cambia de tono.
+// En la barra, al pasar el ratón por encima sigue al cursor con un muelle: se desplaza, gira y madura
+// (más verde hacia la izquierda, rojo intenso hacia la derecha).
 // Para cambiar el texto del anillo sustituye la imagen assets/images/name-cartela.webp
 
 import * as THREE from 'three';
@@ -70,28 +71,39 @@ ringBack.renderOrder = 0;
 ringFront.renderOrder = 2;
 ring.add(ringBack, ringFront);
 
-// Hue shift uniform shared by every tomato material (driven by the hover spring)
-const hue = { value: 0 };
-function addHueShift(material) {
+// Ripeness uniform shared by every tomato material (driven by the hover spring):
+// -1 = unripe (orange going green), 0 = as modelled, 1 = very ripe (deep red).
+// Only the red skin changes; the green stem stays as it is.
+const ripe = { value: 0 };
+function addRipeness(material) {
   material.onBeforeCompile = (shader) => {
-    shader.uniforms.uHue = hue;
+    shader.uniforms.uRipe = ripe;
     shader.fragmentShader = shader.fragmentShader
-      .replace('void main() {', `uniform float uHue;
+      .replace('void main() {', `uniform float uRipe;
 vec3 hueShift(vec3 c, float a) {
   const vec3 k = vec3(0.57735);
   float ca = cos(a);
   return c * ca + cross(k, c) * sin(a) + k * dot(k, c) * (1.0 - ca);
 }
+vec3 ripen(vec3 c, float r) {
+  float skin = smoothstep(0.08, 0.3, (c.r - max(c.g, c.b)) / (c.r + 0.001)); // reddish, lit or in shade
+  float gray = dot(c, vec3(0.299, 0.587, 0.114));
+  vec3 unripe = hueShift(c, 1.15) * 1.1;
+  unripe = mix(vec3(gray), unripe, 0.8);
+  vec3 ripe = mix(vec3(gray), c, 1.45) * vec3(0.95, 0.72, 0.72);
+  vec3 target = r < 0.0 ? mix(c, unripe, -r) : mix(c, ripe, r);
+  return mix(c, max(target, 0.0), skin);
+}
 void main() {`)
       .replace('#include <map_fragment>', `#include <map_fragment>
-diffuseColor.rgb = hueShift(diffuseColor.rgb, uHue);`);
+diffuseColor.rgb = ripen(diffuseColor.rgb, uRipe);`);
   };
   material.needsUpdate = true;
 }
 
 new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
   const model = gltf.scene;
-  model.traverse((o) => { if (o.isMesh) [].concat(o.material).forEach(addHueShift); });
+  model.traverse((o) => { if (o.isMesh) [].concat(o.material).forEach(addRipeness); });
   // Center the model and normalize it to a height of 1 unit
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
@@ -149,7 +161,7 @@ function layout(progress) {
 
 // ---------- Hover in the nav ----------
 // Like motion.dev's "Three.js: Motion values" example: one spring follows the
-// cursor across the logo and drives the shift, the turn and the hue together.
+// cursor across the logo and drives the shift, the turn and the ripeness together.
 function spring(stiffness, damping) {
   return {
     value: 0, velocity: 0, target: 0,
@@ -201,7 +213,7 @@ function frame() {
   pivot.scale.multiplyScalar(1 + hoverIn.value * 0.18);       // grows a little
   hoverGroup.rotation.y = THREE.MathUtils.degToRad(hx * 40);  // turns with it
   hoverGroup.rotation.z = -hx * 0.18;                         // and leans
-  hue.value = hx * 0.55;                                      // shifts its hue: pinker left, golden right
+  ripe.value = Math.max(-1, Math.min(1, hx / 1.5));          // ripens: greener left, deeper red right
 
   // Keep spinning, with a gentle flying wobble
   spinner.rotation.y += dt * (reduced ? 0.3 : 0.9);
