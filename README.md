@@ -61,7 +61,7 @@ Están en `js/room.js` (objeto `nowPlaying` y lista `destinations`). La imagen d
 
 ## Cosas a tener en cuenta
 - Las rutas empiezan por `/` (por ejemplo `/assets/images/sky.webp`): significan "desde la raíz de la web".
-- Si cambias el nombre de la carpeta de un proyecto, cambia también el enlace en la card de la home y el botón × del proyecto.
+- Si cambias el nombre de la carpeta de un proyecto, cambia también el enlace en la card de la home y la flecha "← Back" del proyecto.
 - El diseño de las páginas de proyecto es común (`css/project.css`): un cambio ahí afecta a todos los proyectos.
 - Para ver cómo queda en tu ordenador, abre una terminal en esta carpeta y ejecuta `python3 -m http.server 8000`; después entra en <http://localhost:8000>. (No vale abrir el `.html` con doble clic: las rutas con `/` necesitan un servidor.)
 - Los tomates 3D usan la librería [three.js](https://threejs.org), que se carga desde internet (jsDelivr).
