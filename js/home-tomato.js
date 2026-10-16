@@ -124,6 +124,39 @@ function layout(progress) {
   pivot.position.set((xPx - width / 2) * upp, (height / 2 - yPx) * upp, 0);
 }
 
+// ---------- Hover on the docked tomato ----------
+// When the tomato is the logo in the nav, hovering it makes it grow a little, lean
+// towards the cursor and spin faster. Every value follows the cursor through a spring,
+// so it moves with a bit of bounce and settles back smoothly when the cursor leaves.
+const hoverRig = new THREE.Group(); // sits between pivot and spinner, only for the hover
+pivot.remove(spinner);
+hoverRig.add(spinner);
+pivot.add(hoverRig);
+
+const logo = document.querySelector('.nav-logo');
+const pointer = { over: false, x: 0, y: 0 }; // x, y: -1 to 1 across the logo
+logo.addEventListener('pointerenter', () => { pointer.over = true; });
+logo.addEventListener('pointerleave', () => { pointer.over = false; pointer.x = pointer.y = 0; });
+logo.addEventListener('pointermove', (e) => {
+  const r = logo.getBoundingClientRect();
+  pointer.x = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width) * 2 - 1));
+  pointer.y = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height) * 2 - 1));
+});
+
+// A damped spring: value chases target with some overshoot
+function spring(stiffness, damping) {
+  return { value: 0, velocity: 0, stiffness, damping };
+}
+function stepSpring(s, target, dt) {
+  const force = (target - s.value) * s.stiffness - s.velocity * s.damping;
+  s.velocity += force * dt;
+  s.value += s.velocity * dt;
+}
+const hoverGrow = spring(320, 14); // 0 → 1 while hovered
+const tiltX = spring(220, 16);
+const tiltY = spring(220, 16);
+const spinBoost = spring(60, 12);
+
 // ---------- Animation ----------
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 let shown = 0; // 0 = big in the center, 1 = docked in the nav
@@ -158,6 +191,22 @@ function frame() {
     spinner.rotation.z = Math.sin(t * 0.6) * 0.12 * calm;
     spinner.position.y = Math.sin(t * 1.4) * 0.06 * calm;
   }
+
+  // Hover springs (only while docked, so the big hero tomato is never affected)
+  const hovering = pointer.over && shown > 0.95 && !reduced;
+  const sdt = Math.min(dt, 1 / 60); // small steps keep the springs stable
+  for (let left = dt; left > 0; left -= sdt) {
+    const h = Math.min(sdt, left);
+    stepSpring(hoverGrow, hovering ? 1 : 0, h);
+    stepSpring(tiltX, hovering ? pointer.y * 0.6 : 0, h);
+    stepSpring(tiltY, hovering ? pointer.x * 0.8 : 0, h);
+    stepSpring(spinBoost, hovering ? 1 : 0, h);
+  }
+  hoverRig.scale.setScalar(1 + hoverGrow.value * 0.35);
+  hoverRig.rotation.x = tiltX.value;
+  hoverRig.rotation.z = -tiltY.value * 0.5;
+  hoverRig.position.y = hoverGrow.value * 0.04;
+  spinner.rotation.y += dt * spinBoost.value * 5;
 
   hint.style.opacity = shown > 0.05 ? 0 : 0.85;
   renderer.render(scene, camera);
