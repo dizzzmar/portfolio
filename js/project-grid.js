@@ -1,4 +1,4 @@
-// PÁGINAS DE PROYECTO · galería en cuadrícula infinita (#grid-hero): ocupa toda la pantalla,
+// PÁGINAS DE PROYECTO · galería en cuadrícula infinita (#grid-hero): va dentro del cuadrado redondeado,
 // se desplaza sola muy despacio y se puede arrastrar en cualquier dirección (con inercia).
 // Las imágenes se repiten para llenar la cuadrícula. Basta con poner las <figure> dentro de
 // <section class="grid-hero" id="grid-hero"> (ver project/soap-and-glory-vanilla).
@@ -29,8 +29,8 @@
 
   function build() {
     const w = root.clientWidth, h = root.clientHeight;
-    gap = w < 640 ? 10 : 16;
-    size = Math.round(Math.min(340, Math.max(150, w * (w < 640 ? 0.42 : 0.2))));
+    gap = w < 640 ? 8 : 12;
+    size = Math.round(w * (w < 640 ? 0.42 : 0.3));
     step = size + gap;
     cols = Math.ceil(w / step) + 2;
     rows = Math.ceil(h / step) + 2;
@@ -147,8 +147,8 @@
     resizeTimer = setTimeout(build, 150);
   });
 
+  root.classList.add('is-live');   // antes de medir: el cuadrado ya no lleva la cuadrícula de reserva
   build();
-  root.classList.add('is-live');
   requestAnimationFrame(() => root.classList.add('is-in'));
   start();
 })();

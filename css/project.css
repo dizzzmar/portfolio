@@ -51,10 +51,11 @@ figure { margin: 0; }
 .stack.is-live .stack-ui { margin-top: 0; }
 @media (max-width: 640px) { .stack-deck { gap: 12px; } .stack.is-live .stack-card { border-radius: 12px; } }
 @media (prefers-reduced-motion: reduce) { .stack.is-live .stack-card, .stack.is-live .stack-card.out { transition: none; } }
-/* ---------- Galería en cuadrícula infinita (hero a pantalla completa) ----------
-   Ocupa toda la primera pantalla; se arrastra en cualquier dirección. Lo mueve js/project-grid.js.
+/* ---------- Galería en cuadrícula infinita (dentro del cuadrado redondeado) ----------
+   Es un cuadrado del ancho del contenido; las fotos se arrastran dentro y se recortan en sus bordes. Lo mueve js/project-grid.js.
    Sin JavaScript se ven las imágenes en una cuadrícula normal. */
-.grid-hero { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: #f1ede4; outline: none; }
+.grid-hero { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 18px; background: #f1ede4; outline: none; isolation: isolate; }
+.grid-hero:not(.is-live) { aspect-ratio: auto; }
 .grid-source { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; padding: 16px; }
 .grid-source img { display: block; width: 100%; height: auto; border-radius: 18px; }
 .grid-hero.is-live .grid-source { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; padding: 0; }
@@ -63,12 +64,10 @@ figure { margin: 0; }
 .grid-cell { position: absolute; top: 0; left: 0; width: var(--cell); height: var(--cell); margin: 0; will-change: transform; }
 .grid-cell img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 18px; background: #eee9df; box-shadow: 0 10px 28px rgba(60,40,10,.12); pointer-events: none; opacity: 0; transform: scale(.85); transition: opacity .7s ease var(--d, 0ms), transform .9s cubic-bezier(.2,.8,.2,1) var(--d, 0ms); }
 .grid-hero.is-in .grid-cell img { opacity: 1; transform: none; }
-.grid-hero::after { content: ''; position: absolute; inset: auto 0 0; height: 22%; background: linear-gradient(to bottom, rgba(250,249,246,0), #faf9f6); pointer-events: none; }
-.grid-hint { position: absolute; z-index: 1; left: 50%; bottom: 28px; transform: translateX(-50%); margin: 0; padding: 8px 16px 7px; border-radius: 999px; background: rgba(250,249,246,.86); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; pointer-events: none; transition: opacity .4s; }
+.grid-hint { position: absolute; z-index: 1; left: 50%; bottom: 16px; transform: translateX(-50%); margin: 0; padding: 8px 16px 7px; border-radius: 999px; background: rgba(250,249,246,.86); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; pointer-events: none; transition: opacity .4s; }
 .grid-hero:not(.is-live) .grid-hint, .grid-hero.dragging .grid-hint { opacity: 0; }
 .grid-hero:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; }
-.grid-hero + .project-page { margin-top: 0; }
-@media (max-width: 640px) { .grid-cell img, .grid-source img { border-radius: 12px; } .grid-hint { bottom: 20px; } }
+@media (max-width: 640px) { .grid-hero { border-radius: 12px; } .grid-cell img, .grid-source img { border-radius: 10px; } .grid-hint { bottom: 12px; } }
 @media (prefers-reduced-motion: reduce) { .grid-cell img { transition: none; } }
 @media (max-width: 640px) {
  .close-project { top: 12px; right: 12px; width: 44px; height: 44px; }
