@@ -38,3 +38,8 @@ if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
   addEventListener('resize', queue);
   contrast();
 })();
+
+// ---------- Smooth scrolling, but only after the page has loaded ----------
+// Arriving at /#card (back from a project) jumps straight to the card, so the page
+// transition lands on it. Clicks inside the page (Work, the tomato) still glide.
+addEventListener('load', () => requestAnimationFrame(() => document.documentElement.classList.add('smooth-scroll')));
