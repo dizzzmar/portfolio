@@ -36,6 +36,8 @@
 
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
 <link rel="stylesheet" href="/css/project.css">
+<!-- Descarga la home por adelantado para que al volver la animación de cierre llegue a tiempo -->
+<script type="speculationrules">{ "prefetch": [{ "urls": ["/"] }] }</script>
 </head>
 <body>
 
@@ -50,11 +52,13 @@
      - Cada <figure class="stack-card"> es una imagen. Mínimo 3, puedes poner las que quieras.
      - EDITA en cada una: src (ruta de la imagen), width/height (tamaño real en píxeles)
        y alt (descripción corta de lo que se ve, para accesibilidad).
+     - EDITA view-transition-name: pon el nombre de la carpeta del proyecto, el mismo que en
+       la card de la home. Así la imagen de la card crece hasta aquí al abrir el proyecto.
      - ¿Prefieres UNA sola imagen grande? Borra todo el <section class="stack"> y el
        <script> del final de la página, y usa en su lugar:
-         <figure><img class="project-image" src="/assets/projects/nombre/imagen-1.webp" width="1600" height="1600" alt="Descripción"></figure>
+         <figure style="view-transition-name: NOMBRE-DEL-PROYECTO"><img class="project-image" src="/assets/projects/nombre/imagen-1.webp" width="1600" height="1600" alt="Descripción"></figure>
 -->
-<section class="stack" id="stack" aria-roledescription="carousel" aria-label="Project images">
+<section class="stack" id="stack" style="view-transition-name: NOMBRE-DEL-PROYECTO" aria-roledescription="carousel" aria-label="Project images">
 <div class="stack-deck" id="stack-deck">
 <figure class="stack-card"><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción de la imagen 1" decoding="async" draggable="false"></figure>
 <figure class="stack-card"><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción de la imagen 2" loading="lazy" decoding="async" draggable="false"></figure>

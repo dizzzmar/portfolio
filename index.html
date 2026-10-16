@@ -18,6 +18,11 @@
   <title>dizmar</title>
   <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
   <link rel="stylesheet" href="/css/home.css">
+  <!-- Al pasar el ratón por una card, Chrome prepara la página del proyecto por adelantado:
+       se abre al instante y la animación de apertura siempre llega a tiempo -->
+  <script type="speculationrules">
+    { "prerender": [{ "where": { "href_matches": "/project/*" }, "eagerness": "moderate" }] }
+  </script>
   <script type="importmap">
     {
       "imports": {
@@ -69,7 +74,9 @@
                que aparezca. El orden en el código es el orden en la página.
              - Para que la card ABRA la página del proyecto: envuelve el contenido
                en <a class="project-link" href="/project/NOMBRE-DEL-PROYECTO/"> como
-               en la card de Soap & Glory.
+               en la card de Soap & Glory, y pon en su <div class="project-media">
+               style="view-transition-name: NOMBRE-DEL-PROYECTO" (el mismo nombre que en
+               la imagen principal de su página) para que se anime al abrir y cerrar.
              ========================================================================== -->
         <div class="project-grid">
 
@@ -84,7 +91,7 @@
                   <li class="project-year">2025</li>
                 </ul>
               </header>
-              <div class="project-media">
+              <div class="project-media" style="view-transition-name: lexus-electrified">
                 <video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video>
               </div>
             </a>
@@ -100,7 +107,7 @@
                   <li>Key visuals</li>
                 </ul>
               </header>
-              <div class="project-media"><img src="/assets/projects/soap-and-glory-vanilla/sg3-800.webp" style="object-position: 50% 42%" width="800" height="800" loading="lazy" decoding="async" alt="Soap &amp; Glory body lotions with vanilla cream, caramel and lime"></div>
+              <div class="project-media" style="view-transition-name: soap-and-glory-vanilla"><img src="/assets/projects/soap-and-glory-vanilla/sg3-800.webp" style="object-position: 50% 42%" width="800" height="800" loading="lazy" decoding="async" alt="Soap &amp; Glory body lotions with vanilla cream, caramel and lime"></div>
             </a>
           </article>
 

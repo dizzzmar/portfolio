@@ -153,7 +153,7 @@ addEventListener('resize', () => { if (cropped) setCrop(true); });
 
 // ---------- Animation ----------
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-let shown = 0; // 0 = big in the center, 1 = docked in the nav
+let shown = scrollY > 4 ? 1 : 0; // 0 = big in the center, 1 = docked in the nav (already docked if the page opens scrolled down)
 const DOCK_TIME = 0.7; // seconds for the trip between the two
 const clock = new THREE.Clock();
 

@@ -48,6 +48,7 @@ Abre `project/<nombre>/index.html`. Los trozos editables están marcados con com
 2. Crea `assets/projects/<nombre-del-proyecto>/` y sube allí las imágenes (mejor `.webp`).
 3. Edita los textos marcados con `EDITA:` en el nuevo `index.html`.
 4. Copia `templates/project-card.html` dentro de la lista de proyectos de `index.html` y edítala.
+   Para la animación al abrir y cerrar el proyecto, la imagen de la card y la imagen principal de la página del proyecto deben llevar el mismo `style="view-transition-name: nombre-del-proyecto"`.
 5. Cuando esté listo, borra la línea `<meta name="robots" content="noindex">` de la página del proyecto para que aparezca en buscadores.
 
 ### Cambiar o añadir imágenes

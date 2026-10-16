@@ -16,6 +16,8 @@
 
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
 <link rel="stylesheet" href="/css/project.css">
+<!-- Descarga la home por adelantado para que al volver la animación de cierre llegue a tiempo -->
+<script type="speculationrules">{ "prefetch": [{ "urls": ["/"] }] }</script>
 </head>
 <body>
 
@@ -28,7 +30,7 @@
 <!-- ======================= 1. VÍDEO PRINCIPAL =======================
      Vídeo corto en bucle y sin sonido (el mismo de la card de la home).
      Para cambiarlo, sustituye los archivos de /assets/projects/lexus-electrified/ -->
-<figure><video class="project-image" src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video></figure>
+<figure style="view-transition-name: lexus-electrified"><video class="project-image" src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video></figure>
 
 <!-- ======================= 2. CABECERA Y TEXTO ======================= -->
 <header class="project-intro">
