@@ -18,23 +18,15 @@ body {
   position: fixed;
   inset: -8%;
   z-index: -1;
+  /* El grano de película va aquí mismo, mezclado con la foto (antes era una capa aparte que
+     obligaba a recalcular la mezcla de toda la pantalla en cada frame de scroll) */
   background:
+    url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat,
     url("/assets/images/sky.webp") center / cover,
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
+  background-blend-mode: overlay, normal, normal;
   animation: drift 40s ease-in-out infinite alternate;
   will-change: transform;
-}
-
-/* Grano de película: se queda quieto encima del cielo en movimiento */
-.grain {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: url("/assets/images/grain.png") repeat;
-  background-size: 128px 128px;
-  mix-blend-mode: overlay;
-  opacity: 0.32;
 }
 
 @keyframes drift {
@@ -168,21 +160,12 @@ body {
 .paper {
   position: absolute;
   inset: 0;
-  background: #2c4e37;
+  /* Verde con el grano ya mezclado en la imagen (mismo aspecto, sin mezclar en cada frame) */
+  background: #2c4e37 url("/assets/images/paper-grain.png") 0 0 / 128px 128px repeat;
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
 }
 
-/* El mismo grano que el cielo, sobre el verde liso */
-.paper::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url("/assets/images/grain.png") repeat;
-  background-size: 128px 128px;
-  mix-blend-mode: overlay;
-  opacity: 0.3;
-}
 
 .work-inner { position: relative; }
 

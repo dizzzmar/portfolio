@@ -1,6 +1,7 @@
 // HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con la cartela "Mario Diz"
 // y viaja a la esquina superior izquierda (logo de la barra) al hacer scroll.
-// En la barra solo gira; para que pese poco, el lienzo se encoge a un recuadro alrededor del tomate.
+// En la barra solo gira; para que pese poco, el lienzo se encoge a un recuadro alrededor del tomate
+// y se dibuja a 30 fotogramas por segundo.
 // Para cambiar el texto del anillo sustituye la imagen assets/images/name-cartela.webp
 
 import * as THREE from 'three';
@@ -156,7 +157,14 @@ let shown = 0; // 0 = big in the center, 1 = docked in the nav
 const DOCK_TIME = 0.7; // seconds for the trip between the two
 const clock = new THREE.Clock();
 
-function frame() {
+// Docked, the 44px tomato only needs 30 frames per second; its slow spin looks the same
+const DOCKED_FPS = 30;
+let lastDraw = 0;
+
+function frame(now) {
+  requestAnimationFrame(frame);
+  if (cropped && now - lastDraw < 1000 / DOCKED_FPS - 2) return;
+  lastDraw = now;
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.elapsedTime;
 
@@ -191,6 +199,5 @@ function frame() {
   const hintOpacity = shown > 0.05 ? '0' : '0.85';
   if (hint.style.opacity !== hintOpacity) hint.style.opacity = hintOpacity;
   renderer.render(scene, camera);
-  requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);

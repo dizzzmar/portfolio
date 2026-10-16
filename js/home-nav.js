@@ -1,9 +1,15 @@
 // HOME · barra de navegación: marca "Work" como activo mientras ves esa sección y oscurece los enlaces cuando pasan sobre una card blanca.
-// También deja quietos los vídeos de las cards si el visitante pide menos movimiento.
+// También pausa los vídeos de las cards cuando no se ven (o siempre, si el visitante pide menos movimiento).
 
-// Looping project previews stay still for visitors who prefer reduced motion
+// Looping project previews stay still for visitors who prefer reduced motion,
+// and only play while on screen (off screen they would keep decoding for nothing)
 if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.querySelectorAll('.project-media video').forEach((v) => { v.autoplay = false; v.pause(); });
+} else {
+  const videos = new IntersectionObserver((entries) => {
+    for (const e of entries) e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause();
+  });
+  document.querySelectorAll('.project-media video').forEach((v) => videos.observe(v));
 }
 
 // ---------- Nav: current section and link contrast ----------
