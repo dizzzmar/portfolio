@@ -8,15 +8,19 @@ html { scroll-behavior: smooth; }
 body { margin: 0; background: #faf9f6; color: #20221d; font-family: 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-underline-offset: 4px; }
 a:focus-visible { outline: 3px solid #175cff; outline-offset: 5px; }
-.close-project { position: fixed; z-index: 2; top: 20px; right: 20px; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #eeede8; text-decoration: none; font-size: 30px; line-height: 1; transition: background .2s; }
-.close-project:hover { background: #deded6; }
+/* Flecha "← Back" arriba a la izquierda: mismo estilo de texto que los enlaces del final, con un fondo
+   suave para que se lea al pasar por encima de las imágenes */
+.back-link { position: fixed; z-index: 2; top: 20px; left: 20px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: rgba(250, 249, 246, .82); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-size: 14px; text-decoration: none; transition: background .2s; }
+.back-link span { transition: transform .2s; }
+.back-link:hover { background: #eeede8; }
+.back-link:hover span { transform: translateX(-3px); }
 .project-page { width: min(620px, calc(100% - 160px)); margin: 24px auto 0; }
 figure { margin: 0; }
 .project-image { display: block; width: 100%; height: auto; border-radius: 18px; background: #eee9df; }
 .project-intro { padding: 28px 24px 64px; }
 .project-intro { display: grid; gap: 4px; }
 .project-brand { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(18px, 2vw, 26px); letter-spacing: -.035em; line-height: 1; text-transform: uppercase; }
-.project-intro h1 { margin: 0 0 0 -.045em; font-size: clamp(48px, 9vw, 92px); font-weight: 700; letter-spacing: -.06em; line-height: .88; text-transform: uppercase; }
+.project-intro h1 { margin: 0 0 0 -.045em; font-size: clamp(40px, 9vw, 76px); font-weight: 700; letter-spacing: -.06em; line-height: .88; text-transform: uppercase; }
 .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
 .project-tags li { padding: 5px 11px 4px; border: 1px solid #171717; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .06em; line-height: 1.2; text-transform: uppercase; }
 .project-tags .project-year { margin-left: auto; padding: 0; border: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 14px; font-weight: 400; letter-spacing: -.02em; font-variant-numeric: lining-nums; transform: translateY(2.5px); }
@@ -68,10 +72,10 @@ figure { margin: 0; }
 @media (max-width: 640px) { .grid-hero { width: calc(100% - 24px); margin-top: 72px; border-radius: 12px; } .grid-cell img, .grid-source img { border-radius: 10px; } }
 @media (prefers-reduced-motion: reduce) { .grid-cell img { transition: none; } }
 @media (max-width: 640px) {
- .close-project { top: 12px; right: 12px; width: 44px; height: 44px; }
+ .back-link { top: 14px; left: 12px; }
  .project-page { width: calc(100% - 24px); margin-top: 72px; }
  .project-intro { padding: 24px 8px 40px; }
- .project-intro h1 { font-size: clamp(44px, 14vw, 64px); }
+ .project-intro h1 { font-size: clamp(32px, 11.5vw, 64px); }
  .project-brand { font-size: 18px; }
  .project-description { font-size: 16px; }
  .project-gallery, .image-pair { gap: 12px; }
@@ -80,4 +84,4 @@ figure { margin: 0; }
  .project-video { border-radius: 12px; }
  .project-end { padding: 40px 8px; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .close-project { transition: none; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .back-link, .back-link span { transition: none; } }
