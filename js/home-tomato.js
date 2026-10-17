@@ -84,17 +84,25 @@ new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
 
 // ---------- Layout ----------
 // Hero: centered and large. Docked: small, in the top-left corner.
+// The canvas is as tall as the screen with the browser bars hidden (100lvh in the CSS), so
+// on phones it doesn't have to be rebuilt every time Safari's bar slides in or out while
+// scrolling. A hidden probe of that same height tells its size even while it's cropped.
+const probe = Object.assign(document.createElement('div'), { ariaHidden: 'true' });
+probe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100vh;height:100lvh;visibility:hidden;pointer-events:none';
+document.body.appendChild(probe);
+const hero = document.querySelector('.hero');
 let width = 0, height = 0;
 
 function resize() {
-  width = innerWidth;
-  height = innerHeight;
-  renderer.setSize(width, height, false);
+  const w = probe.offsetWidth, h = probe.offsetHeight;
+  if (w === width && h === height) return; // only the browser bar moved: nothing to rebuild
+  width = w;
+  height = h;
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
+  if (cropped) setCrop(true); else renderer.setSize(width, height, false);
 }
 addEventListener('resize', resize);
-resize();
 
 // World units visible per pixel at the z = 0 plane
 function unitsPerPixel() {
@@ -109,7 +117,9 @@ const firstNavLink = document.querySelector('.nav-links a');
 
 function layout(progress) {
   const upp = unitsPerPixel();
-  const heroPx = Math.min(width, height) * 0.5; // tomato size in the hero
+  // In the hero the tomato sits in its middle and scrolls with it, as if stuck to the page
+  const h = hero.getBoundingClientRect();
+  const heroPx = Math.min(width, h.height) * 0.5; // tomato size in the hero
   // Docked, the tomato is the logo at the left of the nav bar
   const dockPx = width < 700 ? 36 : 44;        // tomato size when docked
   const margin = width < 700 ? 14 : 24;
@@ -120,7 +130,7 @@ function layout(progress) {
   // Docked, the body's center lines up with the middle of the nav links
   const r = firstNavLink.getBoundingClientRect();
   const dockY = (r.top + r.bottom) / 2 - dockPx * BODY_OFFSET;
-  const yPx = THREE.MathUtils.lerp(height / 2, dockY, progress);
+  const yPx = THREE.MathUtils.lerp(h.top + h.height / 2, dockY, progress);
 
   pivot.scale.setScalar(sizePx * upp);
   pivot.position.set((xPx - width / 2) * upp, (height / 2 - yPx) * upp, 0);
@@ -149,11 +159,16 @@ function setCrop(on) {
   }
   cropped = on;
 }
-addEventListener('resize', () => { if (cropped) setCrop(true); });
+resize();
 
 // ---------- Animation ----------
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-let shown = scrollY > 4 ? 1 : 0; // 0 = big in the center, 1 = docked in the nav
+// It flies to the nav once about a third of the hero has scrolled away, and back when the
+// visitor scrolls above that. Two thresholds, so it doesn't bounce back and forth if the
+// page stops right at the edge.
+const DOCK_AT = 0.35, UNDOCK_AT = 0.25; // share of the hero's height scrolled away
+let docked = scrollY > hero.offsetHeight * 0.3;
+let shown = docked ? 1 : 0; // 0 = big in the hero, 1 = docked in the nav
 
 // The tomato only flies when the visitor scrolls. If the page moves on its own before
 // they touch anything (coming back to a card, the back button restoring the position),
@@ -176,9 +191,12 @@ function frame(now) {
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.elapsedTime;
 
-  // As soon as the page leaves the top, the tomato goes straight to the nav in
-  // one move (and back when the page returns to the top). It never parks halfway.
-  const target = scrollY > 4 ? 1 : 0;
+  // Past the threshold the tomato goes straight to the nav in one move (and back above it).
+  // It never parks halfway.
+  const heroH = hero.offsetHeight;
+  if (!docked && scrollY > heroH * DOCK_AT) docked = true;
+  else if (docked && scrollY < heroH * UNDOCK_AT) docked = false;
+  const target = docked ? 1 : 0;
   const step = reduced || !userMoved ? 1 : dt / DOCK_TIME;
   shown = target > shown ? Math.min(target, shown + step) : Math.max(target, shown - step);
   layout(ease(shown));
