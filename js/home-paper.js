@@ -53,11 +53,13 @@
   function layoutHoles(w, h) {
     const rand = rng(11);
     const list = [];
-    const bands = innerWidth < 700 ? [[24, 150], [h - 170, h - 30]] : [[30, 180], [h - 200, h - 40]];
-    const perBand = Math.max(5, Math.round(w / 110));
+    // Small shapes scattered in a strip at the top and another at the bottom (smaller and lower on phones)
+    const phone = innerWidth < 700;
+    const bands = phone ? [[14, 84], [h - 84, h - 18]] : [[26, 150], [h - 140, h - 28]];
+    const perBand = Math.max(6, Math.round(w / (phone ? 55 : 70)));
     for (const [top, bottom] of bands) {
       for (let i = 0; i < perBand; i++) {
-        const size = 36 + rand() * 60;
+        const size = phone ? 14 + rand() * 18 : 20 + rand() * 28;
         list.push({
           x: (i + 0.15 + rand() * 0.7) / perBand,
           y: top + rand() * (bottom - top),
@@ -84,11 +86,10 @@
       holes = layoutHoles(w, h);
       holes.w = w; holes.h = h;
     }
-    const radius = innerWidth < 700 ? 20 : 28;
     const cut = [...holes, ...punched].map((hole) => holeMarkup(hole, w)).join('');
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">` +
       `<defs><mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="${w}" height="${h}">` +
-      `<rect width="${w}" height="${h}" rx="${radius}" fill="#fff"/><g fill="#000">${cut}</g></mask></defs>` +
+      `<rect width="${w}" height="${h}" fill="#fff"/><g fill="#000">${cut}</g></mask></defs>` +
       `<rect width="${w}" height="${h}" mask="url(#m)"/></svg>`;
     const url = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
     paper.style.webkitMaskImage = url;
@@ -106,7 +107,7 @@
     const hole = {
       x: (e.clientX - rect.left) / rect.width,
       y: e.clientY - rect.top,
-      size: 40 + Math.random() * 30,
+      size: 24 + Math.random() * 16,
       rot: Math.random() * 360,
       shape: Math.floor(Math.random() * SHAPES.length),
     };
@@ -133,7 +134,7 @@
   // A few pieces already lying on the sky in the footer
   const rand = rng(23);
   for (let i = 0; i < 9; i++) {
-    const size = 26 + rand() * 34;
+    const size = 16 + rand() * 18;
     const el = document.createElement('div');
     el.innerHTML = shapeSvg(Math.floor(rand() * SHAPES.length), size, Math.round(rand() * 360));
     const svg = el.firstChild;

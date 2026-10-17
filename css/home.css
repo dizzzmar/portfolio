@@ -158,25 +158,24 @@ body {
 
 /* ---------- Papel verde (sección "Selected work") ---------- */
 /* La sección es una hoja de papel verde que sube por encima del cielo.
-   Sus esquinas redondeadas y los agujeros salen de una máscara que crea js/home-paper.js. */
+   Es plana (sin textura, sombra ni esquinas redondeadas); los agujeros salen de una máscara que crea js/home-paper.js. */
 .work {
   position: relative;
   color: #111;
-  padding: 260px 10px 240px;
+  padding: 190px 10px 170px;
 }
 
 .paper-shadow {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  filter: drop-shadow(2px 6px 6px rgba(0, 25, 10, 0.45));
 }
 
 .paper {
   position: absolute;
   inset: 0;
-  /* Verde con el grano ya mezclado en la imagen (mismo aspecto, sin mezclar en cada frame) */
-  background: #2c4e37 url("/assets/images/paper-grain.png") 0 0 / 128px 128px repeat;
+  /* Verde liso, sin textura ni esquinas redondeadas */
+  background: #2c4e37;
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
 }
@@ -399,11 +398,10 @@ body {
 
 .fallen svg {
   position: absolute;
-  filter: drop-shadow(1px 3px 3px rgba(0, 25, 10, 0.3));
 }
 
 @media (max-width: 700px) {
-  .work { padding: 220px 8px 200px; }
+  .work { padding: 110px 8px 104px; }
   .punch-hint { top: 168px; right: 20px; }
   :root { --nav-h: 56px; }
   .nav { gap: 10px; padding: 0 14px; }
