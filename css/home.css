@@ -115,6 +115,9 @@ body {
   pointer-events: none;
 }
 
+/* Texto solo para buscadores y lectores de pantalla (no se ve) */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+
 /* ---------- Página: hero ---------- */
 .hero {
   /* Altura fija (la pantalla con las barras del navegador visibles): con 100dvh cambiaba al
@@ -214,7 +217,7 @@ body {
   gap: 20px;
 }
 
-.work h1, .work-intro p {
+.work-intro h2, .work-intro p {
   font-size: 12px;
   font-weight: 400;
   line-height: 1.4;
