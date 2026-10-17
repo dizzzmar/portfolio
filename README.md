@@ -37,6 +37,8 @@ assets/                    Imágenes, vídeos y modelos 3D
 
 Regla fácil: **textos → archivos `.html`**, **aspecto → `.css`**, **animaciones → `.js`**.
 
+**Al cambiar un `.css` o un `.js`:** en los HTML, los enlaces llevan `?v=20261017` al final (por ejemplo `/css/home.css?v=20261017`). Cambia ese número (por ejemplo, a la fecha del día) en todas las páginas para que los navegadores descarguen la versión nueva en vez de usar la que tienen guardada.
+
 ## Tareas habituales
 
 ### Cambiar un texto de una card de la home
