@@ -43,3 +43,21 @@ if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
 // Arriving at /#card (back from a project) jumps straight to the card, so the page
 // transition lands on it. Clicks inside the page (Work, the tomato) still glide.
 addEventListener('load', () => requestAnimationFrame(() => document.documentElement.classList.add('smooth-scroll')));
+
+// ---------- Card skeletons ----------
+// Each card's media shows a shimmering block until its image (or the video's poster) has loaded
+document.querySelectorAll('.project-media').forEach((box) => {
+  const media = box.querySelector('img, video');
+  if (!media) { box.classList.add('is-loaded'); return; }
+  const done = () => box.classList.add('is-loaded');
+  if (media.tagName === 'VIDEO') {
+    if (media.readyState >= 2) return done();
+    media.addEventListener('loadeddata', done, { once: true });
+    if (media.poster) { const poster = new Image(); poster.onload = poster.onerror = done; poster.src = media.poster; }
+  } else if (media.complete) {
+    done();
+  } else {
+    media.addEventListener('load', done, { once: true });
+    media.addEventListener('error', done, { once: true });
+  }
+});

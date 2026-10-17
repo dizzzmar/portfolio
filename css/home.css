@@ -113,6 +113,44 @@ body {
   height: 100lvh;
   z-index: 10;
   pointer-events: none;
+  transition: opacity .6s ease;
+}
+
+/* ---------- Carga ----------
+   Mientras llega el tomate 3D se ve un tomate plano en el mismo sitio y del mismo tamaño;
+   cuando el 3D está listo (clase tomato-ready, la pone js/home-tomato.js) se funden. */
+.js:not(.tomato-ready) #scene { opacity: 0; }
+.tomato-placeholder {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: calc(min(100vw, 100vh) * 0.5);
+  height: calc(min(100vw, 100svh) * 0.5);
+  width: auto;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: opacity .6s ease;
+  animation: placeholder-float 3s ease-in-out infinite;
+}
+.tomato-ready .tomato-placeholder { opacity: 0; }
+@keyframes placeholder-float {
+  50% { transform: translate(-50%, calc(-50% - 10px)) rotate(-3deg); }
+}
+
+/* Cards: un bloque con brillo que pasa (skeleton) hasta que llega su imagen o vídeo */
+.js .project-media img, .js .project-media video { opacity: 0; transition: opacity .5s ease; }
+.js .project-media.is-loaded img, .js .project-media.is-loaded video { opacity: 1; }
+.js .project-media:not(.is-loaded)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .75) 50%, transparent 70%) #ecebe6;
+  background-size: 250% 100%;
+  animation: skeleton 1.3s linear infinite;
+}
+@keyframes skeleton {
+  from { background-position: 120% 0; }
+  to { background-position: -120% 0; }
 }
 
 /* Texto solo para buscadores y lectores de pantalla (no se ve) */
@@ -428,7 +466,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   html.smooth-scroll { scroll-behavior: auto; }
-  .scroll-hint::after, .sky, .ticker-track { animation: none; }
+  .scroll-hint::after, .sky, .ticker-track, .tomato-placeholder, .project-media::after { animation: none; }
 }
 
 /* ---------- Transición al abrir y cerrar un proyecto (View Transitions) ----------

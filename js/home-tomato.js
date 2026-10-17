@@ -76,6 +76,8 @@ new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
   holder.scale.setScalar(1 / Math.max(size.x, size.y, size.z));
   holder.traverse((o) => { o.renderOrder = 1; });
   spinner.add(holder);
+  // The 3D tomato is ready: fade it in over the flat placeholder (see .tomato-ready in home.css)
+  requestAnimationFrame(() => document.documentElement.classList.add('tomato-ready'));
 });
 
 // ---------- Layout ----------
