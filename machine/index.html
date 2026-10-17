@@ -21,12 +21,13 @@
 </script>
 <style>
   /* Todo el estilo va aquí mismo para no hacer más peticiones.
-     Rojo tomate sobre el cielo; el nombre y los títulos, bordados en punto de cruz (SVG).
+     Todo en un rojo tomate sólido sobre el cielo; el nombre y los títulos, bordados en punto de cruz (SVG).
      Con el botón de arriba se cambia a fondo negro. */
   :root {
-    --red: #e3241a; --dim: #b8261d; --line: rgba(227, 36, 26, .45);
-    --thread: #e3241a; --thread-dark: #a8150e; --thread-light: #ff8a7a;
-    --halo: 0 1px 0 rgba(255, 255, 255, .7), 0 -1px 0 rgba(255, 255, 255, .25); /* un filo claro y nítido para que el rojo se lea sobre el azul */
+    /* Un solo rojo sólido para todo: texto, líneas y puntadas */
+    --red: #e3241a; --dim: var(--red); --line: var(--red);
+    --thread: var(--red); --thread-dark: var(--red); --thread-light: var(--red);
+    --halo: none;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { background: #6fa7e6 linear-gradient(to bottom, #4f8fd8, #8cc0ef 55%, #d8ecfb); min-height: 100%; }
@@ -41,11 +42,11 @@
 
   /* Botón de arriba: cielo / fondo negro */
   .bg-toggle { display: flex; justify-content: flex-end; margin-bottom: 28px; }
-  .bg-toggle button { appearance: none; border: 1px solid var(--red); border-radius: 999px; padding: 6px 12px 5px; background: rgba(255, 255, 255, .55); color: var(--red); font: inherit; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; text-shadow: none; }
+  .bg-toggle button { appearance: none; border: 1px solid var(--red); border-radius: 999px; padding: 6px 12px 5px; background: transparent; color: var(--red); font: inherit; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; text-shadow: none; }
   .bg-toggle button:hover { background: var(--red); color: #fff; }
 
   /* Punto de cruz: cada píxel de las letras es una cruz de dos puntadas */
-  .stitch { display: block; height: 40px; width: auto; max-width: 100%; overflow: visible; filter: drop-shadow(0 1px 1px rgba(60, 5, 0, .4)); }
+  .stitch { display: block; height: 40px; width: auto; max-width: 100%; overflow: visible; }
   .stitch-title { height: clamp(58px, 14vw, 104px); }
 
   nav ul { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 28px 0 32px; list-style: none; }
@@ -77,12 +78,11 @@
   html.black { background: #0b0807; }
   html.black body { font-weight: 400; }
   html.black body::before { content: none; }
-  html.black { --red: #ff4434; --dim: #c2382c; --line: rgba(255, 68, 52, .4); --thread: #ff4434; --thread-dark: #b8231a; --thread-light: #ff9a8c; --halo: none; }
+  html.black { --red: #ff4434; }
   html.black .bg-toggle button { background: transparent; }
   html.black .bg-toggle button:hover { background: var(--red); color: #0b0807; }
   html.black a:hover, html.black nav a[aria-current] { color: #0b0807; }
-  html.black .stitch { filter: none; }
-  html.black .mode { background: #1a1210; box-shadow: none; border: 1px solid var(--line); }
+  html.black .mode { background: #0b0807; box-shadow: none; border: 1px solid var(--red); }
   html.black .mode span { color: #0b0807; }
 
   @media (max-width: 520px) { body { font-size: 12px; } dt { width: 12ch; } .stitch:not(.stitch-title) { height: 30px; } }
