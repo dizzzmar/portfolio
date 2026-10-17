@@ -1,0 +1,175 @@
+<!doctype html>
+<!--
+  MODO MÁQUINA  ·  www.dizmar.xyz/machine/
+  Versión ligera de toda la web en una sola página de texto: carga al instante con conexiones lentas
+  y la pueden leer buscadores y agentes de IA. Sin JavaScript, sin 3D, sin fotos (las imágenes son enlaces).
+  Cuando cambies algo en la web (un proyecto nuevo, la canción de "Now playing"…), actualízalo también aquí.
+  Los textos marcados con EDITA son de ejemplo.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dizmar :: machine-readable index</title>
+<meta name="description" content="Plain-text mirror of dizmar.xyz, the portfolio of Mario Diz, art director and visual designer based in Madrid.">
+<link rel="canonical" href="https://www.dizmar.xyz/machine/">
+<link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
+<style>
+  /* Todo el estilo va aquí mismo para no hacer más peticiones: papel verde con grano y letra de terminal */
+  :root { --paper: #2c4e37; --ink: #e9efe4; --dim: #a9bfa6; --line: rgba(233, 239, 228, .35); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--paper) url("/assets/images/paper-grain.png") 0 0 / 128px 128px; }
+  body { color: var(--ink); font: 13px/1.6 ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", "Courier New", monospace; text-transform: uppercase; letter-spacing: .02em; -webkit-font-smoothing: antialiased; }
+  a { color: var(--ink); text-underline-offset: 3px; }
+  a:hover { background: var(--ink); color: var(--paper); text-decoration: none; }
+  a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .wrap { width: min(720px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0 120px; }
+  .ascii { font-size: clamp(6px, 1.95vw, 13px); line-height: 1.05; letter-spacing: 0; white-space: pre; overflow: hidden; color: var(--ink); text-transform: none; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+  nav ul { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 28px 0 32px; list-style: none; }
+  nav a[aria-current] { background: var(--ink); color: var(--paper); text-decoration: none; padding: 0 4px; }
+  .dim { color: var(--dim); }
+  p { margin: 0 0 14px; max-width: 64ch; }
+  h2 { display: flex; align-items: center; gap: 10px; margin: 44px 0 18px; font-size: inherit; font-weight: 400; color: var(--dim); white-space: nowrap; }
+  h2::before { content: "──"; }
+  h2::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 0; margin-bottom: 18px; }
+  dt { color: var(--dim); white-space: pre; }
+  dt::after { content: " ............"; }
+  dt { overflow: hidden; width: 15ch; }
+  dd { padding-left: 1ch; }
+  .project { margin: 0 0 30px; }
+  .project h3 { font-size: inherit; font-weight: 700; margin-bottom: 4px; }
+  .project h3::before { content: "* "; }
+  .tags { color: var(--dim); margin-bottom: 8px; }
+  .links { list-style: none; margin-top: 6px; }
+  .links li::before { content: "→ "; color: var(--dim); }
+  .images { display: flex; flex-wrap: wrap; gap: 0 10px; list-style: none; }
+  footer { margin-top: 56px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: var(--dim); }
+  /* Píldora para volver al modo humano (la misma que hay en el resto de la web) */
+  .mode { position: fixed; right: 16px; bottom: 16px; display: flex; padding: 3px; border-radius: 999px; background: var(--ink); font-size: 11px; box-shadow: 0 6px 20px rgba(0, 25, 10, .35); }
+  .mode a, .mode span { padding: 5px 11px 4px; border-radius: 999px; text-decoration: none; color: var(--paper); }
+  .mode span { background: var(--paper); color: var(--ink); }
+  .mode a:hover { background: rgba(44, 78, 55, .15); color: var(--paper); }
+  @media (max-width: 520px) { body { font-size: 12px; } dt { width: 12ch; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1 class="sr-only">dizmar — Mario Diz, machine-readable index</h1>
+<pre class="ascii" aria-hidden="true">██████╗ ██╗███████╗███╗   ███╗ █████╗ ██████╗
+██╔══██╗██║╚══███╔╝████╗ ████║██╔══██╗██╔══██╗
+██║  ██║██║  ███╔╝ ██╔████╔██║███████║██████╔╝
+██║  ██║██║ ███╔╝  ██║╚██╔╝██║██╔══██║██╔══██╗
+██████╔╝██║███████╗██║ ╚═╝ ██║██║  ██║██║  ██║
+╚═════╝ ╚═╝╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝</pre>
+<nav aria-label="Sections">
+<ul>
+<li><a href="#about" aria-current="true">/about</a></li>
+<li><a href="#work">/work</a></li>
+<li><a href="#room">/room</a></li>
+<li><a href="#contact">/contact</a></li>
+<li><a href="#sitemap">/sitemap</a></li>
+<li><a href="/">human ↗</a></li>
+</ul>
+</nav>
+<p>dizmar.xyz :: machine-readable index</p>
+<p class="dim"># Plain-text mirror of dizmar.xyz for slow connections, crawlers, AI agents and humans who prefer it raw.</p>
+</header>
+
+<main>
+<section id="about" aria-labelledby="h-about">
+<h2 id="h-about">About</h2>
+<dl>
+<dt>Name</dt><dd>Mario Diz</dd>
+<dt>Aka</dt><dd>dizmar</dd>
+<dt>Role</dt><dd>Art direction &amp; visual design</dd>
+<dt>Based</dt><dd>Madrid, Spain</dd>
+<dt>Work</dt><dd>Key visuals, audiovisual, campaigns</dd>
+<dt>Site</dt><dd><a href="https://www.dizmar.xyz/">dizmar.xyz</a></dd>
+</dl>
+<!-- EDITA: tu presentación (2-3 frases), la misma que en About -->
+<p>Mario Diz is an art director and visual designer based in Madrid, working on key visuals, product imagery and films for brands.</p>
+</section>
+
+<section id="work" aria-labelledby="h-work">
+<h2 id="h-work">Selected work</h2>
+
+<article class="project">
+<h3>Lexus — Electrified</h3>
+<p class="tags">[audiovisual] [2025]</p>
+<!-- EDITA: el texto del proyecto, cuando esté escrito en su página -->
+<p class="dim">Project description coming soon.</p>
+<ul class="links">
+<li><a href="/project/lexus-electrified/">Project page (human mode)</a></li>
+<li><a href="https://www.instagram.com/p/DUk54nFkTu_/" rel="noopener">Watch the film on Instagram ↗</a></li>
+</ul>
+</article>
+
+<article class="project">
+<h3>Soap &amp; Glory — Vanillalicious</h3>
+<p class="tags">[key visuals]</p>
+<p>This project focused on developing high-quality key visuals and product shots that integrate real products into a fantasy, food-inspired world. The goal was to combine the realism of product photography with the freedom of AI-generated environments, so that the final images feel like a single, cohesive piece rather than a composite.</p>
+<ul class="links">
+<li><a href="/project/soap-and-glory-vanilla/">Project page (human mode)</a></li>
+<li><a href="/assets/projects/soap-and-glory-vanilla/video.mp4">Watch the video (mp4)</a></li>
+<li>Images (open one at a time):
+<ul class="images">
+<li><a href="/assets/projects/soap-and-glory-vanilla/sg1-800.webp">01</a></li>
+<li><a href="/assets/projects/soap-and-glory-vanilla/sg2-800.webp">02</a></li>
+<li><a href="/assets/projects/soap-and-glory-vanilla/sg3-800.webp">03</a></li>
+<li><a href="/assets/projects/soap-and-glory-vanilla/sg4-800.webp">04</a></li>
+<li><a href="/assets/projects/soap-and-glory-vanilla/sg5-800.webp">05</a></li>
+</ul>
+</li>
+</ul>
+</article>
+</section>
+
+<section id="room" aria-labelledby="h-room">
+<h2 id="h-room">The room</h2>
+<p class="dim"># A 3D shelf of personal interests. Here, the short version.</p>
+<dl>
+<dt>Now playing</dt><dd>Bug — Fontaines D.C. (Romance)</dd>
+<dt>Last watched</dt><dd>La Bola Negra</dd>
+<dt>Pokemon</dt><dd>Mimikyu plush</dd>
+<dt>Lamp</dt><dd>A tomato lamp</dd>
+<dt>Plant</dt><dd>Eucalyptus in a fluted vase</dd>
+</dl>
+<ul class="links">
+<li><a href="/room.html">Enter the 3D room (heavy, human mode)</a></li>
+</ul>
+</section>
+
+<section id="contact" aria-labelledby="h-contact">
+<h2 id="h-contact">Contact</h2>
+<!-- EDITA: tu email y tus redes -->
+<dl>
+<dt>Email</dt><dd><a href="mailto:hello@dizmar.xyz">hello@dizmar.xyz</a></dd>
+<dt>Based</dt><dd>Madrid, Spain</dd>
+</dl>
+</section>
+
+<section id="sitemap" aria-labelledby="h-sitemap">
+<h2 id="h-sitemap">Sitemap</h2>
+<ul class="links">
+<li><a href="/">/ — home (3D tomato, selected work)</a></li>
+<li><a href="/project/lexus-electrified/">/project/lexus-electrified/</a></li>
+<li><a href="/project/soap-and-glory-vanilla/">/project/soap-and-glory-vanilla/</a></li>
+<li><a href="/room.html">/room.html — the 3D room</a></li>
+<li><a href="/machine/">/machine/ — this page</a></li>
+</ul>
+</section>
+</main>
+
+<footer>
+<span>© Mario Diz — Madrid</span>
+<span>Last updated 2026-10-17</span>
+</footer>
+</div>
+
+<!-- Píldora HUMAN | MACHINE -->
+<nav class="mode" aria-label="View mode"><a href="/">Human</a><span aria-current="page">Machine</span></nav>
+</body>
+</html>

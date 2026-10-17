@@ -8,6 +8,8 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 index.html                 La home (tomate, papel verde con los proyectos, footer)
 room.html                  La página "The room" (habitación 3D)
 404.html                   Página de "no encontrada"
+machine/index.html         Modo máquina: toda la web en texto, ligera (para conexiones lentas, buscadores e IA)
+robots.txt · sitemap.xml · llms.txt   Para buscadores y agentes de IA
 
 project/                   Una carpeta por proyecto  →  www.dizmar.xyz/project/<nombre>/
   lexus-electrified/index.html
@@ -56,6 +58,9 @@ Súbelas a `assets/projects/<proyecto>/` y cambia la ruta (`src`) y la descripci
 
 ### Cambiar los textos de la habitación o la canción de "Now playing"
 Están en `js/room.js` (objetos `nowPlaying` y `lastWatched`, y lista `destinations`). La imagen de la pegatina es `assets/room/now-playing-sticker.webp`; el póster de la última película vista, que aparece al acercarse al póster de la pared, es `assets/room/film-poster.webp` (vertical, unos 840×1200).
+
+### Mantener al día el modo máquina
+`machine/index.html` es la versión en texto de toda la web (la píldora HUMAN | MACHINE de abajo a la derecha lleva a ella, y se sugiere sola si la conexión es lenta). Cuando añadas un proyecto o cambies la canción o la película de la habitación, cámbialo también ahí, y añade las páginas nuevas a `sitemap.xml`. La píldora y el aviso los pone `js/mode-switch.js`.
 
 ### Cambiar el texto de la página 404
 `404.html`, el párrafo con clase `message`.
