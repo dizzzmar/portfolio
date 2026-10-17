@@ -1,6 +1,7 @@
 // THE ROOM · la habitación 3D (three.js): carga assets/room/shelf.glb, los objetos seleccionables (array `destinations`),
-// la cámara que se acerca al pasar por la lista de la izquierda, la lámpara que parpadea y la pegatina "Now playing".
-// Para cambiar las pegatinas edita los objetos `nowPlaying` y `lastWatched` (y sus imágenes en assets/room/).
+// la cámara que se acerca al pasar por la lista de la izquierda o por los objetos, la lámpara que parpadea,
+// la pegatina "Now playing" y el póster que cambia a la última película vista al acercarse.
+// Para cambiar la pegatina edita `nowPlaying`; para el póster, `lastWatched` (imágenes en assets/room/).
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -78,17 +79,18 @@ const nowPlaying = {
   image: '/assets/room/now-playing-sticker.webp',
   alt: 'Now playing: Bug by Fontaines D.C. — Romance',
 };
-// The last film I watched.
+// The last film I watched: when the camera comes close to the wall poster, a new poster
+// unrolls over the old one. Swap the image (about 840×1200, portrait) and the title to change it.
 const lastWatched = {
-  image: '/assets/room/last-watched-sticker.webp',
-  alt: 'Last loved: La Bola Negra',
+  image: '/assets/room/film-poster.webp',
+  title: 'Last watched: La Bola Negra',
 };
 
 const destinations = [
   // Both are outlined, but the camera looks at the collection on the lower shelf
   { label: 'Now playing', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, track: nowPlaying, href: null },
   { label: 'Pokemon', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
-  { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, track: lastWatched, href: null },
+  { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, poster: lastWatched, href: null },
   // The camera frames just the tomato, not the cord that runs down to the floor
   { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, focus: /^lamp (tomato diffuser|green calyx)\b/, href: null },
   { label: 'Plant', key: 'plant', match: /^plants (eucalyptus|fluted vase)\b/, href: null },
@@ -200,28 +202,55 @@ function highlight(selection) {
   label.hidden = !selection || !!track;
   if (track) showSticker(track); else hideSticker();
   for (const button of nav.querySelectorAll('button')) button.classList.toggle('active', !!selection && button.textContent === selection.item.label);
-  if (selection && !track) label.textContent = selection.item.label + ' +';
+  if (selection && !track) label.textContent = selection.item.poster ? selection.item.poster.title : selection.item.label + ' +';
   canvas.style.cursor = selection ? 'pointer' : 'default';
 }
 
+// Hovering an object in the room brings the camera closer, like hovering its name in the list.
+// As the camera moves, a different object can slide under a still cursor, so switching to
+// another object waits a moment, and going back to the overview waits a little longer.
+let switchTimer = null, leaveTimer = null;
+function hoverObject(selection) {
+  highlight(selection);
+  clearTimeout(leaveTimer);
+  if (selection) {
+    if (focused === selection.item) { clearTimeout(switchTimer); return; }
+    clearTimeout(switchTimer);
+    switchTimer = setTimeout(() => focusOn(selection.item), focused ? 160 : 0);
+  } else {
+    clearTimeout(switchTimer);
+    leaveTimer = setTimeout(() => focusOn(null), 380);
+  }
+}
 canvas.addEventListener('pointermove', event => {
-  highlight(pick(event));
+  if (event.pointerType === 'mouse') hoverObject(pick(event));
 });
-canvas.addEventListener('pointerleave', () => highlight(null));
+canvas.addEventListener('pointerleave', event => {
+  if (event.pointerType !== 'mouse') return;
+  clearTimeout(switchTimer); clearTimeout(leaveTimer);
+  highlight(null); focusOn(null);
+});
 canvas.addEventListener('pointerdown', event => { down = [event.clientX, event.clientY]; });
 canvas.addEventListener('pointerup', event => {
   if (!down) return;
   const moved = Math.hypot(event.clientX - down[0], event.clientY - down[1]);
   down = null;
-  if (moved < 8) {
-    const selection = pick(event);
+  if (moved >= 8) return;
+  const selection = pick(event);
+  if (event.pointerType === 'mouse') {
     if (selection) openItem(selection.item);
+    return;
   }
+  // Touch has no hover: the first tap comes closer, a second tap on the same object opens it,
+  // and a tap on the rest of the room goes back to the overview
+  if (selection && focused === selection.item) { openItem(selection.item); return; }
+  highlight(selection);
+  focusOn(selection ? selection.item : null);
 });
 canvas.addEventListener('pointercancel', () => { down = null; });
 
 function openItem(item) {
-  if (item.track) return; // the record and the poster only have their sticker: clicking opens nothing more
+  if (item.track || item.poster) return; // the record and the poster only have their sticker / poster swap: clicking opens nothing more
   if (item.href) {
     location.href = item.href;
     return;
@@ -299,6 +328,35 @@ new GLTFLoader().load('/assets/room/shelf.glb', gltf => {
       sleeve.material.needsUpdate = true;
     }
   });
+  // The wall poster gets a second image and a shader that unrolls it over the first one
+  // from the top (see the frame loop). uPosterReveal goes from 0 (old poster) to 1 (new one).
+  const posterMesh = meshes.find((mesh) => /^wall upper left poster\b/.test(words(mesh.name)) && /poster/i.test(mesh.material.name));
+  if (posterMesh) {
+    new THREE.TextureLoader().load(lastWatched.image, (filmPoster) => {
+      filmPoster.colorSpace = THREE.SRGBColorSpace;
+      filmPoster.flipY = false; // glTF textures aren't flipped
+      filmPoster.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      const material = posterMesh.material = posterMesh.material.clone();
+      material.onBeforeCompile = (shader) => {
+        shader.uniforms.uPoster2 = { value: filmPoster };
+        shader.uniforms.uPosterReveal = posterReveal;
+        shader.fragmentShader = shader.fragmentShader
+          .replace('void main() {', 'uniform sampler2D uPoster2;\nuniform float uPosterReveal;\nvoid main() {')
+          .replace('#include <map_fragment>', `#ifdef USE_MAP
+  // glTF UVs start at the top of the image, so the new poster comes down from v = 0
+  const float SOFT = 0.025;
+  float edge = uPosterReveal * (1.0 + SOFT);
+  float k = 1.0 - smoothstep(edge - SOFT, edge, vMapUv.y);
+  // a soft shadow just under the unrolling edge, as if the paper still curls a little
+  float curl = smoothstep(edge - SOFT * 4.0, edge, vMapUv.y) * (1.0 - smoothstep(edge, edge + SOFT * 2.0, vMapUv.y));
+  vec4 posterColor = mix(texture2D(map, vMapUv), texture2D(uPoster2, vMapUv), k);
+  posterColor.rgb *= 1.0 - 0.45 * curl * step(0.001, uPosterReveal) * step(uPosterReveal, 0.999);
+  diffuseColor *= posterColor;
+#endif`);
+      };
+      material.needsUpdate = true;
+    });
+  }
   const bounds = new THREE.Box3().setFromObject(model);
   const size = bounds.getSize(new THREE.Vector3());
   const center = bounds.getCenter(new THREE.Vector3());
@@ -452,6 +510,23 @@ function flickerLevel(t) {
   return 1;
 }
 
+// ---------- Last watched poster ----------
+// Once the camera has settled close to the poster, the new one unrolls; moving away rolls it back.
+const posterReveal = { value: 0 };
+let posterSince = null; // when the camera started looking at the poster
+let posterLast = null;
+function updatePoster(now) {
+  // Real elapsed time (not the 50ms-capped frame step), so it takes 0.9s even on a slow machine
+  const dt = posterLast === null ? 0 : Math.min((now - posterLast) / 1000, 0.25);
+  posterLast = now;
+  const looking = focused && focused.poster;
+  posterSince = looking ? (posterSince ?? now) : null;
+  const target = looking && now - posterSince > 550 ? 1 : 0; // wait for the camera to arrive
+  const speed = target ? 1 / 0.9 : 1 / 0.5;                    // unrolls in 0.9s, rolls back in 0.5s
+  const step = reduced ? 1 : dt * speed;
+  posterReveal.value = target > posterReveal.value ? Math.min(1, posterReveal.value + step) : Math.max(0, posterReveal.value - step);
+}
+
 let lastFrame = performance.now();
 function frame() {
   const now = performance.now();
@@ -465,6 +540,7 @@ function frame() {
     setLamp(flickerLevel(lampFlicker.t));
     if (lampFlicker.t > FLICKER[FLICKER.length - 1][0]) { setLamp(1); lampFlicker.start = false; }
   }
+  updatePoster(now);
   // Ease the camera towards its goal (overview or a focused object)
   const ease = reduced ? 1 : 1 - Math.exp(-dt * 4);
   view.pos.lerp(goal.pos, ease);
