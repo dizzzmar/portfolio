@@ -231,8 +231,8 @@ body {
 .ticker-list li {
   display: flex;
   align-items: center;
-  padding: 13px 0 12px;
-  font-size: 15px;
+  padding: 9px 0 8px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1;
@@ -240,11 +240,14 @@ body {
   white-space: nowrap;
 }
 
-/* Separador entre capacidades */
+/* Separador entre capacidades: un circulito */
 .ticker-list li::after {
-  content: "✦";
-  margin: 0 22px;
-  font-size: 11px;
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin: 0 18px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 /* Las dos copias de la lista miden lo mismo: al llegar a la mitad vuelve al principio sin que se note */
@@ -409,8 +412,8 @@ body {
   .nav-links a { padding: 0 7px; }
   .nav-links a { font-size: 13px; }
   .work-intro { margin-bottom: 20px; }
-  .ticker-list li { padding: 11px 0 10px; font-size: 13px; }
-  .ticker-list li::after { margin: 0 16px; }
+  .ticker-list li { padding: 8px 0 7px; font-size: 11px; }
+  .ticker-list li::after { width: 4px; height: 4px; margin: 0 14px; }
   .project-grid { grid-template-columns: 1fr; gap: 8px; }
   .project { border-radius: 20px; }
   .project-caption { padding: 14px 8px 22px; }
