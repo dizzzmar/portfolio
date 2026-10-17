@@ -10,6 +10,8 @@ room.html                  La página "The room" (habitación 3D)
 404.html                   Página de "no encontrada"
 machine/index.html         Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 robots.txt · sitemap.xml · llms.txt   Para buscadores y agentes de IA
+CLAUDE.md                  Reglas para Claude (seguridad: nunca publicar claves; avisar antes de acciones con riesgo)
+.github/workflows/secret-scan.yml  Comprueba en cada cambio que no se suba ninguna clave (gitleaks)
 
 project/                   Una carpeta por proyecto  →  www.dizmar.xyz/project/<nombre>/
   lexus-electrified/index.html

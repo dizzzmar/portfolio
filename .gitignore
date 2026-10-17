@@ -1,0 +1,21 @@
+# Nunca subir secretos ni credenciales
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+credentials*.json
+secrets*.json
+service-account*.json
+.npmrc
+.netrc
+
+# Archivos del sistema y del editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+node_modules/
