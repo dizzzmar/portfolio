@@ -1,8 +1,8 @@
-// HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con el nombre "MARIO DIZ" (tipografía Jacquard 24)
+// HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con el nombre "Mario Diz" (tipografía Jacquard 24)
 // y viaja a la esquina superior izquierda (logo de la barra) al hacer scroll.
 // En la barra solo gira; para que pese poco, el lienzo se encoge a un recuadro alrededor del tomate
 // y se dibuja a 30 fotogramas por segundo.
-// Para cambiar el texto del anillo busca  fillText('MARIO DIZ'  (y añade las letras nuevas al enlace de la fuente en index.html)
+// Para cambiar el texto del anillo busca  fillText('Mario Diz'  (y añade las letras nuevas al enlace de la fuente en index.html)
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -31,7 +31,7 @@ scene.add(pivot);
 function nameTexture() {
   // The canvas is as wide (relative to its height) as the ring is around,
   // so the letters keep their proportions once wrapped.
-  // "MARIO DIZ", once, in Jacquard 24 (Google Fonts, loaded in index.html with only these letters).
+  // "Mario Diz", once, in Jacquard 24 (Google Fonts, loaded in index.html with only these letters).
   const c = document.createElement('canvas');
   c.width = 6400;
   c.height = 256;
@@ -46,11 +46,11 @@ function nameTexture() {
     g.font = font + ', Georgia, serif';
     g.textAlign = 'center';
     g.textBaseline = 'middle';
-    g.fillText('MARIO DIZ', c.width / 2, c.height / 2 + 6);
+    g.fillText('Mario Diz', c.width / 2, c.height / 2 + 6);
     tex.needsUpdate = true;
   };
   // Draw once the font has arrived (or with the fallback if it can't load)
-  document.fonts.load(font, 'MARIO DIZ').then(draw, draw);
+  document.fonts.load(font, 'Mario Diz').then(draw, draw);
   document.fonts.addEventListener('loadingdone', draw); // in case the font's stylesheet arrived later
   return tex;
 }
