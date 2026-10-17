@@ -1,4 +1,4 @@
-// HOME · barra de navegación: marca "Work" como activo mientras ves esa sección y oscurece los enlaces cuando pasan sobre una card blanca.
+// HOME · barra de navegación: marca "Work" como activo mientras ves esa sección y oscurece los enlaces cuando pasan sobre una card blanca o la tira de capacidades.
 // También pausa los vídeos de las cards cuando no se ven (o siempre, si el visitante pide menos movimiento).
 
 // Looping project previews stay still for visitors who prefer reduced motion,
@@ -30,7 +30,7 @@ if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const r = link.getBoundingClientRect();
       const behind = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2)
         .find((el) => !nav.contains(el) && el.id !== 'scene');
-      link.classList.toggle('on-light', !!behind && !!behind.closest('.project'));
+      link.classList.toggle('on-light', !!behind && !!behind.closest('.project, .ticker'));
     }
   }
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(contrast); } };
