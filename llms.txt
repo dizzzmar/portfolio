@@ -2,9 +2,7 @@
 
 > Portfolio of Mario Diz, art director and visual designer based in Madrid.
 
-The full site in plain text, readable without JavaScript: https://www.dizmar.xyz/machine/
-
 ## Pages
-- [Machine-readable index](https://www.dizmar.xyz/machine/): about, selected work, the room and contact, as text
+- [Home](https://www.dizmar.xyz/): selected work
 - [Lexus — Electrified](https://www.dizmar.xyz/project/lexus-electrified/): audiovisual, 2025
 - [Soap & Glory — Vanillalicious](https://www.dizmar.xyz/project/soap-and-glory-vanilla/): key visuals

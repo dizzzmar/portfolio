@@ -8,7 +8,7 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 index.html                 La home (tomate, papel verde con los proyectos, footer)
 room.html                  La página "The room" (habitación 3D)
 404.html                   Página de "no encontrada"
-machine/index.html         Modo máquina: toda la web en texto, ligera (para conexiones lentas, buscadores e IA)
+machine/index.html         Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 robots.txt · sitemap.xml · llms.txt   Para buscadores y agentes de IA
 
 project/                   Una carpeta por proyecto  →  www.dizmar.xyz/project/<nombre>/
@@ -59,8 +59,11 @@ Súbelas a `assets/projects/<proyecto>/` y cambia la ruta (`src`) y la descripci
 ### Cambiar los textos de la habitación o la canción de "Now playing"
 Están en `js/room.js` (objetos `nowPlaying` y `lastWatched`, y lista `destinations`). La imagen de la pegatina es `assets/room/now-playing-sticker.webp`; el póster de la última película vista, que aparece al acercarse al póster de la pared, es `assets/room/film-poster.webp` (vertical, unos 840×1200).
 
-### Mantener al día el modo máquina
-`machine/index.html` es la versión en texto de toda la web (la píldora HUMAN | MACHINE de abajo a la derecha lleva a ella, y se sugiere sola si la conexión es lenta). Cuando añadas un proyecto o cambies la canción o la película de la habitación, cámbialo también ahí, y añade las páginas nuevas a `sitemap.xml`. La píldora y el aviso los pone `js/mode-switch.js`.
+### Modo máquina (oculto por ahora)
+`machine/index.html` es una versión en texto de toda la web, ligera para conexiones lentas. Ahora mismo está **oculta**: no hay enlaces a ella, no está en `sitemap.xml` y lleva `noindex`. Para volver a activarla:
+1. Añade antes de `</body>` en cada página (home, proyectos, room, 404 y la plantilla): `<script src="/js/mode-switch.js" defer></script>` (pone la píldora HUMAN | MACHINE y el aviso de conexión lenta).
+2. Borra la línea `noindex` de `machine/index.html` y añade `/machine/` a `sitemap.xml`.
+3. Revisa que sus textos sigan al día con la web.
 
 ### Cambiar el texto de la página 404
 `404.html`, el párrafo con clase `message`.
