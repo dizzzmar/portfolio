@@ -207,20 +207,49 @@ body {
 
 .work-inner { max-width: 1800px; margin: 0 auto; }
 
-.work-intro { color: #e9efe4; }
+/* Tira blanca con las capacidades pasando en bucle, de borde a borde del papel */
+.work-intro { margin: 0 calc(50% - 50vw) 24px; } /* sale del ancho del contenido y ocupa toda la pantalla */
 
-.work-intro {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: 0 20px 24px;
-  gap: 20px;
+.ticker {
+  overflow: hidden;
+  background: #fff;
+  color: #111;
 }
 
-.work-intro h2, .work-intro p {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.4;
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 32s linear infinite;
+}
+
+.ticker-list {
+  display: flex;
+  flex: none;
+  list-style: none;
+}
+
+.ticker-list li {
+  display: flex;
+  align-items: center;
+  padding: 13px 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Separador entre capacidades */
+.ticker-list li::after {
+  content: "✦";
+  margin: 0 22px;
+  font-size: 11px;
+}
+
+/* Las dos copias de la lista miden lo mismo: al llegar a la mitad vuelve al principio sin que se note */
+@keyframes ticker {
+  to { transform: translateX(-50%); }
 }
 
 .project-grid {
@@ -379,7 +408,9 @@ body {
   .nav-links { margin-right: -7px; }
   .nav-links a { padding: 0 7px; }
   .nav-links a { font-size: 13px; }
-  .work-intro { padding: 0 12px 20px; }
+  .work-intro { margin-bottom: 20px; }
+  .ticker-list li { padding: 11px 0 10px; font-size: 13px; }
+  .ticker-list li::after { margin: 0 16px; }
   .project-grid { grid-template-columns: 1fr; gap: 8px; }
   .project { border-radius: 20px; }
   .project-caption { padding: 14px 8px 22px; }
@@ -396,7 +427,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   html.smooth-scroll { scroll-behavior: auto; }
-  .scroll-hint::after, .sky { animation: none; }
+  .scroll-hint::after, .sky, .ticker-track { animation: none; }
 }
 
 /* ---------- Transición al abrir y cerrar un proyecto (View Transitions) ----------

@@ -74,10 +74,18 @@
     <section class="work" id="work" aria-labelledby="work-title">
       <div class="paper-shadow" aria-hidden="true"><div class="paper" id="paper"></div></div>
       <div class="work-inner">
+        <!-- Tira blanca con las capacidades pasando en bucle.
+             EDITA: una <li> por capacidad. Cada lista repite las capacidades tres veces (para
+             llenar pantallas anchas) y la lista va dos veces (la segunda es una copia para
+             que el bucle no tenga cortes): cambia todas igual. -->
         <header class="work-intro">
-          <!-- Título y subtítulo de la sección -->
-          <h2 id="work-title">Selected work</h2>
-          <p>Art direction &amp; visual design</p>
+          <h2 class="sr-only" id="work-title">Selected work</h2>
+          <div class="ticker">
+            <div class="ticker-track">
+              <ul class="ticker-list" aria-label="Capabilities"><li>Art director</li><li>AI creative</li><li>Visual designer</li><li>3D artist</li><li>Tech enthusiast</li><li aria-hidden="true">Art director</li><li aria-hidden="true">AI creative</li><li aria-hidden="true">Visual designer</li><li aria-hidden="true">3D artist</li><li aria-hidden="true">Tech enthusiast</li><li aria-hidden="true">Art director</li><li aria-hidden="true">AI creative</li><li aria-hidden="true">Visual designer</li><li aria-hidden="true">3D artist</li><li aria-hidden="true">Tech enthusiast</li></ul>
+              <ul class="ticker-list" aria-hidden="true"><li>Art director</li><li>AI creative</li><li>Visual designer</li><li>3D artist</li><li>Tech enthusiast</li><li>Art director</li><li>AI creative</li><li>Visual designer</li><li>3D artist</li><li>Tech enthusiast</li><li>Art director</li><li>AI creative</li><li>Visual designer</li><li>3D artist</li><li>Tech enthusiast</li></ul>
+            </div>
+          </div>
         </header>
 
         <!-- ==========================================================================
