@@ -55,7 +55,7 @@ Abre `project/<nombre>/index.html`. Los trozos editables están marcados con com
 Súbelas a `assets/projects/<proyecto>/` y cambia la ruta (`src`) y la descripción (`alt`) en el HTML. Consejo: `.webp`, hasta 1600 px de ancho, y una versión de 800 px para las miniaturas (así la web carga rápido).
 
 ### Cambiar los textos de la habitación o la canción de "Now playing"
-Están en `js/room.js` (objeto `nowPlaying` y lista `destinations`). La imagen de la pegatina es `assets/room/now-playing-sticker.webp`.
+Están en `js/room.js` (objetos `nowPlaying` y `lastWatched`, y lista `destinations`). La imagen de la pegatina es `assets/room/now-playing-sticker.webp`; el póster de la última película vista, que aparece al acercarse al póster de la pared, es `assets/room/film-poster.webp` (vertical, unos 840×1200).
 
 ### Cambiar el texto de la página 404
 `404.html`, el párrafo con clase `message`.
