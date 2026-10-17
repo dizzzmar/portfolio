@@ -1,8 +1,8 @@
-// HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con el nombre "Mario Diz" (tipografía Jacquard 24)
+// HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con el nombre "MARIO DIZ"
 // y viaja a la esquina superior izquierda (logo de la barra) al hacer scroll.
 // En la barra solo gira; para que pese poco, el lienzo se encoge a un recuadro alrededor del tomate
 // y se dibuja a 30 fotogramas por segundo.
-// Para cambiar el texto del anillo busca  fillText('Mario Diz'  (y añade las letras nuevas al enlace de la fuente en index.html)
+// Para cambiar el texto del anillo busca  fillText('MARIO DIZ' ...
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -26,32 +26,23 @@ pivot.add(spinner);
 scene.add(pivot);
 
 // ---------- Name ring ----------
-// The "Mario Diz" label, once, printed on an open cylinder that circles the tomato.
+// "MARIO DIZ", once, printed on an open cylinder that circles the tomato.
 // It spins the opposite way; its far side shows faintly through.
 function nameTexture() {
   // The canvas is as wide (relative to its height) as the ring is around,
   // so the letters keep their proportions once wrapped.
-  // "Mario Diz", once, in Jacquard 24 (Google Fonts, loaded in index.html with only these letters).
   const c = document.createElement('canvas');
-  c.width = 6400;
-  c.height = 256;
+  c.width = 3200;
+  c.height = 128;
+  const g = c.getContext('2d');
+  g.fillStyle = '#fff';
+  g.font = '700 92px "Helvetica Neue", Arial, sans-serif';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillText('MARIO DIZ', c.width / 2, c.height / 2 + 4);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  const font = '210px "Jacquard 24"'; // tamaño de las letras (más grande = más grande alrededor del tomate)
-  const draw = () => {
-    const g = c.getContext('2d');
-    g.clearRect(0, 0, c.width, c.height);
-    g.fillStyle = '#fff';
-    g.font = font + ', Georgia, serif';
-    g.textAlign = 'center';
-    g.textBaseline = 'middle';
-    g.fillText('Mario Diz', c.width / 2, c.height / 2 + 6);
-    tex.needsUpdate = true;
-  };
-  // Draw once the font has arrived (or with the fallback if it can't load)
-  document.fonts.load(font, 'Mario Diz').then(draw, draw);
-  document.fonts.addEventListener('loadingdone', draw); // in case the font's stylesheet arrived later
   return tex;
 }
 
