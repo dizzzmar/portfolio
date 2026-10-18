@@ -66,7 +66,7 @@ main, .close { padding: 0 var(--gutter); }
 /* Rejilla de dos columnas: a la izquierda nombre y presentación, a la derecha la foto */
 .intro {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
   grid-template-areas: "name portrait" "statement portrait";
   align-items: end;
   column-gap: var(--gutter);
@@ -83,9 +83,9 @@ main, .close { padding: 0 var(--gutter); }
 
 .statement {
   grid-area: statement;
-  max-width: 25em;
-  margin-top: clamp(24px, 5vh, 56px);
-  font-size: clamp(22px, 1.95vw, 28px);
+  max-width: 40em;
+  margin-top: clamp(20px, 4vh, 48px);
+  font-size: clamp(19px, 1.55vw, 24px);
   letter-spacing: -.015em;
   line-height: 1.22;
 }
@@ -106,14 +106,15 @@ main, .close { padding: 0 var(--gutter); }
 }
 .portrait-placeholder span { color: var(--tomato); font-family: Georgia, serif; font-style: italic; font-weight: 400; }
 
-/* Tres columnas cortas en texto pequeño */
+/* Columnas en texto pequeño: el título en negrita y el texto normal, para que los párrafos largos se lean bien */
 .facts {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--gutter);
   margin-top: clamp(32px, 6vh, 64px);
 }
 .fact h2 { margin-bottom: 1.35em; font-size: inherit; }
+.fact p { max-width: 34em; font-weight: 400; }
 .fact a { text-underline-offset: 3px; transition: opacity .2s; }
 .fact a:hover { opacity: .7; }
 
@@ -147,7 +148,7 @@ main, .close { padding: 0 var(--gutter); }
   .nav-links { margin-right: -10px; }
   .intro { grid-template-columns: 1fr; grid-template-areas: "name" "statement" "portrait"; }
   .name { font-size: clamp(56px, 16vw, 80px); }
-  .statement { font-size: 22px; }
+  .statement { font-size: 19px; }
   .portrait { justify-self: start; width: 55%; margin-top: 32px; }
   .facts { grid-template-columns: 1fr; gap: 32px; }
   .fact h2 { margin-bottom: .6em; }
