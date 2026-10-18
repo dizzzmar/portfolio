@@ -1,6 +1,7 @@
 /* ABOUT — estilos de about/index.html.
-   Como el "about" de nicolo-lombardi.com: todo en Helvetica negrita, pocos tamaños, y lo importante
-   cabe en la primera pantalla. Fondo: el papel verde liso de la home (sin textura ni esquinas).
+   Estructura como el "about" de nicolo-lombardi.com (lo importante cabe en la primera pantalla) y aspecto
+   de la home: el contenido va en una tarjeta blanca redondeada sobre el papel verde liso, con la misma
+   tipografía que las cards de proyecto (marca en Georgia, título en mayúsculas apretadas, etiquetas en píldora).
    Orden: colores y base · barra de navegación · primera pantalla · clientes · pie · móvil · movimiento. */
 
 :root {
@@ -8,6 +9,9 @@
   --green-deep: #25432f;  /* un paso más oscuro: el recuadro de la foto */
   --cream: #e9efe4;       /* el texto */
   --cream-soft: rgba(233, 239, 228, .7); /* notas secundarias */
+  --ink: #171717;         /* el texto de la tarjeta (como en las cards de la home) */
+  --ink-soft: #5b5b57;
+  --card-pad: clamp(20px, 2.4vw, 36px);
   --nav-h: 64px;
   --gutter: 20px;
   --small: 15px;          /* el texto de las columnas */
@@ -60,31 +64,51 @@ ul { list-style: none; }
 .nav-links a:hover, .nav-links a[aria-current="page"] { color: #fff; }
 .nav-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 
-main, .close { padding: 0 var(--gutter); }
+/* La tarjeta blanca: deja 10px de papel verde a los lados, como las cards de la home */
+.sheet {
+  margin: var(--nav-h) 10px 0;
+  padding: var(--card-pad);
+  color: var(--ink);
+  background: #fff;
+  border-radius: 24px;
+}
+.sheet :focus-visible { outline-color: var(--ink); }
+.close { padding: 0 var(--gutter); }
 
 /* ---------- 1. Primera pantalla ---------- */
 /* Rejilla de dos columnas: a la izquierda nombre y presentación, a la derecha la foto */
 .intro {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-areas: "name portrait" "statement portrait";
+  grid-template-areas: "title portrait" "statement portrait";
   align-items: end;
   column-gap: var(--gutter);
-  padding-top: calc(var(--nav-h) + clamp(16px, 4vh, 48px));
 }
 
+.intro-title { grid-area: title; display: grid; gap: 6px; }
+/* Igual que la marca de las cards: Georgia en mayúsculas */
+.brand {
+  margin-top: -.18em;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(17px, 1.5vw, 24px);
+  font-weight: 400;
+  letter-spacing: -.035em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+/* Igual que el título de las cards: Helvetica negrita en mayúsculas, muy apretada */
 .name {
-  grid-area: name;
-  margin-left: -.04em; /* alinea la tinta de la M con el margen */
+  margin-left: -.045em; /* alinea la tinta de la M con el margen */
   font-size: clamp(56px, 7.4vw, 112px);
   letter-spacing: -.06em;
-  line-height: .9;
+  line-height: .88;
+  text-transform: uppercase;
 }
 
 .statement {
   grid-area: statement;
   max-width: 25em;
-  margin-top: clamp(24px, 5vh, 56px);
+  margin-top: clamp(24px, 4vh, 48px);
   font-size: clamp(22px, 1.95vw, 28px);
   letter-spacing: -.015em;
   line-height: 1.22;
@@ -98,13 +122,14 @@ main, .close { padding: 0 var(--gutter); }
   aspect-ratio: 4 / 5;
   object-fit: cover;
 }
+.portrait { border-radius: 18px; } /* como las imágenes de las cards */
 .portrait-placeholder {
   display: flex;
   align-items: flex-end;
-  padding: 12px;
-  background: var(--green-deep);
+  padding: 14px;
+  background: #f2f2ef;
 }
-.portrait-placeholder span { color: var(--cream-soft); font-family: Georgia, serif; font-style: italic; font-weight: 400; }
+.portrait-placeholder span { color: var(--ink-soft); font-family: Georgia, serif; font-style: italic; font-weight: 400; }
 
 /* Tres columnas cortas en texto pequeño */
 .facts {
@@ -113,13 +138,23 @@ main, .close { padding: 0 var(--gutter); }
   gap: var(--gutter);
   margin-top: clamp(32px, 6vh, 64px);
 }
-.fact h2 { margin-bottom: 1.35em; font-size: inherit; }
+/* Los títulos de columna son píldoras, como las etiquetas de las cards */
+.fact h2, .clients h2 {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 5px 11px 4px;
+  border: 1px solid var(--ink); /* taste-skill-ignore: las píldoras con borde son el estilo de la web */
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: .06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
 .fact a { text-underline-offset: 3px; transition: opacity .2s; }
 .fact a:hover { opacity: .7; }
 
 /* ---------- 2. Clientes ---------- */
 .clients { margin-top: clamp(32px, 6vh, 64px); }
-.clients h2 { margin-bottom: 18px; font-size: inherit; }
 .client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 48px; }
 .client-list a { display: block; transition: opacity .2s; }
 .client-list a:hover { opacity: .7; }
@@ -131,10 +166,12 @@ main, .close { padding: 0 var(--gutter); }
 /* ---------- Pie ---------- */
 .close {
   display: flex;
+  font-size: 13px;
+  font-weight: 400;
   justify-content: space-between;
   gap: var(--gutter);
-  margin-top: clamp(48px, 8vh, 96px);
-  padding-bottom: 24px;
+  margin-top: 20px;
+  padding-bottom: 20px;
   color: var(--cream-soft);
 }
 .close a { color: var(--cream); text-underline-offset: 3px; }
@@ -145,12 +182,14 @@ main, .close { padding: 0 var(--gutter); }
   .nav { padding: 0 16px; }
   .nav-links a { padding: 0 10px; font-size: 14px; }
   .nav-links { margin-right: -10px; }
-  .intro { grid-template-columns: 1fr; grid-template-areas: "name" "statement" "portrait"; }
+  .intro { grid-template-columns: 1fr; grid-template-areas: "title" "statement" "portrait"; }
   .name { font-size: clamp(56px, 16vw, 80px); }
   .statement { font-size: 22px; }
   .portrait { justify-self: start; width: 55%; margin-top: 32px; }
-  .facts { grid-template-columns: 1fr; gap: 32px; }
-  .fact h2 { margin-bottom: .6em; }
+  .sheet { margin: var(--nav-h) 8px 0; border-radius: 20px; }
+  .portrait { border-radius: 14px; }
+  .facts { grid-template-columns: 1fr; gap: 28px; }
+  .fact h2 { margin-bottom: 10px; }
   .close { flex-direction: column; }
 }
 
