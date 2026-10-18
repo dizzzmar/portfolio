@@ -14,11 +14,6 @@
   document.fonts && document.fonts.ready.then(fit);
   addEventListener('resize', fit);
 
-  // Con "reducir movimiento" el vídeo de Lexus se queda quieto en su primera imagen
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    document.querySelectorAll('video[autoplay]').forEach((v) => { v.removeAttribute('autoplay'); v.pause(); });
-  }
-
   const items = document.querySelectorAll('[data-reveal]');
   if (!('IntersectionObserver' in window)) {
     items.forEach((el) => el.classList.add('is-in'));
