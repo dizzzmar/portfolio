@@ -1,5 +1,5 @@
 /* HOME — estilos de index.html.
-   Orden: base y cielo · barra de navegación · hero · papel verde · cards de proyecto · footer · móvil.
+   Orden: base y cielo · barra de navegación · hero · sección de trabajos · cards de proyecto · footer · móvil.
    Los colores y tamaños importantes están aquí; busca la clase que ves en el HTML (por ejemplo .project-brand). */
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -194,52 +194,12 @@ body {
   100% { transform: scaleY(1); opacity: 0; }
 }
 
-/* ---------- Papel verde (sección "Selected work") ---------- */
-/* La sección es una hoja de papel verde que sube por encima del cielo.
-   Es plana (sin textura, sombra ni esquinas redondeadas); los agujeros salen de una máscara que crea js/home-paper.js. */
+/* ---------- Sección "Selected work" ----------
+   La tira blanca y las cards van directamente sobre el cielo (ya no hay papel verde detrás). */
 .work {
   position: relative;
   color: #111;
-  padding: 190px 10px 170px;
-}
-
-.paper-shadow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.paper {
-  position: absolute;
-  inset: 0;
-  /* Verde liso, sin textura ni esquinas redondeadas */
-  background: #2c4e37;
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-}
-
-
-.work-inner { position: relative; }
-
-.punch-hint {
-  position: absolute;
-  top: 196px;
-  right: 30px;
-  color: #cfe0cf;
-  font-family: "Courier New", monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0.75;
-  pointer-events: none;
-}
-
-/* Un trozo recortado que cae de la página */
-.piece {
-  position: fixed;
-  z-index: 5;
-  pointer-events: none;
-  filter: drop-shadow(1px 3px 3px rgba(0, 25, 10, 0.35));
+  padding: 120px 10px 120px;
 }
 
 .work-inner { max-width: 1800px; margin: 0 auto; }
@@ -426,21 +386,8 @@ body {
   line-height: 1.4;
 }
 
-/* Trozos recortados del papel, tirados sobre el cielo */
-.fallen {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.fallen svg {
-  position: absolute;
-}
-
 @media (max-width: 700px) {
-  .work { padding: 110px 8px 104px; }
-  .punch-hint { top: 168px; right: 20px; }
+  .work { padding: 80px 8px 80px; }
   :root { --nav-h: 56px; }
   .nav { gap: 10px; padding: 0 14px; }
   .nav-logo { width: 36px; height: 36px; }
