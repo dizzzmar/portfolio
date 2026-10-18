@@ -5,7 +5,7 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 ## Cómo está organizado
 
 ```
-index.html                 La home (tomate, papel verde con los proyectos, footer)
+index.html                 La home (tomate, tira de capacidades y cards de proyectos sobre el cielo, footer)
 room.html                  La página "The room" (habitación 3D)
 about/index.html           About (nombre grande, presentación, foto, gustos, clientes, preguntas). Estilos: css/about.css. Textos de ejemplo marcados con EDITA
 404.html                   Página de "no encontrada"
