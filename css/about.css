@@ -1,16 +1,16 @@
 /* ABOUT — estilos de about/index.html.
-   Toda la página es el papel verde liso de la home (sin textura ni esquinas) con texto crema.
-   Orden: colores y base · barra de navegación · nombre y foto · columnas pequeñas · clientes · preguntas · cierre · móvil · movimiento. */
+   Como el "about" de nicolo-lombardi.com: todo en Helvetica negrita, pocos tamaños, y lo importante
+   cabe en la primera pantalla. Fondo: el papel verde liso de la home (sin textura ni esquinas).
+   Orden: colores y base · barra de navegación · primera pantalla · clientes · pie · móvil · movimiento. */
 
 :root {
   --green: #2c4e37;       /* el papel */
   --green-deep: #25432f;  /* un paso más oscuro: el recuadro de la foto */
   --cream: #e9efe4;       /* el texto */
-  --cream-soft: rgba(233, 239, 228, .72); /* notas secundarias */
-  --sans: "Helvetica Neue", Arial, sans-serif;
-  --serif: Georgia, "Times New Roman", serif;
+  --cream-soft: rgba(233, 239, 228, .7); /* notas secundarias */
   --nav-h: 64px;
-  --gutter: clamp(16px, 2.2vw, 32px);
+  --gutter: 20px;
+  --small: 15px;          /* el texto de las columnas */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,14 +19,16 @@ body {
   overflow-x: clip;
   color: var(--cream);
   background: var(--green);
-  font-family: var(--sans);
-  font-size: 17px;
-  line-height: 1.45;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: var(--small);
+  font-weight: 700;
+  line-height: 1.35;
   -webkit-font-smoothing: antialiased;
 }
 
 a { color: inherit; }
 img { display: block; max-width: 100%; height: auto; }
+ul { list-style: none; }
 ::selection { background: var(--cream); color: var(--green); }
 :focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
 
@@ -43,7 +45,7 @@ img { display: block; max-width: 100%; height: auto; }
 }
 .nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
 .nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
-.nav-links { display: flex; align-self: stretch; margin: 0 -16px 0 auto; list-style: none; }
+.nav-links { display: flex; align-self: stretch; margin: 0 -16px 0 auto; }
 .nav-links a {
   display: flex;
   align-items: center;
@@ -51,6 +53,7 @@ img { display: block; max-width: 100%; height: auto; }
   padding: 0 16px;
   color: rgba(255, 255, 255, .78);
   font-size: 15px;
+  font-weight: 400;
   text-decoration: none;
   transition: color .2s;
 }
@@ -59,192 +62,96 @@ img { display: block; max-width: 100%; height: auto; }
 
 main, .close { padding: 0 var(--gutter); }
 
-/* Título pequeño de cada columna ("What I do", "Likes"…) */
-.label {
-  margin-bottom: 14px;
-  color: var(--cream-soft);
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.2;
-}
-/* Título de sección ("Selected clients", "Commonly asked") */
-.section-title {
-  margin-bottom: clamp(20px, 2.4vw, 32px);
-  font-family: var(--serif);
-  font-size: 32px;
-  font-weight: 400;
-  font-style: italic;
-  letter-spacing: -.025em;
-  line-height: 1.1;
-}
-.label-gap { margin-top: 28px; }
-
-/* ---------- 1. Nombre, presentación y foto ---------- */
-.intro { padding-top: calc(var(--nav-h) + clamp(24px, 4vw, 56px)); }
-
-/* El nombre ocupa todo el ancho: js/about.js ajusta el tamaño a la tipografía de cada dispositivo;
-   17.4vw es una aproximación por si el script no carga */
-.name {
-  width: max-content; /* la caja mide lo que el texto: así js/about.js puede medirlo */
-  font-size: 17.4vw;
-  font-weight: 700;
-  letter-spacing: -.065em;
-  line-height: .8;
-  margin-left: -.05em; /* alinea la tinta de la M con el margen */
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.intro-body {
+/* ---------- 1. Primera pantalla ---------- */
+/* Rejilla de dos columnas: a la izquierda nombre y presentación, a la derecha la foto */
+.intro {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  gap: var(--gutter);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "name portrait" "statement portrait";
   align-items: end;
-  margin-top: clamp(32px, 5vw, 72px);
+  column-gap: var(--gutter);
+  padding-top: calc(var(--nav-h) + clamp(16px, 4vh, 48px));
+}
+
+.name {
+  grid-area: name;
+  margin-left: -.04em; /* alinea la tinta de la M con el margen */
+  font-size: clamp(56px, 7.4vw, 112px);
+  letter-spacing: -.06em;
+  line-height: .9;
 }
 
 .statement {
-  max-width: 23em;
-  padding-bottom: 6px;
-  font-size: clamp(25px, 2.5vw, 36px);
-  font-weight: 500;
-  letter-spacing: -.025em;
-  line-height: 1.12;
+  grid-area: statement;
+  max-width: 25em;
+  margin-top: clamp(24px, 5vh, 56px);
+  font-size: clamp(22px, 1.95vw, 28px);
+  letter-spacing: -.015em;
+  line-height: 1.22;
 }
 
-/* Recuadro de la foto (hasta que haya foto real) */
+/* Recuadro de la foto (hasta que haya foto real): pequeño, para no empujar el resto hacia abajo */
 .portrait {
+  grid-area: portrait;
   justify-self: end;
-  width: 100%;
-  max-width: 440px;
+  width: clamp(180px, 18vw, 280px);
   aspect-ratio: 4 / 5;
   object-fit: cover;
 }
 .portrait-placeholder {
   display: flex;
   align-items: flex-end;
-  padding: 16px;
+  padding: 12px;
   background: var(--green-deep);
 }
-.portrait-placeholder span {
-  color: var(--cream-soft);
-  font-family: var(--serif);
-  font-size: 17px;
-  font-style: italic;
-}
+.portrait-placeholder span { color: var(--cream-soft); font-family: Georgia, serif; font-style: italic; font-weight: 400; }
 
-/* ---------- 2. Columnas pequeñas ---------- */
+/* Tres columnas cortas en texto pequeño */
 .facts {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--gutter);
-  margin-top: clamp(72px, 9vw, 140px);
+  margin-top: clamp(32px, 6vh, 64px);
 }
+.fact h2 { margin-bottom: 1.35em; font-size: inherit; }
+.fact a { text-underline-offset: 3px; transition: opacity .2s; }
+.fact a:hover { opacity: .7; }
 
-.pills { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; }
-.pills li {
-  padding: 6px 12px 5px;
-  border: 1px solid var(--cream); /* taste-skill-ignore: las píldoras con borde son el estilo de la web */
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .05em;
-  line-height: 1.2;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.plain { list-style: none; font-size: clamp(20px, 1.7vw, 26px); letter-spacing: -.02em; line-height: 1.2; }
-
-.now-playing { display: grid; grid-template-columns: 96px 1fr; gap: 14px 16px; align-content: start; text-decoration: none; }
-.now-playing .label { grid-column: 1 / -1; }
-.now-playing img { width: 96px; height: 96px; object-fit: cover; transition: transform .4s cubic-bezier(.2, .8, .2, 1); }
-.now-playing p { font-size: 17px; line-height: 1.3; align-self: center; }
-.now-playing strong { font-family: var(--serif); font-size: 25px; font-weight: 400; letter-spacing: -.03em; text-transform: uppercase; }
-.now-playing .more { color: var(--cream-soft); font-size: 15px; transition: color .2s; }
-.now-playing .film { height: auto; aspect-ratio: 7 / 10; }
-.now-playing:hover img { transform: rotate(-4deg) scale(1.04); }
-.now-playing:hover .more { color: var(--cream); }
-
-/* ---------- 3. Clientes ---------- */
-.clients { margin-top: clamp(96px, 11vw, 180px); }
-.client-list { display: grid; list-style: none; }
-.client-list a {
-  display: flex;
-  align-items: center;
-  padding: clamp(20px, 2.6vw, 40px) 0;
-  text-decoration: none;
-}
+/* ---------- 2. Clientes ---------- */
+.clients { margin-top: clamp(32px, 6vh, 64px); }
+.clients h2 { margin-bottom: 18px; font-size: inherit; }
+.client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 48px; }
+.client-list a { display: block; transition: opacity .2s; }
+.client-list a:hover { opacity: .7; }
 /* Los logos van a la misma altura; el SVG ya viene en color crema */
-.client-logo {
-  width: auto;
-  height: clamp(40px, 5.6vw, 92px);
-  max-width: 70%;
-  object-fit: contain;
-  object-position: left center;
-  transition: transform .4s cubic-bezier(.2, .8, .2, 1);
-}
+.client-logo { width: auto; height: 30px; }
 /* Un logo más alargado se ve más grande a la misma altura: lo bajamos un poco para igualarlos a ojo */
-.client-logo-wide { height: clamp(32px, 4.5vw, 74px); }
-.client-list a:hover .client-logo { transform: translateX(12px); }
+.client-logo-wide { height: 24px; }
 
-/* ---------- 4. Preguntas ---------- */
-.faq { margin-top: clamp(96px, 11vw, 180px); }
-.faq-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(36px, 4vw, 56px) var(--gutter);
+/* ---------- Pie ---------- */
+.close {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gutter);
+  margin-top: clamp(48px, 8vh, 96px);
+  padding-bottom: 24px;
+  color: var(--cream-soft);
 }
-.faq-list dt {
-  font-family: var(--serif);
-  font-size: clamp(25px, 2.2vw, 32px);
-  font-style: italic;
-  letter-spacing: -.025em;
-  line-height: 1.1;
-}
-.faq-list dd { max-width: 34em; margin-top: 10px; font-size: 17px; }
-
-/* ---------- 5. Cierre ---------- */
-.close { margin-top: clamp(110px, 13vw, 200px); padding-bottom: 20px; }
-.close-link {
-  display: inline-block;
-  padding: 12px 20px 11px;
-  border: 1px solid var(--cream); /* taste-skill-ignore: las píldoras con borde son el estilo de la web */
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .05em;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: background .2s, color .2s, transform .15s;
-}
-.close-link:hover { background: var(--cream); color: var(--green); }
-.close-link:active { transform: scale(.97); }
-.close-name {
-  width: max-content;
-  margin: clamp(40px, 6vw, 80px) 0 0 -.05em;
-  font-size: 17.4vw;
-  font-weight: 700;
-  letter-spacing: -.065em;
-  line-height: .8;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.close-meta { margin-top: 18px; color: var(--cream-soft); font-size: 15px; }
+.close a { color: var(--cream); text-underline-offset: 3px; }
 
 /* ---------- Móvil ---------- */
 @media (max-width: 760px) {
+  :root { --gutter: 16px; }
   .nav { padding: 0 16px; }
   .nav-links a { padding: 0 10px; font-size: 14px; }
   .nav-links { margin-right: -10px; }
-  .intro-body { grid-template-columns: 1fr; }
-  .portrait { justify-self: stretch; max-width: none; }
-  .statement { font-size: 24px; }
-  .facts { grid-template-columns: 1fr; gap: 40px; }
-  .client-logo { max-width: 100%; }
-  .faq-list { grid-template-columns: 1fr; }
-  .faq-list dt { font-size: 25px; }
-  .section-title { font-size: 25px; }
+  .intro { grid-template-columns: 1fr; grid-template-areas: "name" "statement" "portrait"; }
+  .name { font-size: clamp(56px, 16vw, 80px); }
+  .statement { font-size: 22px; }
+  .portrait { justify-self: start; width: 55%; margin-top: 32px; }
+  .facts { grid-template-columns: 1fr; gap: 32px; }
+  .fact h2 { margin-bottom: .6em; }
+  .close { flex-direction: column; }
 }
 
 /* ---------- Movimiento: cada bloque sube y aparece al entrar en pantalla (js/about.js) ----------
@@ -252,7 +159,7 @@ main, .close { padding: 0 var(--gutter); }
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal] {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
     transition: opacity .7s cubic-bezier(.2, .8, .2, 1), transform .7s cubic-bezier(.2, .8, .2, 1);
     transition-delay: var(--d, 0ms);
   }

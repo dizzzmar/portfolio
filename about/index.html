@@ -1,8 +1,8 @@
 <!doctype html>
 <!--
   ABOUT  ·  www.dizmar.xyz/about
-  Referencias: kellauren.design/contact (bio, likes/dislikes, now playing, preguntas en dos columnas)
-  y el "about" de nicolo-lombardi.com (nombre grande, frase de presentación, columnas pequeñas, clientes).
+  Composición como el "about" de nicolo-lombardi.com: lo importante cabe en la primera pantalla
+  (nombre, presentación, tres columnas cortas y los logos de los clientes).
   Fondo: el papel verde plano de la home. Estilos en /css/about.css
   Los textos marcados con EDITA son de ejemplo. El contacto va en otra página.
 -->
@@ -33,96 +33,59 @@
 
 <main>
 
-  <!-- 1. Nombre, presentación y foto -->
+  <!-- 1. Primera pantalla: nombre, presentación, foto, columnas y clientes -->
   <header class="intro">
     <h1 class="name" data-reveal>Mario Diz</h1>
-    <div class="intro-body">
-      <!-- EDITA: tu presentación (una o dos frases) -->
-      <p class="statement" data-reveal>Art director and visual designer in Madrid. I make key visuals, product imagery and films for brands, mixing photography, 3D and AI.</p>
-      <!-- EDITA: tu foto. Sustituye este recuadro por
-           <img class="portrait" src="/assets/images/mario.webp" width="900" height="1200" alt="Mario Diz"> -->
-      <div class="portrait portrait-placeholder" role="img" aria-label="Portrait of Mario Diz (coming soon)" data-reveal>
-        <span>Photo</span>
-      </div>
+    <!-- EDITA: tu presentación (dos o tres frases) -->
+    <p class="statement" data-reveal>Art director and visual designer based in Madrid. I create key visuals, product imagery and films for brands, combining photography, 3D and artificial intelligence with a love for colour and craft.</p>
+    <!-- EDITA: tu foto. Sustituye este recuadro por
+         <img class="portrait" src="/assets/images/mario.webp" width="600" height="750" alt="Mario Diz"> -->
+    <div class="portrait portrait-placeholder" role="img" aria-label="Portrait of Mario Diz (coming soon)" data-reveal>
+      <span>Photo</span>
     </div>
   </header>
 
-  <!-- 2. Qué hace · lo que le gusta · lo que suena (como en The room) -->
+  <!-- Tres columnas cortas, como en la referencia -->
   <section class="facts" aria-label="About Mario">
     <div class="fact" data-reveal>
-      <h2 class="label">What I do</h2>
-      <!-- EDITA: una <li> por capacidad (las mismas que la tira de la home) -->
-      <ul class="pills">
-        <li>Art direction</li>
+      <!-- EDITA: una <li> por capacidad -->
+      <h2>Art direction &amp; visual design</h2>
+      <ul>
+        <li>Key visuals</li>
         <li>AI creative</li>
-        <li>Visual design</li>
-        <li>3D</li>
+        <li>3D &amp; product imagery</li>
         <li>Audiovisual</li>
       </ul>
     </div>
     <div class="fact" data-reveal>
-      <h2 class="label">Likes</h2>
+      <h2>Based in Madrid, Spain</h2>
       <!-- EDITA -->
-      <ul class="plain">
-        <li>Tomatoes, obviously</li>
-        <li>Fontaines D.C.</li>
-        <li>Almodóvar films</li>
-        <li>Pokémon</li>
-      </ul>
-      <h2 class="label label-gap">Dislikes</h2>
-      <ul class="plain">
-        <li>Stock photos</li>
-        <li>Templates</li>
-        <li>Mondays</li>
-      </ul>
+      <p>Likes: tomatoes, Fontaines D.C., Almodóvar films, Pokémon.</p>
+      <p>Dislikes: stock photos, templates, Mondays.</p>
     </div>
     <!-- Lo mismo que la estantería de The room: actualízalo a la vez que js/room.js -->
-    <a class="fact now-playing" href="/room.html" data-reveal>
-      <h2 class="label">Now playing</h2>
-      <img src="/assets/room/vinyl-cover.webp" width="400" height="400" alt="Romance, by Fontaines D.C." loading="lazy">
-      <p><strong>Bug</strong><br>Fontaines D.C. — Romance</p>
-      <img class="film" src="/assets/room/film-poster.webp" width="400" height="571" alt="La Bola Negra poster" loading="lazy">
-      <p class="more">Last watched<br><strong>La Bola Negra</strong><br>See the room →</p>
-    </a>
+    <div class="fact" data-reveal>
+      <h2>Now playing</h2>
+      <p>Bug — Fontaines D.C.</p>
+      <p>Last watched: La Bola Negra</p>
+      <p><a href="/room.html">See the room →</a></p>
+    </div>
   </section>
 
-  <!-- 3. Marcas con las que ha trabajado: solo sus logos (en /assets/brands, en color crema). Solo reales; cada una enlaza a su proyecto -->
+  <!-- 2. Marcas con las que ha trabajado: solo sus logos (en /assets/brands, en color crema). Solo reales; cada una enlaza a su proyecto -->
   <section class="clients" aria-labelledby="clients-title">
-    <h2 class="section-title" id="clients-title" data-reveal>Selected clients</h2>
-    <ul class="client-list">
-      <li data-reveal>
-        <a href="/project/lexus-electrified/">
-          <img class="client-logo client-logo-wide" src="/assets/brands/lexus.svg" width="567" height="96" alt="Lexus">
-        </a>
-      </li>
-      <li data-reveal>
-        <a href="/project/soap-and-glory-vanilla/">
-          <img class="client-logo" src="/assets/brands/soap-and-glory.svg" width="626" height="134" alt="Soap &amp; Glory">
-        </a>
-      </li>
+    <h2 id="clients-title" data-reveal>Selected clients</h2>
+    <ul class="client-list" data-reveal>
+      <li><a href="/project/lexus-electrified/"><img class="client-logo client-logo-wide" src="/assets/brands/lexus.svg" width="567" height="96" alt="Lexus"></a></li>
+      <li><a href="/project/soap-and-glory-vanilla/"><img class="client-logo" src="/assets/brands/soap-and-glory.svg" width="626" height="134" alt="Soap &amp; Glory"></a></li>
     </ul>
-  </section>
-
-  <!-- 4. Preguntas frecuentes, en dos columnas. EDITA: preguntas y respuestas -->
-  <section class="faq" aria-labelledby="faq-title">
-    <h2 class="section-title" id="faq-title" data-reveal>Commonly asked</h2>
-    <dl class="faq-list">
-      <div data-reveal><dt>What kind of projects do you take on?</dt><dd>Key visuals, campaign imagery, product shots and short films for brands.</dd></div>
-      <div data-reveal><dt>Do you use AI?</dt><dd>Yes, as one tool among photography, 3D and retouching. Real products stay real.</dd></div>
-      <div data-reveal><dt>Where are you based?</dt><dd>Madrid, Spain. Working with brands everywhere.</dd></div>
-      <div data-reveal><dt>Are you taking on new work?</dt><dd>Yes. Say hello on the contact page.</dd></div>
-      <div data-reveal><dt>Where did you study?</dt><dd>Placeholder answer: school and degree.</dd></div>
-      <div data-reveal><dt>Why a tomato?</dt><dd>Placeholder answer: the story behind the tomato.</dd></div>
-    </dl>
   </section>
 
 </main>
 
-<!-- 5. Cierre: el nombre vuelve a todo el ancho -->
 <footer class="close">
-  <a class="close-link" href="/#first-project">See selected work →</a>
-  <p class="close-name" aria-hidden="true">Mario Diz</p>
-  <p class="close-meta">Madrid · © 2026</p>
+  <p>© 2026 Mario Diz · Madrid</p>
+  <a href="/#first-project">See selected work →</a>
 </footer>
 
 <script src="/js/about.js?v=20261018" defer></script>
