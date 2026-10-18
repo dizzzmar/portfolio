@@ -115,7 +115,7 @@ main, .close { padding: 0 var(--gutter); }
   margin-top: clamp(32px, 6vh, 64px);
 }
 .fact h2 { margin-bottom: 1.35em; font-size: inherit; }
-.fact p { max-width: 34em; font-weight: 400; }
+.fact p, .fact li { max-width: 34em; font-weight: 400; } /* las tres columnas con el mismo estilo de texto */
 .fact a { text-underline-offset: 3px; transition: opacity .2s; }
 .fact a:hover { opacity: .7; }
 
