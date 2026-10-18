@@ -1,7 +1,7 @@
 /* ABOUT — estilos de about/index.html.
    Estructura como el "about" de nicolo-lombardi.com (lo importante cabe en la primera pantalla) y aspecto
-   de la home: el contenido va en una tarjeta blanca redondeada sobre el papel verde liso, con la misma
-   tipografía que las cards de proyecto (marca en Georgia, título en mayúsculas apretadas, etiquetas en píldora).
+   de la home: papel verde liso con margen generoso y la misma tipografía que las cards de proyecto
+   (marca en Georgia, título en mayúsculas apretadas, etiquetas en píldora), en color crema.
    Orden: colores y base · barra de navegación · primera pantalla · clientes · pie · móvil · movimiento. */
 
 :root {
@@ -9,8 +9,6 @@
   --green-deep: #25432f;  /* un paso más oscuro: el recuadro de la foto */
   --cream: #e9efe4;       /* el texto */
   --cream-soft: rgba(233, 239, 228, .7); /* notas secundarias */
-  --ink: #171717;         /* el texto de la tarjeta (como en las cards de la home) */
-  --ink-soft: #5b5b57;
   --card-pad: clamp(20px, 2.4vw, 36px);
   --nav-h: 64px;
   --gutter: 20px;
@@ -64,16 +62,9 @@ ul { list-style: none; }
 .nav-links a:hover, .nav-links a[aria-current="page"] { color: #fff; }
 .nav-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 
-/* La tarjeta blanca: deja 10px de papel verde a los lados, como las cards de la home */
-.sheet {
-  margin: var(--nav-h) 10px 0;
-  padding: var(--card-pad);
-  color: var(--ink);
-  background: #fff;
-  border-radius: 24px;
-}
-.sheet :focus-visible { outline-color: var(--ink); }
-.close { padding: 0 var(--gutter); }
+/* Margen: el texto queda donde empieza el texto de las cards de la home (10px de papel + el relleno de la card) */
+.sheet { padding: calc(var(--nav-h) + clamp(20px, 4vh, 48px)) calc(10px + var(--card-pad)) 0; }
+.close { padding: 0 calc(10px + var(--card-pad)); }
 
 /* ---------- 1. Primera pantalla ---------- */
 /* Rejilla de dos columnas: a la izquierda nombre y presentación, a la derecha la foto */
@@ -127,9 +118,9 @@ ul { list-style: none; }
   display: flex;
   align-items: flex-end;
   padding: 14px;
-  background: #f2f2ef;
+  background: var(--green-deep);
 }
-.portrait-placeholder span { color: var(--ink-soft); font-family: Georgia, serif; font-style: italic; font-weight: 400; }
+.portrait-placeholder span { color: var(--cream-soft); font-family: Georgia, serif; font-style: italic; font-weight: 400; }
 
 /* Tres columnas cortas en texto pequeño */
 .facts {
@@ -143,7 +134,7 @@ ul { list-style: none; }
   display: inline-block;
   margin-bottom: 14px;
   padding: 5px 11px 4px;
-  border: 1px solid var(--ink); /* taste-skill-ignore: las píldoras con borde son el estilo de la web */
+  border: 1px solid var(--cream); /* taste-skill-ignore: las píldoras con borde son el estilo de la web */
   border-radius: 999px;
   font-size: 11px;
   letter-spacing: .06em;
@@ -170,8 +161,8 @@ ul { list-style: none; }
   font-weight: 400;
   justify-content: space-between;
   gap: var(--gutter);
-  margin-top: 20px;
-  padding-bottom: 20px;
+  margin-top: clamp(40px, 7vh, 72px);
+  padding-bottom: 24px;
   color: var(--cream-soft);
 }
 .close a { color: var(--cream); text-underline-offset: 3px; }
@@ -186,7 +177,8 @@ ul { list-style: none; }
   .name { font-size: clamp(56px, 16vw, 80px); }
   .statement { font-size: 22px; }
   .portrait { justify-self: start; width: 55%; margin-top: 32px; }
-  .sheet { margin: var(--nav-h) 8px 0; border-radius: 20px; }
+  .sheet { padding: calc(var(--nav-h) + 8px) var(--gutter) 0; }
+  .close { padding: 0 var(--gutter); }
   .portrait { border-radius: 14px; }
   .facts { grid-template-columns: 1fr; gap: 28px; }
   .fact h2 { margin-bottom: 10px; }
