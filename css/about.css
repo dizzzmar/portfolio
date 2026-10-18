@@ -122,13 +122,18 @@ main, .close { padding: 0 var(--margin); }
 /* ---------- 2. Clientes ---------- */
 .clients { margin-top: clamp(32px, 6vh, 64px); }
 .clients h2 { margin-bottom: 18px; font-size: inherit; }
-.client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 48px; }
+.client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 44px; max-width: 1100px; }
 .client-list a { display: block; transition: opacity .2s; }
 .client-list a:hover { opacity: .7; }
-/* Los logos van a la misma altura; el SVG ya viene en color crema */
-.client-logo { width: auto; height: 30px; } /* los SVG ya vienen en rojo tomate */
-/* Un logo más alargado se ve más grande a la misma altura: lo bajamos un poco para igualarlos a ojo */
-.client-logo-wide { height: 24px; }
+/* Cada logo se pinta del color del texto usando su silueta: así todos quedan en el mismo rojo */
+.client-logo {
+  display: block;
+  height: var(--h, 28px);
+  aspect-ratio: var(--ratio, 3);
+  background: currentColor;
+  -webkit-mask: var(--logo) center / contain no-repeat;
+  mask: var(--logo) center / contain no-repeat;
+}
 
 /* ---------- Pie ---------- */
 .close {
