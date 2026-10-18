@@ -19,3 +19,6 @@ Thumbs.db
 .vscode/
 .idea/
 node_modules/
+
+# Capturas de la revisión de diseño (skill design-taste-frontend)
+.taste-skill/
