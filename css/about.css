@@ -1,11 +1,11 @@
 /* ABOUT — estilos de about/index.html.
    Como el "about" de nicolo-lombardi.com: todo en Helvetica negrita, pocos tamaños, y lo importante
-   cabe en la primera pantalla. Fondo crema y texto rojo tomate.
+   cabe en la primera pantalla. Fondo blanco y texto rojo tomate.
    Orden: colores y base · barra de navegación · primera pantalla · clientes · pie · móvil · movimiento. */
 
 :root {
-  --cream: #f3ede0;       /* el fondo */
-  --cream-deep: #e9e0cd;  /* un paso más oscuro: el recuadro de la foto */
+  --cream: #fff;          /* el fondo */
+  --cream-deep: #f2f2ef;  /* un gris muy claro: el recuadro de la foto (como el de las cards de la home) */
   --tomato: #c8321c;      /* el texto: el rojo del tomate (oscurecido lo justo para que se lea bien) */
   --nav-h: 64px;
   --gutter: 20px;
