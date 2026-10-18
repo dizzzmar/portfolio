@@ -85,7 +85,7 @@ main, .close { padding: 0 var(--gutter); }
   grid-area: statement;
   max-width: 40em;
   margin-top: clamp(20px, 4vh, 48px);
-  font-size: clamp(19px, 1.55vw, 24px);
+  font-size: clamp(18px, 1.35vw, 21px);
   letter-spacing: -.015em;
   line-height: 1.22;
 }
@@ -98,6 +98,7 @@ main, .close { padding: 0 var(--gutter); }
   aspect-ratio: 4 / 5;
   object-fit: cover;
 }
+.statement p + p { margin-top: .8em; }
 .portrait-placeholder {
   display: flex;
   align-items: flex-end;
@@ -109,7 +110,7 @@ main, .close { padding: 0 var(--gutter); }
 /* Columnas en texto pequeño: el título en negrita y el texto normal, para que los párrafos largos se lean bien */
 .facts {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--gutter);
   margin-top: clamp(32px, 6vh, 64px);
 }
@@ -148,7 +149,7 @@ main, .close { padding: 0 var(--gutter); }
   .nav-links { margin-right: -10px; }
   .intro { grid-template-columns: 1fr; grid-template-areas: "name" "statement" "portrait"; }
   .name { font-size: clamp(56px, 16vw, 80px); }
-  .statement { font-size: 19px; }
+  .statement { font-size: 18px; }
   .portrait { justify-self: start; width: 55%; margin-top: 32px; }
   .facts { grid-template-columns: 1fr; gap: 32px; }
   .fact h2 { margin-bottom: .6em; }
