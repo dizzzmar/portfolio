@@ -1,13 +1,9 @@
 /* ABOUT — estilos de about/index.html.
    Como el "about" de nicolo-lombardi.com: todo en Helvetica negrita, pocos tamaños, y lo importante
-   cabe en la primera pantalla. Fondo: el papel verde liso de la home (sin textura ni esquinas).
+   cabe en la primera pantalla. Fondo: el cielo de la home, con el texto en blanco.
    Orden: colores y base · barra de navegación · primera pantalla · clientes · pie · móvil · movimiento. */
 
 :root {
-  --green: #2c4e37;       /* el papel */
-  --green-deep: #25432f;  /* un paso más oscuro: el recuadro de la foto */
-  --cream: #e9efe4;       /* el texto */
-  --cream-soft: rgba(233, 239, 228, .7); /* notas secundarias */
   --nav-h: 64px;
   --gutter: 20px;
   --small: 15px;          /* el texto de las columnas */
@@ -17,8 +13,8 @@
 
 body {
   overflow-x: clip;
-  color: var(--cream);
-  background: var(--green);
+  color: #fff;
+  background-color: #8cc0ef;
   font-family: "Helvetica Neue", Arial, sans-serif;
   font-size: var(--small);
   font-weight: 700;
@@ -27,10 +23,32 @@ body {
 }
 
 a { color: inherit; }
+
+/* Cielo: la misma foto con grano que la home, algo más grande que la pantalla para moverse despacio */
+.sky {
+  position: fixed;
+  inset: -8%;
+  z-index: -1;
+  background:
+    url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat,
+    url("/assets/images/sky.webp") center / cover,
+    linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
+  background-blend-mode: overlay, normal, normal;
+  animation: drift 40s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes drift {
+  0%   { transform: translate(-3%, 1%) scale(1); }
+  50%  { transform: translate(1%, -1.5%) scale(1.04); }
+  100% { transform: translate(3%, 1%) scale(1.02); }
+}
+@media (prefers-reduced-motion: reduce) { .sky { animation: none; } }
+/* Una sombra muy suave para que el texto blanco se lea igual sobre las nubes (como en la home) */
+main, .close { text-shadow: 0 1px 10px rgba(0, 20, 40, .25); }
 img { display: block; max-width: 100%; height: auto; }
 ul { list-style: none; }
-::selection { background: var(--cream); color: var(--green); }
-:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
+::selection { background: #fff; color: #175cff; }
+:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 /* ---------- Barra de navegación (como la de la home) ---------- */
 .nav {
@@ -41,7 +59,6 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   padding: 0 24px;
-  background: var(--green);
 }
 .nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
 .nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
@@ -102,9 +119,11 @@ main, .close { padding: 0 var(--gutter); }
   display: flex;
   align-items: flex-end;
   padding: 12px;
-  background: var(--green-deep);
+  background: rgba(255, 255, 255, .18);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
-.portrait-placeholder span { color: var(--cream-soft); font-family: Georgia, serif; font-style: italic; font-weight: 400; }
+.portrait-placeholder span { color: rgba(255, 255, 255, .85); font-family: Georgia, serif; font-style: italic; font-weight: 400; }
 
 /* Tres columnas cortas en texto pequeño */
 .facts {
@@ -124,7 +143,7 @@ main, .close { padding: 0 var(--gutter); }
 .client-list a { display: block; transition: opacity .2s; }
 .client-list a:hover { opacity: .7; }
 /* Los logos van a la misma altura; el SVG ya viene en color crema */
-.client-logo { width: auto; height: 30px; }
+.client-logo { width: auto; height: 30px; filter: brightness(0) invert(1); } /* en blanco sobre el cielo */
 /* Un logo más alargado se ve más grande a la misma altura: lo bajamos un poco para igualarlos a ojo */
 .client-logo-wide { height: 24px; }
 
@@ -135,9 +154,9 @@ main, .close { padding: 0 var(--gutter); }
   gap: var(--gutter);
   margin-top: clamp(48px, 8vh, 96px);
   padding-bottom: 24px;
-  color: var(--cream-soft);
+  color: rgba(255, 255, 255, .85);
 }
-.close a { color: var(--cream); text-underline-offset: 3px; }
+.close a { color: #fff; text-underline-offset: 3px; }
 
 /* ---------- Móvil ---------- */
 @media (max-width: 760px) {
