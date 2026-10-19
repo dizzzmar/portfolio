@@ -2,6 +2,13 @@
 
 Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar**. Lo que ves en el repositorio es exactamente lo que se publica en <https://www.dizmar.xyz> (GitHub Pages). Cuando un cambio llega a la rama `main`, la web se actualiza en un par de minutos.
 
+## Página temporal "We're cooking"
+
+Mientras la web está en obras, todas las páginas mandan a `/cooking/` (lo hace `js/gate.js`, que va en el `<head>` de cada página).
+- **Ver la web de verdad** en tu móvil u ordenador: abre una vez `www.dizmar.xyz/?preview` (ese navegador lo recuerda). Para volver a ver la página temporal: `www.dizmar.xyz/?nopreview`.
+- **Quitarla** cuando la web esté lista: borra la línea `<script src="/js/gate.js…">` de cada página (o pídeselo a Claude).
+- No es una contraseña: el código del repositorio es público. Solo evita que los visitantes vean la web a medias.
+
 ## Cómo está organizado
 
 ```

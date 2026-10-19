@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+  WE'RE COOKING · www.dizmar.xyz/cooking/
+  Página temporal mientras la web está en obras. Todas las demás páginas mandan aquí
+  (lo hace /js/gate.js). Para ver la web de verdad en un dispositivo, abre una vez
+  www.dizmar.xyz/?preview — para volver a taparla en ese dispositivo, www.dizmar.xyz/?nopreview
+  Para quitar la página temporal: borra la línea de /js/gate.js en cada página (ver README).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mario Diz — We’re cooking</title>
+<meta name="description" content="Mario Diz, art director in Madrid. The new site is on its way.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100svh;
+    padding: clamp(20px, 4vw, 48px) clamp(24px, 6vw, 96px);
+    color: #c8321c;
+    background: #f3ede0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { display: flex; flex-direction: column; align-items: flex-start; gap: clamp(16px, 3vw, 32px); }
+  img { width: clamp(72px, 9vw, 120px); height: auto; }
+  @media (prefers-reduced-motion: no-preference) {
+    img { animation: bob 3s ease-in-out infinite; }
+    @keyframes bob { 50% { transform: translateY(-8px) rotate(-4deg); } }
+  }
+  h1 { font-size: clamp(56px, 11vw, 180px); letter-spacing: -.06em; line-height: .9; }
+  p { font-size: 15px; }
+</style>
+</head>
+<body>
+  <main>
+    <img src="/assets/images/tomato.webp" width="595" height="640" alt="">
+    <h1>We’re cooking.</h1>
+  </main>
+  <p>Mario Diz, Madrid</p>
+</body>
+</html>
