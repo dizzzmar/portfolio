@@ -504,86 +504,144 @@ body::before {
 .intro-word { font-variant-ligatures: none; }
 .intro-line .ch { display: inline-block; }
 
-/* ---------- Work: lista editorial con miniaturas en movimiento ---------- */
-.work-grid { position: relative; z-index: 5; padding: 28px clamp(16px, 2.8vw, 40px) 0; color: #20201d; }
-.work-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 20px; }
-.work-heading h2, .work-preview-toggle { font: 11px "Helvetica Neue", Arial, sans-serif; text-transform: uppercase; letter-spacing: .07em; }
-.work-preview-toggle { border: 0; padding: 8px 0 8px 12px; background: none; color: inherit; cursor: pointer; }
-.work-preview-toggle:hover { text-decoration: underline; text-underline-offset: 4px; }
-.work-grid ol { list-style: none; border-bottom: 1px solid rgba(32, 32, 29, .2); }
-.work-item { border-top: 1px solid rgba(32, 32, 29, .2); background: rgba(255, 255, 255, .72); }
-.work-item > a, .work-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) minmax(100px, .35fr) 24px; align-items: center; gap: clamp(16px, 2vw, 32px); min-height: 132px; padding: 20px 0; color: inherit; text-decoration: none; }
-.work-info { min-width: 0; }
-.work-title { font-family: var(--font-ui); font-size: clamp(26px, 2.8vw, 42px); font-weight: 500; letter-spacing: -.045em; line-height: 1.1; }
-.work-info > p { margin-top: 10px; font-size: 11px; letter-spacing: .045em; text-transform: uppercase; }
-.work-num { align-self: start; padding-top: 18px; font-size: 10px; font-variant-numeric: tabular-nums; }
-.work-num::after { content: "."; }
-.work-item .work-media { display: none; }
-.work-media img, .work-media video { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.2, .8, .2, 1), opacity .22s ease; }
-.work-media img.preview-next { position: absolute; inset: 0; opacity: 0; }
-.work-media img.preview-next.is-active { opacity: 1; }
-.work-item a:hover .work-media img, .work-item a:hover .work-media video,
-.work-item a:focus-visible .work-media img, .work-item a:focus-visible .work-media video { transform: scale(1.035); }
-.work-type { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; text-align: right; }
-.work-type span { display: block; margin-top: 8px; color: #72726c; font-variant-numeric: tabular-nums; }
-.work-open { position: relative; justify-self: end; width: 18px; height: 18px; font-size: 0; transition: transform .25s; }
-.work-open::before { content: ""; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; border-top: 1px solid currentColor; border-right: 1px solid currentColor; }
-.work-open::after { content: ""; position: absolute; top: 9px; left: 0; width: 19px; border-top: 1px solid currentColor; transform: rotate(-45deg); }
-.work-item a:hover .work-open { transform: translate(3px, -3px); }
-.work-item a:focus-visible { outline: 2px solid #20201d; outline-offset: 6px; }
-.work-foot { padding: 48px 0 24px; font-size: 12px; }
-.work-ph { display: grid; place-items: center; background: rgba(32, 32, 29, .035); }
-.work-ph span { font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: #777770; }
-.is-placeholder .work-info, .is-placeholder .work-num, .is-placeholder .work-type { color: #777770; }
-
-/* Work: la preview activa llena la pantalla, como la miniatura bajo el cursor. */
-.work-backdrop { position: fixed; inset: 0; z-index: 2; background: #111; opacity: 0; pointer-events: none; transition: opacity .5s ease; }
-.work-backdrop.is-visible { opacity: 1; }
-.work-backdrop-frame { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .45s ease; }
-.work-backdrop-frame.is-active { opacity: 1; }
-.work-backdrop::after { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, .5); }
-.work-preview-on .work-grid { color: #fff; }
-.work-preview-on .work-item { background: transparent; border-color: rgba(255, 255, 255, .23); }
-.work-preview-on .work-grid ol { border-color: rgba(255, 255, 255, .23); }
-.work-preview-on .work-item.is-active { background: rgba(255, 255, 255, .045); }
-.work-preview-on .work-type span,
-.work-preview-on .is-placeholder .work-info,
-.work-preview-on .is-placeholder .work-num,
-.work-preview-on .is-placeholder .work-type,
-.work-preview-on .work-ph span { color: rgba(255, 255, 255, .62); }
-.work-preview-on .work-ph { background: rgba(255, 255, 255, .06); }
-.work-preview-on .nav-links a { color: rgba(255, 255, 255, .8); text-shadow: none; }
-.work-preview-on .nav-links a:hover { color: #fff; }
-.work-preview-on .intro-line { visibility: hidden; }
-.work-preview-on .work-item a:focus-visible { outline-color: #fff; }
-.work-preview-on .work-preview-toggle:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
-.work-cursor { position: fixed; inset: 0 auto auto 0; z-index: 11; color: #fff; mix-blend-mode: difference; pointer-events: none; opacity: 0; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
-.work-cursor::before { content: ""; display: inline-block; width: 5px; height: 5px; margin: 0 7px 1px 0; border-radius: 50%; background: currentColor; }
-@media (hover: hover) and (pointer: fine) {
-  .work-cursor-on .work-cursor { opacity: 1; }
-  .work-cursor-on .work-item > a { cursor: none; }
+/* ---------- Work: colección de proyectos ----------
+   Referencia: provoke.framer.website/case-studies, con el estilo de esta web (fondo blanco al que llega el cielo,
+   Helvetica apretada, Georgia cursiva, paneles de color). A la izquierda queda fijo el título "Creative ___" (la
+   palabra la cambia js/home-work.js); a la derecha, dos columnas escalonadas que se solapan: las tarjetas altas
+   (.work-a) y los paneles de color (.work-b). Los movimientos (aparecer, inercia, zoom) están al final y se apagan
+   con "reducir movimiento". Sin JavaScript todo se ve completo y quieto. */
+.work-grid {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: clamp(16px, 2vw, 32px);
+  padding: calc(var(--nav-h) + 3vh) clamp(16px, 1.2vw, 24px) 0;
+  color: #20201d;
 }
+
+/* Título fijo: se queda mientras pasan las tarjetas */
+.work-head { position: sticky; top: calc(var(--nav-h) + 3vh); align-self: start; min-width: 0; }
+.work-big {
+  font-family: var(--font-ui);
+  font-size: clamp(44px, 6.3vw, 112px);
+  font-weight: 700;
+  letter-spacing: -.055em;
+  line-height: .94;
+}
+.wb-first, .wb-word { display: block; }
+.wb-word { font-variant-ligatures: none; min-height: .94em; }
+.wb-word .ch { display: inline-block; }
+.work-sub { margin-top: clamp(14px, 1.6vw, 24px); font: italic 400 clamp(22px, 2.4vw, 36px)/1.05 Georgia, "Times New Roman", serif; letter-spacing: -.02em; }
+.work-sub span { font-variant-numeric: lining-nums; }
+
+/* Tarjetas: una sola columna de flujo; las "b" se desplazan a la derecha y se solapan con las "a".
+   Las medidas usan cqw (el 1% del ancho de la columna), así todo escala junto. */
+.work-cards { container-type: inline-size; display: flex; flex-direction: column; list-style: none; padding-bottom: 16vh; min-width: 0; }
+.work-item { position: relative; translate: 0 var(--dy, 0px); }
+.work-a { width: 75%; }
+.work-b { z-index: 2; width: 50%; margin-left: 50%; margin-top: 2cqw; } /* los paneles quedan por encima de la tarjeta que tienen debajo */
+.work-b + .work-a { margin-top: -11cqw; }
+.work-item > a, .work-link { display: block; color: inherit; text-decoration: none; }
+.work-item > a:focus-visible { outline: 2px solid #20201d; outline-offset: 6px; }
+
+.work-media { position: relative; overflow: hidden; background: rgba(32, 32, 29, .06); }
+.work-a .work-media { aspect-ratio: 4 / 5; }
+.work-media img, .work-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  translate: 0 var(--iy, 0%);
+  scale: var(--sz, 1.1);
+}
+.work-media .work-alt { position: absolute; inset: 0; opacity: 0; }
+.work-media .work-alt.is-on { opacity: 1; }
+
+/* Pie: título en Helvetica apretada, categoría en Georgia cursiva y el año en una píldora fina */
+.work-cap { padding-top: clamp(10px, 1.1cqw, 16px); }
+.work-title { font-family: var(--font-ui); font-size: clamp(28px, 3.5vw, 54px); font-weight: 500; letter-spacing: -.05em; line-height: 1; }
+.work-cat { display: flex; align-items: center; gap: 12px; margin-top: 6px; font: italic 400 clamp(18px, 1.9vw, 30px)/1.1 Georgia, "Times New Roman", serif; letter-spacing: -.02em; }
+.work-pill { flex: none; padding: 5px 10px 4px; border: 1px solid currentColor; border-radius: 999px; font: 700 11px/1.2 var(--font-ui); letter-spacing: .05em; font-variant-numeric: lining-nums; }
+
+/* Paneles de color con la imagen dentro (como las tarjetas pequeñas de la referencia) */
+.work-panel { display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 348 / 421; padding: 6%; background: var(--panel, #8cc0ef); }
+.work-panel.is-dark { color: #fff; }
+.work-b .work-media { width: 52%; aspect-ratio: 4 / 5; margin: 14% auto 0; }
+.work-b .work-cap { padding: 0; }
+.work-b .work-title { font-size: clamp(22px, 2.3vw, 34px); }
+.work-b .work-cat { font-size: clamp(16px, 1.5vw, 23px); }
+
+/* Proyectos de relleno */
+.work-ph { display: grid; place-items: center; background: var(--ph, rgba(255, 255, 255, .3)); }
+.work-ph span { font: italic 400 clamp(18px, 1.9vw, 28px)/1 Georgia, "Times New Roman", serif; opacity: .6; }
+.is-placeholder .work-title, .is-placeholder .work-cat { opacity: .45; }
+
+.work-foot { grid-column: 1 / -1; padding: 6vh 0 24px; font-size: 12px; }
+
+/* "View project": sigue al ratón con retraso (js/home-work.js) */
+.work-cursor {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 11;
+  padding: 9px 14px 8px;
+  border-radius: 999px;
+  background: #20201d;
+  color: #fff;
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0;
+  scale: .6;
+  transition: opacity .25s ease, scale .4s cubic-bezier(.2, .8, .2, 1);
+}
+.work-cursor.is-on { opacity: 1; scale: 1; }
+
+/* Al pasar por encima de un vídeo o un panel oscuro, los enlaces de la barra se ponen blancos */
+.nav-links a.on-dark, .light-on .nav-links a.on-dark, .light-on .nav-links a.on-dark:hover { color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, .35); }
 
 /* "Creative ___" se queda fijo en el centro mientras los proyectos pasan por encima; al bajar se
-   desenfoca un poco (js/home-intro.js pone --blur) */
+   desenfoca un poco (js/home-intro.js pone --blur) y desaparece al llegar a Work, donde sigue en el título fijo */
 .intro-line { position: fixed; z-index: 1; filter: blur(var(--blur, 0px)); }
 
-@media (max-width: 700px) {
-  .work-item > a, .work-row { grid-template-columns: 20px minmax(0, 1fr); gap: 10px; min-height: 112px; padding: 18px 0; }
-  .work-title { font-size: clamp(21px, 5.5vw, 30px); }
-  .work-num { padding-top: 4px; }
-  .work-info > p { font-size: 9px; margin-top: 7px; }
-  .work-type { grid-column: 2; grid-row: 2; display: flex; justify-content: space-between; text-align: left; font-size: 9px; }
-  .work-type span { margin-top: 0; }
-  .work-open { display: none; }
+/* ---------- Work: movimiento (solo con JavaScript y sin "reducir movimiento") ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .work-media img, .work-media video { transition: scale 1.1s cubic-bezier(.2, .8, .2, 1); }
+  .work-media .work-alt { transition: opacity .6s ease; }
+  .work-cap { transition: transform .7s cubic-bezier(.2, .8, .2, 1); }
+  .work-motion .work-media { transition: clip-path 1.2s cubic-bezier(.77, 0, .18, 1); }
+  .work-motion .work-b .work-panel { transition: clip-path 1.2s cubic-bezier(.77, 0, .18, 1); }
+  .work-motion .work-cap { transition: transform .7s cubic-bezier(.2, .8, .2, 1), opacity .8s ease .35s, translate .9s cubic-bezier(.2, .8, .2, 1) .35s; }
+  /* Antes de entrar: la foto está tapada (se destapa de abajo arriba) y un poco más cerca */
+  .work-motion .work-item:not(.is-in) .work-media { clip-path: inset(100% 0 0 0); }
+  .work-motion .work-item:not(.is-in) .work-media img, .work-motion .work-item:not(.is-in) .work-media video { --sz: 1.35; }
+  .work-motion .work-b:not(.is-in) .work-panel { clip-path: inset(100% 0 0 0); }
+  .work-motion .work-b:not(.is-in) .work-media { clip-path: none; }
+  .work-motion .work-item:not(.is-in) .work-cap { opacity: 0; translate: 0 18px; }
+  .work-item { transition: opacity .5s ease; }
 }
-.work-motion .work-item { opacity: 1; transform: none; transition: opacity .6s ease, transform .7s cubic-bezier(.2, .8, .2, 1); }
-.work-motion .work-item:not(.is-in):not(:focus-within) { opacity: 0; transform: translateY(20px); }
-.work-motion .work-item.is-above:not(.is-in):not(:focus-within) { transform: translateY(-20px); }
+/* Al pasar el ratón: la foto se acerca, el pie sube y las demás tarjetas se apagan un poco */
+@media (hover: hover) and (pointer: fine) {
+  .work-item > a:hover .work-media img, .work-item > a:hover .work-media video,
+  .work-item > a:focus-visible .work-media img, .work-item > a:focus-visible .work-media video { --sz: 1.17; }
+  .work-item > a:hover .work-cap, .work-item > a:focus-visible .work-cap { transform: translateY(-9px); }
+  .work-cards:has(.work-item > a:hover) .work-item:not(:has(> a:hover)) { opacity: .5; }
+}
+
+/* ---------- Móvil: el título deja de estar fijo y las tarjetas ocupan casi todo el ancho ---------- */
+@media (max-width: 760px) {
+  .work-grid { display: block; padding-top: calc(var(--nav-h) + 6vh); }
+  .work-head { position: static; margin-bottom: 9vh; }
+  .work-big { font-size: clamp(40px, 13.4vw, 72px); }
+  .work-a { width: 86%; }
+  .work-b { width: 62%; margin-left: 38%; margin-top: 3cqw; }
+  .work-b + .work-a { margin-top: -14cqw; }
+  .work-title { font-size: clamp(26px, 8vw, 38px); }
+  .work-b .work-title { font-size: clamp(20px, 6vw, 28px); }
+  .work-cat { font-size: clamp(17px, 5vw, 24px); }
+  .work-b .work-cat { font-size: clamp(15px, 4.2vw, 20px); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .intro-line { transition: none; transform: none; }
   body::before { transition: none; }
-  .work-media img, .work-media video, .work-open { transition: none; }
-  .work-backdrop, .work-backdrop-frame { transition: none; }
 }

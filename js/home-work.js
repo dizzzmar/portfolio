@@ -1,183 +1,146 @@
-// WORK · fondo en vídeo o secuencias de imágenes con transición pixelada.
-// Solo se animan mientras están visibles; se pueden pausar y respetan reducir movimiento.
+// WORK · colección de proyectos (referencia: provoke.framer.website/case-studies, con el estilo de esta web).
+//  · el título fijo de la izquierda es "Creative ___": su palabra cambia de tipografía (createWordCycler, js/home-intro.js);
+//  · cada tarjeta se destapa de abajo arriba al entrar y se mueve a su propia velocidad al hacer scroll, con inercia;
+//  · al pasar el ratón: la foto se acerca, el pie sube y aparece "View project" siguiendo al cursor (la parte visual está en css/home.css);
+//  · los vídeos solo se reproducen mientras se ven; la tarjeta de Soap & Glory cambia de foto mientras se pasa el ratón.
+// Todo se apaga con "reducir movimiento". Sin este script, la colección se ve completa y quieta.
 (() => {
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const button = document.querySelector('.work-preview-toggle');
-  let paused = false;
-  const previews = [...document.querySelectorAll('.work-media')].map((box) => {
-    const video = box.querySelector('video');
-    const sources = (box.dataset.previewImages || '').split(/\s+/).filter(Boolean);
-    const image = box.querySelector('img');
-    let index = 0, timer = 0, generation = 0, running = false, visible = false, transition = null;
-    if (image) image.loading = 'eager';
-    const finishTransition = () => {
-      if (!transition) return;
-      image.src = transition.image.src;
-      index = transition.index;
-      transition = null;
-    };
-    const cycle = async () => {
-      const ticket = generation;
-      const target = (index + 1) % sources.length;
-      const preload = new Image();
-      preload.src = sources[target];
-      try { await preload.decode(); } catch { /* Keep the current image on a failed download. */ }
-      if (!running || ticket !== generation) return;
-      if (preload.naturalWidth) {
-        transition = { image: preload, index: target, startedAt: performance.now(), duration: 680 };
-        timer = setTimeout(() => {
-          finishTransition();
-          timer = setTimeout(cycle, 1800);
-        }, transition.duration);
-      } else timer = setTimeout(cycle, 2000);
-    };
-    const update = () => {
-      const shouldRun = visible && !paused && !reduced.matches && !document.hidden;
-      if (shouldRun === running) return;
-      running = shouldRun;
-      generation++;
-      clearTimeout(timer);
-      if (video) {
-        video.autoplay = false;
-        if (running) video.play().catch(() => {});
-        else video.pause();
-      }
-      if (image && sources.length > 1) {
-        finishTransition();
-        if (running) timer = setTimeout(cycle, 1800);
-      }
-    };
-    if (video) { video.autoplay = false; video.pause(); }
-    return { box, video, image, link: box.closest('a'), get transition() { return transition; }, update, setVisible(value) { visible = value; update(); } };
-  });
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => previews.find((p) => p.box.closest('.work-item') === entry.target)?.setVisible(entry.isIntersecting));
-  });
-  previews.forEach((p) => observer.observe(p.box.closest('.work-item')));
-  const updateAll = () => {
-    if (button) {
-      button.hidden = reduced.matches;
-      button.textContent = paused ? 'Play previews' : 'Pause previews';
-      button.setAttribute('aria-pressed', String(paused));
-    }
-    previews.forEach((p) => p.update());
-  };
-  button?.addEventListener('click', () => { paused = !paused; updateAll(); });
-  document.addEventListener('visibilitychange', updateAll);
-  reduced.addEventListener('change', updateAll);
-  updateAll();
-
-  // Los medios ocultos alimentan el fondo; el vídeo solo se decodifica una vez.
   const work = document.getElementById('work');
-  const projects = previews.filter((p) => p.link);
-  if (!work || !projects.length) return;
-  const backdrop = document.createElement('div');
-  backdrop.className = 'work-backdrop';
-  backdrop.setAttribute('aria-hidden', 'true');
-  const frames = [0, 1].map(() => {
-    const canvas = document.createElement('canvas');
-    canvas.className = 'work-backdrop-frame';
-    backdrop.append(canvas);
-    return { canvas, context: canvas.getContext('2d', { alpha: false }) };
-  });
-  if (frames.some((f) => !f.context)) return;
-  const pixels = document.createElement('canvas');
-  const pixelContext = pixels.getContext('2d');
-  const cursor = document.createElement('div');
-  cursor.className = 'work-cursor';
-  cursor.textContent = 'View project';
-  cursor.setAttribute('aria-hidden', 'true');
-  document.body.append(backdrop, cursor);
-  projects.forEach((p) => {
-    if (p.video) {
-      p.poster = new Image();
-      p.poster.src = p.video.poster;
+  if (!work) return;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const items = [...work.querySelectorAll('.work-item')];
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+  // ---- Título fijo: la palabra cambia mientras el título se ve ----
+  const big = work.querySelector('.work-big');
+  const bigWord = work.querySelector('.wb-word');
+  if (big && bigWord) createWordCycler(bigWord, { visible: false }).watch(big);
+
+  // ---- Vídeos: solo suenan los fotogramas que se ven ----
+  const videos = [...work.querySelectorAll('.work-media video')];
+  videos.forEach((v) => { v.autoplay = false; v.pause(); });
+  if (!reduced && videos.length) {
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())));
+    videos.forEach((v) => io.observe(v));
+  }
+
+  // ---- Aparecer: cada tarjeta se destapa una vez, al entrar en pantalla ----
+  if (!reduced) {
+    document.documentElement.classList.add('work-motion');
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+    }), { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
+    items.forEach((el) => io.observe(el));
+  }
+
+  // ---- Movimiento con inercia: la tarjeta (--dy) y su foto (--iy) van un poco por detrás del scroll ----
+  // Las tarjetas "a" suben algo más despacio que la página y las "b" algo más deprisa, así se cruzan y dan profundidad.
+  if (!reduced) {
+    const speeds = items.map((el) => (el.classList.contains('work-b') ? -0.11 : 0.06));
+    const now = items.map(() => ({ dy: 0, iy: 0 }));
+    let raf = 0, last = 0;
+    const frame = (t) => {
+      raf = 0;
+      const k = 1 - Math.exp(-(t - (last || t - 16)) / 110); // cuánto se acerca cada fotograma a su destino
+      last = t;
+      let moving = false;
+      const vh = innerHeight;
+      items.forEach((el, i) => {
+        const r = el.getBoundingClientRect();
+        const center = r.top - now[i].dy + r.height / 2; // posición sin el desplazamiento que ya llevamos aplicado
+        const off = center - vh / 2;
+        if (Math.abs(off) > vh * 1.6) return;
+        const toDy = off * speeds[i];
+        const toIy = clamp(off / vh, -1, 1) * -4;
+        now[i].dy += (toDy - now[i].dy) * k;
+        now[i].iy += (toIy - now[i].iy) * k;
+        if (Math.abs(toDy - now[i].dy) > 0.05 || Math.abs(toIy - now[i].iy) > 0.01) moving = true;
+        el.style.setProperty('--dy', now[i].dy.toFixed(2) + 'px');
+        el.style.setProperty('--iy', now[i].iy.toFixed(3) + '%');
+      });
+      if (moving) raf = requestAnimationFrame(frame);
+      else last = 0;
+    };
+    const wake = () => { if (!raf) raf = requestAnimationFrame(frame); };
+    addEventListener('scroll', wake, { passive: true });
+    addEventListener('resize', wake);
+    wake();
+  }
+
+  // ---- Soap & Glory: mientras el ratón está encima, la foto va cambiando ----
+  if (!reduced) {
+    items.forEach((item) => {
+      const box = item.querySelector('.work-media[data-preview-images]');
+      const link = item.querySelector(':scope > a');
+      if (!box || !link) return;
+      const urls = box.dataset.previewImages.split(/\s+/).filter(Boolean);
+      if (urls.length < 2) return;
+      let layers = null, index = 0, timer = 0;
+      const show = (i) => { index = i; layers.forEach((l, n) => l.classList.toggle('is-on', n === i && i > 0)); };
+      const build = () => {
+        layers = [box.querySelector('img'), ...urls.slice(1).map((src) => {
+          const img = new Image();
+          img.className = 'work-alt';
+          img.alt = '';
+          img.src = src;
+          img.setAttribute('aria-hidden', 'true');
+          box.append(img);
+          return img;
+        })];
+      };
+      link.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        if (!layers) build();
+        clearTimeout(timer);
+        const next = () => { show((index + 1) % layers.length); timer = setTimeout(next, 900); };
+        timer = setTimeout(next, 350);
+      });
+      link.addEventListener('pointerleave', () => { clearTimeout(timer); timer = setTimeout(() => layers && show(0), 250); });
+    });
+  }
+
+  // ---- "View project": sigue al ratón con un poco de retraso ----
+  if (fine && !reduced) {
+    const pill = document.createElement('div');
+    pill.className = 'work-cursor';
+    pill.textContent = 'View project';
+    pill.setAttribute('aria-hidden', 'true');
+    document.body.append(pill);
+    let x = 0, y = 0, tx = 0, ty = 0, raf = 0, mouse = null;
+    const loop = () => {
+      x += (tx - x) * 0.2;
+      y += (ty - y) * 0.2;
+      pill.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+      raf = Math.abs(tx - x) > 0.3 || Math.abs(ty - y) > 0.3 ? requestAnimationFrame(loop) : 0;
+    };
+    const over = () => !!mouse && !!document.elementFromPoint(mouse.x, mouse.y)?.closest('.work-item > a');
+    work.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      mouse = { x: e.clientX, y: e.clientY };
+      tx = Math.min(e.clientX + 16, innerWidth - 130);
+      ty = Math.min(e.clientY + 16, innerHeight - 40);
+      pill.classList.toggle('is-on', over());
+      if (!raf) raf = requestAnimationFrame(loop);
+    }, { passive: true });
+    work.addEventListener('pointerleave', () => { mouse = null; pill.classList.remove('is-on'); });
+    addEventListener('scroll', () => { if (mouse) pill.classList.toggle('is-on', over()); }, { passive: true });
+  }
+
+  // ---- Barra: sus enlaces se ponen blancos cuando pasan por encima de un vídeo o un panel oscuro ----
+  const links = [...document.querySelectorAll('.nav-links a')];
+  let queued = false;
+  const contrast = () => {
+    queued = false;
+    for (const link of links) {
+      const r = link.getBoundingClientRect();
+      const behind = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2)
+        .find((el) => !el.closest('.nav') && el.id !== 'scene' && !el.classList.contains('work-cursor'));
+      link.classList.toggle('on-dark', !!behind && !!behind.closest('.work-media video, .work-panel.is-dark'));
     }
-  });
-  const fine = matchMedia('(hover: hover) and (pointer: fine)');
-  let active = projects[0], frame = 0, inWork = false, raf = 0, lastPaint = 0, lastKey = '';
-  let mouse = null;
-  const fit = (context, source, width, height) => {
-    const sw = source.videoWidth || source.naturalWidth;
-    const sh = source.videoHeight || source.naturalHeight;
-    if (!sw || !sh) return false;
-    const scale = Math.max(width / sw, height / sh);
-    context.drawImage(source, (width - sw * scale) / 2, (height - sh * scale) / 2, sw * scale, sh * scale);
-    return true;
   };
-  const draw = () => {
-    const { canvas, context } = frames[frame];
-    const width = Math.min(innerWidth, 1920), height = Math.round(width * innerHeight / innerWidth);
-    if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; lastKey = ''; }
-    const transition = active.transition;
-    const progress = transition ? Math.min(1, (performance.now() - transition.startedAt) / transition.duration) : 0;
-    const source = transition && progress >= .5 ? transition.image : active.video && active.video.readyState >= 2 ? active.video : active.image || active.poster;
-    if (!source || !(source.videoWidth || source.naturalWidth)) return;
-    const block = transition && !reduced.matches ? 1 + Math.max(14, width * .045) * Math.pow(Math.sin(progress * Math.PI), 1.4) : 1;
-    const key = [frame, active.link.href, source.currentSrc || source.src, source.currentTime || 0, block].join('|');
-    if (key === lastKey) return;
-    context.globalAlpha = 1;
-    if (pixelContext && block > 1.5) {
-      pixels.width = Math.max(1, Math.round(width / block));
-      pixels.height = Math.max(1, Math.round(height / block));
-      fit(pixelContext, source, pixels.width, pixels.height);
-      context.imageSmoothingEnabled = false;
-      context.drawImage(pixels, 0, 0, width, height);
-    } else {
-      context.imageSmoothingEnabled = true;
-      fit(context, source, width, height);
-    }
-    lastKey = key;
-    frames.forEach((f, i) => f.canvas.classList.toggle('is-active', i === frame));
-  };
-  const render = (now) => {
-    raf = 0;
-    if (!inWork || document.hidden) return;
-    if (now - lastPaint > 33) { draw(); lastPaint = now; }
-    raf = requestAnimationFrame(render);
-  };
-  const select = (project) => {
-    if (!project || project === active) return;
-    active = project;
-    frame = 1 - frame;
-    lastKey = '';
-    projects.forEach((p) => p.link.closest('.work-item').classList.toggle('is-active', p === active));
-    draw();
-  };
-  const updateView = () => {
-    const r = work.getBoundingClientRect();
-    inWork = r.top <= innerHeight * .45 && r.bottom > 0;
-    document.body.classList.toggle('work-preview-on', inWork);
-    backdrop.classList.toggle('is-visible', inWork);
-    const hovered = mouse && fine.matches && document.elementFromPoint(mouse.x, mouse.y)?.closest('.work-item > a');
-    const selected = projects.find((p) => p.link === hovered);
-    const focused = projects.find((p) => p.link === document.activeElement && p.link.matches(':focus-visible'));
-    document.body.classList.toggle('work-cursor-on', inWork && !!selected);
-    if (focused) select(focused);
-    else if (selected) select(selected);
-    else if (!fine.matches && inWork) {
-      const visible = projects.filter((p) => { const r = p.link.getBoundingClientRect(); return r.bottom > 64 && r.top < innerHeight; });
-      if (visible.length) select(visible.reduce((a, b) => {
-        const center = (p) => { const r = p.link.getBoundingClientRect(); return Math.abs(r.top + r.height / 2 - innerHeight * .4); };
-        return center(a) < center(b) ? a : b;
-      }));
-    }
-    if (inWork && !raf && !document.hidden) raf = requestAnimationFrame(render);
-  };
-  projects[0].link.closest('.work-item').classList.add('is-active');
-  projects.forEach((p) => {
-    p.link.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') select(p); });
-    p.link.addEventListener('focus', () => { select(p); updateView(); });
-  });
-  document.addEventListener('pointermove', (e) => {
-    if (e.pointerType !== 'mouse') return;
-    mouse = { x: e.clientX, y: e.clientY };
-    cursor.style.transform = `translate3d(${Math.min(e.clientX + 18, innerWidth - 124)}px, ${Math.min(e.clientY + 18, innerHeight - 28)}px, 0)`;
-    updateView();
-  }, { passive: true });
-  document.documentElement.addEventListener('pointerleave', () => { mouse = null; document.body.classList.remove('work-cursor-on'); });
-  addEventListener('scroll', updateView, { passive: true });
-  addEventListener('resize', updateView);
-  document.addEventListener('visibilitychange', updateView);
-  updateView();
+  const queueContrast = () => { if (!queued) { queued = true; requestAnimationFrame(contrast); } };
+  addEventListener('scroll', queueContrast, { passive: true });
+  addEventListener('resize', queueContrast);
+  contrast();
 })();
