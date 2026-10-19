@@ -73,3 +73,36 @@ const HOLD = 2800;     // cuánto se queda en "Designer" antes de la siguiente r
   };
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
 })();
+
+// ---------- Work: movimiento al hacer scroll ----------
+// Cada proyecto sube a su propia velocidad (--dy, da profundidad), su imagen se mueve dentro del marco más despacio
+// (--iy, paralaje) y se destapa de abajo arriba al entrar (clase is-in; ver css/home.css).
+// Solo transform / translate / clip-path. Con "reducir movimiento" no se hace nada y todo se ve directamente.
+(() => {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const items = [...document.querySelectorAll('.work-item')];
+  if (!items.length) return;
+  document.documentElement.classList.add('work-motion');
+  const speeds = items.map((_, i) => [0.09, -0.07, 0.12, -0.1, 0.06, -0.12][i % 6]);
+  const io = new IntersectionObserver((entries) => {
+    entries.filter((e) => e.isIntersecting).forEach((e) => { e.target.classList.add('is-in'); io.unobserve(e.target); });
+  }, { rootMargin: '0px 0px -12% 0px' });
+  items.forEach((el) => io.observe(el));
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  let queued = false;
+  function update() {
+    queued = false;
+    const vh = innerHeight;
+    items.forEach((el, i) => {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < -200 || r.top > vh + 200) return;
+      const off = r.top + r.height / 2 - vh / 2;
+      el.style.setProperty('--dy', (off * speeds[i]).toFixed(1) + 'px');
+      el.style.setProperty('--iy', (clamp(off / vh, -1, 1) * -6).toFixed(2) + '%');
+    });
+  }
+  const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+  addEventListener('scroll', queue, { passive: true });
+  addEventListener('resize', queue);
+  update();
+})();
