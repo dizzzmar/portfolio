@@ -467,7 +467,7 @@ body {
    Cada proyecto tiene su sitio y su tamaño (--x, --w, --y en el HTML). Debajo de la imagen, el número
    pequeño a la izquierda y el título en Georgia mayúscula a la derecha, como la marca de las antiguas cards. */
 .work-grid { position: relative; z-index: 5; /* por encima del texto fijo, por debajo de la barra */ padding: 10vh clamp(12px, 2vw, 28px) 0; color: #fff; }
-.work-grid ol { display: grid; gap: 22vh; list-style: none; }
+.work-grid ol { display: grid; gap: 18vh; list-style: none; }
 .work-item { width: var(--w); margin-left: var(--x); margin-top: var(--y); }
 .work-item a { display: block; color: inherit; text-decoration: none; }
 .work-media { overflow: hidden; background: rgba(255, 255, 255, 0.12); }
@@ -494,6 +494,16 @@ body {
 .work-item a:hover .work-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 .work-item a:focus-visible { outline: 2px solid #fff; outline-offset: 6px; }
 .work-foot { padding: 30vh 0 24px; font-size: 13px; }
+/* Proyectos de relleno: un recuadro translúcido sobre el cielo hasta que haya imagen */
+.work-ph {
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.work-ph span { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.8; }
+.is-placeholder .work-cap { opacity: 0.7; }
 
 /* "Creative ___" se queda fijo en el centro mientras los proyectos pasan por encima; al bajar se
    desenfoca un poco (js/home-intro.js pone --blur) */
