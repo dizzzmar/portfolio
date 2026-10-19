@@ -3,11 +3,11 @@
 // la segunda palabra va cambiando: cada cambio se descifra rápido y la palabra se queda quieta un instante para poder leerla;
 // al final se para en "Designer" y vuelve a empezar.
 // A partir de ahí ya se puede hacer scroll hasta los proyectos.
-// Cada cambio de palabra se "descifra" desde el centro hacia fuera (letras al azar que se van fijando).
+// Antes de cambiar, la palabra actual se mezcla; después la siguiente se descifra de izquierda a derecha.
 // Código propio, sin librerías.
 // EDITA aquí las palabras (la primera es en la que se para):
 const WORDS = ['Designer', 'Director', 'Coder', 'Enthusiast', 'Thinker', 'Technologist', 'Maximalist', 'Storyteller', 'Retoucher', '3D Artist', 'Mind', 'Nerd'];
-const SCRAMBLE = 320;  // milisegundos que tarda cada palabra en descifrarse al aparecer
+const SCRAMBLE = 480;  // milisegundos que tarda cada palabra en descifrarse al aparecer
 const SPEED = 950;     // milisegundos entre una palabra y la siguiente: tras descifrarse, la palabra se queda quieta (se lee) el resto
 const BURST = 6000;    // cuánto dura cada ronda de palabras
 const HOLD = 3200;     // cuánto se queda en "Designer" antes de la siguiente ronda
@@ -40,25 +40,40 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   }
   split(first, first.textContent.trim());
 
-  // ---- Descifrar desde el centro: las letras del medio se fijan primero y el resto detrás ----
+  // ---- Mezclar la palabra actual antes de revelar la siguiente ----
   const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
   let scrambleRaf = 0;
   function setWord(text, ms = SCRAMBLE) {
     cancelAnimationFrame(scrambleRaf);
     if (reduced) { split(word, text); return; }
-    split(word, text);
-    const chars = [...word.children];
-    const n = chars.length, mid = (n - 1) / 2;
+    const previous = word.textContent.replaceAll(NBSP, ' ');
+    if (previous === text) { split(word, text); return; }
     const start = performance.now();
-    const settle = chars.map((c, i) => ({ c, final: text[i] === ' ' ? NBSP : text[i], at: n > 1 ? (Math.abs(i - mid) / mid) * 0.65 : 0 }));
+    const mixDuration = ms * 0.35;
+    let revealing = false, lastFrame = -Infinity;
+    let chars = [...word.children];
+    if (!chars.length) { split(word, previous); chars = [...word.children]; }
     const step = (now) => {
-      const p = Math.min(1, (now - start) / ms);
-      let done = true;
-      for (const { c, final, at } of settle) {
-        if (p >= at + 0.35 || final === NBSP) c.textContent = final;
-        else { c.textContent = GLYPHS[(Math.random() * GLYPHS.length) | 0]; done = false; }
+      const elapsed = now - start;
+      if (elapsed >= ms) { split(word, text); return; }
+      // Limitar el ruido a 25 fps mantiene las letras legibles entre cambios.
+      if (now - lastFrame >= 40) {
+        lastFrame = now;
+        if (elapsed >= mixDuration && !revealing) {
+          split(word, text);
+          chars = [...word.children];
+          revealing = true;
+        }
+        const progress = revealing ? (elapsed - mixDuration) / (ms - mixDuration) : 0;
+        const source = revealing ? text : previous;
+        chars.forEach((c, i) => {
+          const final = source[i] === ' ' ? NBSP : source[i];
+          c.textContent = final === NBSP || (revealing && i < Math.floor(progress * chars.length))
+            ? final
+            : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+        });
       }
-      if (!done) scrambleRaf = requestAnimationFrame(step);
+      scrambleRaf = requestAnimationFrame(step);
     };
     scrambleRaf = requestAnimationFrame(step);
   }
