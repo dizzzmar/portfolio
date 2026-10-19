@@ -8,7 +8,7 @@
   --ink: #141414;
   --soft: rgba(20, 20, 20, .55);
   --panel: rgba(255, 255, 255, .3);  /* hueco de las imágenes mientras cargan */
-  --veil: rgba(241, 238, 230, .74);  /* el crema que se mezcla con el cielo: más alto = más claro */
+  --veil: rgba(241, 238, 230, .4);  /* el crema que se mezcla con el cielo: más alto = más claro */
   --edge: clamp(16px, 2.8vw, 40px);
   --nav-h: 64px;
 }
@@ -30,10 +30,10 @@ img, video { display: block; width: 100%; height: auto; }
 /* Cielo emborronado (la misma foto de la portada) y el grano en su propia capa, nítido */
 .case-sky {
   position: fixed;
-  inset: -8%;
+  inset: -20%;            /* más grande que la pantalla: el desenfoque fuerte no deja bordes */
   z-index: -2;
   background: url("/assets/images/sky.webp") center / cover, linear-gradient(to bottom, #4f8fd8, #8cc0ef 55%, #d8ecfb);
-  filter: blur(14px);
+  filter: blur(60px) saturate(1.5) contrast(1.35); /* muy desenfocado y con más contraste: manchas de color abstractas */
 }
 /* Velo crema encima del cielo: lo aclara y lo acerca al fondo crema */
 .case-sky::after { content: ""; position: absolute; inset: 0; background: var(--veil); }
@@ -49,7 +49,7 @@ img, video { display: block; width: 100%; height: auto; }
 
 
 /* ---------- Barra (enlaces a la derecha) ----------
-   Se invierte de color para leerse sobre el fondo claro y sobre las imágenes */
+   Oscura sobre el fondo; blanca mientras está encima de la portada (clase over-hero, la pone js/case.js) */
 .case-nav {
   position: fixed;
   inset: 0 0 auto;
@@ -59,8 +59,8 @@ img, video { display: block; width: 100%; height: auto; }
   align-items: center;
   justify-content: flex-end;
   padding: 0 var(--edge);
-  color: #fff;
-  mix-blend-mode: difference; /* se invierte: claro sobre las imágenes oscuras, oscuro sobre el fondo claro */
+  color: var(--ink);
+  transition: color .3s;
   pointer-events: none;
 }
 .case-nav ul { pointer-events: auto; }
@@ -78,8 +78,8 @@ img, video { display: block; width: 100%; height: auto; }
   align-items: center;
   gap: 6px;
   height: var(--nav-h);
-  color: #fff;
-  mix-blend-mode: difference; /* se invierte: claro sobre las imágenes oscuras, oscuro sobre el fondo claro */
+  color: var(--ink);
+  transition: color .3s;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: .04em;
@@ -98,8 +98,8 @@ img, video { display: block; width: 100%; height: auto; }
   position: fixed;
   top: 50%;
   z-index: 19;
-  color: #fff;
-  mix-blend-mode: difference; /* se invierte: claro sobre las imágenes oscuras, oscuro sobre el fondo claro */
+  color: var(--ink);
+  transition: color .3s;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .04em;
@@ -109,6 +109,9 @@ img, video { display: block; width: 100%; height: auto; }
 }
 .case-side.left { left: var(--edge); }
 .case-side.right { right: var(--edge); }
+
+/* Encima de la imagen de portada, barra, Back y lados van en blanco */
+.over-hero .case-nav, .over-hero .case-back, .over-hero .case-side { color: #fff; text-shadow: 0 1px 10px rgba(0, 0, 0, .3); }
 
 /* ---------- 1. Portada: imagen o vídeo a toda pantalla ---------- */
 .case-hero { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: #111; }
