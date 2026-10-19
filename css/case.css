@@ -1,12 +1,14 @@
 /* PÁGINAS DE PROYECTO (estilo cipher.tv/works/the-circle) — compartido por todo /project/*.
-   Fondo crema suave, sin cielo. Orden: colores y base · barra · portada a toda pantalla con el número y el
+   Fondo: el cielo de la portada emborronado y mezclado con crema, con el grano nítido encima. Orden: colores y base · barra · portada a toda pantalla con el número y el
    título a los lados · texto "About" · imagen grande · galería en parejas descompensadas ·
    siguiente proyecto · móvil · movimiento. */
 
 :root {
-  --bg: #f1eee6;        /* crema sutil */
+  --bg: #dfe6ea;        /* color de reserva mientras carga el cielo */
   --ink: #141414;
   --soft: rgba(20, 20, 20, .55);
+  --panel: rgba(255, 255, 255, .3);  /* hueco de las imágenes mientras cargan */
+  --veil: rgba(241, 238, 230, .4);  /* el crema que se mezcla con el cielo: más alto = más claro */
   --edge: clamp(16px, 2.8vw, 40px);
   --nav-h: 64px;
 }
@@ -23,10 +25,31 @@ body {
 a { color: inherit; }
 img, video { display: block; width: 100%; height: auto; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
-::selection { background: var(--ink); color: var(--bg); }
+::selection { background: var(--ink); color: #f1eee6; }
+
+/* Cielo emborronado (la misma foto de la portada) y el grano en su propia capa, nítido */
+.case-sky {
+  position: fixed;
+  inset: -20%;            /* más grande que la pantalla: el desenfoque fuerte no deja bordes */
+  z-index: -2;
+  background: url("/assets/images/sky.webp") center / cover, linear-gradient(to bottom, #4f8fd8, #8cc0ef 55%, #d8ecfb);
+  filter: blur(60px) saturate(1.5) contrast(1.35); /* muy desenfocado y con más contraste: manchas de color abstractas */
+}
+/* Velo crema encima del cielo: lo aclara y lo acerca al fondo crema */
+.case-sky::after { content: ""; position: absolute; inset: 0; background: var(--veil); }
+.case-grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat;
+  mix-blend-mode: overlay;
+  opacity: .7; /* sobre el fondo claro el grano se nota más: un poco más suave */
+  pointer-events: none;
+}
+
 
 /* ---------- Barra (enlaces a la derecha) ----------
-   Sobre la portada va en blanco; mix-blend-mode la invierte para que se lea sobre crema y sobre imagen */
+   Oscura sobre el fondo; blanca mientras está encima de la portada (clase over-hero, la pone js/case.js) */
 .case-nav {
   position: fixed;
   inset: 0 0 auto;
@@ -36,8 +59,8 @@ img, video { display: block; width: 100%; height: auto; }
   align-items: center;
   justify-content: flex-end;
   padding: 0 var(--edge);
-  color: #fff;
-  mix-blend-mode: difference;
+  color: var(--ink);
+  transition: color .3s;
   pointer-events: none;
 }
 .case-nav ul { pointer-events: auto; }
@@ -45,7 +68,7 @@ img, video { display: block; width: 100%; height: auto; }
 .case-logo { position: fixed; z-index: 21; top: calc((var(--nav-h) - 43px) / 2); left: var(--edge); width: 40px; height: 43px; transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
 .case-logo:hover { transform: rotate(-8deg) scale(1.06); }
 .case-logo img { width: 100%; height: 100%; object-fit: contain; }
-/* Botón "Back", junto al tomate: sin fondo, como los enlaces de la barra (se invierte para leerse sobre imagen y crema) */
+/* Botón "Back", junto al tomate: sin fondo, como los enlaces de la barra */
 .case-back {
   position: fixed;
   z-index: 21;
@@ -55,8 +78,8 @@ img, video { display: block; width: 100%; height: auto; }
   align-items: center;
   gap: 6px;
   height: var(--nav-h);
-  color: #fff;
-  mix-blend-mode: difference;
+  color: var(--ink);
+  transition: color .3s;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: .04em;
@@ -75,8 +98,8 @@ img, video { display: block; width: 100%; height: auto; }
   position: fixed;
   top: 50%;
   z-index: 19;
-  color: #fff;
-  mix-blend-mode: difference;
+  color: var(--ink);
+  transition: color .3s;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .04em;
@@ -86,6 +109,9 @@ img, video { display: block; width: 100%; height: auto; }
 }
 .case-side.left { left: var(--edge); }
 .case-side.right { right: var(--edge); }
+
+/* Encima de la imagen de portada, barra, Back y lados van en blanco */
+.over-hero .case-nav, .over-hero .case-back, .over-hero .case-side { color: #fff; text-shadow: 0 1px 10px rgba(0, 0, 0, .3); }
 
 /* ---------- 1. Portada: imagen o vídeo a toda pantalla ---------- */
 .case-hero { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: #111; }
@@ -129,14 +155,14 @@ img, video { display: block; width: 100%; height: auto; }
 
 /* ---------- 3. Imagen o vídeo grande (con margen) ---------- */
 .case-wide { padding: 0 var(--edge); }
-.case-wide > * { overflow: hidden; background: #e4e0d6; }
+.case-wide > * { overflow: hidden; background: var(--panel); }
 .case-wide.vertical { display: flex; justify-content: center; }
 .case-wide.vertical > * { width: min(420px, 100%); }
 .case-wide video[controls] { background: #000; }
 /* El post de Instagram (Lexus) va centrado en la columna */
 .case-embed { display: flex; justify-content: center; padding: 0 var(--edge); }
 .case-embed .instagram-media { width: min(540px, 100%) !important; min-width: 0 !important; margin: 0 !important; }
-.case-embed blockquote.instagram-media { padding: 24px; background: #e4e0d6; text-align: center; font-size: 13px; }
+.case-embed blockquote.instagram-media { padding: 24px; background: var(--panel); text-align: center; font-size: 13px; }
 
 /* ---------- Barra de reproducción propia (js/case.js, vídeos con data-player) ---------- */
 .player { position: relative; }
@@ -192,7 +218,7 @@ img, video { display: block; width: 100%; height: auto; }
 .case-pair.flip { grid-template-columns: 28fr 7fr 60fr; }
 .case-pair.flip > :first-child { grid-column: 1; align-self: end; }
 .case-pair.flip > :last-child { grid-column: 3; }
-.case-pair figure { overflow: hidden; background: #e4e0d6; }
+.case-pair figure { overflow: hidden; background: var(--panel); }
 .case-gallery figcaption { margin-top: 8px; color: var(--soft); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
 
 /* ---------- 5. Siguiente proyecto ---------- */

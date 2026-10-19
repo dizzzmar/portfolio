@@ -13,6 +13,16 @@
   items.forEach((el) => io.observe(el));
 })();
 
+// ---------- La barra va en blanco mientras está encima de la imagen de portada ----------
+(() => {
+  const hero = document.querySelector('.case-hero');
+  if (!hero) return;
+  const check = () => document.body.classList.toggle('over-hero', hero.getBoundingClientRect().bottom > innerHeight / 2);
+  addEventListener('scroll', check, { passive: true });
+  addEventListener('resize', check);
+  check();
+})();
+
 // ---------- Barra de reproducción propia ----------
 // Línea de progreso abajo (se puede pulsar para saltar), PLAY / PAUSE con el tiempo en el centro,
 // y SOUND : ON/OFF y FULL SCREEN a la derecha. Sin script, el vídeo conserva los controles del navegador.
