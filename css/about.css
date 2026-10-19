@@ -110,7 +110,7 @@ main, .close { padding: 0 var(--margin); }
 /* Columnas en texto pequeño: el título en negrita y el texto normal, para que los párrafos largos se lean bien */
 .facts {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--gutter);
   margin-top: clamp(32px, 6vh, 64px);
 }
@@ -118,6 +118,15 @@ main, .close { padding: 0 var(--margin); }
 .fact p, .fact li { max-width: 28em; font-weight: 400; } /* las tres columnas con el mismo estilo de texto */
 .fact a { text-underline-offset: 3px; transition: opacity .2s; }
 .fact a:hover { opacity: .7; }
+/* Now playing: el disco y la película de The room, en pequeño */
+.now-playing { text-decoration: none; }
+.np-row { display: grid; grid-template-columns: 48px 1fr; gap: 12px; align-items: center; }
+.np-row + .np-row { margin-top: 10px; }
+.np-row img { width: 48px; height: 48px; object-fit: cover; }
+.np-row .np-film { height: 68px; }
+.np-row strong { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 17px; text-transform: uppercase; letter-spacing: -.02em; }
+.np-more { text-decoration: underline; text-underline-offset: 3px; }
+.now-playing:hover .np-more { opacity: .7; }
 
 /* ---------- 2. Clientes ---------- */
 .clients { margin-top: clamp(32px, 6vh, 64px); }
