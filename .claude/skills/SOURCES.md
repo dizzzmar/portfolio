@@ -21,3 +21,8 @@ Todas se han copiado al repositorio (carpeta `.claude/skills/`, que no se public
   código de terceros).
 
 Para actualizar cualquiera, vuelve a revisar el código nuevo antes de sustituir la carpeta.
+
+## Archivadas
+
+Para ahorrar contexto, varias de estas skills se han movido a `.claude/skills-archive/` (ver su README). Siguen
+siendo las mismas, solo que Claude no las carga hasta que se reactiven.
