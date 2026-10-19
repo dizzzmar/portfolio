@@ -1,9 +1,8 @@
 <!doctype html>
 <!--
   PROYECTO: Soap & Glory — Vanillalicious  ·  www.dizmar.xyz/project/soap-and-glory-vanilla/
-  Para crear otro proyecto copia templates/project-template (ahí están explicados todos los pasos).
-  Textos: busca <h1>, <p class="project-brand">, <p class="project-description">.
-  Imágenes: carpeta /assets/projects/soap-and-glory-vanilla/
+  Diseño como cipher.tv/works/the-circle, sobre crema. Estilos comunes en /css/case.css.
+  Para crear otro proyecto copia templates/project-template. Imágenes: /assets/projects/soap-and-glory-vanilla/
 -->
 <html lang="en">
 <head>
@@ -20,50 +19,82 @@
 <meta property="og:image" content="https://www.dizmar.xyz/assets/projects/soap-and-glory-vanilla/sg3-1600.webp">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-<link rel="stylesheet" href="/css/project.css?v=20261017b">
-<!-- Descarga la home por adelantado para que al volver la animación de cierre llegue a tiempo -->
-<script type="speculationrules">{ "prefetch": [{ "urls": ["/"] }] }</script>
+<link rel="stylesheet" href="/css/case.css?v=20261019b">
+<script>document.documentElement.classList.add('js')</script>
 </head>
-<body>
-<!-- Flecha "← Back" (vuelve a la card de este proyecto en la home) -->
-<a class="back-link" href="/#soap-and-glory" aria-label="Back to all projects"><span aria-hidden="true">←</span> Back</a>
-<!-- 1. IMAGEN PRINCIPAL: galería en cuadrícula infinita dentro del cuadrado redondeado (se arrastra).
-     Las imágenes se repiten solas para llenar el cuadrado. Para cambiar las fotos, edita estas <figure>. -->
-<section class="grid-hero" id="grid-hero" style="view-transition-name: soap-and-glory-vanilla" tabindex="0" aria-roledescription="gallery" aria-label="Project images">
-<div class="grid-source">
-<figure><img src="/assets/projects/soap-and-glory-vanilla/sg1-800.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg1-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg1-1600.webp 1600w" sizes="340px" width="800" height="800" alt="Soap &amp; Glory Vanilla collection arranged on golden petals with caramel" decoding="async"></figure>
-<figure><img src="/assets/projects/soap-and-glory-vanilla/sg3-800.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg3-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg3-1600.webp 1600w" sizes="340px" width="800" height="800" alt="Soap &amp; Glory body lotions with vanilla cream, caramel and lime" decoding="async"></figure>
-<figure><img src="/assets/projects/soap-and-glory-vanilla/sg4-800.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg4-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg4-1600.webp 1600w" sizes="340px" width="800" height="800" alt="Vanilla and Clean On Me shower creams surrounded by petals, cream and lime" decoding="async"></figure>
-<figure><img src="/assets/projects/soap-and-glory-vanilla/sg5-800.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg5-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg5-1600.webp 1600w" sizes="340px" width="800" height="800" alt="Vanilla body lotion on a golden petal with flowing caramel" decoding="async"></figure>
-<figure><img src="/assets/projects/soap-and-glory-vanilla/sg2-800.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg2-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg2-1600.webp 1600w" sizes="340px" width="800" height="800" alt="Clean On Me shower cream held against a pink sunset and water" decoding="async"></figure>
-</div>
-</section>
-<main class="project-page" id="top">
-<!-- 2. CABECERA Y TEXTO -->
-<header class="project-intro">
-<p class="project-brand">Soap &amp; Glory</p>
-<h1>Vanillalicious</h1>
-<ul class="project-tags" aria-label="Project type"><li>Key visuals</li></ul>
-<p class="project-description">This project focused on developing high-quality key visuals and product shots that integrate real products into a fantasy, food-inspired world. The goal was to combine the realism of product photography with the freedom of AI-generated environments, so that the final images feel like a single, cohesive piece rather than a composite.</p>
-</header>
-<!-- 3. GALERÍA: imágenes a ancho completo y en parejas -->
-<section class="project-gallery" aria-label="Project images">
-<figure><img class="project-image" src="/assets/projects/soap-and-glory-vanilla/sg3-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg3-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg3-1600.webp 1600w" sizes="(max-width: 640px) calc(100vw - 24px), (max-width: 1000px) calc(100vw - 160px), 620px" width="1600" height="1600" alt="Soap &amp; Glory body lotions with vanilla cream, caramel and lime" loading="lazy" decoding="async"></figure>
-<div class="image-pair"><figure><img class="project-image" src="/assets/projects/soap-and-glory-vanilla/sg4-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg4-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg4-1600.webp 1600w" sizes="(max-width: 640px) calc(100vw - 24px), (max-width: 1000px) calc((100vw - 180px) / 2), 300px" width="1600" height="1600" alt="Vanilla and Clean On Me shower creams surrounded by petals, cream and lime" loading="lazy" decoding="async"></figure><figure><img class="project-image" src="/assets/projects/soap-and-glory-vanilla/sg5-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg5-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg5-1600.webp 1600w" sizes="(max-width: 640px) calc(100vw - 24px), (max-width: 1000px) calc((100vw - 180px) / 2), 300px" width="1600" height="1600" alt="Vanilla body lotion on a golden petal with flowing caramel" loading="lazy" decoding="async"></figure></div>
-<figure><img class="project-image" src="/assets/projects/soap-and-glory-vanilla/sg2-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg2-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg2-1600.webp 1600w" sizes="(max-width: 640px) calc(100vw - 24px), (max-width: 1000px) calc(100vw - 160px), 620px" width="1600" height="1600" alt="Clean On Me shower cream held against a pink sunset and water" loading="lazy" decoding="async"></figure>
+<body id="top">
+<!-- Barra: el tomate vuelve a la portada; los enlaces, como en el resto de la web -->
+<a class="case-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" width="44" height="47" alt=""></a>
+<nav class="case-nav" aria-label="Main">
+  <ul>
+    <li><a href="/#work">Work</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/contact">Contact</a></li>
+    <li><a href="/room.html">Room</a></li>
+  </ul>
+</nav>
 
-<!-- Vídeo vertical (9:16). Empieza solo, en bucle y sin sonido; los controles permiten pausarlo o activar el sonido.
-     Para cambiarlo, sustituye assets/projects/soap-and-glory-vanilla/video.mp4 (y la imagen video-poster.webp) -->
-<figure class="project-video">
-<video src="/assets/projects/soap-and-glory-vanilla/video.mp4" poster="/assets/projects/soap-and-glory-vanilla/video-poster.webp" width="360" height="640" controls autoplay muted loop playsinline preload="metadata" aria-label="Soap &amp; Glory Vanillalicious — video"></video>
-</figure>
-</section>
-<!-- 4. Enlaces del final -->
-<nav class="project-end" aria-label="Project navigation"><a href="/#soap-and-glory">← All projects</a><a href="#grid-hero">Back to top ↑</a></nav>
+<!-- Número y título, fijos en los bordes. EDITA si cambia el orden de los proyectos en la portada -->
+<p class="case-side left" aria-hidden="true">02</p>
+<p class="case-side right" aria-hidden="true">Soap &amp; Glory Vanillalicious</p>
+
+<main>
+  <!-- 1. Portada a toda pantalla -->
+  <header class="case-hero">
+    <h1 class="sr-only">Soap &amp; Glory — Vanillalicious</h1>
+    <img src="/assets/projects/soap-and-glory-vanilla/sg3-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg3-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg3-1600.webp 1600w" sizes="100vw" width="1600" height="1600" alt="Soap &amp; Glory body lotions with vanilla cream, caramel and lime" decoding="async">
+  </header>
+
+  <!-- 2. Texto y ficha. EDITA: el texto del proyecto -->
+  <section class="case-about">
+    <div class="case-text" data-reveal>
+      <p class="case-label">About</p>
+      <p>Real products in a fantasy, food-inspired world.</p>
+      <p>This project focused on developing high-quality key visuals and product shots that integrate real products into a fantasy, food-inspired world. The goal was to combine the realism of product photography with the freedom of AI-generated environments, so that the final images feel like a single, cohesive piece rather than a composite.</p>
+      <a class="case-link" href="#film">Watch the film</a>
+    </div>
+    <dl class="case-facts" data-reveal>
+      <dt>Client</dt><dd>Soap &amp; Glory</dd>
+      <dt>Project</dt><dd>Vanillalicious</dd>
+      <dt>Discipline</dt><dd>Key visuals</dd>
+      <!-- EDITA: <dt>Year</dt><dd>2025</dd> -->
+    </dl>
+  </section>
+
+  <!-- 3. Imagen grande -->
+  <section class="case-wide" data-reveal>
+    <figure><img src="/assets/projects/soap-and-glory-vanilla/sg1-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg1-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg1-1600.webp 1600w" sizes="100vw" width="1600" height="1600" alt="Soap &amp; Glory Vanilla collection arranged on golden petals with caramel" loading="lazy" decoding="async"></figure>
+  </section>
+
+  <!-- 4. Galería en parejas: una grande y una pequeña (la clase flip las cambia de lado) -->
+  <section class="case-gallery" aria-label="Project images">
+    <div class="case-pair">
+      <figure data-reveal><img src="/assets/projects/soap-and-glory-vanilla/sg4-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg4-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg4-1600.webp 1600w" sizes="60vw" width="1600" height="1600" alt="Vanilla and Clean On Me shower creams surrounded by petals, cream and lime" loading="lazy" decoding="async"></figure>
+      <figure data-reveal><img src="/assets/projects/soap-and-glory-vanilla/sg5-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg5-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg5-1600.webp 1600w" sizes="28vw" width="1600" height="1600" alt="Vanilla body lotion on a golden petal with flowing caramel" loading="lazy" decoding="async"></figure>
+    </div>
+    <div class="case-pair flip">
+      <figure data-reveal><img src="/assets/projects/soap-and-glory-vanilla/sg3-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg3-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg3-1600.webp 1600w" sizes="28vw" width="1600" height="1600" alt="Soap &amp; Glory body lotions with vanilla cream, caramel and lime" loading="lazy" decoding="async"></figure>
+      <figure data-reveal><img src="/assets/projects/soap-and-glory-vanilla/sg2-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg2-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg2-1600.webp 1600w" sizes="60vw" width="1600" height="1600" alt="Clean On Me shower cream held against a pink sunset and water" loading="lazy" decoding="async"></figure>
+    </div>
+    <!-- Vídeo vertical: empieza solo, en bucle y sin sonido; con controles para el sonido -->
+    <div class="case-wide vertical" id="film" data-reveal>
+      <figure><video src="/assets/projects/soap-and-glory-vanilla/video.mp4" poster="/assets/projects/soap-and-glory-vanilla/video-poster.webp" width="360" height="640" controls autoplay muted loop playsinline preload="metadata" aria-label="Soap &amp; Glory Vanillalicious — video"></video></figure>
+    </div>
+  </section>
+
+  <!-- 5. Créditos. EDITA: añade más con <div><dt>Puesto</dt><dd>Nombre</dd></div> -->
+  <section class="case-credits" aria-label="Credits">
+    <p class="case-label">Credits</p>
+    <dl data-reveal>
+      <div><dt>Client</dt><dd>Soap &amp; Glory</dd></div>
+      <div><dt>Art direction</dt><dd>Mario Diz</dd></div>
+    </dl>
+  </section>
+
+  <!-- 6. Siguiente proyecto -->
+  <a class="case-next" href="/project/lexus-electrified/"><span>Next project</span><strong>Lexus Electrified</strong></a>
 </main>
-<footer class="site-footer">Mario Diz, Madrid</footer>
-<!-- Scripts: galería en cuadrícula y vídeo -->
-<script src="/js/project-grid.js?v=20261017b" defer></script>
-<script src="/js/project-video.js?v=20261017b" defer></script>
+<footer class="case-foot"><span>Mario Diz, Madrid</span><a href="#top">Back to top ↑</a></footer>
+<script src="/js/case.js?v=20261019b" defer></script>
 </body>
 </html>

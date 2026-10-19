@@ -1,5 +1,7 @@
 // HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con el nombre "MARIO DIZ"
 // y viaja a la esquina superior izquierda (logo de la barra) al hacer scroll.
+// Con <body data-intro="auto"> no espera al scroll: sube solo poco después de cargar, se queda en
+// la barra y avisa con el evento "tomato-docked" (lo usa js/home-intro.js para sacar el texto).
 // En la barra solo gira; para que pese poco, el lienzo se encoge a un recuadro alrededor del tomate
 // y se dibuja a 30 fotogramas por segundo.
 // Para cambiar el texto del anillo busca  fillText('MARIO DIZ' ...
@@ -76,6 +78,8 @@ new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
   holder.scale.setScalar(1 / Math.max(size.x, size.y, size.z));
   holder.traverse((o) => { o.renderOrder = 1; });
   spinner.add(holder);
+  // Auto intro: the trip to the nav starts a moment after the tomato appears
+  introAt = clock.elapsedTime + (reduced ? 0 : INTRO_DELAY);
   // The 3D tomato is ready: fade it in over the flat placeholder (see .tomato-ready in home.css)
   requestAnimationFrame(() => document.documentElement.classList.add('tomato-ready'));
 });
@@ -178,6 +182,14 @@ for (const type of ['wheel', 'touchstart', 'keydown', 'pointerdown']) {
 const DOCK_TIME = 0.7; // seconds for the trip between the two
 const clock = new THREE.Clock();
 
+// Auto intro (data-intro="auto"): the tomato flies up on its own and stays in the nav
+const AUTO = document.body.dataset.intro === 'auto';
+const INTRO_DELAY = 1.2;  // seconds the big tomato spins in the middle before flying up
+const AUTO_TIME = 1.1;    // a slower, showier trip than the scroll one
+let introAt = Infinity;   // set when the model has loaded
+let announced = false;
+if (AUTO) { docked = false; shown = 0; }
+
 // Docked, the 44px tomato only needs 30 frames per second; its slow spin looks the same
 const DOCKED_FPS = 30;
 let lastDraw = 0;
@@ -192,15 +204,18 @@ function frame(now) {
   // Past the threshold the tomato goes straight to the nav in one move (and back above it).
   // It never parks halfway.
   const heroH = hero.offsetHeight;
-  if (!docked && scrollY > heroH * DOCK_AT) docked = true;
+  if (AUTO) {
+    docked = t >= introAt;
+  } else if (!docked && scrollY > heroH * DOCK_AT) docked = true;
   else if (docked && scrollY < heroH * UNDOCK_AT) docked = false;
   const target = docked ? 1 : 0;
-  const step = reduced || !userMoved ? 1 : dt / DOCK_TIME;
+  const step = AUTO ? (reduced ? 1 : dt / AUTO_TIME) : (reduced || !userMoved ? 1 : dt / DOCK_TIME);
   shown = target > shown ? Math.min(target, shown + step) : Math.max(target, shown - step);
   layout(ease(shown));
 
   // Docked and settled: draw only the small box around the tomato
   if ((shown >= 1) !== cropped) setCrop(shown >= 1);
+  if (AUTO && shown >= 1 && !announced) { announced = true; document.dispatchEvent(new Event('tomato-docked')); }
 
   // Keep spinning, with a gentle flying wobble
   spinner.rotation.y += dt * (reduced ? 0.3 : 0.9);
