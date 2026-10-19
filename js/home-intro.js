@@ -101,9 +101,17 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     if (started) return;
     started = true;
     document.body.classList.add('intro-on');
-    document.body.classList.remove('intro-lock');
     burst();
   }
+
+  // La portada no se desplaza hasta pulsar Work: hasta entonces sigue el bloqueo de scroll (intro-lock, css/home.css)
+  const unlock = () => document.body.classList.remove('intro-lock');
+  document.querySelector('.nav-links a[href="#work"]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    unlock();
+    history.replaceState(null, '', '#work');
+    document.getElementById('work').scrollIntoView({ behavior: 'smooth' });
+  });
 
   document.addEventListener('tomato-docked', start, { once: true });
   // Si el tomate 3D no carga (navegador sin WebGL, conexión lenta), el texto sale igual
@@ -112,10 +120,15 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   // hasta los proyectos con un desplazamiento suave. Volver con Atrás deja la portada donde estaba (ver arriba).
   if (location.hash === '#work') {
     start();
+    unlock();
     requestAnimationFrame(() => document.getElementById('work').scrollIntoView({ behavior: 'smooth' }));
   } else if (BACK) {
     start();
-    scrollTo({ top: SAVED_Y, behavior: 'instant' });
+    unlock();
+    // Se repite al terminar de cargar: hasta entonces la altura de la página aún cambia y el salto se vería
+    const restore = () => scrollTo({ top: SAVED_Y, behavior: 'instant' });
+    restore();
+    addEventListener('load', restore, { once: true });
   }
 
   // La ráfaga solo corre mientras el texto se ve
