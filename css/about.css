@@ -120,11 +120,12 @@ main, .close { padding: 0 var(--margin); }
 .fact a:hover { opacity: .7; }
 /* Now playing: el disco y la película de The room, en pequeño */
 .now-playing { text-decoration: none; }
-.np-row { display: grid; grid-template-columns: 48px 1fr; gap: 12px; align-items: center; }
-.np-row + .np-row { margin-top: 10px; }
-.np-row img { width: 48px; height: 48px; object-fit: cover; }
-.np-row .np-film { height: 68px; }
-.np-row strong { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 17px; text-transform: uppercase; letter-spacing: -.02em; }
+.np-row { display: grid; grid-template-columns: 84px 1fr; gap: 16px; align-items: center; }
+.np-row + .np-row { margin-top: 12px; }
+.np-row img { width: 84px; height: 84px; object-fit: cover; }
+.np-row .np-film { height: 120px; }
+.np-row p { font-size: 16px; line-height: 1.35; }
+.np-row strong { display: inline-block; margin: 2px 0; font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 24px; line-height: 1.05; text-transform: uppercase; letter-spacing: -.02em; }
 .np-more { text-decoration: underline; text-underline-offset: 3px; }
 .now-playing:hover .np-more { opacity: .7; }
 
