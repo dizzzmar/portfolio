@@ -4,8 +4,8 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Por ahora la portada es solo el tomate sobre el cielo: sin scroll */
-html:has(body.no-scroll), body.no-scroll { height: 100%; overflow: hidden; overscroll-behavior: none; }
+/* Mientras el tomate sube al menú no se puede hacer scroll (js/home-intro.js quita la clase) */
+html:has(body.intro-lock), body.intro-lock { height: 100%; overflow: hidden; overscroll-behavior: none; }
 
 /* El desplazamiento suave lo activa js/home-nav.js después de cargar: así, al volver de un
    proyecto, la home aparece directamente en su card en vez de deslizarse hasta ella. */
@@ -23,15 +23,26 @@ body {
   position: fixed;
   inset: -8%;
   z-index: -1;
-  /* El grano de película va aquí mismo, mezclado con la foto (antes era una capa aparte que
-     obligaba a recalcular la mezcla de toda la pantalla en cada frame de scroll) */
+  /* El grano va en .grain, una capa aparte, para que no se emborrone con el cielo */
   background:
-    url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat,
     url("/assets/images/sky.webp") center / cover,
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
-  background-blend-mode: overlay, normal, normal;
+  transition: filter 0.8s ease;
   animation: drift 40s ease-in-out infinite alternate;
   will-change: transform;
+}
+
+/* Al bajar a los proyectos el cielo se emborrona un poco (clase sky-soft, la pone js/home-intro.js) */
+.sky-soft .sky { filter: blur(10px); }
+
+/* El grano va en su propia capa, encima del cielo, para que siga nítido aunque el cielo se emborrone */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat;
+  mix-blend-mode: overlay;
+  pointer-events: none;
 }
 
 @keyframes drift {
@@ -437,4 +448,84 @@ body {
 @keyframes vt-rise-in { from { opacity: 0; transform: translateY(24px); } }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: .01s !important; animation-delay: 0s !important; }
+}
+
+/* ---------- "Creative ___": aparece en el centro cuando el tomate llega al menú ----------
+   La segunda palabra cambia muy rápido (js/home-intro.js). */
+.intro-line {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: clamp(48px, 9vw, 150px);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+  text-align: center;
+  text-shadow: 0 2px 30px rgba(0, 20, 40, 0.25);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2, .8, .2, 1);
+  pointer-events: none;
+}
+.intro-on .intro-line { opacity: 1; transform: none; }
+.intro-word { font-variant-ligatures: none; }
+
+/* ---------- Work (como cipher.tv/works): proyectos sueltos sobre el cielo ----------
+   Cada proyecto tiene su sitio y su tamaño (--x, --w, --y en el HTML). Debajo de la imagen, el número
+   pequeño a la izquierda y el título en Georgia mayúscula a la derecha, como la marca de las antiguas cards. */
+.work-grid { position: relative; z-index: 5; /* por encima del texto fijo, por debajo de la barra */ padding: 10vh clamp(12px, 2vw, 28px) 0; color: #fff; }
+.work-grid ol { display: grid; gap: 18vh; list-style: none; }
+.work-item { width: var(--w); margin-left: var(--x); margin-top: var(--y); }
+.work-item a { display: block; color: inherit; text-decoration: none; }
+.work-media { overflow: hidden; background: rgba(255, 255, 255, 0.12); }
+.work-media img, .work-media video { display: block; width: 100%; height: auto; transition: transform 0.8s cubic-bezier(.2, .8, .2, 1); }
+.work-item a:hover .work-media img, .work-item a:hover .work-media video { transform: scale(1.04); }
+.work-cap {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-top: 10px;
+  text-shadow: 0 1px 10px rgba(0, 20, 40, 0.3);
+}
+.work-num { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; }
+.work-num::before { content: ""; width: 5px; height: 5px; background: currentColor; }
+.work-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(17px, 1.5vw, 24px);
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-align: right;
+  text-transform: uppercase;
+}
+.work-item a:hover .work-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.work-item a:focus-visible { outline: 2px solid #fff; outline-offset: 6px; }
+.work-foot { padding: 30vh 0 24px; font-size: 13px; }
+/* Proyectos de relleno: un recuadro translúcido sobre el cielo hasta que haya imagen */
+.work-ph {
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.work-ph span { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.8; }
+.is-placeholder .work-cap { opacity: 0.7; }
+
+/* "Creative ___" se queda fijo en el centro mientras los proyectos pasan por encima; al bajar se
+   desenfoca un poco (js/home-intro.js pone --blur) */
+.intro-line { position: fixed; z-index: 1; filter: blur(var(--blur, 0px)); }
+
+@media (max-width: 700px) {
+  .work-grid ol { gap: 14vh; }
+  .work-item:nth-child(odd) { --x: 0% !important; --w: 86% !important; }
+  .work-item:nth-child(even) { --x: 30% !important; --w: 70% !important; }
+  .work-item { margin-top: 0 !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-line { transition: none; transform: none; }
 }

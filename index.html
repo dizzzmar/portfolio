@@ -32,7 +32,7 @@
   {"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://www.dizmar.xyz/#mario", "name": "Mario Diz", "alternateName": "dizmar", "jobTitle": "Art director and visual designer", "url": "https://www.dizmar.xyz/", "image": "https://www.dizmar.xyz/assets/images/og-image.jpg", "address": {"@type": "PostalAddress", "addressLocality": "Madrid", "addressCountry": "ES"}, "knowsAbout": ["Art direction", "Visual design", "Key visuals", "Product imagery", "Audiovisual"]}, {"@type": "WebSite", "@id": "https://www.dizmar.xyz/#website", "name": "dizmar", "alternateName": "Mario Diz portfolio", "url": "https://www.dizmar.xyz/", "author": {"@id": "https://www.dizmar.xyz/#mario"}, "inLanguage": "en"}]}
   </script>
   <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-  <link rel="stylesheet" href="/css/home.css?v=20261019">
+  <link rel="stylesheet" href="/css/home.css?v=20261019b">
   <!-- Al pasar el ratón por una card, Chrome prepara la página del proyecto por adelantado:
        se abre al instante y la animación de apertura siempre llega a tiempo -->
   <script type="importmap">
@@ -44,15 +44,17 @@
     }
   </script>
 </head>
-<body class="no-scroll">
+<body class="intro-lock" data-intro="auto"> <!-- data-intro="auto": al cargar, el tomate sube solo al menú (ver js/home-tomato.js) -->
   <div class="sky" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div> <!-- grano encima del cielo (se queda nítido aunque el cielo se emborrone) -->
   <!-- Lienzo del tomate 3D (lo dibuja /js/home-tomato.js) -->
   <canvas id="scene" aria-hidden="true"></canvas>
 
   <!-- ========== 1. Navegación ========== -->
   <nav class="nav" aria-label="Main">
-    <a class="nav-logo" href="#top" aria-label="Back to top"></a>
+    <a class="nav-logo" href="/" aria-label="Home"></a> <!-- el tomate de la barra vuelve a la portada (y repite la entrada) -->
     <ul class="nav-links">
+      <li><a href="#work">Work</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/contact">Contact</a></li>
       <li><a href="/room.html">Room</a></li>
@@ -66,16 +68,65 @@
       <h1 class="sr-only" id="site-title">Mario Diz — art direction &amp; visual design, Madrid</h1>
       <!-- Tomate plano que se ve al instante mientras carga el 3D (luego se funde con él) -->
       <img class="tomato-placeholder" src="/assets/images/tomato.webp" width="595" height="640" alt="" aria-hidden="true" fetchpriority="high">
-      <div class="scroll-hint" id="hint" hidden>Scroll</div> <!-- oculto: ahora no hay nada debajo -->
+      <div class="scroll-hint" id="hint" hidden>Scroll</div> <!-- oculto: el tomate sube solo -->
+      <!-- Cuando el tomate llega al menú aparece "Creative ___" y la segunda palabra cambia muy rápido.
+           EDITA la lista de palabras en js/home-intro.js -->
+      <p class="intro-line" aria-hidden="true"><span>Creative</span> <span class="intro-word">Designer</span></p>
     </section>
 
-    <!-- Los proyectos y la tira de capacidades están quitados por ahora (la portada no hace scroll).
-         Para recuperarlos, mira el historial de este archivo en GitHub. -->
+    <!-- ========== 3. Work (referencia: cipher.tv/works) ==========
+         Los proyectos van sueltos sobre el cielo, cada uno de un tamaño y en un sitio distinto, y pasan por
+         encima del texto "Creative ___", que se queda fijo en el centro y se desenfoca al bajar.
+         Para AÑADIR un proyecto copia un <li class="work-item"> y ajusta su posición con style:
+           --x  dónde empieza (en % del ancho)   --w  su ancho (en %)   --y  cuánto baja respecto al anterior -->
+    <section class="work-grid" id="work" aria-labelledby="work-title">
+      <h2 class="sr-only" id="work-title">Selected work</h2>
+      <ol>
+        <li class="work-item" style="--x: 8%; --w: 40%; --y: 0px">
+          <a href="/project/lexus-electrified/">
+            <div class="work-media"><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" muted loop playsinline autoplay preload="metadata" aria-label="Lexus Electrified, preview"></video></div>
+            <p class="work-cap"><span class="work-num">01</span><span class="work-title">Lexus Electrified</span></p>
+          </a>
+        </li>
+        <li class="work-item" style="--x: 68%; --w: 24%; --y: -18vh">
+          <a href="/project/soap-and-glory-vanilla/">
+            <div class="work-media"><img src="/assets/projects/soap-and-glory-vanilla/sg3-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg3-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg3-1600.webp 1600w" sizes="(max-width: 700px) 70vw, 24vw" width="1600" height="1600" loading="lazy" alt="Soap &amp; Glory body lotions with vanilla cream, caramel and lime"></div>
+            <p class="work-cap"><span class="work-num">02</span><span class="work-title">Soap &amp; Glory Vanillalicious</span></p>
+          </a>
+        </li>
+        <!-- Proyectos de relleno (EDITA: sustituye cada uno por uno real, con su <a href>, imagen y título) -->
+        <li class="work-item is-placeholder" style="--x: 30%; --w: 34%; --y: 0px">
+          <div class="work-media work-ph" style="aspect-ratio: 4 / 3" aria-hidden="true"><span>Coming soon</span></div>
+          <p class="work-cap"><span class="work-num">03</span><span class="work-title">Project title</span></p>
+        </li>
+        <li class="work-item is-placeholder" style="--x: 4%; --w: 22%; --y: -6vh">
+          <div class="work-media work-ph" style="aspect-ratio: 3 / 4" aria-hidden="true"><span>Coming soon</span></div>
+          <p class="work-cap"><span class="work-num">04</span><span class="work-title">Project title</span></p>
+        </li>
+        <li class="work-item is-placeholder" style="--x: 58%; --w: 36%; --y: -34vh">
+          <div class="work-media work-ph" style="aspect-ratio: 16 / 9" aria-hidden="true"><span>Coming soon</span></div>
+          <p class="work-cap"><span class="work-num">05</span><span class="work-title">Project title</span></p>
+        </li>
+        <li class="work-item is-placeholder" style="--x: 16%; --w: 28%; --y: 0px">
+          <div class="work-media work-ph" style="aspect-ratio: 4 / 5" aria-hidden="true"><span>Coming soon</span></div>
+          <p class="work-cap"><span class="work-num">06</span><span class="work-title">Project title</span></p>
+        </li>
+        <li class="work-item is-placeholder" style="--x: 66%; --w: 22%; --y: -26vh">
+          <div class="work-media work-ph" style="aspect-ratio: 1 / 1" aria-hidden="true"><span>Coming soon</span></div>
+          <p class="work-cap"><span class="work-num">07</span><span class="work-title">Project title</span></p>
+        </li>
+        <li class="work-item is-placeholder" style="--x: 34%; --w: 40%; --y: 0px">
+          <div class="work-media work-ph" style="aspect-ratio: 16 / 9" aria-hidden="true"><span>Coming soon</span></div>
+          <p class="work-cap"><span class="work-num">08</span><span class="work-title">Project title</span></p>
+        </li>
+      </ol>
+      <p class="work-foot">Mario Diz, Madrid</p>
+    </section>
   </main>
 
 
-  <!-- Script: tomate 3D (js/home-nav.js no se carga mientras no haya proyectos en la portada) -->
-
-  <script type="module" src="/js/home-tomato.js?v=20261019"></script>
+  <!-- Scripts: texto "Creative ___" y vídeos · tomate 3D -->
+  <script src="/js/home-intro.js?v=20261019c" defer></script>
+  <script type="module" src="/js/home-tomato.js?v=20261019c"></script>
 </body>
 </html>

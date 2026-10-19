@@ -5,7 +5,7 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 ## Cómo está organizado
 
 ```
-index.html                 La home (por ahora solo el tomate 3D sobre el cielo, sin scroll; los proyectos están quitados)
+index.html                 La home (el tomate sube solo al menú, aparece "Creative ___" con palabras que cambian y debajo la lista de proyectos)
 room.html                  La página "The room" (habitación 3D)
 about/index.html           About (nombre grande, presentación, foto, gustos, clientes, preguntas). Estilos: css/about.css. Textos de ejemplo marcados con EDITA
 404.html                   Página de "no encontrada"
@@ -14,7 +14,7 @@ robots.txt · sitemap.xml · llms.txt   Para buscadores y agentes de IA
 CLAUDE.md                  Reglas para Claude (seguridad: nunca publicar claves; avisar antes de acciones con riesgo)
 .github/workflows/secret-scan.yml  Comprueba en cada cambio que no se suba ninguna clave (gitleaks)
 
-project/                   Una carpeta por proyecto  →  www.dizmar.xyz/project/<nombre>/
+project/                   Una carpeta por proyecto  →  www.dizmar.xyz/project/<nombre>/  (estilos: css/case.css, como cipher.tv)
   lexus-electrified/index.html
   soap-and-glory-vanilla/index.html
 
