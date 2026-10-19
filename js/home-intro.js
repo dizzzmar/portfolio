@@ -142,10 +142,10 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     workRevealed = true;
     clearTimeout(dockFallback);
     start();
+    // La página no baja sola: se desbloquea y el visitante hace scroll hasta los proyectos
     setTimeout(() => {
       unlock();
       document.body.classList.remove('work-entering');
-      document.getElementById('work').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
     }, reduced ? 0 : 650);
   };
   document.querySelector('.nav-links a[href="#work"]')?.addEventListener('click', (e) => {
