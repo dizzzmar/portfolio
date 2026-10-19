@@ -1,63 +1,68 @@
-// WORK · colección de proyectos (referencia: provoke.framer.website/case-studies, con el estilo de esta web).
-//  · el título fijo de la izquierda es "Creative ___": su palabra cambia de tipografía (createWordCycler, js/home-intro.js);
-//  · cada tarjeta se destapa de abajo arriba al entrar y se mueve a su propia velocidad al hacer scroll, con inercia;
-//  · al pasar el ratón: la foto se acerca, el pie sube y aparece "View project" siguiendo al cursor (la parte visual está en css/home.css);
-//  · los vídeos solo se reproducen mientras se ven; la tarjeta de Soap & Glory cambia de foto mientras se pasa el ratón.
-// Todo se apaga con "reducir movimiento". Sin este script, la colección se ve completa y quieta.
+// WORK · lista de proyectos (referencia: 13322566869.com/works, con el estilo de esta web).
+//  · la cabecera tiene "Creative ___": su palabra se descifra con la animación de la portada (createWordCycler, js/home-intro.js);
+//  · cada fila aparece una vez al entrar: la línea se dibuja, el nombre sube desde su máscara y las miniaturas se destapan una a una;
+//  · al hacer scroll la tira de miniaturas se desplaza un poco de lado, con inercia (la fila se mueve distinto que la página);
+//  · al pasar el ratón: se encienden los textos, suben las miniaturas y aparece "View project" siguiendo al cursor (la parte visual está en css/home.css);
+//  · los vídeos de las miniaturas solo se reproducen mientras se ven.
+// Todo se apaga con "reducir movimiento". Sin este script, la lista se ve completa y quieta.
 (() => {
   const work = document.getElementById('work');
   if (!work) return;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  const items = [...work.querySelectorAll('.work-item')];
+  const rows = [...work.querySelectorAll('.work-item')];
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-  // ---- Título fijo: la palabra cambia mientras el título se ve ----
-  const big = work.querySelector('.work-big');
-  const bigWord = work.querySelector('.wb-word');
-  if (big && bigWord) createWordCycler(bigWord, { visible: false }).watch(big);
+  // ---- Cabecera: palabra cambiante ----
+  const top = work.querySelector('.work-top');
+  const word = work.querySelector('.wb-word');
+  if (top && word) createWordCycler(word, { visible: false }).watch(top);
 
-  // ---- Vídeos: solo suenan los fotogramas que se ven ----
-  const videos = [...work.querySelectorAll('.work-media video')];
+  // ---- Miniaturas: cada una sabe su posición (--i) para destaparse en cadena ----
+  rows.forEach((row) => row.querySelectorAll('.wi-slot').forEach((slot, i) => slot.style.setProperty('--i', i)));
+
+  // ---- Vídeos: solo se reproducen mientras se ven ----
+  const videos = [...work.querySelectorAll('.wi-slot video')];
   videos.forEach((v) => { v.autoplay = false; v.pause(); });
   if (!reduced && videos.length) {
     const io = new IntersectionObserver((entries) => entries.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())));
     videos.forEach((v) => io.observe(v));
   }
 
-  // ---- Aparecer: cada tarjeta se destapa una vez, al entrar en pantalla ----
+  // ---- Aparecer: cada fila entra una sola vez ----
   if (!reduced) {
     document.documentElement.classList.add('work-motion');
     const io = new IntersectionObserver((entries) => entries.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
-    }), { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
-    items.forEach((el) => io.observe(el));
+    }), { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+    rows.forEach((row) => io.observe(row));
   }
 
-  // ---- Movimiento con inercia: la tarjeta (--dy) y su foto (--iy) van un poco por detrás del scroll ----
-  // Las tarjetas "a" suben algo más despacio que la página y las "b" algo más deprisa, así se cruzan y dan profundidad.
-  if (!reduced) {
-    const speeds = items.map((el) => (el.classList.contains('work-b') ? -0.11 : 0.06));
-    const now = items.map(() => ({ dy: 0, iy: 0 }));
+  // ---- Móvil: la fila del centro de la pantalla se enciende (no hay ratón para hacerlo) ----
+  if (!fine) {
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('is-hot', e.isIntersecting)), { rootMargin: '-42% 0px -42% 0px' });
+    rows.forEach((row) => io.observe(row));
+  }
+
+  // ---- Inercia: la tira de cada fila se desplaza de lado (--dx) algo por detrás del scroll ----
+  if (!reduced && matchMedia('(min-width: 761px)').matches) {
+    const strips = rows.map((row) => row.querySelector('.wi-strip'));
+    const now = rows.map(() => 0);
     let raf = 0, last = 0;
     const frame = (t) => {
       raf = 0;
-      const k = 1 - Math.exp(-(t - (last || t - 16)) / 110); // cuánto se acerca cada fotograma a su destino
+      const k = 1 - Math.exp(-(t - (last || t - 16)) / 120);
       last = t;
       let moving = false;
       const vh = innerHeight;
-      items.forEach((el, i) => {
-        const r = el.getBoundingClientRect();
-        const center = r.top - now[i].dy + r.height / 2; // posición sin el desplazamiento que ya llevamos aplicado
-        const off = center - vh / 2;
+      rows.forEach((row, i) => {
+        const r = row.getBoundingClientRect();
+        const off = r.top + r.height / 2 - vh / 2;
         if (Math.abs(off) > vh * 1.6) return;
-        const toDy = off * speeds[i];
-        const toIy = clamp(off / vh, -1, 1) * -4;
-        now[i].dy += (toDy - now[i].dy) * k;
-        now[i].iy += (toIy - now[i].iy) * k;
-        if (Math.abs(toDy - now[i].dy) > 0.05 || Math.abs(toIy - now[i].iy) > 0.01) moving = true;
-        el.style.setProperty('--dy', now[i].dy.toFixed(2) + 'px');
-        el.style.setProperty('--iy', now[i].iy.toFixed(3) + '%');
+        const to = clamp(off * -0.07, -70, 70) * (i % 2 ? -1 : 1); // las filas pares van hacia un lado y las impares hacia el otro
+        now[i] += (to - now[i]) * k;
+        if (Math.abs(to - now[i]) > 0.05) moving = true;
+        strips[i].style.setProperty('--dx', now[i].toFixed(2) + 'px');
       });
       if (moving) raf = requestAnimationFrame(frame);
       else last = 0;
@@ -66,38 +71,6 @@
     addEventListener('scroll', wake, { passive: true });
     addEventListener('resize', wake);
     wake();
-  }
-
-  // ---- Soap & Glory: mientras el ratón está encima, la foto va cambiando ----
-  if (!reduced) {
-    items.forEach((item) => {
-      const box = item.querySelector('.work-media[data-preview-images]');
-      const link = item.querySelector(':scope > a');
-      if (!box || !link) return;
-      const urls = box.dataset.previewImages.split(/\s+/).filter(Boolean);
-      if (urls.length < 2) return;
-      let layers = null, index = 0, timer = 0;
-      const show = (i) => { index = i; layers.forEach((l, n) => l.classList.toggle('is-on', n === i && i > 0)); };
-      const build = () => {
-        layers = [box.querySelector('img'), ...urls.slice(1).map((src) => {
-          const img = new Image();
-          img.className = 'work-alt';
-          img.alt = '';
-          img.src = src;
-          img.setAttribute('aria-hidden', 'true');
-          box.append(img);
-          return img;
-        })];
-      };
-      link.addEventListener('pointerenter', (e) => {
-        if (e.pointerType !== 'mouse') return;
-        if (!layers) build();
-        clearTimeout(timer);
-        const next = () => { show((index + 1) % layers.length); timer = setTimeout(next, 900); };
-        timer = setTimeout(next, 350);
-      });
-      link.addEventListener('pointerleave', () => { clearTimeout(timer); timer = setTimeout(() => layers && show(0), 250); });
-    });
   }
 
   // ---- "View project": sigue al ratón con un poco de retraso ----
@@ -126,21 +99,4 @@
     work.addEventListener('pointerleave', () => { mouse = null; pill.classList.remove('is-on'); });
     addEventListener('scroll', () => { if (mouse) pill.classList.toggle('is-on', over()); }, { passive: true });
   }
-
-  // ---- Barra: sus enlaces se ponen blancos cuando pasan por encima de un vídeo o un panel oscuro ----
-  const links = [...document.querySelectorAll('.nav-links a')];
-  let queued = false;
-  const contrast = () => {
-    queued = false;
-    for (const link of links) {
-      const r = link.getBoundingClientRect();
-      const behind = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2)
-        .find((el) => !el.closest('.nav') && el.id !== 'scene' && !el.classList.contains('work-cursor'));
-      link.classList.toggle('on-dark', !!behind && !!behind.closest('.work-media video, .work-panel.is-dark'));
-    }
-  };
-  const queueContrast = () => { if (!queued) { queued = true; requestAnimationFrame(contrast); } };
-  addEventListener('scroll', queueContrast, { passive: true });
-  addEventListener('resize', queueContrast);
-  contrast();
 })();
