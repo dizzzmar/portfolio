@@ -139,3 +139,12 @@
     });
   });
 })();
+
+// ---------- Atrás: vuelve a la portada exactamente donde estaba ----------
+// Si se llegó desde la web, usa el historial (js/home-intro.js guarda y restaura la posición).
+// Si no (por ejemplo, abriendo el proyecto directamente), el enlace lleva a /#work como siempre.
+(() => {
+  const back = document.querySelector('.case-back');
+  if (!back || history.length < 2 || !document.referrer.startsWith(location.origin + '/')) return;
+  back.addEventListener('click', (e) => { e.preventDefault(); history.back(); });
+})();
