@@ -4,6 +4,9 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Por ahora la portada es solo el tomate sobre el cielo: sin scroll */
+html:has(body.no-scroll), body.no-scroll { height: 100%; overflow: hidden; overscroll-behavior: none; }
+
 /* El desplazamiento suave lo activa js/home-nav.js después de cargar: así, al volver de un
    proyecto, la home aparece directamente en su card en vez de deslizarse hasta ella. */
 html.smooth-scroll { scroll-behavior: smooth; }
