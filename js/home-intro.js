@@ -177,66 +177,11 @@ function createWordCycler(word, { visible = true } = {}) {
   cycler.watch(word.parentElement, () => started);
 })();
 
-// ---------- Del cielo al negro: disolución en píxeles ----------
-// Un lienzo fijo dibuja cuadrados negros (esquinas rectas) que van creciendo mientras se baja. Cada cuadrado tiene su momento:
-// mezcla de azar y de posición (los de abajo antes que los de arriba), así el negro sube desde el borde inferior con el borde roto.
-// El azar es siempre el mismo, de modo que al subir y bajar se ve igual. Al llegar al final, la capa negra de css/home.css (work-solid)
-// deja la página negra del todo. Con "reducir movimiento" no se crea y se usa el fundido de siempre.
-function createDissolve() {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return null;
-  canvas.className = 'dissolve';
-  canvas.setAttribute('aria-hidden', 'true');
-  document.body.append(canvas);
-  document.documentElement.classList.add('dissolve-on');
-  const GROW = 0.22; // cuánto del recorrido tarda cada cuadrado en crecer del todo
-  let cell = 40, cols = 0, rows = 0, dpr = 1, th = [], last = -1;
-  const rng = (seed) => () => {
-    seed = (seed + 0x6D2B79F5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  function build() {
-    dpr = Math.min(devicePixelRatio || 1, 2);
-    canvas.width = Math.round(innerWidth * dpr);
-    canvas.height = Math.round(innerHeight * dpr);
-    cell = Math.max(24, Math.min(56, Math.round(innerWidth / 30)));
-    cols = Math.ceil(innerWidth / cell);
-    rows = Math.ceil(innerHeight / cell);
-    const r = rng(1337);
-    th = [];
-    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) th.push((0.55 * r() + 0.45 * (1 - y / Math.max(1, rows - 1))) * (1 - GROW));
-    last = -1;
-  }
-  function draw(p) {
-    canvas.style.visibility = p >= 1 ? 'hidden' : 'visible'; // al final lo cubre la capa negra de la página
-    if (p === last) return;
-    last = p;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (p <= 0 || p >= 1) return;
-    ctx.fillStyle = '#0c0c0b';
-    const c = cell * dpr;
-    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
-      const t = (p - th[y * cols + x]) / GROW;
-      if (t <= 0) continue;
-      const k = t >= 1 ? 1 : t * t * (3 - 2 * t);
-      const size = k >= 1 ? c + 1 : c * k; // el cuadrado completo pasa 1 px para que no queden rendijas
-      ctx.fillRect(Math.round((x + 0.5) * c - size / 2), Math.round((y + 0.5) * c - size / 2), Math.ceil(size), Math.ceil(size));
-    }
-  }
-  build();
-  addEventListener('resize', build);
-  return { draw };
-}
-
 // ---------- Al bajar, "Creative ___" y el cielo se desenfocan (los proyectos pasan por encima) ----------
 (() => {
   const line = document.querySelector('.intro-line');
   if (!line) return;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const dissolve = still ? null : createDissolve();
   let queued = false;
   const update = () => {
     queued = false;
@@ -245,8 +190,10 @@ function createDissolve() {
     const easedLight = light * light * (3 - 2 * light);
     document.body.style.setProperty('--light-progress', easedLight.toFixed(3));
     document.body.classList.toggle('light-on', light > 0.55);
-    document.body.classList.toggle('work-solid', easedLight >= 1);
-    if (dissolve) dissolve.draw(easedLight);
+    // Del cielo al negro: primero se invierten los colores del cielo (en la primera mitad del recorrido) y después se apaga hasta el negro
+    const smooth = (v) => v * v * (3 - 2 * v);
+    document.body.style.setProperty('--invert', smooth(Math.min(1, light * 2)).toFixed(3));
+    document.body.style.setProperty('--dark', smooth(Math.min(1, Math.max(0, (light - 0.4) / 0.6))).toFixed(3));
     if (!still) line.style.setProperty('--blur', (p * 10).toFixed(1) + 'px');
     document.body.classList.toggle('sky-soft', scrollY > innerHeight * 0.3);
     // Al llegar a Work, el "Creative ___" del centro desaparece: la palabra sigue en el título fijo de la izquierda
