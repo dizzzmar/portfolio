@@ -553,6 +553,7 @@ body::before {
 .work-motion .work-item a:hover .work-media img, .work-motion .work-item a:hover .work-media video { transform: translate3d(0, var(--iy, 0%), 0) scale(1.2); }
 /* Entrada: la imagen se destapa de abajo arriba y el pie sube y aparece, un instante después */
 .work-motion .work-item:not(.is-in) .work-media { clip-path: inset(100% 0 0 0); }
+.work-motion .work-item.is-above:not(.is-in) .work-media { clip-path: inset(0 0 100% 0); }
 .work-motion .work-item .work-media { clip-path: inset(0); transition: clip-path 1.2s cubic-bezier(.2, .8, .2, 1); }
 .work-motion .work-item:not(.is-in) .work-cap { opacity: 0; transform: translateY(12px); }
 .work-motion .work-item .work-cap { transition: opacity .7s .35s, transform .7s .35s cubic-bezier(.2, .8, .2, 1); }

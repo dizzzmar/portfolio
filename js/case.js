@@ -6,10 +6,20 @@
   if (reduced) document.querySelectorAll('video[autoplay]').forEach((v) => { v.autoplay = false; v.pause(); });
 
   const items = document.querySelectorAll('[data-reveal]');
-  if (!('IntersectionObserver' in window)) { items.forEach((el) => el.classList.add('is-in')); return; }
+  if (reduced || !('IntersectionObserver' in window)) { items.forEach((el) => el.classList.add('is-in')); return; }
+  items.forEach((el, i) => {
+    if (el.matches('figure, .case-wide')) el.classList.add('media-reveal');
+    el.style.setProperty('--reveal-delay', (i % 3) * 55 + 'ms');
+  });
   const io = new IntersectionObserver((entries) => {
-    entries.filter((e) => e.isIntersecting).forEach((e) => { e.target.classList.add('is-in'); io.unobserve(e.target); });
-  }, { rootMargin: '0px 0px -10% 0px' });
+    entries.forEach((e) => {
+      if (e.isIntersecting) e.target.classList.add('is-in');
+      else {
+        e.target.classList.toggle('is-above', e.boundingClientRect.bottom <= 0);
+        e.target.classList.remove('is-in');
+      }
+    });
+  }, { threshold: 0 });
   items.forEach((el) => io.observe(el));
 })();
 
@@ -70,7 +80,7 @@
 })();
 
 // ---------- Barra de reproducción propia ----------
-// Línea de progreso abajo (se puede pulsar para saltar), PLAY / PAUSE con el tiempo en el centro,
+// Línea de progreso abajo (se puede pulsar para saltar), PLAY / PAUSE junto al cursor,
 // y SOUND : ON/OFF y FULL SCREEN a la derecha. Sin script, el vídeo conserva los controles del navegador.
 (() => {
   const fmt = (t) => {

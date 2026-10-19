@@ -174,8 +174,14 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   document.documentElement.classList.add('work-motion');
   const speeds = items.map((_, i) => [0.09, -0.07, 0.12, -0.1, 0.06, -0.12][i % 6]);
   const io = new IntersectionObserver((entries) => {
-    entries.filter((e) => e.isIntersecting).forEach((e) => { e.target.classList.add('is-in'); io.unobserve(e.target); });
-  }, { rootMargin: '0px 0px -12% 0px' });
+    entries.forEach((e) => {
+      if (e.isIntersecting) e.target.classList.add('is-in');
+      else {
+        e.target.classList.toggle('is-above', e.boundingClientRect.bottom <= 0);
+        e.target.classList.remove('is-in');
+      }
+    });
+  }, { threshold: 0 });
   items.forEach((el) => io.observe(el));
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   let queued = false;

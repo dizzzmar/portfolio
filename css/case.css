@@ -178,10 +178,10 @@ img, video { display: block; width: 100%; height: auto; }
 .case-embed blockquote.instagram-media { padding: 24px; background: var(--panel); text-align: center; font-size: 13px; }
 
 /* ---------- Barra de reproducción propia (js/case.js, vídeos con data-player) ---------- */
-.player { position: relative; }
+.player { position: relative; isolation: isolate; }
 .player video { cursor: pointer; }
 .player button { border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
-.player-toggle {
+.player .player-toggle {
   position: absolute;
   bottom: 48px;
   left: 14px;
@@ -189,11 +189,11 @@ img, video { display: block; width: 100%; height: auto; }
   justify-items: start;
   gap: 2px;
   color: #fff;
-  color: #fff !important;
   font-family: Georgia, "Times New Roman", serif !important;
   font-size: 15px !important;
   text-transform: uppercase;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, .7), 0 0 18px rgba(0, 0, 0, .55);
+  mix-blend-mode: difference;
+  text-shadow: none;
   opacity: 0;
   transition: opacity .25s;
 }
@@ -209,15 +209,16 @@ img, video { display: block; width: 100%; height: auto; }
   font-size: 10px;
   letter-spacing: .08em;
   text-transform: uppercase;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, .7), 0 0 14px rgba(0, 0, 0, .5);
+  mix-blend-mode: difference;
+  text-shadow: none;
 }
 .player-bar button { padding: 6px 0; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
 .player-bar button:hover { opacity: 1; }
 /* La línea: fina, blanca translúcida; lo ya visto en blanco */
 .player-track { position: relative; flex: 1; height: 14px; cursor: pointer; }
 .player-track::before, .player-track i { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; }
-.player-track::before { background: rgba(255, 255, 255, .45); }
-.player-track i { background: #fff; height: 2px; margin-top: -.5px; transform-origin: left; transform: scaleX(0); }
+.player-track::before { background: currentColor; opacity: .45; }
+.player-track i { background: currentColor; height: 2px; margin-top: -.5px; transform-origin: left; transform: scaleX(0); }
 .player.pointer-inside .player-toggle, .player-toggle:focus-visible { opacity: 1; }
 @media (hover: hover) and (pointer: fine) {
   .player video { cursor: none; }
@@ -250,9 +251,10 @@ img, video { display: block; width: 100%; height: auto; }
 /* Las dos fotos de cada pareja suben a distinta velocidad (--dy) */
 .case-pair > figure { translate: 0 var(--dy, 0px); }
 @media (prefers-reduced-motion: no-preference) {
-  /* Las fotos se destapan de abajo arriba al entrar, mientras la imagen se asienta */
-  .js .case-pair > figure[data-reveal], .js .case-wide[data-reveal] > figure { clip-path: inset(16% 0 0 0); transition: clip-path 1.1s cubic-bezier(.2, .8, .2, 1), opacity .8s, transform .8s cubic-bezier(.2, .8, .2, 1); }
-  .js .case-pair > figure[data-reveal].is-in, .js .case-wide[data-reveal].is-in > figure { clip-path: inset(0 0 0 0); }
+  /* Las fotos se revelan en ambas direcciones sin alterar la cuadrícula. */
+  .js .media-reveal { clip-path: inset(14% 0 0 0); }
+  .js .media-reveal.is-above { clip-path: inset(0 0 14% 0); }
+  .js .media-reveal.is-in { clip-path: inset(0); }
 }
 
 /* ---------- Móvil ---------- */
@@ -273,7 +275,10 @@ img, video { display: block; width: 100%; height: auto; }
 
 /* ---------- Movimiento: cada bloque sube un poco al aparecer (js/case.js) ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .js [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.2, .8, .2, 1), transform .8s cubic-bezier(.2, .8, .2, 1); }
-  .js [data-reveal].is-in { opacity: 1; transform: none; }
+  .js [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .85s cubic-bezier(.2, .8, .2, 1), clip-path .85s cubic-bezier(.2, .8, .2, 1); }
+  .js [data-reveal].media-reveal { transform: translateY(32px) scale(.98); }
+  .js [data-reveal].is-above { transform: translateY(-28px); }
+  .js [data-reveal].media-reveal.is-above { transform: translateY(-32px) scale(.98); }
+  .js [data-reveal].is-in { opacity: 1; transform: none; transition-delay: var(--reveal-delay, 0ms); }
 }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
