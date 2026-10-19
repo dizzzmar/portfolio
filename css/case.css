@@ -167,9 +167,13 @@ img, video { display: block; width: 100%; height: auto; }
 .case-wide > * { overflow: hidden; background: var(--panel); }
 .case-wide.vertical { display: flex; justify-content: center; }
 .case-wide.vertical > * { width: min(420px, 100%); }
+/* Vídeo horizontal (Lexus): ancho medio, centrado */
+.case-wide.vertical.case-landscape > * { width: min(720px, 100%); }
+/* La foto grande no pasa de un ancho medio, centrada, para que no abrume (Soap & Glory) */
+.case-wide:not(.vertical) > figure { width: min(760px, 100%); margin: 0 auto; }
 .case-wide video[controls] { background: #000; }
 /* El post de Instagram (Lexus) va centrado en la columna */
-.case-embed { display: flex; justify-content: center; padding: 0 var(--edge); }
+.case-embed { display: flex; justify-content: center; padding: clamp(60px, 8vw, 110px) var(--edge) 0; }
 .case-embed .instagram-media { width: min(540px, 100%) !important; min-width: 0 !important; margin: 0 !important; }
 .case-embed blockquote.instagram-media { padding: 24px; background: var(--panel); text-align: center; font-size: 13px; }
 
@@ -220,7 +224,7 @@ img, video { display: block; width: 100%; height: auto; }
 @media (hover: none) { .player-toggle { opacity: 1; } }
 
 /* ---------- 4. Galería: parejas descompensadas, una grande y una pequeña ---------- */
-.case-gallery { display: grid; gap: clamp(80px, 10vw, 140px); padding: clamp(80px, 10vw, 140px) var(--edge) 0; }
+.case-gallery { max-width: 1040px; margin-inline: auto; display: grid; gap: clamp(80px, 10vw, 140px); padding: clamp(80px, 10vw, 140px) var(--edge) 0; }
 .case-pair { display: grid; grid-template-columns: 60fr 7fr 28fr; align-items: start; }
 .case-pair > :first-child { grid-column: 1; }
 .case-pair > :last-child { grid-column: 3; }

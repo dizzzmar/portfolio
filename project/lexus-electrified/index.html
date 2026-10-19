@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://www.dizmar.xyz/assets/projects/lexus-electrified/thumb.webp">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-<link rel="stylesheet" href="/css/case.css?v=20261019r">
+<link rel="stylesheet" href="/css/case.css?v=20261019t">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body id="top">
@@ -65,8 +65,15 @@
     </dl>
   </section>
 
+
+  <!-- 3. El vídeo, con la barra de reproducción propia (js/case.js). Ahora es el clip corto de la portada;
+       cuando tengas la película completa, sustituye assets/projects/lexus-electrified/thumb.mp4 o pásamela -->
+  <section class="case-wide vertical case-landscape" id="film" data-reveal>
+    <figure><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" controls data-player muted loop playsinline preload="metadata" aria-label="Lexus Electrified — video"></video></figure>
+  </section>
+
   <!-- 3. La película (post de Instagram incrustado: Instagram añade su cabecera y su pie, no se pueden quitar) -->
-  <section class="case-embed" id="film" aria-label="Lexus Electrified film" data-reveal>
+  <section class="case-embed" id="instagram" aria-label="Lexus Electrified film" data-reveal>
     <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DUk54nFkTu_/" data-instgrm-version="14">
       <a href="https://www.instagram.com/p/DUk54nFkTu_/">Watch Lexus Electrified on Instagram</a>
     </blockquote>
@@ -78,6 +85,6 @@
 
 <!-- Script oficial de Instagram: convierte el bloque de arriba en el reproductor -->
 <script async src="https://www.instagram.com/embed.js"></script>
-<script src="/js/case.js?v=20261019r" defer></script>
+<script src="/js/case.js?v=20261019s" defer></script>
 </body>
 </html>
