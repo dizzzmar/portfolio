@@ -32,7 +32,7 @@
   {"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://www.dizmar.xyz/#mario", "name": "Mario Diz", "alternateName": "dizmar", "jobTitle": "Art director and visual designer", "url": "https://www.dizmar.xyz/", "image": "https://www.dizmar.xyz/assets/images/og-image.jpg", "address": {"@type": "PostalAddress", "addressLocality": "Madrid", "addressCountry": "ES"}, "knowsAbout": ["Art direction", "Visual design", "Key visuals", "Product imagery", "Audiovisual"]}, {"@type": "WebSite", "@id": "https://www.dizmar.xyz/#website", "name": "dizmar", "alternateName": "Mario Diz portfolio", "url": "https://www.dizmar.xyz/", "author": {"@id": "https://www.dizmar.xyz/#mario"}, "inLanguage": "en"}]}
   </script>
   <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-  <link rel="stylesheet" href="/css/home.css?v=20261019l">
+  <link rel="stylesheet" href="/css/home.css?v=20261019m">
   <!-- Al pasar el ratón por una card, Chrome prepara la página del proyecto por adelantado:
        se abre al instante y la animación de apertura siempre llega a tiempo -->
   <script type="importmap">
@@ -44,7 +44,7 @@
     }
   </script>
 </head>
-<body class="intro-lock" data-intro="auto"> <!-- data-intro="auto": al cargar, el tomate sube solo al menú (ver js/home-tomato.js) -->
+<body class="intro-lock" data-intro="work"> <!-- El tomate gira en la landing; solo sube al pulsar Work. -->
   <div class="sky" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div> <!-- grano encima del cielo (se queda nítido aunque el cielo se emborrone) -->
   <!-- Lienzo del tomate 3D (lo dibuja /js/home-tomato.js) -->
@@ -74,8 +74,8 @@
       <p class="intro-line" aria-hidden="true"><span>Creative</span> <span class="intro-word">Designer</span></p>
     </section>
 
-    <!-- Work: lista numerada con título, preview animada y categoría.
-         Para proyectos sin vídeo, data-preview-images contiene las imágenes que alterna la miniatura. -->
+    <!-- Work: lista sobre la preview a pantalla completa. Los elementos work-media solo
+         proporcionan el vídeo o las imágenes del fondo; no aparecen dentro de la fila. -->
     <section class="work-grid" id="work" aria-labelledby="work-title">
       <div class="work-heading">
         <h2 id="work-title">Selected work</h2>
@@ -126,8 +126,8 @@
 
 
   <!-- Scripts: texto "Creative ___" y vídeos · tomate 3D -->
-  <script src="/js/home-intro.js?v=20261019p" defer></script>
-  <script src="/js/home-work.js?v=20261019b" defer></script>
-  <script type="module" src="/js/home-tomato.js?v=20261019d"></script>
+  <script src="/js/home-intro.js?v=20261019r" defer></script>
+  <script src="/js/home-work.js?v=20261019c" defer></script>
+  <script type="module" src="/js/home-tomato.js?v=20261019e"></script>
 </body>
 </html>

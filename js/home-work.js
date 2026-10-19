@@ -1,4 +1,4 @@
-// WORK · previews en vídeo o secuencias de imágenes del propio proyecto.
+// WORK · fondo en vídeo o secuencias de imágenes con transición pixelada.
 // Solo se animan mientras están visibles; se pueden pausar y respetan reducir movimiento.
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -8,16 +8,14 @@
     const video = box.querySelector('video');
     const sources = (box.dataset.previewImages || '').split(/\s+/).filter(Boolean);
     const image = box.querySelector('img');
-    let next, index = 0, timer = 0, generation = 0, running = false, visible = false;
-    if (image && sources.length > 1) {
-      next = document.createElement('img');
-      next.className = 'preview-next';
-      next.alt = '';
-      next.setAttribute('aria-hidden', 'true');
-      next.width = image.width;
-      next.height = image.height;
-      box.append(next);
-    }
+    let index = 0, timer = 0, generation = 0, running = false, visible = false, transition = null;
+    if (image) image.loading = 'eager';
+    const finishTransition = () => {
+      if (!transition) return;
+      image.src = transition.image.src;
+      index = transition.index;
+      transition = null;
+    };
     const cycle = async () => {
       const ticket = generation;
       const target = (index + 1) % sources.length;
@@ -26,14 +24,11 @@
       try { await preload.decode(); } catch { /* Keep the current image on a failed download. */ }
       if (!running || ticket !== generation) return;
       if (preload.naturalWidth) {
-        next.src = sources[target];
-        next.classList.add('is-active');
+        transition = { image: preload, index: target, startedAt: performance.now(), duration: 680 };
         timer = setTimeout(() => {
-          image.src = sources[target];
-          index = target;
-          next.classList.remove('is-active');
-          timer = setTimeout(cycle, 850);
-        }, 240);
+          finishTransition();
+          timer = setTimeout(cycle, 1800);
+        }, transition.duration);
       } else timer = setTimeout(cycle, 2000);
     };
     const update = () => {
@@ -47,18 +42,18 @@
         if (running) video.play().catch(() => {});
         else video.pause();
       }
-      if (next) {
-        next.classList.remove('is-active');
-        if (running) timer = setTimeout(cycle, 850);
+      if (image && sources.length > 1) {
+        finishTransition();
+        if (running) timer = setTimeout(cycle, 1800);
       }
     };
     if (video) { video.autoplay = false; video.pause(); }
-    return { box, video, image, next, link: box.closest('a'), update, setVisible(value) { visible = value; update(); } };
+    return { box, video, image, link: box.closest('a'), get transition() { return transition; }, update, setVisible(value) { visible = value; update(); } };
   });
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => previews.find((p) => p.box === entry.target)?.setVisible(entry.isIntersecting));
+    entries.forEach((entry) => previews.find((p) => p.box.closest('.work-item') === entry.target)?.setVisible(entry.isIntersecting));
   });
-  previews.forEach((p) => observer.observe(p.box));
+  previews.forEach((p) => observer.observe(p.box.closest('.work-item')));
   const updateAll = () => {
     if (button) {
       button.hidden = reduced.matches;
@@ -72,7 +67,7 @@
   reduced.addEventListener('change', updateAll);
   updateAll();
 
-  // El mismo fotograma de la miniatura ocupa el fondo entero; no se carga otro vídeo.
+  // Los medios ocultos alimentan el fondo; el vídeo solo se decodifica una vez.
   const work = document.getElementById('work');
   const projects = previews.filter((p) => p.link);
   if (!work || !projects.length) return;
@@ -86,6 +81,8 @@
     return { canvas, context: canvas.getContext('2d', { alpha: false }) };
   });
   if (frames.some((f) => !f.context)) return;
+  const pixels = document.createElement('canvas');
+  const pixelContext = pixels.getContext('2d');
   const cursor = document.createElement('div');
   cursor.className = 'work-cursor';
   cursor.textContent = 'View project';
@@ -112,18 +109,23 @@
     const { canvas, context } = frames[frame];
     const width = Math.min(innerWidth, 1920), height = Math.round(width * innerHeight / innerWidth);
     if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; lastKey = ''; }
-    const source = active.video && active.video.readyState >= 2 ? active.video : active.image || active.poster;
+    const transition = active.transition;
+    const progress = transition ? Math.min(1, (performance.now() - transition.startedAt) / transition.duration) : 0;
+    const source = transition && progress >= .5 ? transition.image : active.video && active.video.readyState >= 2 ? active.video : active.image || active.poster;
     if (!source || !(source.videoWidth || source.naturalWidth)) return;
-    const next = active.next;
-    const opacity = next ? Number(getComputedStyle(next).opacity) : 0;
-    const key = [frame, active.link.href, source.currentSrc || source.src, source.currentTime || 0, next?.src, opacity].join('|');
+    const block = transition && !reduced.matches ? 1 + Math.max(14, width * .045) * Math.pow(Math.sin(progress * Math.PI), 1.4) : 1;
+    const key = [frame, active.link.href, source.currentSrc || source.src, source.currentTime || 0, block].join('|');
     if (key === lastKey) return;
     context.globalAlpha = 1;
-    fit(context, source, width, height);
-    if (next?.complete && next.naturalWidth && opacity > 0) {
-      context.globalAlpha = opacity;
-      fit(context, next, width, height);
-      context.globalAlpha = 1;
+    if (pixelContext && block > 1.5) {
+      pixels.width = Math.max(1, Math.round(width / block));
+      pixels.height = Math.max(1, Math.round(height / block));
+      fit(pixelContext, source, pixels.width, pixels.height);
+      context.imageSmoothingEnabled = false;
+      context.drawImage(pixels, 0, 0, width, height);
+    } else {
+      context.imageSmoothingEnabled = true;
+      fit(context, source, width, height);
     }
     lastKey = key;
     frames.forEach((f, i) => f.canvas.classList.toggle('is-active', i === frame));

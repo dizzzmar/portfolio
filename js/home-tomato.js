@@ -1,7 +1,6 @@
 // HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con el nombre "MARIO DIZ"
-// y viaja a la esquina superior izquierda (logo de la barra) al hacer scroll.
-// Con <body data-intro="auto"> no espera al scroll: sube solo poco después de cargar, se queda en
-// la barra y avisa con el evento "tomato-docked" (lo usa js/home-intro.js para sacar el texto).
+// Con <body data-intro="work"> se queda girando hasta pulsar Work; entonces viaja al logo
+// y avisa con "tomato-docked" para mostrar Creative antes de entrar en la lista.
 // En la barra solo gira; para que pese poco, el lienzo se encoge a un recuadro alrededor del tomate
 // y se dibuja a 30 fotogramas por segundo.
 // Para cambiar el texto del anillo busca  fillText('MARIO DIZ' ...
@@ -79,7 +78,7 @@ new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
   holder.traverse((o) => { o.renderOrder = 1; });
   spinner.add(holder);
   // Auto intro: the trip to the nav starts a moment after the tomato appears
-  introAt = clock.elapsedTime + (reduced || SKIP_INTRO ? 0 : INTRO_DELAY);
+  if (!CLICK_INTRO) introAt = clock.elapsedTime + (reduced || SKIP_INTRO ? 0 : INTRO_DELAY);
   // The 3D tomato is ready: fade it in over the flat placeholder (see .tomato-ready in home.css)
   requestAnimationFrame(() => document.documentElement.classList.add('tomato-ready'));
 });
@@ -183,14 +182,15 @@ const DOCK_TIME = 0.7; // seconds for the trip between the two
 const clock = new THREE.Clock();
 
 // Auto intro (data-intro="auto"): the tomato flies up on its own and stays in the nav
-const AUTO = document.body.dataset.intro === 'auto';
+const CLICK_INTRO = document.body.dataset.intro === 'work';
+const AUTO = document.body.dataset.intro === 'auto' || CLICK_INTRO;
 const INTRO_DELAY = 1.2;  // seconds the big tomato spins in the middle before flying up
 const AUTO_TIME = 1.1;    // a slower, showier trip than the scroll one
 let introAt = Infinity;   // set when the model has loaded
 // Arriving at /#work or coming back with Atrás from a project: the tomato is already in the nav, no intro
-const BACK = performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
-const SKIP_INTRO = AUTO && (location.hash === '#work' || BACK);
+const SKIP_INTRO = AUTO && (location.hash === '#work' || document.body.classList.contains('work-engaged'));
 if (SKIP_INTRO) introAt = 0;
+document.addEventListener('work-requested', () => { introAt = Math.min(introAt, clock.elapsedTime); });
 let announced = false;
 if (AUTO) { docked = false; shown = 0; }
 

@@ -2,7 +2,7 @@
 // Cuando el tomate termina de subir al menú (aviso "tomato-docked" de js/home-tomato.js) aparece el texto,
 // la segunda palabra va cambiando: cada cambio se descifra rápido y la palabra se queda quieta un instante para poder leerla;
 // al final se para en "Designer" y vuelve a empezar.
-// A partir de ahí ya se puede hacer scroll hasta los proyectos.
+// Solo se inicia al pulsar Work; la landing se queda con el tomate girando.
 // Antes de cambiar, la palabra actual se mezcla; después la siguiente se descifra de izquierda a derecha.
 // Código propio, sin librerías.
 // EDITA aquí las palabras (la primera es en la que se para):
@@ -15,7 +15,13 @@ const HOLD = 3200;     // cuánto se queda en "Designer" antes de la siguiente r
 // Volver con Atrás (desde un proyecto): el navegador lo marca como "back_forward". La portada vuelve entonces
 // a la posición donde estaba al salir (guardada en sessionStorage) y sin la entrada del tomate.
 // Lo hacemos nosotros porque la portada bloquea el scroll al cargar y el navegador no lo restauraba.
-const BACK = performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+const NAVIGATION_TYPE = performance.getEntriesByType('navigation')[0]?.type;
+const BACK = NAVIGATION_TYPE === 'back_forward';
+// Recargar la landing vuelve a su portada, aunque el último clic haya dejado #work en la URL.
+if (NAVIGATION_TYPE === 'reload' && location.hash === '#work') {
+  history.replaceState(null, '', location.pathname + location.search);
+  scrollTo({ top: 0, behavior: 'instant' });
+}
 let SAVED_Y = 0;
 try { SAVED_Y = Number(sessionStorage.getItem('dizmar-home-y')) || 0; } catch (e) { /* storage blocked */ }
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -104,31 +110,51 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     burst();
   }
 
-  // La portada no se desplaza hasta pulsar Work: hasta entonces sigue el bloqueo de scroll (intro-lock, css/home.css)
+  // Work inicia el viaje del tomate, muestra Creative y después entra en la lista.
   const unlock = () => document.body.classList.remove('intro-lock');
+  let workRequested = false, workRevealed = false, dockFallback = 0;
+  const revealWork = () => {
+    if (!workRequested || workRevealed) return;
+    workRevealed = true;
+    clearTimeout(dockFallback);
+    start();
+    setTimeout(() => {
+      unlock();
+      document.body.classList.remove('work-entering');
+      document.getElementById('work').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
+    }, reduced ? 0 : 650);
+  };
   document.querySelector('.nav-links a[href="#work"]')?.addEventListener('click', (e) => {
     e.preventDefault();
-    unlock();
+    if (workRequested || document.body.classList.contains('work-engaged')) {
+      if (!document.body.classList.contains('work-entering')) document.getElementById('work').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
+      return;
+    }
+    workRequested = true;
+    document.body.classList.add('work-engaged', 'work-entering');
     history.replaceState(null, '', '#work');
-    document.getElementById('work').scrollIntoView({ behavior: 'smooth' });
+    document.dispatchEvent(new Event('work-requested'));
+    // También funciona si WebGL o la librería 3D no están disponibles.
+    dockFallback = setTimeout(revealWork, 1300);
+    if (reduced) revealWork();
   });
 
-  document.addEventListener('tomato-docked', start, { once: true });
-  // Si el tomate 3D no carga (navegador sin WebGL, conexión lenta), el texto sale igual
-  setTimeout(start, 6000);
-  // Llegar a Work (/#work, desde el menú de un proyecto) no tiene entrada: el texto aparece y la página baja
-  // hasta los proyectos con un desplazamiento suave. Volver con Atrás deja la portada donde estaba (ver arriba).
-  if (location.hash === '#work') {
-    start();
-    unlock();
-    requestAnimationFrame(() => document.getElementById('work').scrollIntoView({ behavior: 'smooth' }));
-  } else if (BACK) {
+  document.addEventListener('tomato-docked', revealWork);
+  // Atrás restaura la posición exacta, incluso si la URL conserva #work.
+  // Los enlaces explícitos a Work entran directamente en la lista, sin deslizar la landing.
+  if (BACK && SAVED_Y > 0) {
+    document.body.classList.add('work-engaged');
     start();
     unlock();
     // Se repite al terminar de cargar: hasta entonces la altura de la página aún cambia y el salto se vería
     const restore = () => scrollTo({ top: SAVED_Y, behavior: 'instant' });
     restore();
     addEventListener('load', restore, { once: true });
+  } else if (location.hash === '#work') {
+    document.body.classList.add('work-engaged');
+    start();
+    unlock();
+    requestAnimationFrame(() => document.getElementById('work').scrollIntoView({ behavior: 'instant' }));
   }
 
   // La ráfaga solo corre mientras el texto se ve
