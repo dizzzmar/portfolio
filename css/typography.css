@@ -1,0 +1,31 @@
+/* Tipografía compartida por Work y las páginas de proyecto. */
+:root {
+  --font-ui: "Helvetica Neue", Arial, sans-serif;
+  --type-body: 16px;
+  --type-label: 11px;
+  --type-nav: 14px;
+  --tracking-label: .06em;
+}
+body, button, input, select, textarea { font-family: var(--font-ui); }
+
+/* La navegación mantiene el mismo tamaño y caja dentro y fuera de los proyectos. */
+.nav-links a, .case-nav a, .case-back, .back-link {
+  font-family: var(--font-ui);
+  font-size: var(--type-nav);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.work-heading h2, .work-preview-toggle, .work-info > p, .work-type,
+.case-kicker, .case-label, .case-link, .work-cursor,
+.player .player-toggle, .player-bar, .player-bar button {
+  font-family: var(--font-ui);
+  font-size: var(--type-label);
+  font-weight: 400;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+.case-facts { font-size: 12px; letter-spacing: 0; }
+.case-foot, .work-foot { font-size: 12px; letter-spacing: 0; }
+.player-time { font-family: var(--font-ui); font-size: var(--type-label); font-weight: 400; letter-spacing: .02em; }

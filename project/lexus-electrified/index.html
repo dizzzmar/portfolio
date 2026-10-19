@@ -1,8 +1,7 @@
 <!doctype html>
 <!--
   PROYECTO: Lexus — Electrified  ·  www.dizmar.xyz/project/lexus-electrified/
-  La card de la home enlaza aquí (index.html, "Proyecto 1").
-  Para crear otro proyecto copia templates/project-template (ahí están explicados todos los pasos).
+  Título, ficha editorial y galería sobre fondo blanco. Estilos comunes en /css/case.css.
 -->
 <html lang="en">
 <head>
@@ -20,55 +19,69 @@
 <meta property="og:url" content="https://www.dizmar.xyz/project/lexus-electrified/">
 <meta property="og:image" content="https://www.dizmar.xyz/assets/projects/lexus-electrified/thumb.webp">
 <meta name="twitter:card" content="summary_large_image">
-
-
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-<link rel="stylesheet" href="/css/project.css?v=20261017b">
-<!-- Descarga la home por adelantado para que al volver la animación de cierre llegue a tiempo -->
-<script type="speculationrules">{ "prefetch": [{ "urls": ["/"] }] }</script>
+<link rel="stylesheet" href="/css/case.css?v=20261019av">
+<link rel="stylesheet" href="/css/typography.css?v=20261019a">
+<script>document.documentElement.classList.add('js')</script>
 </head>
-<body>
+<body id="top">
+<!-- Barra: el tomate vuelve a la portada; los enlaces, como en el resto de la web -->
+<a class="case-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" width="44" height="47" alt=""></a>
+<nav class="case-nav" aria-label="Main">
+  <ul>
+    <li><a href="/#work">Work</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/contact">Contact</a></li>
+    <li><a href="/room.html">Room</a></li>
+  </ul>
+</nav>
 
-<!-- Flecha "← Back" de arriba a la izquierda. EDITA: cambia ID-DE-LA-CARD por el id de la card en la home
-     (por ejemplo /#soap-and-glory) para que al cerrar vuelva justo a esa card. -->
-<a class="back-link" href="/#first-project" aria-label="Back to all projects"><span aria-hidden="true">←</span> Back</a>
+<div class="case-head">
+  <!-- El nombre es el botón de volver: al pasar el ratón se mezcla y pasa a "Back to projects" (js/case.js). Vuelve a la lista justo donde estabas -->
+  <h1 class="case-name"><a class="case-back" href="/#work"><span class="cb-text" aria-hidden="true">Lexus Electrified</span><span class="sr-only">Lexus Electrified — back to projects</span></a></h1>
+  <!-- En pantallas táctiles no hay "pasar por encima": se ve siempre un enlace pequeño -->
+  <a class="case-back case-back-touch" href="/#work">← Back to projects</a>
+  <p class="case-meta date">2025</p>
+  <p class="case-meta client">Lexus Singapore</p>
+</div>
 
-<main class="project-page" id="top">
+<main>
+  <!-- Primera pantalla: galería horizontal (esquinas rectas) y, debajo, los datos y la descripción -->
+  <div class="case-first">
+    <section class="p-gallery" aria-label="Project gallery">
+      <div class="p-track" tabindex="0" role="region" aria-label="Project gallery, scroll sideways">
+        <!-- La película completa, con la barra de reproducción propia (js/case.js). No arranca sola: se pulsa Play (con sonido).
+             Archivo: assets/projects/lexus-electrified/film.mp4 (30 s, 1080p) y su imagen film-poster.webp -->
+        <figure class="p-card" style="--ar: 16 / 9" id="film"><video src="/assets/projects/lexus-electrified/film.mp4" poster="/assets/projects/lexus-electrified/film-poster.webp" width="1920" height="1080" controls data-player playsinline preload="metadata" aria-label="Lexus Electrified — film"></video></figure>
+        <figure class="p-card" style="--ar: 16 / 9"><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video></figure>
+      </div>
+      <div class="p-progress" aria-hidden="true"><i></i></div>
+    </section>
 
-<!-- ======================= 1. VÍDEO PRINCIPAL =======================
-     Vídeo corto en bucle y sin sonido (el mismo de la card de la home).
-     Para cambiarlo, sustituye los archivos de /assets/projects/lexus-electrified/ -->
-<figure style="view-transition-name: lexus-electrified"><video class="project-image" src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video></figure>
+    <!-- EDITA: datos y texto del proyecto -->
+    <section class="case-info" aria-label="About the project">
+      <ul class="case-tags"><li>Audiovisual</li><li>Lexus Singapore</li><li>2025</li></ul>
+      <div class="case-text">
+        <p class="case-lead">Lexus Electrified.</p>
+        <p>Project text coming soon.</p>
+      </div>
+    </section>
+  </div>
 
-<!-- ======================= 2. CABECERA Y TEXTO ======================= -->
-<header class="project-intro">
-<p class="project-brand">Lexus</p>                         <!-- EDITA: la marca / cliente (serif pequeño) -->
-<h1>Electrified</h1>                               <!-- EDITA: nombre del proyecto (sans grande) -->
-<ul class="project-tags" aria-label="Project type">
-<li>Audiovisual</li>                                  <!-- EDITA: etiqueta (Audiovisual, Key visuals…). Copia la línea para añadir más -->
-<li class="project-year">2025</li>                         <!-- EDITA: año (o borra esta línea) -->
-</ul>
-<!-- EDITA: escribe aquí el texto del proyecto y quita las marcas de comentario:
-<p class="project-description">Texto del proyecto.</p>
--->
-</header>
-
-<!-- ======================= 3. PELÍCULA (Instagram) =======================
-     Post de Instagram incrustado. Instagram añade su propia cabecera, pie y enlaces, y no se pueden quitar.
-     Para cambiarlo, sustituye la URL en data-instgrm-permalink y en el enlace de dentro. -->
-<section class="project-embed" aria-label="Lexus Electrified film">
-<blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DUk54nFkTu_/" data-instgrm-version="14">
-<a href="https://www.instagram.com/p/DUk54nFkTu_/">Watch Lexus Electrified on Instagram</a>
-</blockquote>
-</section>
-
-<!-- ======================= 4. ENLACES DEL FINAL ======================= -->
-<nav class="project-end" aria-label="Project navigation"><a href="/#first-project">← All projects</a><a href="#top">Back to top ↑</a></nav>
+  <!-- La película en Instagram (post incrustado: Instagram añade su cabecera y su pie, no se pueden quitar) -->
+  <section class="case-embed" id="instagram" aria-label="Lexus Electrified film on Instagram" data-reveal>
+    <h2>Film on Instagram</h2>
+    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DUk54nFkTu_/" data-instgrm-version="14">
+      <a href="https://www.instagram.com/p/DUk54nFkTu_/">Watch Lexus Electrified on Instagram</a>
+    </blockquote>
+  </section>
 </main>
-
-<footer class="site-footer">Mario Diz, Madrid</footer>
+<!-- Aviso de propiedad: va en todos los proyectos -->
+<div class="case-credit"><p>Property of WPP Production / WPP Holding. Featured here to showcase my contribution as part of the production and creative team.</p></div>
+<footer class="case-foot"><span>Mario Diz, Madrid</span><a href="#top">Back to top ↑</a></footer>
 
 <!-- Script oficial de Instagram: convierte el bloque de arriba en el reproductor -->
 <script async src="https://www.instagram.com/embed.js"></script>
+<script src="/js/case.js?v=20261019y" defer></script>
 </body>
 </html>

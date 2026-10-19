@@ -5,12 +5,12 @@
 * { box-sizing: border-box; }
 :root { color-scheme: light; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: #faf9f6; color: #20221d; font-family: 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: #fff; color: #20221d; font-family: 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-underline-offset: 4px; }
 a:focus-visible { outline: 3px solid #175cff; outline-offset: 5px; }
 /* Flecha "← Back" arriba a la izquierda: mismo estilo de texto que los enlaces del final, con un fondo
    suave para que se lea al pasar por encima de las imágenes */
-.back-link { position: fixed; z-index: 2; top: 20px; left: 20px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: rgba(250, 249, 246, .82); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-size: 14px; text-decoration: none; transition: background .2s; }
+.back-link { position: fixed; z-index: 2; top: 20px; left: 20px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: rgba(255, 255, 255, .82); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-size: 14px; text-decoration: none; transition: background .2s; }
 .back-link span { transition: transform .2s; }
 .back-link:hover { background: #eeede8; }
 .back-link:hover span { transform: translateX(-3px); }
@@ -19,12 +19,12 @@ figure { margin: 0; }
 .project-image { display: block; width: 100%; height: auto; border-radius: 18px; background: #eee9df; }
 .project-intro { padding: 28px 24px 64px; }
 .project-intro { display: grid; gap: 4px; }
-.project-brand { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(18px, 2vw, 26px); letter-spacing: -.035em; line-height: 1; text-transform: uppercase; }
-.project-intro h1 { margin: 0 0 0 -.045em; font-size: clamp(40px, 9vw, 76px); font-weight: 700; letter-spacing: -.06em; line-height: .88; text-transform: uppercase; }
+.project-brand { margin: 0; font-family: var(--font-ui); font-weight: 500; font-size: clamp(18px, 2vw, 26px); letter-spacing: -.035em; line-height: 1.1; }
+.project-intro h1 { margin: 0 0 0 -.045em; font-size: clamp(40px, 9vw, 76px); font-weight: 500; letter-spacing: -.055em; line-height: 1; }
 .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
-.project-tags li { padding: 5px 11px 4px; border: 1px solid #171717; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .06em; line-height: 1.2; text-transform: uppercase; }
-.project-tags .project-year { margin-left: auto; padding: 0; border: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 14px; font-weight: 400; letter-spacing: -.02em; font-variant-numeric: lining-nums; transform: translateY(2.5px); }
-.project-description { margin: 20px 0 0; max-width: 61ch; font-size: 17px; line-height: 1.6; }
+.project-tags li { padding: 5px 11px 4px; border: 1px solid #171717; border-radius: 999px; font-size: 11px; font-weight: 400; letter-spacing: .06em; line-height: 1.2; text-transform: uppercase; }
+.project-tags .project-year { margin-left: auto; padding: 0; border: 0; font-family: var(--font-ui); font-size: 12px; font-weight: 400; letter-spacing: 0; font-variant-numeric: lining-nums; transform: translateY(2.5px); }
+.project-description { margin: 20px 0 0; max-width: 61ch; font-size: var(--type-body); line-height: 1.55; }
 .project-gallery { display: grid; gap: 20px; }
 /* Vídeo vertical: proporción 9:16. Como mucho el ancho de una imagen,
    y nunca más alto que la pantalla (deja 80px libres) para que siempre se vea entero. */
@@ -35,6 +35,7 @@ figure { margin: 0; }
 .project-embed .instagram-media { width: 100% !important; max-width: 100% !important; min-width: 0 !important; margin: 0 !important; border-radius: 18px !important; overflow: hidden; }
 .project-embed blockquote.instagram-media { padding: 24px; background: #eee9df; text-align: center; font-size: 14px; }
 .image-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+.project-credit { max-width: 60ch; padding: 0 24px; font-size: 12px; line-height: 1.5; opacity: .6; }
 .project-end { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 60px 24px; font-size: 14px; }
 .site-footer { display: flex; justify-content: center; padding: 56px 24px; background: #91bce0 url('/assets/images/sky.webp') center 65% / cover; color: #173a31; font-size: 13px; }
 /* ---------- Carrusel de imágenes (pila) ----------

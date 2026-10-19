@@ -32,7 +32,8 @@
   {"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://www.dizmar.xyz/#mario", "name": "Mario Diz", "alternateName": "dizmar", "jobTitle": "Art director and visual designer", "url": "https://www.dizmar.xyz/", "image": "https://www.dizmar.xyz/assets/images/og-image.jpg", "address": {"@type": "PostalAddress", "addressLocality": "Madrid", "addressCountry": "ES"}, "knowsAbout": ["Art direction", "Visual design", "Key visuals", "Product imagery", "Audiovisual"]}, {"@type": "WebSite", "@id": "https://www.dizmar.xyz/#website", "name": "dizmar", "alternateName": "Mario Diz portfolio", "url": "https://www.dizmar.xyz/", "author": {"@id": "https://www.dizmar.xyz/#mario"}, "inLanguage": "en"}]}
   </script>
   <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-  <link rel="stylesheet" href="/css/home.css?v=20261019">
+  <link rel="stylesheet" href="/css/home.css?v=20261019af">
+  <link rel="stylesheet" href="/css/typography.css?v=20261019a">
   <!-- Al pasar el ratón por una card, Chrome prepara la página del proyecto por adelantado:
        se abre al instante y la animación de apertura siempre llega a tiempo -->
   <script type="importmap">
@@ -44,15 +45,17 @@
     }
   </script>
 </head>
-<body class="no-scroll">
+<body class="intro-lock" data-intro="work"> <!-- El tomate gira en la landing; solo sube al pulsar Work. -->
   <div class="sky" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div> <!-- grano encima del cielo (se queda nítido aunque el cielo se emborrone) -->
   <!-- Lienzo del tomate 3D (lo dibuja /js/home-tomato.js) -->
   <canvas id="scene" aria-hidden="true"></canvas>
 
   <!-- ========== 1. Navegación ========== -->
   <nav class="nav" aria-label="Main">
-    <a class="nav-logo" href="#top" aria-label="Back to top"></a>
+    <a class="nav-logo" href="/" aria-label="Home"></a> <!-- el tomate de la barra vuelve a la portada (y repite la entrada) -->
     <ul class="nav-links">
+      <li><a href="#work">Work</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/contact">Contact</a></li>
       <li><a href="/room.html">Room</a></li>
@@ -66,16 +69,86 @@
       <h1 class="sr-only" id="site-title">Mario Diz — art direction &amp; visual design, Madrid</h1>
       <!-- Tomate plano que se ve al instante mientras carga el 3D (luego se funde con él) -->
       <img class="tomato-placeholder" src="/assets/images/tomato.webp" width="595" height="640" alt="" aria-hidden="true" fetchpriority="high">
-      <div class="scroll-hint" id="hint" hidden>Scroll</div> <!-- oculto: ahora no hay nada debajo -->
+      <div class="scroll-hint" id="hint" hidden>Scroll</div> <!-- oculto: el tomate sube solo -->
+      <!-- Cuando el tomate llega al menú aparece "Creative ___" y la segunda palabra cambia muy rápido.
+           EDITA la lista de palabras en js/home-intro.js -->
+      <p class="intro-line" aria-hidden="true"><span>Creative</span> <span class="intro-word">Designer</span></p>
     </section>
 
-    <!-- Los proyectos y la tira de capacidades están quitados por ahora (la portada no hace scroll).
-         Para recuperarlos, mira el historial de este archivo en GitHub. -->
+    <!-- Work: lista de proyectos como 13322566869.com/works, con el estilo de esta web.
+         Cada fila: fecha (izquierda), nombre gigante (centro), etiquetas (derecha) y una tira de miniaturas verticales debajo.
+         Las miniaturas son esquinas rectas: 9 huecos por tira (los "wi-gap" son huecos vacíos que dan ritmo).
+         EDITA: para un proyecto nuevo copia una fila y cambia su enlace, fecha, nombre, etiquetas y miniaturas. -->
+    <section class="work-grid" id="work" aria-labelledby="work-title">
+      <h2 class="sr-only" id="work-title">Selected work</h2>
+      <!-- Barra fija de arriba (se queda pegada al llegar). "Creative ___" en rojo: la palabra cambiante la mueve js/home-work.js -->
+      <div class="work-top" aria-hidden="true">
+        <p class="wt-creative"><strong>Creative <span class="wb-word">Designer</span></strong><span>Selected work, 2025–26</span></p>
+        <p><strong>Currently in Madrid</strong></p>
+      </div>
+      <ol class="work-list">
+        <li class="work-item">
+          <a href="/project/lexus-electrified/">
+            <span class="wi-date">2025</span>
+            <h3 class="wi-name"><span>Lexus Electrified</span></h3>
+            <ul class="wi-tags"><li>Audiovisual</li><li>Lexus Singapore</li></ul>
+            <div class="wi-strip" aria-hidden="true">
+              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/thumb.webp" style="object-position: 0% 50%" width="1280" height="720" loading="lazy" alt=""></span>
+              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/thumb.webp" style="object-position: 50% 50%" width="1280" height="720" loading="lazy" alt=""></span>
+              <span class="wi-slot wi-gap"></span>
+              <span class="wi-slot"><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" muted loop playsinline preload="none" tabindex="-1"></video></span>
+              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/film-poster.webp" style="object-position: 0% 50%" width="1280" height="720" loading="lazy" alt=""></span>
+              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/film-poster.webp" style="object-position: 50% 50%" width="1280" height="720" loading="lazy" alt=""></span>
+              <span class="wi-slot wi-gap"></span>
+              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/film-poster.webp" style="object-position: 100% 50%" width="1280" height="720" loading="lazy" alt=""></span>
+              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/thumb.webp" style="object-position: 100% 50%" width="1280" height="720" loading="lazy" alt=""></span>
+            </div>
+          </a>
+        </li>
+        <li class="work-item">
+          <a href="/project/soap-and-glory-vanilla/">
+            <span class="wi-date">2026</span>
+            <h3 class="wi-name"><span>Soap &amp; Glory</span></h3>
+            <ul class="wi-tags"><li>Key visuals</li><li>Vanillalicious</li></ul>
+            <div class="wi-strip" aria-hidden="true">
+              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg3-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg1-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+              <span class="wi-slot wi-gap"></span>
+              <span class="wi-slot"><video src="/assets/projects/soap-and-glory-vanilla/video.mp4" poster="/assets/projects/soap-and-glory-vanilla/video-poster.webp" width="360" height="640" muted loop playsinline preload="none" tabindex="-1"></video></span>
+              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg4-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg5-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+              <span class="wi-slot wi-gap"></span>
+              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg2-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+              <span class="wi-slot wi-gap"></span>
+            </div>
+          </a>
+        </li>
+        <!-- Proyectos de relleno (EDITA: sustituye cada uno por uno real, con su <a href>, fecha, nombre, etiquetas y miniaturas) -->
+        <li class="work-item is-placeholder"><div class="work-link">
+          <span class="wi-date">2026</span><h3 class="wi-name"><span>Project title</span></h3><ul class="wi-tags"><li>Coming soon</li></ul>
+          <div class="wi-strip" aria-hidden="true"><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-gap"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-gap"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span></div>
+        </div></li>
+        <li class="work-item is-placeholder"><div class="work-link">
+          <span class="wi-date">2026</span><h3 class="wi-name"><span>Project title</span></h3><ul class="wi-tags"><li>Coming soon</li></ul>
+          <div class="wi-strip" aria-hidden="true"><span class="wi-slot wi-ph"></span><span class="wi-slot wi-gap"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-gap"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-gap"></span></div>
+        </div></li>
+        <li class="work-item is-placeholder"><div class="work-link">
+          <span class="wi-date">2026</span><h3 class="wi-name"><span>Project title</span></h3><ul class="wi-tags"><li>Coming soon</li></ul>
+          <div class="wi-strip" aria-hidden="true"><span class="wi-slot wi-gap"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-gap"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-gap"></span><span class="wi-slot wi-ph"></span></div>
+        </div></li>
+        <li class="work-item is-placeholder"><div class="work-link">
+          <span class="wi-date">2026</span><h3 class="wi-name"><span>Project title</span></h3><ul class="wi-tags"><li>Coming soon</li></ul>
+          <div class="wi-strip" aria-hidden="true"><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-gap"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-gap"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span><span class="wi-slot wi-ph"></span></div>
+        </div></li>
+      </ol>
+      <p class="work-foot">Mario Diz, Madrid</p>
+    </section>
   </main>
 
 
-  <!-- Script: tomate 3D (js/home-nav.js no se carga mientras no haya proyectos en la portada) -->
-
-  <script type="module" src="/js/home-tomato.js?v=20261019"></script>
+  <!-- Scripts: texto "Creative ___" y vídeos · tomate 3D -->
+  <script src="/js/home-intro.js?v=20261020c" defer></script>
+  <script src="/js/home-work.js?v=20261019g" defer></script>
+  <script type="module" src="/js/home-tomato.js?v=20261019e"></script>
 </body>
 </html>

@@ -4,34 +4,54 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Por ahora la portada es solo el tomate sobre el cielo: sin scroll */
-html:has(body.no-scroll), body.no-scroll { height: 100%; overflow: hidden; overscroll-behavior: none; }
+/* Mientras el tomate sube al menú no se puede hacer scroll (js/home-intro.js quita la clase) */
+html:has(body.intro-lock), body.intro-lock { height: 100%; overflow: hidden; overscroll-behavior: none; }
 
 /* El desplazamiento suave lo activa js/home-nav.js después de cargar: así, al volver de un
    proyecto, la home aparece directamente en su card en vez de deslizarse hasta ella. */
 html.smooth-scroll { scroll-behavior: smooth; }
 
 body {
+  --light-progress: 0;
   overflow-x: clip; /* que nada ensanche la página más allá de la pantalla */
   color: #fff;
   font-family: "Helvetica Neue", Arial, sans-serif;
   background-color: #8cc0ef;
 }
 
+/* Del cielo al negro: al bajar, el cielo se "revela" en negativo y después se apaga hasta el negro del fondo. Son dos capas fijas que
+   mueve js/home-intro.js: una blanca con "difference", que invierte los colores de lo que hay debajo (el azul pasa a naranja oscuro y
+   las nubes a negro; --invert la mezcla de 0 a 1), y encima otra de tinta casi negra (--dark). Se quedan fijas para que todos los
+   proyectos se acumulen sobre el mismo fondo limpio. */
+body::before, body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+body::before { background: #fff; mix-blend-mode: difference; opacity: var(--invert, 0); }
+body::after { background: #0c0c0b; opacity: var(--dark, 0); }
+
 /* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes */
 .sky {
   position: fixed;
   inset: -8%;
   z-index: -1;
-  /* El grano de película va aquí mismo, mezclado con la foto (antes era una capa aparte que
-     obligaba a recalcular la mezcla de toda la pantalla en cada frame de scroll) */
+  /* El grano va en .grain, una capa aparte, para que no se emborrone con el cielo */
   background:
-    url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat,
     url("/assets/images/sky.webp") center / cover,
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
-  background-blend-mode: overlay, normal, normal;
+  transition: filter 0.8s ease;
   animation: drift 40s ease-in-out infinite alternate;
   will-change: transform;
+}
+
+/* Al bajar a los proyectos el cielo se emborrona un poco (clase sky-soft, la pone js/home-intro.js) */
+.sky-soft .sky { filter: blur(10px); }
+
+/* El grano va en su propia capa, encima del cielo, para que siga nítido aunque el cielo se emborrone */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat;
+  mix-blend-mode: overlay;
+  pointer-events: none;
 }
 
 @keyframes drift {
@@ -97,7 +117,12 @@ body {
 .nav-links a:hover,
 .nav-links a[aria-current="true"] { color: #fff; }
 
-/* Un enlace que pasa por encima de una card blanca se oscurece */
+/* Sobre el fondo oscuro de Work, los enlaces de la barra se quedan claros. */
+.light-on .nav-links a { color: rgba(255, 255, 255, .7); text-shadow: none; }
+.light-on .nav-links a:hover,
+.light-on .nav-links a[aria-current="true"] { color: #fff; }
+
+/* Un enlace que pasa por encima de una card clara se oscurece */
 .nav-links a.on-light { color: rgba(17, 17, 17, 0.6); text-shadow: none; }
 .nav-links a.on-light:hover,
 .nav-links a.on-light[aria-current="true"] { color: #111; }
@@ -136,6 +161,7 @@ body {
   animation: placeholder-float 3s ease-in-out infinite;
 }
 .tomato-ready .tomato-placeholder { opacity: 0; }
+.work-engaged .tomato-placeholder { opacity: 0; }
 @keyframes placeholder-float {
   50% { transform: translate(-50%, calc(-50% - 10px)) rotate(-3deg); }
 }
@@ -437,4 +463,177 @@ body {
 @keyframes vt-rise-in { from { opacity: 0; transform: translateY(24px); } }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: .01s !important; animation-delay: 0s !important; }
+}
+
+/* ---------- "Creative ___": aparece en el centro cuando el tomate llega al menú ----------
+   La segunda palabra cambia muy rápido (js/home-intro.js). */
+.intro-line {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: clamp(48px, 9vw, 150px);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+  text-align: center;
+  text-shadow: 0 2px 30px rgba(0, 20, 40, 0.25);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2, .8, .2, 1), color .45s ease, text-shadow .45s ease;
+  pointer-events: none;
+}
+.intro-on .intro-line { opacity: 1; transform: none; }
+.light-on .intro-line { color: #fff; text-shadow: none; }
+.intro-word { font-variant-ligatures: none; }
+.intro-line .ch { display: inline-block; }
+
+/* ---------- Work: lista de proyectos ----------
+   Referencia: 13322566869.com/works, con el estilo de esta web (tinta oscura, Helvetica apretada, esquinas rectas).
+   Cada fila: fecha (izquierda), nombre gigante (centro), etiquetas (derecha) y una tira de miniaturas verticales debajo.
+   Los textos pequeños están apagados y se encienden al pasar el ratón. Los movimientos (aparecer, inercia, hover) están al final
+   y se apagan con "reducir movimiento". Sin JavaScript todo se ve completo y quieto. */
+.work-grid { position: relative; z-index: 5; padding: 0 clamp(16px, 1.2vw, 24px); color: #fff; scroll-margin-top: 0; } /* al llegar con el enlace Work, la barra de arriba queda justo en el borde de la pantalla */
+
+/* Barra de arriba, fija: se queda pegada arriba al llegar y los proyectos pasan por debajo. Misma tipografía y tamaño en todo;
+   "Creative ___" en rojo (la palabra la cambia js/home-work.js). A la izquierda deja sitio al tomate (44 px + margen) y a la
+   derecha a los enlaces de la barra, que van encima. */
+.work-top {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: 1.1fr 1.2fr 1fr;
+  column-gap: 24px;
+  align-items: center;
+  height: var(--nav-h);
+  margin: 0 calc(-1 * clamp(16px, 1.2vw, 24px));
+  padding: 0 clamp(300px, 24vw, 360px) 0 92px;
+  background: transparent; /* sin relleno: no se ve ninguna barra, los proyectos pasan por debajo del texto */
+  font: 500 15px/1.3 var(--font-ui);
+  letter-spacing: -.005em;
+}
+.work-top p > strong { display: block; font-weight: inherit; }
+.work-top p > span { display: block; color: rgba(255, 255, 255, .6); }
+.work-top .wt-creative > strong { color: #f04a30; white-space: nowrap; } /* el rojo va por clase, no por el orden de los bloques */
+.wb-word { display: inline; font-variant-ligatures: none; }
+.wb-word .ch { display: inline-block; }
+@media (max-width: 1000px) {
+  .work-top { grid-template-columns: 1fr 1fr; }
+}
+
+.work-list { margin-top: clamp(24px, 4vw, 64px); list-style: none; border-bottom: 1px solid rgba(255, 255, 255, .18); }
+.work-item { position: relative; }
+.work-item::before { content: ""; position: absolute; inset: 0 0 auto; height: 1px; background: rgba(255, 255, 255, .18); transform-origin: left; }
+.work-item > a, .work-link {
+  display: grid;
+  grid-template-columns: minmax(70px, 1fr) auto minmax(70px, 1fr);
+  grid-template-areas: "date name tags" "strip strip strip";
+  align-items: start;
+  column-gap: 16px;
+  padding: clamp(52px, 6.6vw, 104px) 0 clamp(34px, 3.4vw, 52px);
+  color: inherit;
+  text-decoration: none;
+}
+.work-item > a:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+
+.wi-date, .wi-tags { margin-top: clamp(4px, .9vw, 14px); font-size: 15px; font-weight: 500; line-height: 1.32; color: rgba(255, 255, 255, .3); transition: color .5s ease; }
+.wi-date { grid-area: date; justify-self: start; font-variant-numeric: lining-nums; }
+.wi-tags { grid-area: tags; justify-self: end; text-align: right; list-style: none; }
+.wi-name {
+  grid-area: name;
+  min-width: 0;
+  padding: 0 .02em .1em;
+  margin-bottom: -.1em;
+  overflow: hidden; /* máscara: el nombre sube desde abajo al aparecer */
+  font-family: var(--font-ui);
+  font-size: clamp(48px, 8.2vw, 148px);
+  font-weight: 700;
+  letter-spacing: -.055em;
+  line-height: .95;
+  text-align: center;
+  transition: opacity .5s ease;
+}
+.wi-name > span { display: block; }
+
+/* Tira de miniaturas verticales (9:16), esquinas rectas */
+.wi-strip { grid-area: strip; display: flex; justify-content: center; gap: 4px; margin-top: clamp(20px, 2.2vw, 34px); }
+.wi-slot { position: relative; flex: none; width: clamp(34px, 6.4vw, 118px); aspect-ratio: 9 / 16; overflow: hidden; background: rgba(255, 255, 255, .07); }
+.wi-gap { visibility: hidden; }
+.wi-ph { background: none; outline: 1px solid rgba(255, 255, 255, .14); outline-offset: -1px; }
+.wi-slot img, .wi-slot video { display: block; width: 100%; height: 100%; object-fit: cover; scale: var(--sz, 1); }
+.wi-strip { translate: var(--dx, 0px) 0; }
+
+.is-placeholder .wi-name { opacity: .32; }
+.is-placeholder .wi-date, .is-placeholder .wi-tags { opacity: .6; }
+
+/* Se enciende la fila bajo el ratón (o la del centro de la pantalla, en el móvil) */
+.work-item > a:hover .wi-date, .work-item > a:hover .wi-tags,
+.work-item > a:focus-visible .wi-date, .work-item > a:focus-visible .wi-tags,
+.work-item.is-hot .wi-date, .work-item.is-hot .wi-tags { color: rgba(255, 255, 255, .95); }
+
+.work-foot { padding: 7vh 0 24px; font-size: 12px; color: rgba(255, 255, 255, .55); }
+
+/* "View project": sigue al ratón con retraso (js/home-work.js) */
+.work-cursor {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 11;
+  padding: 9px 14px 8px;
+  background: #fff;
+  color: #0c0c0b;
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0;
+  scale: .6;
+  transition: opacity .25s ease, scale .4s cubic-bezier(.2, .8, .2, 1);
+}
+.work-cursor.is-on { opacity: 1; scale: 1; }
+
+/* "Creative ___" se queda fijo en el centro mientras los proyectos pasan por encima; al bajar se
+   desenfoca un poco (js/home-intro.js pone --blur) y desaparece al llegar a Work, donde sigue en la cabecera */
+.intro-line { position: fixed; z-index: 1; filter: blur(var(--blur, 0px)); }
+
+/* ---------- Work: movimiento (solo con JavaScript y sin "reducir movimiento") ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .wi-slot img, .wi-slot video { transition: scale 1.1s cubic-bezier(.2, .8, .2, 1); }
+  .wi-slot { transition: translate .7s cubic-bezier(.2, .8, .2, 1) calc(var(--i, 0) * 22ms); }
+  .work-motion .work-item::before { transition: transform 1.4s cubic-bezier(.77, 0, .18, 1); }
+  .work-motion .wi-name > span { transition: translate 1.1s cubic-bezier(.2, .8, .2, 1) .15s; }
+  .work-motion .wi-date, .work-motion .wi-tags { transition: color .5s ease, opacity .9s ease .45s, translate .9s cubic-bezier(.2, .8, .2, 1) .45s; }
+  .work-motion .wi-slot { transition: clip-path 1.1s cubic-bezier(.77, 0, .18, 1) calc(.35s + var(--i, 0) * 70ms), translate .7s cubic-bezier(.2, .8, .2, 1) calc(var(--i, 0) * 22ms); }
+  /* Antes de entrar: la línea sin dibujar, el nombre escondido bajo su máscara y las miniaturas tapadas */
+  .work-motion .work-item:not(.is-in)::before { transform: scaleX(0); }
+  .work-motion .work-item:not(.is-in) .wi-name > span { translate: 0 112%; }
+  .work-motion .work-item:not(.is-in) .wi-date, .work-motion .work-item:not(.is-in) .wi-tags { opacity: 0; translate: 0 14px; }
+  .work-motion .work-item:not(.is-in) .wi-slot { clip-path: inset(100% 0 0 0); }
+  .work-motion .work-item:not(.is-in) .wi-slot img, .work-motion .work-item:not(.is-in) .wi-slot video { --sz: 1.3; }
+}
+/* Al pasar el ratón: las miniaturas suben una tras otra y se acercan, y las demás filas se apagan */
+@media (hover: hover) and (pointer: fine) {
+  .work-item > a:hover .wi-slot:not(.wi-gap), .work-item > a:focus-visible .wi-slot:not(.wi-gap) { translate: 0 -8px; }
+  .work-item > a:hover .wi-slot img, .work-item > a:hover .wi-slot video { --sz: 1.1; }
+  .work-list:has(.work-item > a:hover) .work-item:not(:has(> a:hover)) .wi-name { opacity: .28; }
+}
+
+/* ---------- Móvil: nombre a todo lo ancho y la tira de miniaturas se desliza con el dedo ---------- */
+@media (max-width: 760px) {
+  /* La barra fija ocupa también el hueco de la barra de enlaces (así los proyectos no pasan por detrás) y solo lleva "Creative ___" */
+  .work-top { grid-template-columns: 1fr; height: auto; padding: var(--nav-h) clamp(16px, 1.2vw, 24px) 12px; font-size: 14px; }
+  .work-top p:not(.wt-creative) { display: none; }
+  .work-item > a, .work-link { grid-template-columns: 1fr auto; grid-template-areas: "date tags" "name name" "strip strip"; row-gap: 12px; padding: 26px 0 30px; }
+  .wi-date, .wi-tags { margin-top: 0; font-size: 13px; }
+  .wi-name { text-align: left; font-size: clamp(44px, 14vw, 84px); }
+  .wi-strip { justify-content: flex-start; overflow-x: auto; margin-right: calc(-1 * clamp(16px, 1.2vw, 24px)); margin-top: 8px; scrollbar-width: none; translate: none; }
+  .wi-strip::-webkit-scrollbar { display: none; }
+  .wi-slot { width: 26vw; }
+  .wi-gap { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-line { transition: none; transform: none; }
+  body::before { transition: none; }
 }
