@@ -19,7 +19,7 @@ const FONTS = [
   { family: '"Rubik Wet Paint"', weight: 400 },
   { family: '"Rubik Distressed"', weight: 400 },
   { family: '"Rubik Moonrocks"', weight: 400 },
-  { family: '"Bungee Shade"', weight: 400, size: 0.8 }, // es muy ancha: con "Technologist" se saldría del móvil
+  { family: '"Bungee Shade"', weight: 400, size: 0.75 }, // es muy ancha: con "Technologist" se saldría del móvil
   { family: '"Helvetica Neue", Arial, sans-serif', weight: 700 },
 ];
 
@@ -38,31 +38,26 @@ try { SAVED_Y = Number(sessionStorage.getItem('dizmar-home-y')) || 0; } catch (e
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y', String(scrollY)); } catch (e) { /* ignore */ } });
 
-(() => {
-  const word = document.querySelector('.intro-word');
-  const first = document.querySelector('.intro-line > span:first-child');
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let started = false, timer = 0, visible = true;
-
-  // ---- Letras sueltas: cada palabra se pinta como una fila de <span> (uno por letra) ----
-  const NBSP = '\u00a0';
-  function split(el, text) {
-    el.textContent = '';
-    for (const ch of text) {
-      const c = document.createElement('span');
-      c.className = 'ch';
-      c.textContent = ch === ' ' ? NBSP : ch;
-      el.append(c);
-    }
+// ---- Letras sueltas: cada palabra se pinta como una fila de <span> (uno por letra) ----
+const NBSP = ' ';
+function splitLetters(el, text) {
+  el.textContent = '';
+  for (const ch of text) {
+    const c = document.createElement('span');
+    c.className = 'ch';
+    c.textContent = ch === ' ' ? NBSP : ch;
+    el.append(c);
   }
-  split(first, first.textContent.trim());
+}
 
-  // ---- Mezclar la palabra actual antes de revelar la siguiente ----
+// ---- Palabra cambiante: se mezcla la actual, se descifra la siguiente y cambia de tipografía ----
+// La usan la portada (aquí) y el título fijo de Work (js/home-work.js). Cada una corre solo mientras se ve (watch).
+function createWordCycler(word, { visible = true } = {}) {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
-  let scrambleRaf = 0;
+  let timer = 0, scrambleRaf = 0, lastFont = -1, shown = visible;
 
-  // ---- Tipografía nueva para cada palabra: se cambia justo cuando aparece la palabra nueva ----
-  let lastFont = -1;
+  // Tipografía nueva para cada palabra: se cambia justo cuando aparece la palabra nueva
   function setFont() {
     let i;
     do { i = (Math.random() * FONTS.length) | 0; } while (i === lastFont);
@@ -74,23 +69,23 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
 
   function setWord(text, ms = SCRAMBLE) {
     cancelAnimationFrame(scrambleRaf);
-    if (reduced) { split(word, text); setFont(); return; }
+    if (reduced) { splitLetters(word, text); setFont(); return; }
     const previous = word.textContent.replaceAll(NBSP, ' ');
-    if (previous === text) { split(word, text); return; }
+    if (previous === text) { splitLetters(word, text); return; }
     const start = performance.now();
     const mixDuration = ms * 0.35;
     let revealing = false, lastFrame = -Infinity;
     let chars = [...word.children];
-    if (!chars.length) { split(word, previous); chars = [...word.children]; }
+    if (!chars.length) { splitLetters(word, previous); chars = [...word.children]; }
     const step = (now) => {
       const elapsed = now - start;
-      if (elapsed >= ms) { if (!revealing) setFont(); split(word, text); return; }
+      if (elapsed >= ms) { if (!revealing) setFont(); splitLetters(word, text); return; }
       // Limitar el ruido a 25 fps mantiene las letras legibles entre cambios.
       if (now - lastFrame >= 40) {
         lastFrame = now;
         if (elapsed >= mixDuration && !revealing) {
           setFont();
-          split(word, text);
+          splitLetters(word, text);
           chars = [...word.children];
           revealing = true;
         }
@@ -108,10 +103,9 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     scrambleRaf = requestAnimationFrame(step);
   }
 
-
   function burst() {
     clearTimeout(timer);
-    if (!visible || reduced) { setWord(WORDS[0], 450); return; }
+    if (!shown || reduced) { setWord(WORDS[0], 450); return; }
     const end = performance.now() + BURST;
     let i = 1;
     const tick = () => {
@@ -127,11 +121,32 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     tick();
   }
 
+  function stop() { clearTimeout(timer); setWord(WORDS[0]); }
+
+  // La ráfaga solo corre mientras la palabra se ve (y, si se indica, mientras active() sea verdadero)
+  function watch(target, active = () => true) {
+    new IntersectionObserver(([e]) => {
+      shown = e.isIntersecting && !document.hidden;
+      if (active()) shown ? burst() : stop();
+    }).observe(target);
+  }
+
+  return { setWord, burst, stop, watch };
+}
+
+(() => {
+  const word = document.querySelector('.intro-word');
+  const first = document.querySelector('.intro-line > span:first-child');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let started = false;
+  splitLetters(first, first.textContent.trim());
+  const cycler = createWordCycler(word);
+
   function start() {
     if (started) return;
     started = true;
     document.body.classList.add('intro-on');
-    burst();
+    cycler.burst();
   }
 
   // Work inicia el viaje del tomate, muestra Creative y después entra en la lista.
@@ -182,13 +197,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   }
 
   // La ráfaga solo corre mientras el texto se ve
-  new IntersectionObserver(([e]) => {
-    visible = e.isIntersecting && !document.hidden;
-    if (started) visible ? burst() : (clearTimeout(timer), setWord(WORDS[0]));
-  }).observe(word.parentElement);
-
-  // Los vídeos de los proyectos quedan quietos si el visitante pide menos movimiento
-  if (reduced) document.querySelectorAll('.work-media video').forEach((v) => { v.autoplay = false; v.pause(); });
+  cycler.watch(word.parentElement, () => started);
 })();
 
 // ---------- Al bajar, "Creative ___" y el cielo se desenfocan (los proyectos pasan por encima) ----------
@@ -206,28 +215,13 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     document.body.classList.toggle('light-on', light > 0.55);
     if (!still) line.style.setProperty('--blur', (p * 10).toFixed(1) + 'px');
     document.body.classList.toggle('sky-soft', scrollY > innerHeight * 0.3);
-    line.style.opacity = document.body.classList.contains('intro-on') ? String(1 - p * 0.35) : '';
+    // Al llegar a Work, el "Creative ___" del centro desaparece: la palabra sigue en el título fijo de la izquierda
+    const work = document.getElementById('work');
+    const workOn = !!work && work.getBoundingClientRect().top < innerHeight * 0.5;
+    document.body.classList.toggle('work-on', workOn);
+    line.style.opacity = workOn ? '0' : document.body.classList.contains('intro-on') ? String(1 - p * 0.35) : '';
   };
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
   addEventListener('resize', update);
   update();
-})();
-
-// ---------- Work: entrada de las filas en ambas direcciones ----------
-// La lista mantiene su alineación y cada fila aparece al entrar en pantalla.
-(() => {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const items = [...document.querySelectorAll('.work-item')];
-  if (!items.length) return;
-  document.documentElement.classList.add('work-motion');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) e.target.classList.add('is-in');
-      else {
-        e.target.classList.toggle('is-above', e.boundingClientRect.bottom <= 0);
-        e.target.classList.remove('is-in');
-      }
-    });
-  }, { threshold: 0 });
-  items.forEach((el) => io.observe(el));
 })();

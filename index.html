@@ -32,7 +32,7 @@
   {"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://www.dizmar.xyz/#mario", "name": "Mario Diz", "alternateName": "dizmar", "jobTitle": "Art director and visual designer", "url": "https://www.dizmar.xyz/", "image": "https://www.dizmar.xyz/assets/images/og-image.jpg", "address": {"@type": "PostalAddress", "addressLocality": "Madrid", "addressCountry": "ES"}, "knowsAbout": ["Art direction", "Visual design", "Key visuals", "Product imagery", "Audiovisual"]}, {"@type": "WebSite", "@id": "https://www.dizmar.xyz/#website", "name": "dizmar", "alternateName": "Mario Diz portfolio", "url": "https://www.dizmar.xyz/", "author": {"@id": "https://www.dizmar.xyz/#mario"}, "inLanguage": "en"}]}
   </script>
   <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-  <link rel="stylesheet" href="/css/home.css?v=20261019o">
+  <link rel="stylesheet" href="/css/home.css?v=20261019q">
   <link rel="stylesheet" href="/css/typography.css?v=20261019a">
   <!-- Al pasar el ratón por una card, Chrome prepara la página del proyecto por adelantado:
        se abre al instante y la animación de apertura siempre llega a tiempo -->
@@ -75,50 +75,67 @@
       <p class="intro-line" aria-hidden="true"><span>Creative</span> <span class="intro-word">Designer</span></p>
     </section>
 
-    <!-- Work: lista sobre la preview a pantalla completa. Los elementos work-media solo
-         proporcionan el vídeo o las imágenes del fondo; no aparecen dentro de la fila. -->
+    <!-- Work: colección como provoke.framer.website/case-studies, con el estilo de esta web.
+         Título "Creative ___" fijo a la izquierda; tarjetas escalonadas a la derecha: las "work-a" son altas con foto o vídeo,
+         las "work-b" son paneles de color (--panel) con la imagen dentro. Los proyectos sin enlace son de relleno.
+         EDITA: para un proyecto nuevo copia una tarjeta, cambia su enlace, imagen, título, categoría y año. -->
     <section class="work-grid" id="work" aria-labelledby="work-title">
-      <div class="work-heading">
-        <h2 id="work-title">Selected work</h2>
-        <button class="work-preview-toggle" type="button" aria-pressed="false" hidden>Pause previews</button>
+      <div class="work-head">
+        <!-- El nombre accesible es "Selected work"; la palabra cambiante la mueve js/home-work.js -->
+        <h2 class="work-big" id="work-title" aria-label="Selected work"><span class="wb-first" aria-hidden="true">Creative</span> <span class="wb-word" aria-hidden="true">Designer</span></h2>
+        <p class="work-sub">Selected work, <span>2025–26</span></p>
       </div>
-      <ol>
-        <li class="work-item">
+      <ol class="work-cards">
+        <li class="work-item work-a">
           <a href="/project/lexus-electrified/">
-            <span class="work-num">01</span>
-            <div class="work-info"><h3 class="work-title">Lexus Electrified</h3><p>Lexus Singapore</p></div>
-            <div class="work-media"><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" muted loop playsinline autoplay preload="metadata" aria-label="Lexus Electrified, preview"></video></div>
-            <p class="work-type">Audiovisual<span>2025</span></p>
-            <span class="work-open" aria-hidden="true">↗</span>
+            <figure class="work-media"><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" muted loop playsinline preload="metadata" aria-label="Lexus Electrified, preview"></video></figure>
+            <div class="work-cap"><h3 class="work-title">Lexus Electrified</h3><p class="work-cat"><em>Audiovisual</em><span class="work-pill">2025</span></p></div>
           </a>
         </li>
-        <li class="work-item">
+        <li class="work-item work-b" style="--panel:#f4b6c6">
           <a href="/project/soap-and-glory-vanilla/">
-            <span class="work-num">02</span>
-            <div class="work-info"><h3 class="work-title">Soap &amp; Glory</h3><p>Vanillalicious</p></div>
-            <div class="work-media" data-preview-images="/assets/projects/soap-and-glory-vanilla/sg3-800.webp /assets/projects/soap-and-glory-vanilla/sg1-800.webp /assets/projects/soap-and-glory-vanilla/sg4-800.webp /assets/projects/soap-and-glory-vanilla/sg5-800.webp /assets/projects/soap-and-glory-vanilla/sg2-800.webp"><img src="/assets/projects/soap-and-glory-vanilla/sg3-800.webp" width="800" height="800" loading="lazy" alt="Soap &amp; Glory Vanillalicious project preview"></div>
-            <p class="work-type">Key visuals<span>2026</span></p>
-            <span class="work-open" aria-hidden="true">↗</span>
+            <div class="work-panel">
+              <figure class="work-media" data-preview-images="/assets/projects/soap-and-glory-vanilla/sg3-800.webp /assets/projects/soap-and-glory-vanilla/sg1-800.webp /assets/projects/soap-and-glory-vanilla/sg4-800.webp /assets/projects/soap-and-glory-vanilla/sg5-800.webp /assets/projects/soap-and-glory-vanilla/sg2-800.webp"><img src="/assets/projects/soap-and-glory-vanilla/sg3-800.webp" width="800" height="800" loading="lazy" alt="Soap &amp; Glory Vanillalicious project preview"></figure>
+              <div class="work-cap"><h3 class="work-title">Soap &amp; Glory</h3><p class="work-cat"><em>Key visuals</em><span class="work-pill">2026</span></p></div>
+            </div>
           </a>
         </li>
-        <!-- Proyectos de relleno (EDITA: sustituye cada uno por uno real, con su <a href>, imagen y título) -->
-        <li class="work-item is-placeholder">
-          <div class="work-row"><span class="work-num">03</span><div class="work-info"><h3 class="work-title">Project title</h3><p>Coming soon</p></div><div class="work-media work-ph" aria-hidden="true"><span>Coming soon</span></div><p class="work-type">In progress</p></div>
+        <!-- Proyectos de relleno (EDITA: sustituye cada uno por uno real, con su <a href>, imagen, título, categoría y año) -->
+        <li class="work-item work-a is-placeholder">
+          <div class="work-link">
+            <figure class="work-media work-ph" style="--ph:#e9e3d3"><span>Coming soon</span></figure>
+            <div class="work-cap"><h3 class="work-title">Project title</h3><p class="work-cat"><em>Coming soon</em></p></div>
+          </div>
         </li>
-        <li class="work-item is-placeholder">
-          <div class="work-row"><span class="work-num">04</span><div class="work-info"><h3 class="work-title">Project title</h3><p>Coming soon</p></div><div class="work-media work-ph" aria-hidden="true"><span>Coming soon</span></div><p class="work-type">In progress</p></div>
+        <li class="work-item work-b is-placeholder" style="--panel:#d5402a">
+          <div class="work-link"><div class="work-panel is-dark">
+            <figure class="work-media work-ph"><span>Coming soon</span></figure>
+            <div class="work-cap"><h3 class="work-title">Project title</h3><p class="work-cat"><em>Coming soon</em></p></div>
+          </div></div>
         </li>
-        <li class="work-item is-placeholder">
-          <div class="work-row"><span class="work-num">05</span><div class="work-info"><h3 class="work-title">Project title</h3><p>Coming soon</p></div><div class="work-media work-ph" aria-hidden="true"><span>Coming soon</span></div><p class="work-type">In progress</p></div>
+        <li class="work-item work-a is-placeholder">
+          <div class="work-link">
+            <figure class="work-media work-ph" style="--ph:#bcd9f4"><span>Coming soon</span></figure>
+            <div class="work-cap"><h3 class="work-title">Project title</h3><p class="work-cat"><em>Coming soon</em></p></div>
+          </div>
         </li>
-        <li class="work-item is-placeholder">
-          <div class="work-row"><span class="work-num">06</span><div class="work-info"><h3 class="work-title">Project title</h3><p>Coming soon</p></div><div class="work-media work-ph" aria-hidden="true"><span>Coming soon</span></div><p class="work-type">In progress</p></div>
+        <li class="work-item work-b is-placeholder" style="--panel:#2c4e37">
+          <div class="work-link"><div class="work-panel is-dark">
+            <figure class="work-media work-ph"><span>Coming soon</span></figure>
+            <div class="work-cap"><h3 class="work-title">Project title</h3><p class="work-cat"><em>Coming soon</em></p></div>
+          </div></div>
         </li>
-        <li class="work-item is-placeholder">
-          <div class="work-row"><span class="work-num">07</span><div class="work-info"><h3 class="work-title">Project title</h3><p>Coming soon</p></div><div class="work-media work-ph" aria-hidden="true"><span>Coming soon</span></div><p class="work-type">In progress</p></div>
+        <li class="work-item work-a is-placeholder">
+          <div class="work-link">
+            <figure class="work-media work-ph" style="--ph:#e3e3df"><span>Coming soon</span></figure>
+            <div class="work-cap"><h3 class="work-title">Project title</h3><p class="work-cat"><em>Coming soon</em></p></div>
+          </div>
         </li>
-        <li class="work-item is-placeholder">
-          <div class="work-row"><span class="work-num">08</span><div class="work-info"><h3 class="work-title">Project title</h3><p>Coming soon</p></div><div class="work-media work-ph" aria-hidden="true"><span>Coming soon</span></div><p class="work-type">In progress</p></div>
+        <li class="work-item work-b is-placeholder" style="--panel:#8cc0ef">
+          <div class="work-link"><div class="work-panel">
+            <figure class="work-media work-ph"><span>Coming soon</span></figure>
+            <div class="work-cap"><h3 class="work-title">Project title</h3><p class="work-cat"><em>Coming soon</em></p></div>
+          </div></div>
         </li>
       </ol>
       <p class="work-foot">Mario Diz, Madrid</p>
@@ -127,8 +144,8 @@
 
 
   <!-- Scripts: texto "Creative ___" y vídeos · tomate 3D -->
-  <script src="/js/home-intro.js?v=20261019u" defer></script>
-  <script src="/js/home-work.js?v=20261019c" defer></script>
+  <script src="/js/home-intro.js?v=20261019w" defer></script>
+  <script src="/js/home-work.js?v=20261019e" defer></script>
   <script type="module" src="/js/home-tomato.js?v=20261019e"></script>
 </body>
 </html>
