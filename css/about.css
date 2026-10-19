@@ -1,12 +1,12 @@
 /* ABOUT — estilos de about/index.html.
    Como el "about" de nicolo-lombardi.com: todo en Helvetica negrita, pocos tamaños, y lo importante
-   cabe en la primera pantalla. Fondo blanco y texto rojo tomate.
+   cabe en la primera pantalla. Fondo verde y texto crema.
    Orden: colores y base · barra de navegación · primera pantalla · clientes · pie · móvil · movimiento. */
 
 :root {
-  --cream: #fff;          /* el fondo */
-  --cream-deep: #f2f2ef;  /* un gris muy claro: el recuadro de la foto (como el de las cards de la home) */
-  --tomato: #c8321c;      /* el texto: el rojo del tomate (oscurecido lo justo para que se lea bien) */
+  --bg: #2c4e37;          /* el fondo: el papel verde de la web */
+  --bg-deep: #25432f;     /* un paso más oscuro: el recuadro de la foto */
+  --ink: #e9efe4;         /* el texto (y los logos): crema */
   --nav-h: 64px;
   --gutter: 20px;
   --margin: clamp(24px, 6vw, 96px); /* margen a los lados de la página */
@@ -17,8 +17,8 @@
 
 body {
   overflow-x: clip;
-  color: var(--tomato);
-  background: var(--cream);
+  color: var(--ink);
+  background: var(--bg);
   font-family: "Helvetica Neue", Arial, sans-serif;
   font-size: var(--small);
   font-weight: 700;
@@ -29,8 +29,8 @@ body {
 a { color: inherit; }
 img { display: block; max-width: 100%; height: auto; }
 ul { list-style: none; }
-::selection { background: var(--tomato); color: var(--cream); }
-:focus-visible { outline: 2px solid var(--tomato); outline-offset: 3px; }
+::selection { background: var(--ink); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 /* ---------- Barra de navegación (como la de la home) ---------- */
 .nav {
@@ -41,7 +41,7 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   padding: 0 var(--margin); /* el tomate y el menú alineados con el texto */
-  background: var(--cream);
+  background: var(--bg);
 }
 .nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
 .nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
@@ -51,7 +51,7 @@ ul { list-style: none; }
   align-items: center;
   height: 100%;
   padding: 0 16px;
-  color: var(--tomato);
+  color: var(--ink);
   opacity: .75;
   font-size: 15px;
   font-weight: 400;
@@ -103,9 +103,9 @@ main, .close { padding: 0 var(--margin); }
   display: flex;
   align-items: flex-end;
   padding: 12px;
-  background: var(--cream-deep);
+  background: var(--bg-deep);
 }
-.portrait-placeholder span { color: var(--tomato); font-family: Georgia, serif; font-style: italic; font-weight: 400; }
+.portrait-placeholder span { color: var(--ink); font-family: Georgia, serif; font-style: italic; font-weight: 400; }
 
 /* Columnas en texto pequeño: el título en negrita y el texto normal, para que los párrafos largos se lean bien */
 .facts {
