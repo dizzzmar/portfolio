@@ -110,6 +110,32 @@
     const toggle = () => (video.paused ? video.play().catch(() => {}) : video.pause());
     box.querySelector('.player-toggle').addEventListener('click', toggle);
     video.addEventListener('click', toggle);
+    // En ordenador, el texto sigue al cursor y desaparece al salir del vídeo.
+    const pointer = (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const r = box.getBoundingClientRect();
+      const button = box.querySelector('.player-toggle');
+      const x = Math.max(8, Math.min(r.width - button.offsetWidth - 8, e.clientX - r.left + 16));
+      const y = Math.max(8, Math.min(r.height - button.offsetHeight - 44, e.clientY - r.top + 16));
+      box.style.setProperty('--pointer-x', x + 'px');
+      box.style.setProperty('--pointer-y', y + 'px');
+      box.classList.add('pointer-inside');
+    };
+    video.addEventListener('pointerenter', pointer);
+    video.addEventListener('pointermove', pointer);
+    video.addEventListener('pointerleave', () => box.classList.remove('pointer-inside'));
+
+    // La rueda recorre la película; al llegar a los extremos vuelve a desplazar la página.
+    video.addEventListener('wheel', (e) => {
+      if (e.ctrlKey || !e.cancelable || !Number.isFinite(video.duration) || !video.duration || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      const delta = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? video.clientHeight : 1);
+      const next = Math.max(0, Math.min(video.duration, video.currentTime + delta * 0.01));
+      if (Math.abs(next - video.currentTime) < 0.01) return;
+      e.preventDefault();
+      video.pause();
+      video.currentTime = next;
+      paint();
+    }, { passive: false });
     sound.addEventListener('click', () => { video.muted = !video.muted; if (!video.muted && video.paused) video.play().catch(() => {}); });
     box.querySelector('.player-full').addEventListener('click', () => {
       if (document.fullscreenElement) document.exitFullscreen();
