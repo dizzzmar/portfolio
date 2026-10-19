@@ -13,11 +13,16 @@
   items.forEach((el) => io.observe(el));
 })();
 
-// ---------- La barra va en blanco mientras está encima de la imagen de portada ----------
+// ---------- Barra y lados en blanco mientras la portada pasa por detrás ----------
 (() => {
-  const hero = document.querySelector('.case-hero');
-  if (!hero) return;
-  const check = () => document.body.classList.toggle('over-hero', hero.getBoundingClientRect().bottom > innerHeight / 2);
+  const cover = document.querySelector('.case-cover');
+  if (!cover) return;
+  const navH = () => document.querySelector('.case-nav').offsetHeight;
+  const check = () => {
+    const r = cover.getBoundingClientRect();
+    document.body.classList.toggle('over-cover-mid', r.top < innerHeight / 2 && r.bottom > innerHeight / 2);
+    document.body.classList.toggle('over-cover-nav', r.top < navH() / 2 && r.bottom > navH() / 2);
+  };
   addEventListener('scroll', check, { passive: true });
   addEventListener('resize', check);
   check();
