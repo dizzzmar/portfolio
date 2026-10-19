@@ -473,6 +473,9 @@ body {
 }
 .intro-on .intro-line { opacity: 1; transform: none; }
 .intro-word { font-variant-ligatures: none; }
+.intro-line .ch { display: inline-block; will-change: transform; }
+/* El texto del centro reacciona al ratón (letras que salen disparadas); solo mientras está a la vista y nada pasa por encima */
+.intro-on .intro-line > span { pointer-events: auto; cursor: default; }
 
 /* ---------- Work (como cipher.tv/works): proyectos sueltos sobre el cielo ----------
    Cada proyecto tiene su sitio y su tamaño (--x, --w, --y en el HTML). Debajo de la imagen, el número

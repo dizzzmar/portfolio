@@ -2,29 +2,89 @@
 // Cuando el tomate termina de subir al menú (aviso "tomato-docked" de js/home-tomato.js) aparece el texto,
 // la segunda palabra cambia muy rápido durante un momento, se queda en "Designer" y vuelve a empezar.
 // A partir de ahí ya se puede hacer scroll hasta los proyectos.
+// Cada cambio de palabra se "descifra" desde el centro hacia fuera (letras al azar que se van fijando), y al pasar
+// el ratón por encima las letras salen disparadas y vuelven con un pequeño rebote. Código propio, sin librerías.
 // EDITA aquí las palabras (la primera es en la que se para):
 const WORDS = ['Designer', 'Director', 'Coder', 'Enthusiast', 'Thinker', 'Technologist', 'Maximalist', 'Storyteller', 'Retoucher', '3D Artist', 'Mind', 'Nerd'];
-const SPEED = 75;      // milisegundos que se ve cada palabra mientras pasan
+const SPEED = 150;     // milisegundos que se ve cada palabra mientras pasan (cada una se descifra en ese tiempo)
 const BURST = 2600;    // cuánto dura cada ráfaga de palabras
 const HOLD = 2800;     // cuánto se queda en "Designer" antes de la siguiente ráfaga
 
 (() => {
   const word = document.querySelector('.intro-word');
+  const first = document.querySelector('.intro-line > span:first-child');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let started = false, timer = 0, visible = true;
 
+  // ---- Letras sueltas: cada palabra se pinta como una fila de <span> (uno por letra) ----
+  const NBSP = '\u00a0';
+  function split(el, text) {
+    el.textContent = '';
+    for (const ch of text) {
+      const c = document.createElement('span');
+      c.className = 'ch';
+      c.textContent = ch === ' ' ? NBSP : ch;
+      el.append(c);
+    }
+  }
+  split(first, first.textContent.trim());
+
+  // ---- Descifrar desde el centro: las letras del medio se fijan primero y el resto detrás ----
+  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
+  let scrambleRaf = 0;
+  function setWord(text, ms = SPEED * 0.85) {
+    cancelAnimationFrame(scrambleRaf);
+    if (reduced) { split(word, text); return; }
+    split(word, text);
+    const chars = [...word.children];
+    const n = chars.length, mid = (n - 1) / 2;
+    const start = performance.now();
+    const settle = chars.map((c, i) => ({ c, final: text[i] === ' ' ? NBSP : text[i], at: n > 1 ? (Math.abs(i - mid) / mid) * 0.65 : 0 }));
+    const step = (now) => {
+      const p = Math.min(1, (now - start) / ms);
+      let done = true;
+      for (const { c, final, at } of settle) {
+        if (p >= at + 0.35 || final === NBSP) c.textContent = final;
+        else { c.textContent = GLYPHS[(Math.random() * GLYPHS.length) | 0]; done = false; }
+      }
+      if (!done) scrambleRaf = requestAnimationFrame(step);
+    };
+    scrambleRaf = requestAnimationFrame(step);
+  }
+
+  // ---- Al pasar el ratón: las letras salen disparadas desde el centro y vuelven rebotando ----
+  let scattering = false;
+  function scatter() {
+    if (reduced || scattering || !started) return;
+    scattering = true;
+    const chars = [...first.children, ...word.children];
+    const mid = (chars.length - 1) / 2;
+    const anims = chars.map((c, i) => {
+      const d = Math.abs(i - mid) / mid;                       // 0 en el centro, 1 en los extremos
+      const dx = (Math.random() - 0.5) * 220 * (0.5 + d), dy = (Math.random() - 0.5) * 160, rot = (Math.random() - 0.5) * 120;
+      return c.animate(
+        [{ transform: 'none', offset: 0 },
+         { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, offset: 0.35, easing: 'cubic-bezier(.3, 1.5, .5, 1)' },
+         { transform: 'none', offset: 1 }],
+        { duration: 1100, delay: d * 90, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' });
+    });
+    Promise.allSettled(anims.map((a) => a.finished)).then(() => { scattering = false; });
+  }
+  const line = document.querySelector('.intro-line');
+  line.addEventListener('pointerenter', scatter);
+
   function burst() {
     clearTimeout(timer);
-    if (!visible || reduced) { word.textContent = WORDS[0]; return; }
+    if (!visible || reduced) { setWord(WORDS[0], 700); return; }
     const end = performance.now() + BURST;
     let i = 1;
     const tick = () => {
       if (performance.now() >= end) {
-        word.textContent = WORDS[0];
+        setWord(WORDS[0], 700);
         timer = setTimeout(burst, HOLD);
         return;
       }
-      word.textContent = WORDS[i % WORDS.length];
+      setWord(WORDS[i % WORDS.length]);
       i += 1;
       timer = setTimeout(tick, SPEED);
     };
@@ -51,7 +111,7 @@ const HOLD = 2800;     // cuánto se queda en "Designer" antes de la siguiente r
   // La ráfaga solo corre mientras el texto se ve
   new IntersectionObserver(([e]) => {
     visible = e.isIntersecting && !document.hidden;
-    if (started) visible ? burst() : (clearTimeout(timer), word.textContent = WORDS[0]);
+    if (started) visible ? burst() : (clearTimeout(timer), setWord(WORDS[0]));
   }).observe(word.parentElement);
 
   // Los vídeos de los proyectos quedan quietos si el visitante pide menos movimiento
