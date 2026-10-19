@@ -1,12 +1,12 @@
 /* ABOUT — estilos de about/index.html.
    Como el "about" de nicolo-lombardi.com: todo en Helvetica negrita, pocos tamaños, y lo importante
-   cabe en la primera pantalla. Fondo: el cielo de la portada en negativo (azul a naranja ámbar, nubes oscuras) y texto crema.
+   cabe en la primera pantalla. Fondo: rojo liso (el mismo de "Creative" en Work) y texto crema.
    Orden: colores y base · barra de navegación · primera pantalla · clientes · pie · móvil · movimiento. */
 
 :root {
-  --bg: #2a1807;          /* tinta oscura: el color de la selección de texto */
-  --bg-deep: rgba(12, 12, 11, .38); /* el recuadro de la foto */
-  --ink: #e9efe4;         /* el texto (y los logos): crema */
+  --bg: #f04a30;          /* el rojo de la web (también el de la selección de texto) */
+  --bg-deep: rgba(120, 20, 8, .28); /* el recuadro de la foto */
+  --ink: #fff6ea;         /* el texto (y los logos): crema casi blanco */
   --nav-h: 64px;
   --gutter: 20px;
   --margin: clamp(24px, 6vw, 96px); /* margen a los lados de la página */
@@ -18,34 +18,13 @@
 body {
   overflow-x: clip;
   color: var(--ink);
-  background: #6b3d12; /* mientras carga el cielo */
+  background: var(--bg);
   font-family: "Helvetica Neue", Arial, sans-serif;
   font-size: var(--small);
   font-weight: 700;
   line-height: 1.35;
   -webkit-font-smoothing: antialiased;
 }
-
-/* Fondo: el cielo de la portada en negativo (invert: el azul pasa a naranja ámbar y las nubes a oscuro), algo desenfocado y con el mismo
-   movimiento lento. Es más grande que la pantalla para que no se vean sus bordes. */
-.sky {
-  position: fixed;
-  inset: -8%;
-  z-index: -1;
-  background:
-    url("/assets/images/sky.webp") center / cover,
-    linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
-  filter: invert(1) brightness(.5) blur(10px); /* se oscurece para que el texto crema se lea bien */
-  animation: drift 40s ease-in-out infinite alternate;
-  will-change: transform;
-  pointer-events: none;
-}
-@keyframes drift {
-  0%   { transform: translate(-3%, 1%) scale(1); }
-  50%  { transform: translate(1%, -1.5%) scale(1.04); }
-  100% { transform: translate(3%, 1%) scale(1.02); }
-}
-@media (prefers-reduced-motion: reduce) { .sky { animation: none; } }
 
 a { color: inherit; }
 img { display: block; max-width: 100%; height: auto; }
