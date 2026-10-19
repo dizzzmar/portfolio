@@ -13,6 +13,21 @@
   items.forEach((el) => io.observe(el));
 })();
 
+// ---------- Barra y lados en blanco mientras la portada pasa por detrás ----------
+(() => {
+  const cover = document.querySelector('.case-cover');
+  if (!cover) return;
+  const navH = () => document.querySelector('.case-nav').offsetHeight;
+  const check = () => {
+    const r = cover.getBoundingClientRect();
+    document.body.classList.toggle('over-cover-mid', r.top < innerHeight / 2 && r.bottom > innerHeight / 2);
+    document.body.classList.toggle('over-cover-nav', r.top < navH() / 2 && r.bottom > navH() / 2);
+  };
+  addEventListener('scroll', check, { passive: true });
+  addEventListener('resize', check);
+  check();
+})();
+
 // ---------- Barra de reproducción propia ----------
 // Línea de progreso abajo (se puede pulsar para saltar), PLAY / PAUSE con el tiempo en el centro,
 // y SOUND : ON/OFF y FULL SCREEN a la derecha. Sin script, el vídeo conserva los controles del navegador.

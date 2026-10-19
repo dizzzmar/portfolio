@@ -1,6 +1,6 @@
 /* PÁGINAS DE PROYECTO (estilo cipher.tv/works/the-circle) — compartido por todo /project/*.
    Fondo: el cielo de la portada emborronado y mezclado con crema, con el grano nítido encima.
-   Orden: colores y base · barra · texto "About" con el número y el título a los lados · imagen grande ·
+   Orden: colores y base · barra · portada con márgenes · texto "About" con el número y el título a los lados · imagen grande ·
    galería en parejas descompensadas · siguiente proyecto · móvil · movimiento.
    El párrafo en Georgia va casi sin espaciado (.005em, como la referencia); los textos pequeños, algo abiertos
    (.05em–.08em); el título enorme de "Next project" queda apretado. */
@@ -109,8 +109,22 @@ img, video { display: block; width: 100%; height: auto; }
   transform: translateY(-50%);
   pointer-events: none;
 }
-.case-side.left { left: var(--edge); }
-.case-side.right { right: var(--edge); }
+/* Un poco hacia dentro del borde, para que sobre la portada queden dentro de la imagen */
+.case-side.left { left: calc(var(--edge) + 16px); }
+.case-side.right { right: calc(var(--edge) + 16px); }
+
+/* ---------- 1. Portada con márgenes ---------- */
+.case-cover {
+  margin: var(--nav-h) var(--edge) 0;
+  height: calc(100vh - var(--nav-h) - var(--edge));
+  height: calc(100svh - var(--nav-h) - var(--edge));
+  overflow: hidden;
+  background: var(--panel);
+}
+.case-cover img, .case-cover video { width: 100%; height: 100%; object-fit: cover; }
+/* Mientras la portada pasa por detrás, el número y el título de los lados (y la barra) van en blanco para leerse sobre la imagen */
+.over-cover-mid .case-side { color: #fff; text-shadow: 0 1px 10px rgba(0, 0, 0, .35); }
+.over-cover-nav .case-nav, .over-cover-nav .case-back { color: #fff; text-shadow: 0 1px 10px rgba(0, 0, 0, .35); }
 
 /* ---------- 2. About ---------- */
 .case-about {
