@@ -22,6 +22,17 @@ img, video { display: block; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 ::selection { background: var(--ink); color: #fff; }
 
+/* Grano muy suave sobre toda la página (por encima de las imágenes, por debajo de la barra); no recibe clics */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 19;
+  background: url("/assets/images/grain-on-light.png") 0 0 / 160px 160px repeat;
+  opacity: .045;
+  pointer-events: none;
+}
+
 /* ---------- Cabecera ---------- */
 /* El tomate vuelve a la portada; el nombre, la fecha y el cliente van en columnas y se quedan en la primera pantalla */
 .case-logo { position: fixed; z-index: 21; top: calc((var(--nav-h) - 43px) / 2); left: var(--edge); width: 40px; height: 43px; transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
@@ -89,44 +100,48 @@ img, video { display: block; }
 .player { position: relative; isolation: isolate; }
 .player video { cursor: pointer; }
 .player button { border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+/* Texto blanco con una sombra y un degradado oscuro detrás: se lee igual sobre vídeos claros que oscuros (antes usaba
+   "difference", que sobre colores claros daba tonos azulados y apenas se veía). El rótulo PLAY va solo como texto, sin recuadro. */
 .player .player-toggle {
   position: absolute;
-  bottom: 48px;
+  bottom: 56px;
   left: 14px;
   display: grid;
   justify-items: start;
   gap: 2px;
   color: #fff;
   font-family: var(--font-ui);
-  font-size: var(--type-label);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
   text-transform: uppercase;
-  mix-blend-mode: difference;
-  text-shadow: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .8), 0 0 6px rgba(0, 0, 0, .6), 0 0 16px rgba(0, 0, 0, .6), 0 0 30px rgba(0, 0, 0, .45); /* sin recuadro: solo la sombra da el contraste */
   opacity: 0;
   transition: opacity .25s;
 }
-.player-time { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .06em; opacity: .85; }
+.player-time { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .06em; }
 .player-bar {
   position: absolute;
   inset: auto 0 0;
   display: flex;
   align-items: center;
   gap: 18px;
-  padding: 0 14px 12px;
+  padding: 38px 14px 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, .74), rgba(0, 0, 0, .38) 55%, rgba(0, 0, 0, 0));
   color: #fff;
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
-  mix-blend-mode: difference;
-  text-shadow: none;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .6);
 }
-.player-bar button { padding: 6px 0; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
-.player-bar button:hover { opacity: 1; }
-/* La línea: fina, blanca translúcida; lo ya visto en blanco */
-.player-track { position: relative; flex: 1; height: 14px; cursor: pointer; }
-.player-track::before, .player-track i { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; }
-.player-track::before { background: currentColor; opacity: .45; }
-.player-track i { background: currentColor; height: 2px; margin-top: -.5px; transform-origin: left; transform: scaleX(0); }
+.player-bar button { padding: 6px 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.player-bar button:hover { text-decoration: underline; text-underline-offset: 4px; }
+/* La línea: blanca, más gruesa; lo ya visto, más marcado */
+.player-track { position: relative; flex: 1; height: 16px; cursor: pointer; }
+.player-track::before, .player-track i { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; }
+.player-track::before { background: #fff; opacity: .5; }
+.player-track i { background: #fff; height: 3px; margin-top: -1.5px; transform-origin: left; transform: scaleX(0); }
 .player.pointer-inside .player-toggle, .player-toggle:focus-visible { opacity: 1; }
 @media (hover: hover) and (pointer: fine) {
   .player video { cursor: none; }

@@ -19,15 +19,27 @@ body {
   background-color: #8cc0ef;
 }
 
-/* Al dejar atrás la portada, una capa de tinta oscura tapa el cielo poco a poco (como un atardecer). Se queda fija para que
+/* Al dejar atrás la portada, una capa casi negra tapa el cielo poco a poco (como un atardecer). Se queda fija para que
    todos los proyectos se acumulen sobre el mismo fondo limpio. --light-progress lo mueve JS. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: #20201d;
+  background: #0c0c0b;
   opacity: var(--light-progress);
+  pointer-events: none;
+}
+
+/* Grano muy suave sobre el fondo oscuro de Work: aparece a la vez que la capa oscura (--light-progress) y se queda
+   por encima de los proyectos, pero por debajo de la barra. No recibe clics. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  background: url("/assets/images/grain-on-dark.png") 0 0 / 160px 160px repeat;
+  opacity: calc(var(--light-progress) * .07);
   pointer-events: none;
 }
 
@@ -570,7 +582,7 @@ body::before {
   z-index: 11;
   padding: 9px 14px 8px;
   background: #fff;
-  color: #20201d;
+  color: #0c0c0b;
   pointer-events: none;
   white-space: nowrap;
   opacity: 0;
