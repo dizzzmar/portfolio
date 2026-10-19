@@ -494,71 +494,57 @@ body::before {
 .intro-word { font-variant-ligatures: none; }
 .intro-line .ch { display: inline-block; }
 
-/* ---------- Work (como cipher.tv/works): proyectos sueltos sobre el cielo ----------
-   Cada proyecto tiene su sitio y su tamaño (--x, --w, --y en el HTML). Debajo de la imagen, el número
-   pequeño a la izquierda y el título en Georgia mayúscula a la derecha, como la marca de las antiguas cards. */
-.work-grid { position: relative; z-index: 5; /* por encima del texto fijo, por debajo de la barra */ padding: 10vh clamp(12px, 2vw, 28px) 0; color: #20201d; }
-.work-grid ol { display: grid; gap: 18vh; list-style: none; }
-.work-item { width: var(--w); margin-left: var(--x); margin-top: var(--y); }
-.work-item a { display: block; color: inherit; text-decoration: none; }
-.work-media { overflow: hidden; background: rgba(255, 255, 255, 0.12); }
-.work-media img, .work-media video { display: block; width: 100%; height: auto; transition: transform 0.8s cubic-bezier(.2, .8, .2, 1); }
-.work-media.work-ph { overflow: hidden; }
-.work-item a:hover .work-media img, .work-item a:hover .work-media video { transform: scale(1.04); }
-.work-cap {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-  margin-top: 10px;
-}
-.work-num { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; }
-.work-num::before { content: ""; width: 5px; height: 5px; background: currentColor; }
-.work-title {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(17px, 1.5vw, 24px);
-  letter-spacing: -0.035em;
-  line-height: 1;
-  text-align: right;
-  text-transform: uppercase;
-}
-.work-item a:hover .work-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+/* ---------- Work: lista editorial con miniaturas en movimiento ---------- */
+.work-grid { position: relative; z-index: 5; padding: 28px clamp(16px, 2.8vw, 40px) 0; color: #20201d; }
+.work-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 20px; }
+.work-heading h2, .work-preview-toggle { font: 11px "Helvetica Neue", Arial, sans-serif; text-transform: uppercase; letter-spacing: .07em; }
+.work-preview-toggle { border: 0; padding: 8px 0 8px 12px; background: none; color: inherit; cursor: pointer; }
+.work-preview-toggle:hover { text-decoration: underline; text-underline-offset: 4px; }
+.work-grid ol { list-style: none; border-bottom: 1px solid rgba(32, 32, 29, .2); }
+.work-item { border-top: 1px solid rgba(32, 32, 29, .2); background: rgba(255, 255, 255, .72); }
+.work-item > a, .work-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) clamp(210px, 20vw, 300px) minmax(100px, 1fr) 24px; align-items: center; gap: clamp(16px, 2vw, 32px); min-height: 168px; padding: 12px 0; color: inherit; text-decoration: none; }
+.work-info { min-width: 0; }
+.work-title { font-family: Georgia, "Times New Roman", serif; font-size: clamp(25px, 2.6vw, 42px); font-weight: 400; letter-spacing: -.05em; line-height: 1.05; }
+.work-info > p { margin-top: 10px; font-size: 11px; letter-spacing: .045em; text-transform: uppercase; }
+.work-num { align-self: start; padding-top: 18px; font-size: 10px; font-variant-numeric: tabular-nums; }
+.work-num::after { content: "."; }
+.work-media { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #eee; }
+.work-media img, .work-media video { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.2, .8, .2, 1), opacity .22s ease; }
+.work-media img.preview-next { position: absolute; inset: 0; opacity: 0; }
+.work-media img.preview-next.is-active { opacity: 1; }
+.work-item a:hover .work-media img, .work-item a:hover .work-media video,
+.work-item a:focus-visible .work-media img, .work-item a:focus-visible .work-media video { transform: scale(1.035); }
+.work-type { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; text-align: right; }
+.work-type span { display: block; margin-top: 8px; color: #72726c; font-variant-numeric: tabular-nums; }
+.work-open { position: relative; justify-self: end; width: 18px; height: 18px; font-size: 0; transition: transform .25s; }
+.work-open::before { content: ""; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; border-top: 1px solid currentColor; border-right: 1px solid currentColor; }
+.work-open::after { content: ""; position: absolute; top: 9px; left: 0; width: 19px; border-top: 1px solid currentColor; transform: rotate(-45deg); }
+.work-item a:hover .work-open { transform: translate(3px, -3px); }
 .work-item a:focus-visible { outline: 2px solid #20201d; outline-offset: 6px; }
-.work-foot { padding: 30vh 0 24px; font-size: 13px; }
-/* Proyectos de relleno: un recuadro translúcido sobre el cielo hasta que haya imagen */
-.work-ph {
-  display: grid;
-  place-items: center;
-  background: rgba(32, 32, 29, 0.06);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-}
-.work-ph span { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.8; }
-.is-placeholder .work-cap { opacity: 0.7; }
+.work-foot { padding: 48px 0 24px; font-size: 12px; }
+.work-ph { display: grid; place-items: center; background: rgba(32, 32, 29, .035); }
+.work-ph span { font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: #777770; }
+.is-placeholder .work-info, .is-placeholder .work-num, .is-placeholder .work-type { color: #777770; }
 
 /* "Creative ___" se queda fijo en el centro mientras los proyectos pasan por encima; al bajar se
    desenfoca un poco (js/home-intro.js pone --blur) */
 .intro-line { position: fixed; z-index: 1; filter: blur(var(--blur, 0px)); }
 
 @media (max-width: 700px) {
-  .work-grid ol { gap: 14vh; }
-  .work-item:nth-child(odd) { --x: 0% !important; --w: 86% !important; }
-  .work-item:nth-child(even) { --x: 30% !important; --w: 70% !important; }
-  .work-item { margin-top: 0 !important; }
+  .work-item > a, .work-row { grid-template-columns: 20px minmax(0, 1fr) 112px; gap: 10px; min-height: 126px; padding: 18px 0; }
+  .work-title { font-size: clamp(21px, 5.5vw, 30px); }
+  .work-num { padding-top: 4px; }
+  .work-info > p { font-size: 9px; margin-top: 7px; }
+  .work-type { grid-column: 2 / 4; grid-row: 2; display: flex; justify-content: space-between; text-align: left; font-size: 9px; }
+  .work-type span { margin-top: 0; }
+  .work-open { display: none; }
 }
-/* Work: movimiento al hacer scroll (js/home-intro.js pone la clase work-motion y las variables --dy / --iy) */
-.work-motion .work-item { translate: 0 var(--dy, 0px); }
-.work-motion .work-media { position: relative; }
-.work-motion .work-media img, .work-motion .work-media video { transform: translate3d(0, var(--iy, 0%), 0) scale(1.14); }
-.work-motion .work-item a:hover .work-media img, .work-motion .work-item a:hover .work-media video { transform: translate3d(0, var(--iy, 0%), 0) scale(1.2); }
-/* Entrada: la imagen se destapa de abajo arriba y el pie sube y aparece, un instante después */
-.work-motion .work-item:not(.is-in) .work-media { clip-path: inset(100% 0 0 0); }
-.work-motion .work-item.is-above:not(.is-in) .work-media { clip-path: inset(0 0 100% 0); }
-.work-motion .work-item .work-media { clip-path: inset(0); transition: clip-path 1.2s cubic-bezier(.2, .8, .2, 1); }
-.work-motion .work-item:not(.is-in) .work-cap { opacity: 0; transform: translateY(12px); }
-.work-motion .work-item .work-cap { transition: opacity .7s .35s, transform .7s .35s cubic-bezier(.2, .8, .2, 1); }
+.work-motion .work-item { opacity: 1; transform: none; transition: opacity .6s ease, transform .7s cubic-bezier(.2, .8, .2, 1); }
+.work-motion .work-item:not(.is-in):not(:focus-within) { opacity: 0; transform: translateY(20px); }
+.work-motion .work-item.is-above:not(.is-in):not(:focus-within) { transform: translateY(-20px); }
 
 @media (prefers-reduced-motion: reduce) {
   .intro-line { transition: none; transform: none; }
   body::before { transition: none; }
+  .work-media img, .work-media video, .work-open { transition: none; }
 }
