@@ -17,14 +17,13 @@
 // Solo transform / translate / clip-path (baratos para el navegador) y solo si el visitante no pide menos movimiento:
 //  · portada y fotos: la imagen se mueve dentro de su marco más despacio que la página (paralaje) y la portada
 //    hace un zoom suave hacia atrás al bajar;
-//  · cada pareja de la galería: sus dos fotos suben a distinta velocidad, para dar profundidad;
+// La galería mantiene sus columnas alineadas sin desplazar cada foto por separado.
 // Los marcos y su proporción están en css/case.css (.px); sin JS o con "reducir movimiento" todo queda quieto.
 (() => {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const frames = [...document.querySelectorAll('.case-cover, .case-wide:not(.vertical) figure, .case-pair figure')];
+  const frames = [...document.querySelectorAll('.case-cover, .case-wide:not(.vertical) figure')];
   const cover = document.querySelector('.case-cover');
   frames.forEach((f) => f.classList.add('px'));
-  const drifts = [...document.querySelectorAll('.case-pair')].map((pair) => [...pair.children].map((el, i) => ({ el, speed: i ? -0.16 : 0.1 }))).flat();
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   let queued = false;
   function update() {
@@ -36,11 +35,6 @@
       const p = clamp((r.top + r.height / 2 - vh / 2) / (vh / 2 + r.height / 2), -1, 1); // -1 abajo del todo · 1 arriba del todo
       f.style.setProperty('--py', (p * -r.height * 0.07).toFixed(1) + 'px');
       if (f === cover) f.style.setProperty('--ps', (1 + clamp(scrollY / vh, 0, 1) * -0.06 + 0.08).toFixed(4));
-    }
-    for (const { el, speed } of drifts) {
-      const r = el.getBoundingClientRect();
-      if (r.bottom < -200 || r.top > vh + 200) continue;
-      el.style.setProperty('--dy', ((r.top + r.height / 2 - vh / 2) * speed).toFixed(1) + 'px');
     }
   }
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };

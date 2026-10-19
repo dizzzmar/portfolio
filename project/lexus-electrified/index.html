@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
   PROYECTO: Lexus — Electrified  ·  www.dizmar.xyz/project/lexus-electrified/
-  Diseño como cipher.tv/works/the-circle, sobre fondo blanco. Estilos comunes en /css/case.css.
+  Título, ficha editorial y galería sobre fondo blanco. Estilos comunes en /css/case.css.
 -->
 <html lang="en">
 <head>
@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://www.dizmar.xyz/assets/projects/lexus-electrified/thumb.webp">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-<link rel="stylesheet" href="/css/case.css?v=20261019z">
+<link rel="stylesheet" href="/css/case.css?v=20261019aa">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body id="top">
@@ -39,32 +39,31 @@
   </ul>
 </nav>
 
-<p class="case-side left" aria-hidden="true">01</p>
-<p class="case-side right" aria-hidden="true">Lexus Electrified</p>
-
 <main>
-  <!-- 1. Portada con márgenes: el vídeo en bucle, a toda la altura de la pantalla pero sin llegar a los bordes -->
-  <header class="case-cover">
-    <h1 class="sr-only">Lexus — Electrified</h1>
-    <video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video>
+  <header class="case-heading">
+    <p class="case-kicker">01 / Audiovisual / 2025</p>
+    <h1>Lexus<span>Electrified</span></h1>
   </header>
 
   <!-- 2. Texto y ficha. EDITA: el texto del proyecto -->
   <section class="case-about">
-    <div class="case-text" data-reveal>
-      <p class="case-label">About</p>
-      <p>Lexus Electrified.</p>
-      <p>Project text coming soon.</p> <!-- EDITA -->
-      <a class="case-link" href="#film">Watch the film</a>
-    </div>
+    <h2 class="case-label">[ About the project ]</h2>
     <dl class="case-facts" data-reveal>
       <dt>Client</dt><dd>Lexus Singapore</dd>
       <dt>Project</dt><dd>Electrified</dd>
       <dt>Discipline</dt><dd>Audiovisual</dd>
       <dt>Year</dt><dd>2025</dd>
     </dl>
+    <div class="case-text" data-reveal>
+      <p class="case-lead">Lexus Electrified.</p>
+      <p>Project text coming soon.</p> <!-- EDITA -->
+      <a class="case-link" href="#film">Watch the film</a>
+    </div>
   </section>
 
+  <section class="case-feature" aria-label="Film preview">
+    <figure data-reveal><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video></figure>
+  </section>
 
   <!-- 3. La película completa, con la barra de reproducción propia (js/case.js). No arranca sola: se pulsa Play (con sonido).
        Archivo: assets/projects/lexus-electrified/film.mp4 (30 s, 1080p) y su imagen film-poster.webp -->
@@ -85,6 +84,6 @@
 
 <!-- Script oficial de Instagram: convierte el bloque de arriba en el reproductor -->
 <script async src="https://www.instagram.com/embed.js"></script>
-<script src="/js/case.js?v=20261019t" defer></script>
+<script src="/js/case.js?v=20261019u" defer></script>
 </body>
 </html>
