@@ -1,7 +1,9 @@
 /* PÁGINAS DE PROYECTO (estilo cipher.tv/works/the-circle) — compartido por todo /project/*.
    Fondo: el cielo de la portada emborronado y mezclado con crema, con el grano nítido encima. Orden: colores y base · barra · portada a toda pantalla con el número y el
    título a los lados · texto "About" · imagen grande · galería en parejas descompensadas ·
-   siguiente proyecto · móvil · movimiento. */
+   siguiente proyecto · móvil · movimiento.
+   Los textos pequeños y el párrafo llevan el espaciado entre letras bien abierto (.1em–.14em); solo el título
+   enorme de "Next project" queda apretado. */
 
 :root {
   --bg: #dfe6ea;        /* color de reserva mientras carga el cielo */
@@ -82,7 +84,7 @@ img, video { display: block; width: 100%; height: auto; }
   transition: color .3s;
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: .04em;
+  letter-spacing: .12em;
   text-decoration: none;
   text-transform: uppercase;
 }
@@ -90,7 +92,7 @@ img, video { display: block; width: 100%; height: auto; }
 .case-back:hover { text-decoration: underline; text-underline-offset: 4px; }
 .case-back:hover span { transform: translateX(-3px); }
 .case-nav ul { display: flex; gap: clamp(16px, 2.6vw, 36px); list-style: none; }
-.case-nav a { font-size: 12px; font-weight: 500; letter-spacing: .04em; text-decoration: none; text-transform: uppercase; }
+.case-nav a { font-size: 12px; font-weight: 500; letter-spacing: .12em; text-decoration: none; text-transform: uppercase; }
 .case-nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* Número y título del proyecto, fijos a media altura en los dos bordes (como en la referencia) */
@@ -102,7 +104,7 @@ img, video { display: block; width: 100%; height: auto; }
   transition: color .3s;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: .04em;
+  letter-spacing: .12em;
   text-transform: uppercase;
   transform: translateY(-50%);
   pointer-events: none;
@@ -124,18 +126,18 @@ img, video { display: block; width: 100%; height: auto; }
   gap: var(--edge);
   padding: clamp(80px, 12vw, 160px) calc(var(--edge) + 6vw);
 }
-.case-label { margin-bottom: 22px; color: var(--soft); font-size: 11px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+.case-label { margin-bottom: 22px; color: var(--soft); font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
 .case-text { max-width: 30em; }
 .case-text p {
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(17px, 1.35vw, 20px);
-  letter-spacing: -.01em;
+  letter-spacing: .06em;
   line-height: 1.12;
   text-transform: uppercase;
 }
 .case-text p + p { margin-top: 1.1em; }
 /* Ficha: cliente, proyecto, disciplina y año */
-.case-facts { align-self: end; display: grid; grid-template-columns: auto 1fr; gap: 10px 32px; max-width: 26em; font-size: 12px; letter-spacing: .03em; text-transform: uppercase; }
+.case-facts { align-self: end; display: grid; grid-template-columns: auto 1fr; gap: 10px 32px; max-width: 26em; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
 .case-facts dt { color: var(--soft); }
 .case-facts dd { font-weight: 500; }
 .case-link {
@@ -145,7 +147,7 @@ img, video { display: block; width: 100%; height: auto; }
   margin-top: 48px;
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: .03em;
+  letter-spacing: .1em;
   text-decoration: none;
   text-transform: uppercase;
 }
@@ -184,7 +186,7 @@ img, video { display: block; width: 100%; height: auto; }
   opacity: 0;
   transition: opacity .25s;
 }
-.player-time { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 10px; letter-spacing: .06em; opacity: .85; }
+.player-time { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 10px; letter-spacing: .12em; opacity: .85; }
 .player-bar {
   position: absolute;
   inset: auto 0 0;
@@ -194,11 +196,11 @@ img, video { display: block; width: 100%; height: auto; }
   padding: 0 14px 12px;
   color: #fff;
   font-size: 10px;
-  letter-spacing: .06em;
+  letter-spacing: .14em;
   text-transform: uppercase;
   text-shadow: 0 1px 8px rgba(0, 0, 0, .35);
 }
-.player-bar button { padding: 6px 0; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
+.player-bar button { padding: 6px 0; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
 .player-bar button:hover { opacity: 1; }
 /* La línea: fina, blanca translúcida; lo ya visto en blanco */
 .player-track { position: relative; flex: 1; height: 14px; cursor: pointer; }
@@ -219,7 +221,7 @@ img, video { display: block; width: 100%; height: auto; }
 .case-pair.flip > :first-child { grid-column: 1; align-self: end; }
 .case-pair.flip > :last-child { grid-column: 3; }
 .case-pair figure { overflow: hidden; background: var(--panel); }
-.case-gallery figcaption { margin-top: 8px; color: var(--soft); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.case-gallery figcaption { margin-top: 8px; color: var(--soft); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
 
 /* ---------- 5. Siguiente proyecto ---------- */
 .case-next {
@@ -229,7 +231,7 @@ img, video { display: block; width: 100%; height: auto; }
   border-top: 1px solid var(--ink); /* taste-skill-ignore: separa el final de la página, como en la referencia */
   text-decoration: none;
 }
-.case-next span { display: block; color: var(--soft); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+.case-next span { display: block; color: var(--soft); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
 .case-next strong {
   display: block;
   margin-top: 10px;
