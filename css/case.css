@@ -230,27 +230,8 @@ img, video { display: block; width: 100%; height: auto; }
 .case-pair figure { overflow: hidden; background: var(--panel); }
 .case-gallery figcaption { margin-top: 8px; color: var(--soft); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
 
-/* ---------- 5. Siguiente proyecto ---------- */
-.case-next {
-  display: block;
-  margin-top: clamp(100px, 12vw, 180px);
-  padding: 28px var(--edge) clamp(40px, 6vw, 80px);
-  border-top: 1px solid var(--ink); /* taste-skill-ignore: separa el final de la página, como en la referencia */
-  text-decoration: none;
-}
-.case-next span { display: block; color: var(--soft); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
-.case-next strong {
-  display: block;
-  margin-top: 10px;
-  font-size: clamp(44px, 8vw, 132px);
-  font-weight: 700;
-  letter-spacing: -.06em;
-  line-height: .86;
-  text-transform: uppercase;
-  transition: transform .5s cubic-bezier(.2, .8, .2, 1);
-}
-.case-next:hover strong { transform: translateX(16px); }
-.case-foot { display: flex; justify-content: space-between; padding: 0 var(--edge) 24px; color: var(--soft); font-size: 12px; }
+/* ---------- 5. Pie ---------- */
+.case-foot { display: flex; justify-content: space-between; padding: clamp(80px, 10vw, 140px) var(--edge) 24px; color: var(--soft); font-size: 12px; }
 
 /* ---------- Movimiento al hacer scroll (js/case.js añade la clase .px a los marcos) ---------- */
 /* El marco recorta; la imagen es un poco más grande que él y se desplaza (--py) para dar paralaje */
@@ -260,7 +241,6 @@ img, video { display: block; width: 100%; height: auto; }
 .case-cover.px > img, .case-cover.px > video { top: -9%; height: 118%; }
 /* Las dos fotos de cada pareja suben a distinta velocidad (--dy) */
 .case-pair > figure { translate: 0 var(--dy, 0px); }
-.case-next strong { translate: var(--nx, 0) 0; }
 @media (prefers-reduced-motion: no-preference) {
   /* Las fotos se destapan de abajo arriba al entrar, mientras la imagen se asienta */
   .js .case-pair > figure[data-reveal], .js .case-wide[data-reveal] > figure { clip-path: inset(16% 0 0 0); transition: clip-path 1.1s cubic-bezier(.2, .8, .2, 1), opacity .8s, transform .8s cubic-bezier(.2, .8, .2, 1); }

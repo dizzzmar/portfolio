@@ -18,7 +18,6 @@
 //  · portada y fotos: la imagen se mueve dentro de su marco más despacio que la página (paralaje) y la portada
 //    hace un zoom suave hacia atrás al bajar;
 //  · cada pareja de la galería: sus dos fotos suben a distinta velocidad, para dar profundidad;
-//  · "Next project": el título se desliza desde la izquierda al llegar.
 // Los marcos y su proporción están en css/case.css (.px); sin JS o con "reducir movimiento" todo queda quieto.
 (() => {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -26,7 +25,6 @@
   const cover = document.querySelector('.case-cover');
   frames.forEach((f) => f.classList.add('px'));
   const drifts = [...document.querySelectorAll('.case-pair')].map((pair) => [...pair.children].map((el, i) => ({ el, speed: i ? -0.16 : 0.1 }))).flat();
-  const next = document.querySelector('.case-next strong');
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   let queued = false;
   function update() {
@@ -43,10 +41,6 @@
       const r = el.getBoundingClientRect();
       if (r.bottom < -200 || r.top > vh + 200) continue;
       el.style.setProperty('--dy', ((r.top + r.height / 2 - vh / 2) * speed).toFixed(1) + 'px');
-    }
-    if (next) {
-      const r = next.getBoundingClientRect();
-      next.style.setProperty('--nx', (clamp((r.top - vh * 0.75) / (vh * 0.25), 0, 1) * -8).toFixed(2) + 'vw'); // desliza al entrar y queda recto al llegar
     }
   }
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
