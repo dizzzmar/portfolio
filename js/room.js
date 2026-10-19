@@ -265,7 +265,7 @@ function openItem(item) {
 
 const sleeves = [];  // materials of the displayed vinyl sleeve, whose glow follows the lamp
 let lampLevel = 1;   // 0 = lamp off, 1 = fully lit
-new GLTFLoader().load('/assets/room/shelf.glb?v=20261019', gltf => {
+new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
   const model = gltf.scene;
   scene.add(model);
   model.updateMatrixWorld(true); // world positions are needed below to place the lamp light
