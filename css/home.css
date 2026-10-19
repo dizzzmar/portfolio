@@ -31,6 +31,12 @@ body::before {
   pointer-events: none;
 }
 
+/* Del cielo al negro: con JavaScript, el negro llega con la disolución en píxeles (lienzo .dissolve, js/home-intro.js) y esta capa
+   solo entra del todo al final (work-solid). Sin JavaScript o con "reducir movimiento" sigue el fundido de siempre. */
+.dissolve { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+.dissolve-on body::before { opacity: 0; }
+.dissolve-on body.work-solid::before { opacity: 1; }
+
 /* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes */
 .sky {
   position: fixed;
