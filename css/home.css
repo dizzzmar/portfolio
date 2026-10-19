@@ -483,6 +483,7 @@ body {
 .work-item a { display: block; color: inherit; text-decoration: none; }
 .work-media { overflow: hidden; background: rgba(255, 255, 255, 0.12); }
 .work-media img, .work-media video { display: block; width: 100%; height: auto; transition: transform 0.8s cubic-bezier(.2, .8, .2, 1); }
+.work-media.work-ph { overflow: hidden; }
 .work-item a:hover .work-media img, .work-item a:hover .work-media video { transform: scale(1.04); }
 .work-cap {
   display: flex;
@@ -526,6 +527,17 @@ body {
   .work-item:nth-child(even) { --x: 30% !important; --w: 70% !important; }
   .work-item { margin-top: 0 !important; }
 }
+/* Work: movimiento al hacer scroll (js/home-intro.js pone la clase work-motion y las variables --dy / --iy) */
+.work-motion .work-item { translate: 0 var(--dy, 0px); }
+.work-motion .work-media { position: relative; }
+.work-motion .work-media img, .work-motion .work-media video { transform: translate3d(0, var(--iy, 0%), 0) scale(1.14); }
+.work-motion .work-item a:hover .work-media img, .work-motion .work-item a:hover .work-media video { transform: translate3d(0, var(--iy, 0%), 0) scale(1.2); }
+/* Entrada: la imagen se destapa de abajo arriba y el pie sube y aparece, un instante después */
+.work-motion .work-item:not(.is-in) .work-media { clip-path: inset(100% 0 0 0); }
+.work-motion .work-item .work-media { clip-path: inset(0); transition: clip-path 1.2s cubic-bezier(.2, .8, .2, 1); }
+.work-motion .work-item:not(.is-in) .work-cap { opacity: 0; transform: translateY(12px); }
+.work-motion .work-item .work-cap { transition: opacity .7s .35s, transform .7s .35s cubic-bezier(.2, .8, .2, 1); }
+
 @media (prefers-reduced-motion: reduce) {
   .intro-line { transition: none; transform: none; }
 }
