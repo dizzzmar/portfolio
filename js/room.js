@@ -93,7 +93,7 @@ const destinations = [
   { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, poster: lastWatched, href: null },
   // The camera frames just the tomato, not the cord that runs down to the floor
   { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, focus: /^lamp (tomato diffuser|green calyx)\b/, href: null },
-  { label: 'Plant', key: 'plant', match: /^plants (eucalyptus|fluted vase)\b/, href: null },
+  { label: 'Plant', key: 'plant', match: /^(plants (eucalyptus|fluted vase)\b|plant1 fbx$)/, href: null },
 ];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
@@ -265,7 +265,7 @@ function openItem(item) {
 
 const sleeves = [];  // materials of the displayed vinyl sleeve, whose glow follows the lamp
 let lampLevel = 1;   // 0 = lamp off, 1 = fully lit
-new GLTFLoader().load('/assets/room/shelf.glb', gltf => {
+new GLTFLoader().load('/assets/room/shelf.glb?v=20261019', gltf => {
   const model = gltf.scene;
   scene.add(model);
   model.updateMatrixWorld(true); // world positions are needed below to place the lamp light
