@@ -1,13 +1,14 @@
 /* PÁGINAS DE PROYECTO (estilo cipher.tv/works/the-circle) — compartido por todo /project/*.
-   Fondo: el cielo de la portada, emborronado, con el grano nítido encima. Orden: colores y base · barra · portada a toda pantalla con el número y el
+   Fondo: el cielo de la portada emborronado y mezclado con crema, con el grano nítido encima. Orden: colores y base · barra · portada a toda pantalla con el número y el
    título a los lados · texto "About" · imagen grande · galería en parejas descompensadas ·
    siguiente proyecto · móvil · movimiento. */
 
 :root {
-  --bg: #4f8fd8;        /* azul de reserva mientras carga el cielo */
-  --ink: #fff;
-  --soft: rgba(255, 255, 255, .72);
-  --panel: rgba(255, 255, 255, .14);  /* hueco de las imágenes mientras cargan */
+  --bg: #dfe6ea;        /* color de reserva mientras carga el cielo */
+  --ink: #141414;
+  --soft: rgba(20, 20, 20, .55);
+  --panel: rgba(255, 255, 255, .3);  /* hueco de las imágenes mientras cargan */
+  --veil: rgba(241, 238, 230, .74);  /* el crema que se mezcla con el cielo: más alto = más claro */
   --edge: clamp(16px, 2.8vw, 40px);
   --nav-h: 64px;
 }
@@ -24,7 +25,7 @@ body {
 a { color: inherit; }
 img, video { display: block; width: 100%; height: auto; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
-::selection { background: var(--ink); color: #175cff; }
+::selection { background: var(--ink); color: #f1eee6; }
 
 /* Cielo emborronado (la misma foto de la portada) y el grano en su propia capa, nítido */
 .case-sky {
@@ -34,19 +35,21 @@ img, video { display: block; width: 100%; height: auto; }
   background: url("/assets/images/sky.webp") center / cover, linear-gradient(to bottom, #4f8fd8, #8cc0ef 55%, #d8ecfb);
   filter: blur(14px);
 }
+/* Velo crema encima del cielo: lo aclara y lo acerca al fondo crema */
+.case-sky::after { content: ""; position: absolute; inset: 0; background: var(--veil); }
 .case-grain {
   position: fixed;
   inset: 0;
   z-index: -1;
   background: url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat;
   mix-blend-mode: overlay;
+  opacity: .7; /* sobre el fondo claro el grano se nota más: un poco más suave */
   pointer-events: none;
 }
-/* Una sombra muy suave para que el texto blanco se lea igual sobre las nubes */
-.case-about, .case-next, .case-foot { text-shadow: 0 1px 12px rgba(0, 20, 40, .22); }
+
 
 /* ---------- Barra (enlaces a la derecha) ----------
-   En blanco, con una sombra suave para leerse sobre el cielo y sobre las imágenes */
+   Se invierte de color para leerse sobre el fondo claro y sobre las imágenes */
 .case-nav {
   position: fixed;
   inset: 0 0 auto;
@@ -57,7 +60,7 @@ img, video { display: block; width: 100%; height: auto; }
   justify-content: flex-end;
   padding: 0 var(--edge);
   color: #fff;
-  text-shadow: 0 1px 10px rgba(0, 20, 40, .35); /* blanco sobre el cielo y sobre las imágenes */
+  mix-blend-mode: difference; /* se invierte: claro sobre las imágenes oscuras, oscuro sobre el fondo claro */
   pointer-events: none;
 }
 .case-nav ul { pointer-events: auto; }
@@ -76,7 +79,7 @@ img, video { display: block; width: 100%; height: auto; }
   gap: 6px;
   height: var(--nav-h);
   color: #fff;
-  text-shadow: 0 1px 10px rgba(0, 20, 40, .35); /* blanco sobre el cielo y sobre las imágenes */
+  mix-blend-mode: difference; /* se invierte: claro sobre las imágenes oscuras, oscuro sobre el fondo claro */
   font-size: 12px;
   font-weight: 500;
   letter-spacing: .04em;
@@ -96,7 +99,7 @@ img, video { display: block; width: 100%; height: auto; }
   top: 50%;
   z-index: 19;
   color: #fff;
-  text-shadow: 0 1px 10px rgba(0, 20, 40, .35); /* blanco sobre el cielo y sobre las imágenes */
+  mix-blend-mode: difference; /* se invierte: claro sobre las imágenes oscuras, oscuro sobre el fondo claro */
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .04em;
