@@ -12,22 +12,22 @@ html:has(body.intro-lock), body.intro-lock { height: 100%; overflow: hidden; ove
 html.smooth-scroll { scroll-behavior: smooth; }
 
 body {
-  --cream-progress: 0;
+  --light-progress: 0;
   overflow-x: clip; /* que nada ensanche la página más allá de la pantalla */
   color: #fff;
   font-family: "Helvetica Neue", Arial, sans-serif;
   background-color: #8cc0ef;
 }
 
-/* Al dejar atrás la portada, una capa crema tapa el cielo poco a poco. Se queda fija para que
-   todos los proyectos se acumulen sobre el mismo fondo limpio. --cream-progress lo mueve JS. */
+/* Al dejar atrás la portada, una capa blanca tapa el cielo poco a poco. Se queda fija para que
+   todos los proyectos se acumulen sobre el mismo fondo limpio. --light-progress lo mueve JS. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: #f4f0e8;
-  opacity: var(--cream-progress);
+  background: #fff;
+  opacity: var(--light-progress);
   pointer-events: none;
 }
 
@@ -121,10 +121,10 @@ body::before {
 .nav-links a:hover,
 .nav-links a[aria-current="true"] { color: #fff; }
 
-/* Al entrar en el fondo crema, toda la barra cambia a tinta oscura. */
-.cream-on .nav-links a { color: rgba(32, 32, 29, .62); text-shadow: none; }
-.cream-on .nav-links a:hover,
-.cream-on .nav-links a[aria-current="true"] { color: #20201d; }
+/* Al entrar en el fondo blanco, toda la barra cambia a tinta oscura. */
+.light-on .nav-links a { color: rgba(32, 32, 29, .62); text-shadow: none; }
+.light-on .nav-links a:hover,
+.light-on .nav-links a[aria-current="true"] { color: #20201d; }
 
 /* Un enlace que pasa por encima de una card clara se oscurece */
 .nav-links a.on-light { color: rgba(17, 17, 17, 0.6); text-shadow: none; }
@@ -486,10 +486,11 @@ body::before {
   text-shadow: 0 2px 30px rgba(0, 20, 40, 0.25);
   opacity: 0;
   transform: translateY(16px);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2, .8, .2, 1);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2, .8, .2, 1), color .45s ease, text-shadow .45s ease;
   pointer-events: none;
 }
 .intro-on .intro-line { opacity: 1; transform: none; }
+.light-on .intro-line { color: #111; text-shadow: none; }
 .intro-word { font-variant-ligatures: none; }
 .intro-line .ch { display: inline-block; }
 

@@ -1,12 +1,12 @@
 /* PÁGINAS DE PROYECTO (estilo cipher.tv/works/the-circle) — compartido por todo /project/*.
-   Fondo: crema suave, continuación del fondo de la lista de trabajos.
+   Fondo: blanco, continuación del fondo de la lista de trabajos.
    Orden: colores y base · barra · portada con márgenes · texto "About" con el número y el título a los lados · imagen grande ·
    galería en parejas descompensadas · siguiente proyecto · móvil · movimiento.
    El párrafo en Georgia va casi sin espaciado (.005em, como la referencia); los textos pequeños, algo abiertos
    (.05em–.08em); el título enorme de "Next project" queda apretado. */
 
 :root {
-  --bg: #f4f0e8;
+  --bg: #fff;
   --ink: #141414;
   --soft: rgba(20, 20, 20, .55);
   --panel: rgba(255, 255, 255, .3);  /* hueco de las imágenes mientras cargan */
@@ -28,7 +28,7 @@ img, video { display: block; width: 100%; height: auto; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 ::selection { background: var(--ink); color: #f1eee6; }
 
-/* Las capas se conservan en el HTML para no romper páginas antiguas, pero ahora forman un fondo crema limpio. */
+/* Las capas se conservan en el HTML para no romper páginas antiguas, pero ahora forman un fondo blanco limpio. */
 .case-sky {
   position: fixed;
   inset: 0;

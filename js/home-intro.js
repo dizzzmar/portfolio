@@ -150,15 +150,13 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   const update = () => {
     queued = false;
     const p = Math.min(1, Math.max(0, scrollY / innerHeight));
-    const cream = Math.min(1, Math.max(0, (p - 0.32) / 0.58));
-    const easedCream = cream * cream * (3 - 2 * cream);
-    document.body.style.setProperty('--cream-progress', easedCream.toFixed(3));
-    document.body.classList.toggle('cream-on', cream > 0.55);
-    if (!still) line.style.setProperty('--blur', (p * 10).toFixed(1) + 'px');
+    const light = Math.min(1, Math.max(0, (p - 0.32) / 0.58));
+    const easedLight = light * light * (3 - 2 * light);
+    document.body.style.setProperty('--light-progress', easedLight.toFixed(3));
+    document.body.classList.toggle('light-on', light > 0.55);
+    if (!still) line.style.setProperty('--blur', (p * 10 * (1 - easedLight)).toFixed(1) + 'px');
     document.body.classList.toggle('sky-soft', scrollY > innerHeight * 0.3);
-    line.style.opacity = document.body.classList.contains('intro-on')
-      ? String((1 - p * 0.35) * (1 - easedCream))
-      : '';
+    line.style.opacity = document.body.classList.contains('intro-on') ? String(1 - p * 0.35) : '';
   };
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
   addEventListener('resize', update);
