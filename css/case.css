@@ -36,13 +36,7 @@ img, video { display: block; width: 100%; height: auto; }
   background: var(--bg);
 }
 .case-grain {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat;
-  mix-blend-mode: multiply;
-  opacity: .08;
-  pointer-events: none;
+  display: none;
 }
 
 

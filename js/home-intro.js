@@ -154,7 +154,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     const easedLight = light * light * (3 - 2 * light);
     document.body.style.setProperty('--light-progress', easedLight.toFixed(3));
     document.body.classList.toggle('light-on', light > 0.55);
-    if (!still) line.style.setProperty('--blur', (p * 10 * (1 - easedLight)).toFixed(1) + 'px');
+    if (!still) line.style.setProperty('--blur', (p * 10).toFixed(1) + 'px');
     document.body.classList.toggle('sky-soft', scrollY > innerHeight * 0.3);
     line.style.opacity = document.body.classList.contains('intro-on') ? String(1 - p * 0.35) : '';
   };
