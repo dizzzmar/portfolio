@@ -14,7 +14,7 @@ robots.txt · sitemap.xml · llms.txt   Para buscadores y agentes de IA
 CLAUDE.md                  Reglas para Claude (seguridad: nunca publicar claves; avisar antes de acciones con riesgo)
 .github/workflows/secret-scan.yml  Comprueba en cada cambio que no se suba ninguna clave (gitleaks)
 
-project/                   Una carpeta por proyecto  →  www.dizmar.xyz/project/<nombre>/
+project/                   Una carpeta por proyecto  →  www.dizmar.xyz/project/<nombre>/  (estilos: css/case.css, como cipher.tv)
   lexus-electrified/index.html
   soap-and-glory-vanilla/index.html
 

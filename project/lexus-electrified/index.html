@@ -1,8 +1,7 @@
 <!doctype html>
 <!--
   PROYECTO: Lexus — Electrified  ·  www.dizmar.xyz/project/lexus-electrified/
-  La card de la home enlaza aquí (index.html, "Proyecto 1").
-  Para crear otro proyecto copia templates/project-template (ahí están explicados todos los pasos).
+  Diseño como cipher.tv/works/the-circle, sobre crema. Estilos comunes en /css/case.css.
 -->
 <html lang="en">
 <head>
@@ -20,55 +19,71 @@
 <meta property="og:url" content="https://www.dizmar.xyz/project/lexus-electrified/">
 <meta property="og:image" content="https://www.dizmar.xyz/assets/projects/lexus-electrified/thumb.webp">
 <meta name="twitter:card" content="summary_large_image">
-
-
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-<link rel="stylesheet" href="/css/project.css?v=20261017b">
-<!-- Descarga la home por adelantado para que al volver la animación de cierre llegue a tiempo -->
-<script type="speculationrules">{ "prefetch": [{ "urls": ["/"] }] }</script>
+<link rel="stylesheet" href="/css/case.css?v=20261019b">
+<script>document.documentElement.classList.add('js')</script>
 </head>
-<body>
+<body id="top">
+<!-- Barra: el tomate vuelve a la portada; los enlaces, como en el resto de la web -->
+<a class="case-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" width="44" height="47" alt=""></a>
+<nav class="case-nav" aria-label="Main">
+  <ul>
+    <li><a href="/#work">Work</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/contact">Contact</a></li>
+    <li><a href="/room.html">Room</a></li>
+  </ul>
+</nav>
 
-<!-- Flecha "← Back" de arriba a la izquierda. EDITA: cambia ID-DE-LA-CARD por el id de la card en la home
-     (por ejemplo /#soap-and-glory) para que al cerrar vuelva justo a esa card. -->
-<a class="back-link" href="/#first-project" aria-label="Back to all projects"><span aria-hidden="true">←</span> Back</a>
+<p class="case-side left" aria-hidden="true">01</p>
+<p class="case-side right" aria-hidden="true">Lexus Electrified</p>
 
-<main class="project-page" id="top">
+<main>
+  <!-- 1. Portada: el vídeo en bucle a toda pantalla -->
+  <header class="case-hero">
+    <h1 class="sr-only">Lexus — Electrified</h1>
+    <video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video>
+  </header>
 
-<!-- ======================= 1. VÍDEO PRINCIPAL =======================
-     Vídeo corto en bucle y sin sonido (el mismo de la card de la home).
-     Para cambiarlo, sustituye los archivos de /assets/projects/lexus-electrified/ -->
-<figure style="view-transition-name: lexus-electrified"><video class="project-image" src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video></figure>
+  <!-- 2. Texto y ficha. EDITA: el texto del proyecto -->
+  <section class="case-about">
+    <div class="case-text" data-reveal>
+      <p class="case-label">About</p>
+      <p>Lexus Electrified.</p>
+      <p>Project text coming soon.</p> <!-- EDITA -->
+      <a class="case-link" href="#film">Watch the film</a>
+    </div>
+    <dl class="case-facts" data-reveal>
+      <dt>Client</dt><dd>Lexus</dd>
+      <dt>Project</dt><dd>Electrified</dd>
+      <dt>Discipline</dt><dd>Audiovisual</dd>
+      <dt>Year</dt><dd>2025</dd>
+    </dl>
+  </section>
 
-<!-- ======================= 2. CABECERA Y TEXTO ======================= -->
-<header class="project-intro">
-<p class="project-brand">Lexus</p>                         <!-- EDITA: la marca / cliente (serif pequeño) -->
-<h1>Electrified</h1>                               <!-- EDITA: nombre del proyecto (sans grande) -->
-<ul class="project-tags" aria-label="Project type">
-<li>Audiovisual</li>                                  <!-- EDITA: etiqueta (Audiovisual, Key visuals…). Copia la línea para añadir más -->
-<li class="project-year">2025</li>                         <!-- EDITA: año (o borra esta línea) -->
-</ul>
-<!-- EDITA: escribe aquí el texto del proyecto y quita las marcas de comentario:
-<p class="project-description">Texto del proyecto.</p>
--->
-</header>
+  <!-- 3. La película (post de Instagram incrustado: Instagram añade su cabecera y su pie, no se pueden quitar) -->
+  <section class="case-embed" id="film" aria-label="Lexus Electrified film" data-reveal>
+    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DUk54nFkTu_/" data-instgrm-version="14">
+      <a href="https://www.instagram.com/p/DUk54nFkTu_/">Watch Lexus Electrified on Instagram</a>
+    </blockquote>
+  </section>
 
-<!-- ======================= 3. PELÍCULA (Instagram) =======================
-     Post de Instagram incrustado. Instagram añade su propia cabecera, pie y enlaces, y no se pueden quitar.
-     Para cambiarlo, sustituye la URL en data-instgrm-permalink y en el enlace de dentro. -->
-<section class="project-embed" aria-label="Lexus Electrified film">
-<blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DUk54nFkTu_/" data-instgrm-version="14">
-<a href="https://www.instagram.com/p/DUk54nFkTu_/">Watch Lexus Electrified on Instagram</a>
-</blockquote>
-</section>
+  <!-- 4. Créditos. EDITA: añade más con <div><dt>Puesto</dt><dd>Nombre</dd></div> -->
+  <section class="case-credits" aria-label="Credits">
+    <p class="case-label">Credits</p>
+    <dl data-reveal>
+      <div><dt>Client</dt><dd>Lexus</dd></div>
+      <div><dt>Art direction</dt><dd>Mario Diz</dd></div>
+    </dl>
+  </section>
 
-<!-- ======================= 4. ENLACES DEL FINAL ======================= -->
-<nav class="project-end" aria-label="Project navigation"><a href="/#first-project">← All projects</a><a href="#top">Back to top ↑</a></nav>
+  <!-- 5. Siguiente proyecto -->
+  <a class="case-next" href="/project/soap-and-glory-vanilla/"><span>Next project</span><strong>Soap &amp; Glory Vanillalicious</strong></a>
 </main>
-
-<footer class="site-footer">Mario Diz, Madrid</footer>
+<footer class="case-foot"><span>Mario Diz, Madrid</span><a href="#top">Back to top ↑</a></footer>
 
 <!-- Script oficial de Instagram: convierte el bloque de arriba en el reproductor -->
 <script async src="https://www.instagram.com/embed.js"></script>
+<script src="/js/case.js?v=20261019b" defer></script>
 </body>
 </html>
