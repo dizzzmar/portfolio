@@ -167,9 +167,13 @@ img, video { display: block; width: 100%; height: auto; }
 .case-wide > * { overflow: hidden; background: var(--panel); }
 .case-wide.vertical { display: flex; justify-content: center; }
 .case-wide.vertical > * { width: min(420px, 100%); }
+/* Vídeo horizontal (Lexus): ancho medio, centrado */
+.case-wide.vertical.case-landscape > * { width: min(720px, 100%); }
+/* La foto grande no pasa de un ancho medio, centrada, para que no abrume (Soap & Glory) */
+.case-wide:not(.vertical) > figure { width: min(760px, 100%); margin: 0 auto; }
 .case-wide video[controls] { background: #000; }
 /* El post de Instagram (Lexus) va centrado en la columna */
-.case-embed { display: flex; justify-content: center; padding: 0 var(--edge); }
+.case-embed { display: flex; justify-content: center; padding: clamp(60px, 8vw, 110px) var(--edge) 0; }
 .case-embed .instagram-media { width: min(540px, 100%) !important; min-width: 0 !important; margin: 0 !important; }
 .case-embed blockquote.instagram-media { padding: 24px; background: var(--panel); text-align: center; font-size: 13px; }
 
@@ -185,15 +189,16 @@ img, video { display: block; width: 100%; height: auto; }
   justify-items: start;
   gap: 2px;
   color: #fff;
+  color: #fff !important;
   font-family: Georgia, "Times New Roman", serif !important;
   font-size: 15px !important;
   text-transform: uppercase;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, .35);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .7), 0 0 18px rgba(0, 0, 0, .55);
   transform: translate(-50%, -50%);
   opacity: 0;
   transition: opacity .25s;
 }
-.player-time { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 10px; letter-spacing: .06em; opacity: .85; }
+.player-time { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .06em; opacity: .85; }
 .player-bar {
   position: absolute;
   inset: auto 0 0;
@@ -205,7 +210,7 @@ img, video { display: block; width: 100%; height: auto; }
   font-size: 10px;
   letter-spacing: .08em;
   text-transform: uppercase;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, .35);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .7), 0 0 14px rgba(0, 0, 0, .5);
 }
 .player-bar button { padding: 6px 0; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
 .player-bar button:hover { opacity: 1; }
@@ -220,7 +225,7 @@ img, video { display: block; width: 100%; height: auto; }
 @media (hover: none) { .player-toggle { opacity: 1; } }
 
 /* ---------- 4. Galería: parejas descompensadas, una grande y una pequeña ---------- */
-.case-gallery { display: grid; gap: clamp(80px, 10vw, 140px); padding: clamp(80px, 10vw, 140px) var(--edge) 0; }
+.case-gallery { max-width: 1040px; margin-inline: auto; display: grid; gap: clamp(80px, 10vw, 140px); padding: clamp(80px, 10vw, 140px) var(--edge) 0; }
 .case-pair { display: grid; grid-template-columns: 60fr 7fr 28fr; align-items: start; }
 .case-pair > :first-child { grid-column: 1; }
 .case-pair > :last-child { grid-column: 3; }
