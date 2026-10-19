@@ -1,14 +1,16 @@
 // HOME · texto "Creative ___" del centro de la pantalla.
 // Cuando el tomate termina de subir al menú (aviso "tomato-docked" de js/home-tomato.js) aparece el texto,
-// la segunda palabra cambia muy rápido durante un momento, se queda en "Designer" y vuelve a empezar.
+// la segunda palabra va cambiando: cada cambio se descifra rápido y la palabra se queda quieta un instante para poder leerla;
+// al final se para en "Designer" y vuelve a empezar.
 // A partir de ahí ya se puede hacer scroll hasta los proyectos.
 // Cada cambio de palabra se "descifra" desde el centro hacia fuera (letras al azar que se van fijando), y al pasar
 // el ratón por encima las letras salen disparadas y vuelven con un pequeño rebote. Código propio, sin librerías.
 // EDITA aquí las palabras (la primera es en la que se para):
 const WORDS = ['Designer', 'Director', 'Coder', 'Enthusiast', 'Thinker', 'Technologist', 'Maximalist', 'Storyteller', 'Retoucher', '3D Artist', 'Mind', 'Nerd'];
-const SPEED = 150;     // milisegundos que se ve cada palabra mientras pasan (cada una se descifra en ese tiempo)
-const BURST = 2600;    // cuánto dura cada ráfaga de palabras
-const HOLD = 2800;     // cuánto se queda en "Designer" antes de la siguiente ráfaga
+const SCRAMBLE = 320;  // milisegundos que tarda cada palabra en descifrarse al aparecer
+const SPEED = 950;     // milisegundos entre una palabra y la siguiente: tras descifrarse, la palabra se queda quieta (se lee) el resto
+const BURST = 6000;    // cuánto dura cada ronda de palabras
+const HOLD = 3200;     // cuánto se queda en "Designer" antes de la siguiente ronda
 
 (() => {
   const word = document.querySelector('.intro-word');
@@ -32,7 +34,7 @@ const HOLD = 2800;     // cuánto se queda en "Designer" antes de la siguiente r
   // ---- Descifrar desde el centro: las letras del medio se fijan primero y el resto detrás ----
   const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
   let scrambleRaf = 0;
-  function setWord(text, ms = SPEED * 0.85) {
+  function setWord(text, ms = SCRAMBLE) {
     cancelAnimationFrame(scrambleRaf);
     if (reduced) { split(word, text); return; }
     split(word, text);
@@ -75,12 +77,12 @@ const HOLD = 2800;     // cuánto se queda en "Designer" antes de la siguiente r
 
   function burst() {
     clearTimeout(timer);
-    if (!visible || reduced) { setWord(WORDS[0], 700); return; }
+    if (!visible || reduced) { setWord(WORDS[0], 450); return; }
     const end = performance.now() + BURST;
     let i = 1;
     const tick = () => {
       if (performance.now() >= end) {
-        setWord(WORDS[0], 700);
+        setWord(WORDS[0], 450);
         timer = setTimeout(burst, HOLD);
         return;
       }
