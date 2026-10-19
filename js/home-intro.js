@@ -53,15 +53,17 @@ const HOLD = 2800;     // cuánto se queda en "Designer" antes de la siguiente r
   if (reduced) document.querySelectorAll('.work-media video').forEach((v) => { v.autoplay = false; v.pause(); });
 })();
 
-// ---------- "Creative ___" se desenfoca al bajar (los proyectos pasan por encima) ----------
+// ---------- Al bajar, "Creative ___" y el cielo se desenfocan (los proyectos pasan por encima) ----------
 (() => {
   const line = document.querySelector('.intro-line');
-  if (!line || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!line) return;
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let queued = false;
   const update = () => {
     queued = false;
     const p = Math.min(1, Math.max(0, scrollY / innerHeight));
-    line.style.setProperty('--blur', (p * 10).toFixed(1) + 'px');
+    if (!still) line.style.setProperty('--blur', (p * 10).toFixed(1) + 'px');
+    document.body.classList.toggle('sky-soft', scrollY > innerHeight * 0.3);
     line.style.opacity = document.body.classList.contains('intro-on') ? String(1 - p * 0.35) : '';
   };
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });

@@ -23,15 +23,26 @@ body {
   position: fixed;
   inset: -8%;
   z-index: -1;
-  /* El grano de película va aquí mismo, mezclado con la foto (antes era una capa aparte que
-     obligaba a recalcular la mezcla de toda la pantalla en cada frame de scroll) */
+  /* El grano va en .grain, una capa aparte, para que no se emborrone con el cielo */
   background:
-    url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat,
     url("/assets/images/sky.webp") center / cover,
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
-  background-blend-mode: overlay, normal, normal;
+  transition: filter 0.8s ease;
   animation: drift 40s ease-in-out infinite alternate;
   will-change: transform;
+}
+
+/* Al bajar a los proyectos el cielo se emborrona un poco (clase sky-soft, la pone js/home-intro.js) */
+.sky-soft .sky { filter: blur(10px); }
+
+/* El grano va en su propia capa, encima del cielo, para que siga nítido aunque el cielo se emborrone */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat;
+  mix-blend-mode: overlay;
+  pointer-events: none;
 }
 
 @keyframes drift {
