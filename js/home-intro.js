@@ -11,6 +11,17 @@ const SCRAMBLE = 480;  // milisegundos que tarda cada palabra en descifrarse al 
 const SPEED = 950;     // milisegundos entre una palabra y la siguiente: tras descifrarse, la palabra se queda quieta (se lee) el resto
 const BURST = 6000;    // cuánto dura cada ronda de palabras
 const HOLD = 3200;     // cuánto se queda en "Designer" antes de la siguiente ronda
+// Cada palabra nueva cambia de tipografía (la anterior no se repite). Las fuentes están en /assets/fonts (licencia SIL OFL)
+const FONTS = [
+  { family: '"Jacquard 12"', weight: 400 },
+  { family: '"Jacquard 24"', weight: 400 },
+  { family: '"Rubik Glitch"', weight: 400 },
+  { family: '"Rubik Wet Paint"', weight: 400 },
+  { family: '"Rubik Distressed"', weight: 400 },
+  { family: '"Rubik Moonrocks"', weight: 400 },
+  { family: '"Bungee Shade"', weight: 400, size: 0.8 }, // es muy ancha: con "Technologist" se saldría del móvil
+  { family: '"Helvetica Neue", Arial, sans-serif', weight: 700 },
+];
 
 // Volver con Atrás (desde un proyecto): el navegador lo marca como "back_forward". La portada vuelve entonces
 // a la posición donde estaba al salir (guardada en sessionStorage) y sin la entrada del tomate.
@@ -49,9 +60,21 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   // ---- Mezclar la palabra actual antes de revelar la siguiente ----
   const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
   let scrambleRaf = 0;
+
+  // ---- Tipografía nueva para cada palabra: se cambia justo cuando aparece la palabra nueva ----
+  let lastFont = -1;
+  function setFont() {
+    let i;
+    do { i = (Math.random() * FONTS.length) | 0; } while (i === lastFont);
+    lastFont = i;
+    word.style.fontFamily = FONTS[i].family;
+    word.style.fontWeight = FONTS[i].weight;
+    word.style.fontSize = (FONTS[i].size ?? 1) + 'em';
+  }
+
   function setWord(text, ms = SCRAMBLE) {
     cancelAnimationFrame(scrambleRaf);
-    if (reduced) { split(word, text); return; }
+    if (reduced) { split(word, text); setFont(); return; }
     const previous = word.textContent.replaceAll(NBSP, ' ');
     if (previous === text) { split(word, text); return; }
     const start = performance.now();
@@ -61,11 +84,12 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     if (!chars.length) { split(word, previous); chars = [...word.children]; }
     const step = (now) => {
       const elapsed = now - start;
-      if (elapsed >= ms) { split(word, text); return; }
+      if (elapsed >= ms) { if (!revealing) setFont(); split(word, text); return; }
       // Limitar el ruido a 25 fps mantiene las letras legibles entre cambios.
       if (now - lastFrame >= 40) {
         lastFrame = now;
         if (elapsed >= mixDuration && !revealing) {
+          setFont();
           split(word, text);
           chars = [...word.children];
           revealing = true;
