@@ -1,16 +1,15 @@
 /* PÁGINAS DE PROYECTO (estilo cipher.tv/works/the-circle) — compartido por todo /project/*.
-   Fondo: el cielo de la portada emborronado y mezclado con crema, con el grano nítido encima.
+   Fondo: crema suave, continuación del fondo de la lista de trabajos.
    Orden: colores y base · barra · portada con márgenes · texto "About" con el número y el título a los lados · imagen grande ·
    galería en parejas descompensadas · siguiente proyecto · móvil · movimiento.
    El párrafo en Georgia va casi sin espaciado (.005em, como la referencia); los textos pequeños, algo abiertos
    (.05em–.08em); el título enorme de "Next project" queda apretado. */
 
 :root {
-  --bg: #dfe6ea;        /* color de reserva mientras carga el cielo */
+  --bg: #f4f0e8;
   --ink: #141414;
   --soft: rgba(20, 20, 20, .55);
   --panel: rgba(255, 255, 255, .3);  /* hueco de las imágenes mientras cargan */
-  --veil: rgba(241, 238, 230, .4);  /* el crema que se mezcla con el cielo: más alto = más claro */
   --edge: clamp(16px, 2.8vw, 40px);
   --nav-h: 64px;
 }
@@ -29,23 +28,20 @@ img, video { display: block; width: 100%; height: auto; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 ::selection { background: var(--ink); color: #f1eee6; }
 
-/* Cielo emborronado (la misma foto de la portada) y el grano en su propia capa, nítido */
+/* Las capas se conservan en el HTML para no romper páginas antiguas, pero ahora forman un fondo crema limpio. */
 .case-sky {
   position: fixed;
-  inset: -20%;            /* más grande que la pantalla: el desenfoque fuerte no deja bordes */
+  inset: 0;
   z-index: -2;
-  background: url("/assets/images/sky.webp") center / cover, linear-gradient(to bottom, #4f8fd8, #8cc0ef 55%, #d8ecfb);
-  filter: blur(60px) saturate(1.5) contrast(1.35); /* muy desenfocado y con más contraste: manchas de color abstractas */
+  background: var(--bg);
 }
-/* Velo crema encima del cielo: lo aclara y lo acerca al fondo crema */
-.case-sky::after { content: ""; position: absolute; inset: 0; background: var(--veil); }
 .case-grain {
   position: fixed;
   inset: 0;
   z-index: -1;
   background: url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat;
-  mix-blend-mode: overlay;
-  opacity: .7; /* sobre el fondo claro el grano se nota más: un poco más suave */
+  mix-blend-mode: multiply;
+  opacity: .08;
   pointer-events: none;
 }
 

@@ -12,10 +12,23 @@ html:has(body.intro-lock), body.intro-lock { height: 100%; overflow: hidden; ove
 html.smooth-scroll { scroll-behavior: smooth; }
 
 body {
+  --cream-progress: 0;
   overflow-x: clip; /* que nada ensanche la página más allá de la pantalla */
   color: #fff;
   font-family: "Helvetica Neue", Arial, sans-serif;
   background-color: #8cc0ef;
+}
+
+/* Al dejar atrás la portada, una capa crema tapa el cielo poco a poco. Se queda fija para que
+   todos los proyectos se acumulen sobre el mismo fondo limpio. --cream-progress lo mueve JS. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: #f4f0e8;
+  opacity: var(--cream-progress);
+  pointer-events: none;
 }
 
 /* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes */
@@ -108,7 +121,12 @@ body {
 .nav-links a:hover,
 .nav-links a[aria-current="true"] { color: #fff; }
 
-/* Un enlace que pasa por encima de una card blanca se oscurece */
+/* Al entrar en el fondo crema, toda la barra cambia a tinta oscura. */
+.cream-on .nav-links a { color: rgba(32, 32, 29, .62); text-shadow: none; }
+.cream-on .nav-links a:hover,
+.cream-on .nav-links a[aria-current="true"] { color: #20201d; }
+
+/* Un enlace que pasa por encima de una card clara se oscurece */
 .nav-links a.on-light { color: rgba(17, 17, 17, 0.6); text-shadow: none; }
 .nav-links a.on-light:hover,
 .nav-links a.on-light[aria-current="true"] { color: #111; }
@@ -478,7 +496,7 @@ body {
 /* ---------- Work (como cipher.tv/works): proyectos sueltos sobre el cielo ----------
    Cada proyecto tiene su sitio y su tamaño (--x, --w, --y en el HTML). Debajo de la imagen, el número
    pequeño a la izquierda y el título en Georgia mayúscula a la derecha, como la marca de las antiguas cards. */
-.work-grid { position: relative; z-index: 5; /* por encima del texto fijo, por debajo de la barra */ padding: 10vh clamp(12px, 2vw, 28px) 0; color: #fff; }
+.work-grid { position: relative; z-index: 5; /* por encima del texto fijo, por debajo de la barra */ padding: 10vh clamp(12px, 2vw, 28px) 0; color: #20201d; }
 .work-grid ol { display: grid; gap: 18vh; list-style: none; }
 .work-item { width: var(--w); margin-left: var(--x); margin-top: var(--y); }
 .work-item a { display: block; color: inherit; text-decoration: none; }
@@ -492,7 +510,6 @@ body {
   align-items: baseline;
   gap: 16px;
   margin-top: 10px;
-  text-shadow: 0 1px 10px rgba(0, 20, 40, 0.3);
 }
 .work-num { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; }
 .work-num::before { content: ""; width: 5px; height: 5px; background: currentColor; }
@@ -505,13 +522,13 @@ body {
   text-transform: uppercase;
 }
 .work-item a:hover .work-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
-.work-item a:focus-visible { outline: 2px solid #fff; outline-offset: 6px; }
+.work-item a:focus-visible { outline: 2px solid #20201d; outline-offset: 6px; }
 .work-foot { padding: 30vh 0 24px; font-size: 13px; }
 /* Proyectos de relleno: un recuadro translúcido sobre el cielo hasta que haya imagen */
 .work-ph {
   display: grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(32, 32, 29, 0.06);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
@@ -541,4 +558,5 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .intro-line { transition: none; transform: none; }
+  body::before { transition: none; }
 }
