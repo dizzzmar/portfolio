@@ -1,6 +1,6 @@
 /* PÁGINAS DE PROYECTO (estilo cipher.tv/works/the-circle) — compartido por todo /project/*.
    Fondo crema suave, sin cielo. Orden: colores y base · barra · portada a toda pantalla con el número y el
-   título a los lados · texto "About" · imagen grande · galería en parejas descompensadas · créditos ·
+   título a los lados · texto "About" · imagen grande · galería en parejas descompensadas ·
    siguiente proyecto · móvil · movimiento. */
 
 :root {
@@ -128,13 +128,7 @@ img, video { display: block; width: 100%; height: auto; }
 .case-pair figure { overflow: hidden; background: #e4e0d6; }
 .case-gallery figcaption { margin-top: 8px; color: var(--soft); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
 
-/* ---------- 5. Créditos ---------- */
-.case-credits { padding: clamp(100px, 12vw, 180px) calc(var(--edge) + 6vw) 0; }
-.case-credits dl { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 28px var(--edge); }
-.case-credits dt { color: var(--soft); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
-.case-credits dd { margin-top: 4px; font-family: Georgia, serif; font-size: 17px; text-transform: uppercase; letter-spacing: -.01em; }
-
-/* ---------- 6. Siguiente proyecto ---------- */
+/* ---------- 5. Siguiente proyecto ---------- */
 .case-next {
   display: block;
   margin-top: clamp(100px, 12vw, 180px);
@@ -163,7 +157,6 @@ img, video { display: block; width: 100%; height: auto; }
   .case-nav a { font-size: 11px; }
   .case-side { display: none; } /* en el móvil taparían el contenido */
   .case-about { grid-template-columns: 1fr; gap: 56px; padding: 72px var(--edge); }
-  .case-credits { padding-left: var(--edge); padding-right: var(--edge); }
   .case-pair, .case-pair.flip { grid-template-columns: 1fr; gap: 16px; }
   .case-pair > :first-child, .case-pair > :last-child, .case-pair.flip > :first-child, .case-pair.flip > :last-child { grid-column: 1; }
   .case-pair > :last-child { width: 62%; justify-self: end; }
