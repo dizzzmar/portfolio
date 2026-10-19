@@ -19,23 +19,13 @@ body {
   background-color: #8cc0ef;
 }
 
-/* Al dejar atrás la portada, una capa casi negra tapa el cielo poco a poco (como un atardecer). Se queda fija para que
-   todos los proyectos se acumulen sobre el mismo fondo limpio. --light-progress lo mueve JS. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  background: #0c0c0b;
-  opacity: var(--light-progress);
-  pointer-events: none;
-}
-
-/* Del cielo al negro: con JavaScript, el negro llega con la disolución en píxeles (lienzo .dissolve, js/home-intro.js) y esta capa
-   solo entra del todo al final (work-solid). Sin JavaScript o con "reducir movimiento" sigue el fundido de siempre. */
-.dissolve { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-.dissolve-on body::before { opacity: 0; }
-.dissolve-on body.work-solid::before { opacity: 1; }
+/* Del cielo al negro: al bajar, el cielo se "revela" en negativo y después se apaga hasta el negro del fondo. Son dos capas fijas que
+   mueve js/home-intro.js: una blanca con "difference", que invierte los colores de lo que hay debajo (el azul pasa a naranja oscuro y
+   las nubes a negro; --invert la mezcla de 0 a 1), y encima otra de tinta casi negra (--dark). Se quedan fijas para que todos los
+   proyectos se acumulen sobre el mismo fondo limpio. */
+body::before, body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+body::before { background: #fff; mix-blend-mode: difference; opacity: var(--invert, 0); }
+body::after { background: #0c0c0b; opacity: var(--dark, 0); }
 
 /* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes */
 .sky {
@@ -528,12 +518,11 @@ body::before {
 }
 .work-top p > strong { display: block; font-weight: inherit; }
 .work-top p > span { display: block; color: rgba(255, 255, 255, .6); }
-.work-top p:nth-child(2) > strong { color: #f04a30; white-space: nowrap; }
+.work-top .wt-creative > strong { color: #f04a30; white-space: nowrap; } /* el rojo va por clase, no por el orden de los bloques */
 .wb-word { display: inline; font-variant-ligatures: none; }
 .wb-word .ch { display: inline-block; }
 @media (max-width: 1000px) {
   .work-top { grid-template-columns: 1fr 1fr; }
-  .work-top p:nth-child(3) { display: none; }
 }
 
 .work-list { margin-top: clamp(24px, 4vw, 64px); list-style: none; border-bottom: 1px solid rgba(255, 255, 255, .18); }
@@ -634,7 +623,7 @@ body::before {
 @media (max-width: 760px) {
   /* La barra fija ocupa también el hueco de la barra de enlaces (así los proyectos no pasan por detrás) y solo lleva "Creative ___" */
   .work-top { grid-template-columns: 1fr; height: auto; padding: var(--nav-h) clamp(16px, 1.2vw, 24px) 12px; font-size: 14px; }
-  .work-top p:nth-child(1), .work-top p:nth-child(3) { display: none; }
+  .work-top p:not(.wt-creative) { display: none; }
   .work-item > a, .work-link { grid-template-columns: 1fr auto; grid-template-areas: "date tags" "name name" "strip strip"; row-gap: 12px; padding: 26px 0 30px; }
   .wi-date, .wi-tags { margin-top: 0; font-size: 13px; }
   .wi-name { text-align: left; font-size: clamp(44px, 14vw, 84px); }
