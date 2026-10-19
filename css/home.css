@@ -31,6 +31,18 @@ body::before {
   pointer-events: none;
 }
 
+/* Grano muy suave sobre el fondo oscuro de Work: aparece a la vez que la capa oscura (--light-progress) y se queda
+   por encima de los proyectos, pero por debajo de la barra. No recibe clics. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  background: url("/assets/images/grain-on-dark.png") 0 0 / 160px 160px repeat;
+  opacity: calc(var(--light-progress) * .07);
+  pointer-events: none;
+}
+
 /* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes */
 .sky {
   position: fixed;
