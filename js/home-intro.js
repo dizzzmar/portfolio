@@ -3,8 +3,8 @@
 // la segunda palabra va cambiando: cada cambio se descifra rápido y la palabra se queda quieta un instante para poder leerla;
 // al final se para en "Designer" y vuelve a empezar.
 // A partir de ahí ya se puede hacer scroll hasta los proyectos.
-// Cada cambio de palabra se "descifra" desde el centro hacia fuera (letras al azar que se van fijando), y al pasar
-// el ratón por encima las letras salen disparadas y vuelven con un pequeño rebote. Código propio, sin librerías.
+// Cada cambio de palabra se "descifra" desde el centro hacia fuera (letras al azar que se van fijando).
+// Código propio, sin librerías.
 // EDITA aquí las palabras (la primera es en la que se para):
 const WORDS = ['Designer', 'Director', 'Coder', 'Enthusiast', 'Thinker', 'Technologist', 'Maximalist', 'Storyteller', 'Retoucher', '3D Artist', 'Mind', 'Nerd'];
 const SCRAMBLE = 320;  // milisegundos que tarda cada palabra en descifrarse al aparecer
@@ -54,26 +54,6 @@ const HOLD = 3200;     // cuánto se queda en "Designer" antes de la siguiente r
     scrambleRaf = requestAnimationFrame(step);
   }
 
-  // ---- Al pasar el ratón: las letras salen disparadas desde el centro y vuelven rebotando ----
-  let scattering = false;
-  function scatter() {
-    if (reduced || scattering || !started) return;
-    scattering = true;
-    const chars = [...first.children, ...word.children];
-    const mid = (chars.length - 1) / 2;
-    const anims = chars.map((c, i) => {
-      const d = Math.abs(i - mid) / mid;                       // 0 en el centro, 1 en los extremos
-      const dx = (Math.random() - 0.5) * 220 * (0.5 + d), dy = (Math.random() - 0.5) * 160, rot = (Math.random() - 0.5) * 120;
-      return c.animate(
-        [{ transform: 'none', offset: 0 },
-         { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, offset: 0.35, easing: 'cubic-bezier(.3, 1.5, .5, 1)' },
-         { transform: 'none', offset: 1 }],
-        { duration: 1100, delay: d * 90, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' });
-    });
-    Promise.allSettled(anims.map((a) => a.finished)).then(() => { scattering = false; });
-  }
-  const line = document.querySelector('.intro-line');
-  line.addEventListener('pointerenter', scatter);
 
   function burst() {
     clearTimeout(timer);
