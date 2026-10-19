@@ -73,25 +73,31 @@
       <p class="intro-line" aria-hidden="true"><span>Creative</span> <span class="intro-word">Designer</span></p>
     </section>
 
-    <!-- ========== 3. Work: lista de proyectos en una columna (referencia: collectiveinterest.de/work) ==========
-         Para AÑADIR un proyecto copia un <li class="work-item"> entero. El orden en el código es el orden en la página. -->
+    <!-- ========== 3. Work (referencia: collectiveinterest.de/work) ==========
+         Fondo blanco. A la izquierda, la imagen del proyecto sobre el que está el ratón; a la derecha, la lista.
+         En el móvil cada proyecto lleva su imagen encima.
+         Para AÑADIR un proyecto: copia un <li class="work-item"> (con su data-media) y añade su imagen o vídeo
+         en <div class="work-preview"> con el mismo data-media. El orden en el código es el orden en la página. -->
     <section class="work-list" id="work" aria-labelledby="work-title">
       <h2 class="sr-only" id="work-title">Selected work</h2>
-      <ul>
-        <li class="work-item">
+      <div class="work-preview" aria-hidden="true">
+        <video data-media="lexus" class="is-active" src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" muted loop playsinline autoplay preload="metadata"></video>
+        <img data-media="soap" src="/assets/projects/soap-and-glory-vanilla/sg3-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg3-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg3-1600.webp 1600w" sizes="40vw" width="1600" height="1600" loading="lazy" alt="">
+      </div>
+      <ul class="work-rows">
+        <li class="work-item" data-media="lexus">
           <a href="/project/lexus-electrified/">
-            <div class="work-media"><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" muted loop playsinline autoplay preload="metadata" aria-label="Lexus Electrified, preview"></video></div>
-            <p class="work-meta"><span class="work-title">Lexus — Electrified</span><span>Audiovisual</span><span>2025</span></p>
+            <img class="work-thumb" src="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" loading="lazy" alt="">
+            <span class="work-title">Lexus — Electrified</span><span class="work-type">Audiovisual</span><span class="work-year">2025</span>
           </a>
         </li>
-        <li class="work-item">
+        <li class="work-item" data-media="soap">
           <a href="/project/soap-and-glory-vanilla/">
-            <div class="work-media"><img src="/assets/projects/soap-and-glory-vanilla/sg3-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg3-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg3-1600.webp 1600w" sizes="(max-width: 700px) 92vw, 600px" width="1600" height="1600" loading="lazy" alt="Soap &amp; Glory body lotions with vanilla cream, caramel and lime"></div>
-            <p class="work-meta"><span class="work-title">Soap &amp; Glory — Vanillalicious</span><span>Key visuals</span><span></span> <!-- EDITA: el año --></p>
+            <img class="work-thumb" src="/assets/projects/soap-and-glory-vanilla/sg3-800.webp" width="800" height="800" loading="lazy" alt="">
+            <span class="work-title">Soap &amp; Glory — Vanillalicious</span><span class="work-type">Key visuals</span><span class="work-year"></span> <!-- EDITA: el año -->
           </a>
         </li>
       </ul>
-      <p class="work-foot">Mario Diz, Madrid</p>
     </section>
   </main>
 
