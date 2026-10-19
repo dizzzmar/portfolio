@@ -231,7 +231,7 @@ function highlight(selection) {
   const track = selection?.item.track;
   label.hidden = !selection || !!track;
   if (track) showSticker(track); else hideSticker();
-  for (const button of nav.querySelectorAll('button')) button.classList.toggle('active', !!selection && button.textContent === selection.item.label);
+  for (const button of nav.querySelectorAll('button')) button.classList.toggle('active', !!selection && button.dataset.label === selection.item.label);
   if (selection && !track) label.textContent = selection.item.poster ? selection.item.poster.title : selection.item.label + ' +';
   canvas.style.cursor = selection ? 'pointer' : 'default';
 }
@@ -407,11 +407,16 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
   roomFrame = { size, center };
   frameRoom();
   status.remove();
+  let count = 0;
   destinations.forEach(item => {
     if (!meshes.some(mesh => destinationFor(mesh) === item)) return;
     const button = document.createElement('button');
     button.type = 'button';
-    button.textContent = item.label;
+    button.dataset.label = item.label;
+    // Like the project captions on the home page: "■ 01" small, the name in Georgia capitals
+    const num = Object.assign(document.createElement('span'), { className: 'obj-num', textContent: String(++count).padStart(2, '0') });
+    num.setAttribute('aria-hidden', 'true');
+    button.append(num, Object.assign(document.createElement('span'), { className: 'obj-name', textContent: item.label }));
     button.addEventListener('focus', () => {
       const mesh = meshes.find(candidate => destinationFor(candidate) === item);
       highlight({ item, object: mesh });
