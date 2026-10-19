@@ -42,6 +42,11 @@ const HOLD = 2800;     // cuánto se queda en "Designer" antes de la siguiente r
   document.addEventListener('tomato-docked', start, { once: true });
   // Si el tomate 3D no carga (navegador sin WebGL, conexión lenta), el texto sale igual
   setTimeout(start, 6000);
+  // Al volver de un proyecto (/#work) no hay entrada: el texto y el scroll van directos a los proyectos
+  if (location.hash === '#work') {
+    start();
+    requestAnimationFrame(() => document.getElementById('work').scrollIntoView());
+  }
 
   // La ráfaga solo corre mientras el texto se ve
   new IntersectionObserver(([e]) => {
