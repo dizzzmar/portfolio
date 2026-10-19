@@ -4,8 +4,8 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Por ahora la portada es solo el tomate sobre el cielo: sin scroll */
-html:has(body.no-scroll), body.no-scroll { height: 100%; overflow: hidden; overscroll-behavior: none; }
+/* Mientras el tomate sube al menú no se puede hacer scroll (js/home-intro.js quita la clase) */
+html:has(body.intro-lock), body.intro-lock { height: 100%; overflow: hidden; overscroll-behavior: none; }
 
 /* El desplazamiento suave lo activa js/home-nav.js después de cargar: así, al volver de un
    proyecto, la home aparece directamente en su card en vez de deslizarse hasta ella. */
@@ -437,4 +437,59 @@ body {
 @keyframes vt-rise-in { from { opacity: 0; transform: translateY(24px); } }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: .01s !important; animation-delay: 0s !important; }
+}
+
+/* ---------- "Creative ___": aparece en el centro cuando el tomate llega al menú ----------
+   La segunda palabra cambia muy rápido (js/home-intro.js). */
+.intro-line {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: clamp(48px, 9vw, 150px);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+  text-align: center;
+  text-shadow: 0 2px 30px rgba(0, 20, 40, 0.25);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2, .8, .2, 1);
+  pointer-events: none;
+}
+.intro-on .intro-line { opacity: 1; transform: none; }
+.intro-word { font-variant-ligatures: none; }
+
+/* ---------- Work: una columna de proyectos, imagen grande y debajo título, tipo y año ---------- */
+.work-list { position: relative; padding: 24px clamp(16px, 4vw, 56px) 40px; color: #fff; }
+.work-list ul { display: grid; gap: clamp(64px, 10vw, 140px); list-style: none; }
+.work-item a { display: block; width: min(600px, 100%); color: inherit; text-decoration: none; }
+.work-media { overflow: hidden; background: rgba(255, 255, 255, 0.15); }
+.work-media img, .work-media video { display: block; width: 100%; height: auto; transition: transform 0.6s cubic-bezier(.2, .8, .2, 1); }
+.work-meta {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 20px;
+  margin-top: 12px;
+  padding: 4px 6px 3px;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0, 20, 40, 0.25);
+  transition: background 0.2s, color 0.2s;
+}
+.work-title { letter-spacing: -0.01em; }
+.work-item a:hover .work-meta, .work-item a:focus-visible .work-meta { background: #fff; color: #175cff; text-shadow: none; }
+.work-item a:hover .work-media img, .work-item a:hover .work-media video { transform: scale(1.03); }
+.work-item a:focus-visible { outline: 2px solid #fff; outline-offset: 6px; }
+.work-foot { margin-top: clamp(96px, 14vw, 180px); font-size: 13px; }
+@media (max-width: 700px) {
+  .work-meta { grid-template-columns: 1fr auto; font-size: 13px; }
+  .work-meta span:last-child:empty { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-line { transition: none; transform: none; }
 }
