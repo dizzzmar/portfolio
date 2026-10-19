@@ -1,34 +1,57 @@
 /* ABOUT — estilos de about/index.html.
-   Toda la página es el papel verde liso de la home (sin textura ni esquinas) con texto crema.
-   Orden: colores y base · barra de navegación · nombre y foto · columnas pequeñas · clientes · preguntas · cierre · móvil · movimiento. */
+   Como el "about" de nicolo-lombardi.com: todo en Helvetica negrita, pocos tamaños, y lo importante
+   cabe en la primera pantalla. Fondo: el cielo de la portada en negativo (azul a naranja ámbar, nubes oscuras) y texto crema.
+   Orden: colores y base · barra de navegación · primera pantalla · clientes · pie · móvil · movimiento. */
 
 :root {
-  --green: #2c4e37;       /* el papel */
-  --green-deep: #25432f;  /* un paso más oscuro: el recuadro de la foto */
-  --cream: #e9efe4;       /* el texto */
-  --cream-soft: rgba(233, 239, 228, .72); /* notas secundarias */
-  --sans: "Helvetica Neue", Arial, sans-serif;
-  --serif: Georgia, "Times New Roman", serif;
+  --bg: #2a1807;          /* tinta oscura: el color de la selección de texto */
+  --bg-deep: rgba(12, 12, 11, .38); /* el recuadro de la foto */
+  --ink: #e9efe4;         /* el texto (y los logos): crema */
   --nav-h: 64px;
-  --gutter: clamp(16px, 2.2vw, 32px);
+  --gutter: 20px;
+  --margin: clamp(24px, 6vw, 96px); /* margen a los lados de la página */
+  --small: 15px;          /* el texto de las columnas */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   overflow-x: clip;
-  color: var(--cream);
-  background: var(--green);
-  font-family: var(--sans);
-  font-size: 17px;
-  line-height: 1.45;
+  color: var(--ink);
+  background: #6b3d12; /* mientras carga el cielo */
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: var(--small);
+  font-weight: 700;
+  line-height: 1.35;
   -webkit-font-smoothing: antialiased;
 }
 
+/* Fondo: el cielo de la portada en negativo (invert: el azul pasa a naranja ámbar y las nubes a oscuro), algo desenfocado y con el mismo
+   movimiento lento. Es más grande que la pantalla para que no se vean sus bordes. */
+.sky {
+  position: fixed;
+  inset: -8%;
+  z-index: -1;
+  background:
+    url("/assets/images/sky.webp") center / cover,
+    linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
+  filter: invert(1) brightness(.5) blur(10px); /* se oscurece para que el texto crema se lea bien */
+  animation: drift 40s ease-in-out infinite alternate;
+  will-change: transform;
+  pointer-events: none;
+}
+@keyframes drift {
+  0%   { transform: translate(-3%, 1%) scale(1); }
+  50%  { transform: translate(1%, -1.5%) scale(1.04); }
+  100% { transform: translate(3%, 1%) scale(1.02); }
+}
+@media (prefers-reduced-motion: reduce) { .sky { animation: none; } }
+
 a { color: inherit; }
 img { display: block; max-width: 100%; height: auto; }
-::selection { background: var(--cream); color: var(--green); }
-:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
+ul { list-style: none; }
+::selection { background: var(--ink); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 /* ---------- Barra de navegación (como la de la home) ---------- */
 .nav {
@@ -38,213 +61,138 @@ img { display: block; max-width: 100%; height: auto; }
   height: var(--nav-h);
   display: flex;
   align-items: center;
-  padding: 0 24px;
-  background: var(--green);
+  padding: 0 var(--margin); /* el tomate y el menú alineados con el texto */
 }
 .nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
 .nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
-.nav-links { display: flex; align-self: stretch; margin: 0 -16px 0 auto; list-style: none; }
+.nav-links { display: flex; align-self: stretch; margin: 0 -16px 0 auto; }
 .nav-links a {
   display: flex;
   align-items: center;
   height: 100%;
   padding: 0 16px;
-  color: rgba(255, 255, 255, .78);
+  color: var(--ink);
+  opacity: .75;
   font-size: 15px;
+  font-weight: 400;
   text-decoration: none;
-  transition: color .2s;
+  transition: opacity .2s;
 }
-.nav-links a:hover, .nav-links a[aria-current="page"] { color: #fff; }
+.nav-links a:hover, .nav-links a[aria-current="page"] { opacity: 1; }
 .nav-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 
-main, .close { padding: 0 var(--gutter); }
+main, .close { padding: 0 var(--margin); }
 
-/* Título pequeño de cada columna ("What I do", "Likes"…) */
-.label {
-  margin-bottom: 14px;
-  color: var(--cream-soft);
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.2;
-}
-/* Título de sección ("Selected clients", "Commonly asked") */
-.section-title {
-  margin-bottom: clamp(20px, 2.4vw, 32px);
-  font-family: var(--serif);
-  font-size: 32px;
-  font-weight: 400;
-  font-style: italic;
-  letter-spacing: -.025em;
-  line-height: 1.1;
-}
-.label-gap { margin-top: 28px; }
-
-/* ---------- 1. Nombre, presentación y foto ---------- */
-.intro { padding-top: calc(var(--nav-h) + clamp(24px, 4vw, 56px)); }
-
-/* El nombre ocupa todo el ancho: js/about.js ajusta el tamaño a la tipografía de cada dispositivo;
-   17.4vw es una aproximación por si el script no carga */
-.name {
-  width: max-content; /* la caja mide lo que el texto: así js/about.js puede medirlo */
-  font-size: 17.4vw;
-  font-weight: 700;
-  letter-spacing: -.065em;
-  line-height: .8;
-  margin-left: -.05em; /* alinea la tinta de la M con el margen */
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.intro-body {
+/* ---------- 1. Primera pantalla ---------- */
+/* Toda la página usa la misma rejilla de 4 columnas, para que todo quede alineado:
+   nombre y presentación en las tres primeras, la foto en la cuarta; debajo, "What I do" en la
+   primera, "Values" en la segunda y tercera, y "Now playing" en la cuarta, justo bajo la foto. */
+.intro, .facts {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  gap: var(--gutter);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+.intro {
+  grid-template-areas: "name name name portrait" "statement statement statement portrait";
   align-items: end;
-  margin-top: clamp(32px, 5vw, 72px);
+  padding-top: calc(var(--nav-h) + clamp(16px, 4vh, 48px));
+}
+
+.name {
+  grid-area: name;
+  margin-left: -.04em; /* alinea la tinta de la M con el margen */
+  font-size: clamp(56px, 7.4vw, 112px);
+  letter-spacing: -.06em;
+  line-height: .9;
 }
 
 .statement {
-  max-width: 23em;
-  padding-bottom: 6px;
-  font-size: clamp(25px, 2.5vw, 36px);
-  font-weight: 500;
-  letter-spacing: -.025em;
-  line-height: 1.12;
+  grid-area: statement;
+  max-width: 33em; /* líneas más cortas, más fáciles de leer */
+  margin-top: clamp(20px, 4vh, 48px);
+  font-size: clamp(20px, 1.6vw, 24px);
+  letter-spacing: -.015em;
+  line-height: 1.22;
 }
 
-/* Recuadro de la foto (hasta que haya foto real) */
+/* Recuadro de la foto (hasta que haya foto real): ocupa la cuarta columna */
 .portrait {
-  justify-self: end;
+  grid-area: portrait;
   width: 100%;
-  max-width: 440px;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1;
   object-fit: cover;
 }
 .portrait-placeholder {
   display: flex;
   align-items: flex-end;
-  padding: 16px;
-  background: var(--green-deep);
+  padding: 12px;
+  background: var(--bg-deep);
 }
-.portrait-placeholder span {
-  color: var(--cream-soft);
-  font-family: var(--serif);
-  font-size: 17px;
-  font-style: italic;
-}
+.portrait-placeholder span { color: var(--ink); font-family: Georgia, serif; font-style: italic; font-weight: 400; }
 
-/* ---------- 2. Columnas pequeñas ---------- */
+/* Columnas en texto pequeño: el título en negrita y el texto normal, para que los párrafos largos se lean bien */
 .facts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--gutter);
-  margin-top: clamp(72px, 9vw, 140px);
+  row-gap: var(--gutter);
+  margin-top: clamp(32px, 6vh, 64px);
 }
+.fact-values { grid-column: 2 / 4; }
+.now-playing { grid-column: 4; }
+.fact h2 { margin-bottom: 1.35em; font-size: inherit; }
+.fact p, .fact li { max-width: 28em; font-weight: 400; } /* todas las columnas con el mismo estilo de texto */
+.fact a { text-underline-offset: 3px; transition: opacity .2s; }
+.fact a:hover { opacity: .7; }
+/* Now playing: el disco y la película de The room, en pequeño */
+.now-playing { text-decoration: none; }
+.np-row { display: grid; grid-template-columns: 84px 1fr; gap: 16px; align-items: center; }
+.np-row + .np-row { margin-top: 12px; }
+.np-row img { width: 84px; height: 84px; object-fit: cover; }
+.np-row .np-film { height: 120px; }
+.np-row p { font-size: 16px; line-height: 1.35; }
+.np-row strong { display: inline-block; margin: 2px 0; font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 24px; line-height: 1.05; text-transform: uppercase; letter-spacing: -.02em; }
+.np-more { text-decoration: underline; text-underline-offset: 3px; }
+.now-playing:hover .np-more { opacity: .7; }
 
-.pills { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; }
-.pills li {
-  padding: 6px 12px 5px;
-  border: 1px solid var(--cream); /* taste-skill-ignore: las píldoras con borde son el estilo de la web */
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .05em;
-  line-height: 1.2;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.plain { list-style: none; font-size: clamp(20px, 1.7vw, 26px); letter-spacing: -.02em; line-height: 1.2; }
-
-.now-playing { display: grid; grid-template-columns: 96px 1fr; gap: 14px 16px; align-content: start; text-decoration: none; }
-.now-playing .label { grid-column: 1 / -1; }
-.now-playing img { width: 96px; height: 96px; object-fit: cover; transition: transform .4s cubic-bezier(.2, .8, .2, 1); }
-.now-playing p { font-size: 17px; line-height: 1.3; align-self: center; }
-.now-playing strong { font-family: var(--serif); font-size: 25px; font-weight: 400; letter-spacing: -.03em; text-transform: uppercase; }
-.now-playing .more { color: var(--cream-soft); font-size: 15px; transition: color .2s; }
-.now-playing .film { height: auto; aspect-ratio: 7 / 10; }
-.now-playing:hover img { transform: rotate(-4deg) scale(1.04); }
-.now-playing:hover .more { color: var(--cream); }
-
-/* ---------- 3. Clientes ---------- */
-.clients { margin-top: clamp(96px, 11vw, 180px); }
-.client-list { display: grid; list-style: none; }
-.client-list a {
-  display: flex;
-  align-items: center;
-  padding: clamp(20px, 2.6vw, 40px) 0;
-  text-decoration: none;
-}
-/* Los logos van a la misma altura; el SVG ya viene en color crema */
+/* ---------- 2. Clientes ---------- */
+.clients { margin-top: clamp(32px, 6vh, 64px); }
+.clients h2 { margin-bottom: 18px; font-size: inherit; }
+.client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 44px; max-width: 1100px; }
+.client-list a { display: block; transition: opacity .2s; }
+.client-list a:hover { opacity: .7; }
+/* Cada logo se pinta del color del texto usando su silueta: así todos quedan en el mismo rojo */
 .client-logo {
-  width: auto;
-  height: clamp(40px, 5.6vw, 92px);
-  max-width: 70%;
-  object-fit: contain;
-  object-position: left center;
-  transition: transform .4s cubic-bezier(.2, .8, .2, 1);
+  display: block;
+  height: var(--h, 28px);
+  aspect-ratio: var(--ratio, 3);
+  background: currentColor;
+  -webkit-mask: var(--logo) center / contain no-repeat;
+  mask: var(--logo) center / contain no-repeat;
 }
-/* Un logo más alargado se ve más grande a la misma altura: lo bajamos un poco para igualarlos a ojo */
-.client-logo-wide { height: clamp(32px, 4.5vw, 74px); }
-.client-list a:hover .client-logo { transform: translateX(12px); }
 
-/* ---------- 4. Preguntas ---------- */
-.faq { margin-top: clamp(96px, 11vw, 180px); }
-.faq-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(36px, 4vw, 56px) var(--gutter);
+/* ---------- Pie ---------- */
+.close {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gutter);
+  margin-top: clamp(48px, 8vh, 96px);
+  padding-bottom: 24px;
+  opacity: .85;
 }
-.faq-list dt {
-  font-family: var(--serif);
-  font-size: clamp(25px, 2.2vw, 32px);
-  font-style: italic;
-  letter-spacing: -.025em;
-  line-height: 1.1;
-}
-.faq-list dd { max-width: 34em; margin-top: 10px; font-size: 17px; }
-
-/* ---------- 5. Cierre ---------- */
-.close { margin-top: clamp(110px, 13vw, 200px); padding-bottom: 20px; }
-.close-link {
-  display: inline-block;
-  padding: 12px 20px 11px;
-  border: 1px solid var(--cream); /* taste-skill-ignore: las píldoras con borde son el estilo de la web */
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .05em;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: background .2s, color .2s, transform .15s;
-}
-.close-link:hover { background: var(--cream); color: var(--green); }
-.close-link:active { transform: scale(.97); }
-.close-name {
-  width: max-content;
-  margin: clamp(40px, 6vw, 80px) 0 0 -.05em;
-  font-size: 17.4vw;
-  font-weight: 700;
-  letter-spacing: -.065em;
-  line-height: .8;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.close-meta { margin-top: 18px; color: var(--cream-soft); font-size: 15px; }
+.close a { color: inherit; text-underline-offset: 3px; }
 
 /* ---------- Móvil ---------- */
 @media (max-width: 760px) {
-  .nav { padding: 0 16px; }
+  :root { --gutter: 16px; }
   .nav-links a { padding: 0 10px; font-size: 14px; }
   .nav-links { margin-right: -10px; }
-  .intro-body { grid-template-columns: 1fr; }
-  .portrait { justify-self: stretch; max-width: none; }
-  .statement { font-size: 24px; }
-  .facts { grid-template-columns: 1fr; gap: 40px; }
-  .client-logo { max-width: 100%; }
-  .faq-list { grid-template-columns: 1fr; }
-  .faq-list dt { font-size: 25px; }
-  .section-title { font-size: 25px; }
+  .intro, .facts { grid-template-columns: 1fr; }
+  .intro { grid-template-areas: "name" "statement" "portrait"; }
+  .fact-values, .now-playing { grid-column: auto; }
+  .name { font-size: clamp(56px, 16vw, 80px); }
+  .statement { font-size: 20px; }
+  .portrait { width: 55%; margin-top: 32px; }
+  .facts { row-gap: 32px; }
+  .fact h2 { margin-bottom: .6em; }
+  .close { flex-direction: column; }
 }
 
 /* ---------- Movimiento: cada bloque sube y aparece al entrar en pantalla (js/about.js) ----------
@@ -252,7 +200,7 @@ main, .close { padding: 0 var(--gutter); }
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal] {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
     transition: opacity .7s cubic-bezier(.2, .8, .2, 1), transform .7s cubic-bezier(.2, .8, .2, 1);
     transition-delay: var(--d, 0ms);
   }
