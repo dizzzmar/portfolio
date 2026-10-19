@@ -1,7 +1,7 @@
 /* PÁGINAS DE PROYECTO (estilo cipher.tv/works/the-circle) — compartido por todo /project/*.
-   Fondo: el cielo de la portada emborronado y mezclado con crema, con el grano nítido encima. Orden: colores y base · barra · portada a toda pantalla con el número y el
-   título a los lados · texto "About" · imagen grande · galería en parejas descompensadas ·
-   siguiente proyecto · móvil · movimiento.
+   Fondo: el cielo de la portada emborronado y mezclado con crema, con el grano nítido encima.
+   Orden: colores y base · barra · texto "About" con el número y el título a los lados · imagen grande ·
+   galería en parejas descompensadas · siguiente proyecto · móvil · movimiento.
    El párrafo en Georgia va casi sin espaciado (.005em, como la referencia); los textos pequeños, algo abiertos
    (.05em–.08em); el título enorme de "Next project" queda apretado. */
 
@@ -51,7 +51,7 @@ img, video { display: block; width: 100%; height: auto; }
 
 
 /* ---------- Barra (enlaces a la derecha) ----------
-   Oscura sobre el fondo; blanca mientras está encima de la portada (clase over-hero, la pone js/case.js) */
+   Oscura sobre el fondo */
 .case-nav {
   position: fixed;
   inset: 0 0 auto;
@@ -111,13 +111,6 @@ img, video { display: block; width: 100%; height: auto; }
 }
 .case-side.left { left: var(--edge); }
 .case-side.right { right: var(--edge); }
-
-/* Encima de la imagen de portada, barra, Back y lados van en blanco */
-.over-hero .case-nav, .over-hero .case-back, .over-hero .case-side { color: #fff; text-shadow: 0 1px 10px rgba(0, 0, 0, .3); }
-
-/* ---------- 1. Portada: imagen o vídeo a toda pantalla ---------- */
-.case-hero { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: #111; }
-.case-hero img, .case-hero video { width: 100%; height: 100%; object-fit: cover; }
 
 /* ---------- 2. About ---------- */
 .case-about {
@@ -251,7 +244,7 @@ img, video { display: block; width: 100%; height: auto; }
   .case-nav ul { gap: 14px; }
   .case-nav a { font-size: 11px; }
   .case-side { display: none; } /* en el móvil taparían el contenido */
-  .case-about { grid-template-columns: 1fr; gap: 56px; padding: 72px var(--edge); }
+  .case-about { grid-template-columns: 1fr; gap: 56px; padding: 120px var(--edge) 72px; }
   .case-pair, .case-pair.flip { grid-template-columns: 1fr; gap: 16px; }
   .case-pair > :first-child, .case-pair > :last-child, .case-pair.flip > :first-child, .case-pair.flip > :last-child { grid-column: 1; }
   .case-pair > :last-child { width: 62%; justify-self: end; }
@@ -263,7 +256,5 @@ img, video { display: block; width: 100%; height: auto; }
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.2, .8, .2, 1), transform .8s cubic-bezier(.2, .8, .2, 1); }
   .js [data-reveal].is-in { opacity: 1; transform: none; }
-  .case-hero img, .case-hero video { animation: case-in 1.6s cubic-bezier(.2, .8, .2, 1) both; }
-  @keyframes case-in { from { transform: scale(1.08); } }
 }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
