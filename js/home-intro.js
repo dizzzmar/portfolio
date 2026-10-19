@@ -50,38 +50,19 @@ const HOLD = 2800;     // cuánto se queda en "Designer" antes de la siguiente r
   }).observe(word.parentElement);
 
   // Los vídeos de los proyectos quedan quietos si el visitante pide menos movimiento
-  if (reduced) document.querySelectorAll('.work-preview video').forEach((v) => { v.autoplay = false; v.pause(); });
+  if (reduced) document.querySelectorAll('.work-media video').forEach((v) => { v.autoplay = false; v.pause(); });
 })();
 
-// ---------- Work: al pasar por un proyecto cambia la imagen de la izquierda ----------
+// ---------- "Creative ___" se desenfoca al bajar (los proyectos pasan por encima) ----------
 (() => {
-  const items = [...document.querySelectorAll('.work-item')];
-  const media = [...document.querySelectorAll('.work-preview [data-media]')];
-  if (!items.length) return;
-  function show(item) {
-    items.forEach((i) => i.classList.toggle('is-active', i === item));
-    media.forEach((m) => {
-      const on = m.dataset.media === item.dataset.media;
-      m.classList.toggle('is-active', on);
-      if (m.tagName === 'VIDEO' && !matchMedia('(prefers-reduced-motion: reduce)').matches) on ? m.play().catch(() => {}) : m.pause();
-    });
-  }
-  items.forEach((item) => {
-    item.addEventListener('pointerenter', () => show(item));
-    item.addEventListener('focusin', () => show(item));
-  });
-  show(items[0]);
-
-  // La barra no tiene fondo: sobre el blanco de esta sección los enlaces se oscurecen
-  const links = document.querySelectorAll('.nav-links a');
-  const section = document.getElementById('work');
-  const navH = () => document.querySelector('.nav').offsetHeight;
-  const check = () => {
-    const r = section.getBoundingClientRect();
-    const onLight = r.top < navH() / 2 && r.bottom > navH() / 2;
-    links.forEach((a) => a.classList.toggle('on-light', onLight));
+  const line = document.querySelector('.intro-line');
+  if (!line || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const p = Math.min(1, Math.max(0, scrollY / innerHeight));
+    line.style.setProperty('--blur', (p * 10).toFixed(1) + 'px');
+    line.style.opacity = document.body.classList.contains('intro-on') ? String(1 - p * 0.35) : '';
   };
-  addEventListener('scroll', check, { passive: true });
-  addEventListener('resize', check);
-  check();
+  addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
 })();

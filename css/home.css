@@ -463,86 +463,47 @@ body {
 .intro-on .intro-line { opacity: 1; transform: none; }
 .intro-word { font-variant-ligatures: none; }
 
-/* ---------- Work (como collectiveinterest.de/work) ----------
-   Fondo blanco. A la izquierda, la imagen del proyecto sobre el que está el ratón (se queda fija al bajar);
-   a la derecha, a partir de dos tercios de la pantalla, la lista en mayúsculas pequeñas: título, tipo y año.
-   El proyecto activo se marca con una barra que cruza desde la imagen hasta el borde (js/home-intro.js). */
-.work-list {
-  --ink: #000;
-  --mark: #7dfa4f;          /* color de la barra (el de la referencia) */
-  --edge: 12px;             /* margen a los lados */
-  --list-x: 66.8%;          /* donde empieza la lista */
-  --img-w: 36%;             /* ancho de la imagen */
-  --bar-x: 32.4%;           /* donde empieza la barra (un poco antes del borde de la imagen) */
-  position: relative;
-  display: grid;            /* imagen y lista en la misma celda: la lista ocupa todo el ancho */
-  align-items: start;
-  min-height: 100vh;
-  padding: 120px var(--edge) 160px;
-  background: #fff;
-  color: var(--ink);
-  scroll-margin-top: 0;
+/* ---------- Work (como cipher.tv/works): proyectos sueltos sobre el cielo ----------
+   Cada proyecto tiene su sitio y su tamaño (--x, --w, --y en el HTML). Debajo de la imagen, el número
+   pequeño a la izquierda y el título en Georgia mayúscula a la derecha, como la marca de las antiguas cards. */
+.work-grid { position: relative; z-index: 5; /* por encima del texto fijo, por debajo de la barra */ padding: 10vh clamp(12px, 2vw, 28px) 0; color: #fff; }
+.work-grid ol { display: grid; gap: 22vh; list-style: none; }
+.work-item { width: var(--w); margin-left: var(--x); margin-top: var(--y); }
+.work-item a { display: block; color: inherit; text-decoration: none; }
+.work-media { overflow: hidden; background: rgba(255, 255, 255, 0.12); }
+.work-media img, .work-media video { display: block; width: 100%; height: auto; transition: transform 0.8s cubic-bezier(.2, .8, .2, 1); }
+.work-item a:hover .work-media img, .work-item a:hover .work-media video { transform: scale(1.04); }
+.work-cap {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-top: 10px;
+  text-shadow: 0 1px 10px rgba(0, 20, 40, 0.3);
 }
-.work-preview {
-  grid-area: 1 / 1;
-  position: sticky;
-  top: 120px;
-  width: var(--img-w);
-  height: calc(100vh - 132px);
-  overflow: hidden;
-  background: #f2f2ef;
-}
-.work-preview > * { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.25s ease; }
-.work-preview > .is-active { opacity: 1; }
-.work-rows { grid-area: 1 / 1; position: relative; z-index: 1; list-style: none; padding-top: 108px; pointer-events: none; }
-.work-rows a { pointer-events: auto; }
-.work-item a {
-  position: relative;
-  display: grid;
-  grid-template-columns: var(--list-x) minmax(0, 1fr) 9em 3em;
-  align-items: center;
-  height: 39px;
-  color: var(--ink);
-  font-size: 16px;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+.work-num { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; }
+.work-num::before { content: ""; width: 5px; height: 5px; background: currentColor; }
+.work-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(17px, 1.5vw, 24px);
+  letter-spacing: -0.035em;
   line-height: 1;
-  text-decoration: none;
+  text-align: right;
   text-transform: uppercase;
 }
-.work-title { grid-column: 2; overflow: hidden; padding-right: 16px; white-space: nowrap; text-overflow: ellipsis; }
-.work-type { grid-column: 3; }
-.work-year { grid-column: 4; text-align: right; }
-.work-thumb { display: none; }
-/* La barra: fina, a la altura del texto, desde encima de la imagen hasta el borde derecho */
-.work-item a::before {
-  content: "";
-  position: absolute;
-  left: var(--bar-x);
-  right: 0;
-  top: 50%;
-  height: 15px;
-  margin-top: -8px;
-  z-index: -1;
-  background: var(--mark);
-  opacity: 0;
-}
-.work-item.is-active a::before { opacity: 1; }
-.work-item a:focus-visible { outline: 1px solid var(--ink); outline-offset: 2px; }
+.work-item a:hover .work-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.work-item a:focus-visible { outline: 2px solid #fff; outline-offset: 6px; }
+.work-foot { padding: 30vh 0 24px; font-size: 13px; }
 
-@media (max-width: 1279px) and (min-width: 701px) {
-  .work-list { --list-x: 50%; --img-w: 40%; --bar-x: 36%; }
-}
+/* "Creative ___" se queda fijo en el centro mientras los proyectos pasan por encima; al bajar se
+   desenfoca un poco (js/home-intro.js pone --blur) */
+.intro-line { position: fixed; z-index: 1; filter: blur(var(--blur, 0px)); }
+
 @media (max-width: 700px) {
-  .work-list { padding: 80px 20px 80px; }
-  .work-preview { display: none; }
-  .work-rows { padding-top: 0; display: grid; gap: 56px; }
-  .work-item a { grid-template-columns: 1fr; height: auto; row-gap: 0; font-size: 18px; }
-  .work-thumb { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; margin-bottom: 20px; }
-  .work-title, .work-type, .work-year { grid-column: 1; padding: 0; white-space: normal; }
-  .work-title { padding: 2px 2px 1px; background: var(--mark); justify-self: stretch; }
-  .work-type, .work-year { display: none; }
-  .work-item a::before { display: none; }
+  .work-grid ol { gap: 14vh; }
+  .work-item:nth-child(odd) { --x: 0% !important; --w: 86% !important; }
+  .work-item:nth-child(even) { --x: 30% !important; --w: 70% !important; }
+  .work-item { margin-top: 0 !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .intro-line { transition: none; transform: none; }

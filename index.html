@@ -73,31 +73,28 @@
       <p class="intro-line" aria-hidden="true"><span>Creative</span> <span class="intro-word">Designer</span></p>
     </section>
 
-    <!-- ========== 3. Work (referencia: collectiveinterest.de/work) ==========
-         Fondo blanco. A la izquierda, la imagen del proyecto sobre el que está el ratón; a la derecha, la lista.
-         En el móvil cada proyecto lleva su imagen encima.
-         Para AÑADIR un proyecto: copia un <li class="work-item"> (con su data-media) y añade su imagen o vídeo
-         en <div class="work-preview"> con el mismo data-media. El orden en el código es el orden en la página. -->
-    <section class="work-list" id="work" aria-labelledby="work-title">
+    <!-- ========== 3. Work (referencia: cipher.tv/works) ==========
+         Los proyectos van sueltos sobre el cielo, cada uno de un tamaño y en un sitio distinto, y pasan por
+         encima del texto "Creative ___", que se queda fijo en el centro y se desenfoca al bajar.
+         Para AÑADIR un proyecto copia un <li class="work-item"> y ajusta su posición con style:
+           --x  dónde empieza (en % del ancho)   --w  su ancho (en %)   --y  cuánto baja respecto al anterior -->
+    <section class="work-grid" id="work" aria-labelledby="work-title">
       <h2 class="sr-only" id="work-title">Selected work</h2>
-      <div class="work-preview" aria-hidden="true">
-        <video data-media="lexus" class="is-active" src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" muted loop playsinline autoplay preload="metadata"></video>
-        <img data-media="soap" src="/assets/projects/soap-and-glory-vanilla/sg3-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg3-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg3-1600.webp 1600w" sizes="36vw" width="1600" height="1600" loading="lazy" alt="">
-      </div>
-      <ul class="work-rows">
-        <li class="work-item" data-media="lexus">
+      <ol>
+        <li class="work-item" style="--x: 8%; --w: 40%; --y: 0px">
           <a href="/project/lexus-electrified/">
-            <img class="work-thumb" src="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" loading="lazy" alt="">
-            <span class="work-title">Lexus x Electrified</span><span class="work-type">Audiovisual</span><span class="work-year">2025</span>
+            <div class="work-media"><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" muted loop playsinline autoplay preload="metadata" aria-label="Lexus Electrified, preview"></video></div>
+            <p class="work-cap"><span class="work-num">01</span><span class="work-title">Lexus Electrified</span></p>
           </a>
         </li>
-        <li class="work-item" data-media="soap">
+        <li class="work-item" style="--x: 68%; --w: 24%; --y: -18vh">
           <a href="/project/soap-and-glory-vanilla/">
-            <img class="work-thumb" src="/assets/projects/soap-and-glory-vanilla/sg3-800.webp" width="800" height="800" loading="lazy" alt="">
-            <span class="work-title">Soap &amp; Glory x Vanillalicious</span><span class="work-type">Key visuals</span><span class="work-year"></span> <!-- EDITA: el año -->
+            <div class="work-media"><img src="/assets/projects/soap-and-glory-vanilla/sg3-1600.webp" srcset="/assets/projects/soap-and-glory-vanilla/sg3-800.webp 800w, /assets/projects/soap-and-glory-vanilla/sg3-1600.webp 1600w" sizes="(max-width: 700px) 70vw, 24vw" width="1600" height="1600" loading="lazy" alt="Soap &amp; Glory body lotions with vanilla cream, caramel and lime"></div>
+            <p class="work-cap"><span class="work-num">02</span><span class="work-title">Soap &amp; Glory Vanillalicious</span></p>
           </a>
         </li>
-      </ul>
+      </ol>
+      <p class="work-foot">Mario Diz, Madrid</p>
     </section>
   </main>
 
