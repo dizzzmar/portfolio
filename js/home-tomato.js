@@ -79,7 +79,7 @@ new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
   holder.traverse((o) => { o.renderOrder = 1; });
   spinner.add(holder);
   // Auto intro: the trip to the nav starts a moment after the tomato appears
-  introAt = clock.elapsedTime + (reduced ? 0 : INTRO_DELAY);
+  introAt = clock.elapsedTime + (reduced || SKIP_INTRO ? 0 : INTRO_DELAY);
   // The 3D tomato is ready: fade it in over the flat placeholder (see .tomato-ready in home.css)
   requestAnimationFrame(() => document.documentElement.classList.add('tomato-ready'));
 });
@@ -187,6 +187,9 @@ const AUTO = document.body.dataset.intro === 'auto';
 const INTRO_DELAY = 1.2;  // seconds the big tomato spins in the middle before flying up
 const AUTO_TIME = 1.1;    // a slower, showier trip than the scroll one
 let introAt = Infinity;   // set when the model has loaded
+// Arriving at /#work (the Back button of a project): the tomato is already in the nav, no intro
+const SKIP_INTRO = AUTO && location.hash === '#work';
+if (SKIP_INTRO) introAt = 0;
 let announced = false;
 if (AUTO) { docked = false; shown = 0; }
 
@@ -209,7 +212,7 @@ function frame(now) {
   } else if (!docked && scrollY > heroH * DOCK_AT) docked = true;
   else if (docked && scrollY < heroH * UNDOCK_AT) docked = false;
   const target = docked ? 1 : 0;
-  const step = AUTO ? (reduced ? 1 : dt / AUTO_TIME) : (reduced || !userMoved ? 1 : dt / DOCK_TIME);
+  const step = AUTO ? (reduced || SKIP_INTRO ? 1 : dt / AUTO_TIME) : (reduced || !userMoved ? 1 : dt / DOCK_TIME);
   shown = target > shown ? Math.min(target, shown + step) : Math.max(target, shown - step);
   layout(ease(shown));
 
