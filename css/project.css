@@ -35,6 +35,7 @@ figure { margin: 0; }
 .project-embed .instagram-media { width: 100% !important; max-width: 100% !important; min-width: 0 !important; margin: 0 !important; border-radius: 18px !important; overflow: hidden; }
 .project-embed blockquote.instagram-media { padding: 24px; background: #eee9df; text-align: center; font-size: 14px; }
 .image-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+.project-credit { max-width: 60ch; padding: 0 24px; font-size: 12px; line-height: 1.5; opacity: .6; }
 .project-end { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 60px 24px; font-size: 14px; }
 .site-footer { display: flex; justify-content: center; padding: 56px 24px; background: #91bce0 url('/assets/images/sky.webp') center 65% / cover; color: #173a31; font-size: 13px; }
 /* ---------- Carrusel de imágenes (pila) ----------
