@@ -526,6 +526,34 @@ body::before {
 .work-ph span { font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: #777770; }
 .is-placeholder .work-info, .is-placeholder .work-num, .is-placeholder .work-type { color: #777770; }
 
+/* Work: la preview activa llena la pantalla, como la miniatura bajo el cursor. */
+.work-backdrop { position: fixed; inset: 0; z-index: 2; background: #111; opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+.work-backdrop.is-visible { opacity: 1; }
+.work-backdrop-frame { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .45s ease; }
+.work-backdrop-frame.is-active { opacity: 1; }
+.work-backdrop::after { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, .5); }
+.work-preview-on .work-grid { color: #fff; }
+.work-preview-on .work-item { background: transparent; border-color: rgba(255, 255, 255, .23); }
+.work-preview-on .work-grid ol { border-color: rgba(255, 255, 255, .23); }
+.work-preview-on .work-item.is-active { background: rgba(255, 255, 255, .045); }
+.work-preview-on .work-type span,
+.work-preview-on .is-placeholder .work-info,
+.work-preview-on .is-placeholder .work-num,
+.work-preview-on .is-placeholder .work-type,
+.work-preview-on .work-ph span { color: rgba(255, 255, 255, .62); }
+.work-preview-on .work-ph { background: rgba(255, 255, 255, .06); }
+.work-preview-on .nav-links a { color: rgba(255, 255, 255, .8); text-shadow: none; }
+.work-preview-on .nav-links a:hover { color: #fff; }
+.work-preview-on .intro-line { visibility: hidden; }
+.work-preview-on .work-item a:focus-visible { outline-color: #fff; }
+.work-preview-on .work-preview-toggle:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.work-cursor { position: fixed; inset: 0 auto auto 0; z-index: 11; color: #fff; mix-blend-mode: difference; pointer-events: none; opacity: 0; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.work-cursor::before { content: ""; display: inline-block; width: 5px; height: 5px; margin: 0 7px 1px 0; border-radius: 50%; background: currentColor; }
+@media (hover: hover) and (pointer: fine) {
+  .work-cursor-on .work-cursor { opacity: 1; }
+  .work-cursor-on .work-item > a { cursor: none; }
+}
+
 /* "Creative ___" se queda fijo en el centro mientras los proyectos pasan por encima; al bajar se
    desenfoca un poco (js/home-intro.js pone --blur) */
 .intro-line { position: fixed; z-index: 1; filter: blur(var(--blur, 0px)); }
@@ -547,4 +575,5 @@ body::before {
   .intro-line { transition: none; transform: none; }
   body::before { transition: none; }
   .work-media img, .work-media video, .work-open { transition: none; }
+  .work-backdrop, .work-backdrop-frame { transition: none; }
 }
