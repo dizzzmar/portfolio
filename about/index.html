@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://www.dizmar.xyz/about/">
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
 <script>document.documentElement.classList.add('js')</script>
-<link rel="stylesheet" href="/css/about.css?v=20261018">
+<link rel="stylesheet" href="/css/about.css?v=20261020b">
 </head>
 <body>
 
@@ -26,69 +26,74 @@
 
 <main>
 
+  <!-- Barra fija de arriba, como la de Work: "Creative ___" en rojo (la palabra se descifra, js/about.js) -->
+  <div class="about-top" aria-hidden="true">
+    <p class="wt-creative"><strong>Creative <span class="wb-word">Designer</span></strong><span>About</span></p>
+    <p><strong>Currently in Madrid</strong></p>
+  </div>
+
   <!-- 1. Nombre, presentación y foto -->
   <header class="intro">
-    <h1 class="name" data-reveal>Mario Diz</h1>
+    <div class="intro-title">
+      <span class="side">About</span>
+      <h1 class="name"><span>Mario Diz</span></h1>
+      <span class="side right">Madrid, Spain</span>
+    </div>
     <div class="intro-body">
       <!-- EDITA: tu presentación (una o dos frases) -->
-      <p class="statement" data-reveal>Art director and visual designer in Madrid. I make key visuals, product imagery and films for brands, mixing photography, 3D and AI.</p>
+      <p class="statement">Art director and visual designer in Madrid. I make key visuals, product imagery and films for brands, mixing photography, 3D and AI.</p>
       <!-- EDITA: tu foto. Sustituye este recuadro por
            <img class="portrait" src="/assets/images/mario.webp" width="900" height="1200" alt="Mario Diz"> -->
-      <div class="portrait portrait-placeholder" role="img" aria-label="Portrait of Mario Diz (coming soon)" data-reveal>
+      <div class="portrait portrait-placeholder" role="img" aria-label="Portrait of Mario Diz (coming soon)">
         <span>Photo</span>
       </div>
     </div>
   </header>
 
-  <!-- 2. Qué hace · lo que le gusta · lo que suena (como en The room) -->
-  <section class="facts" aria-label="About Mario">
-    <div class="fact" data-reveal>
-      <h2 class="label">What I do</h2>
-      <!-- EDITA: una <li> por capacidad (las mismas que la tira de la home) -->
-      <ul class="pills">
-        <li>Art direction</li>
-        <li>AI creative</li>
-        <li>Visual design</li>
-        <li>3D</li>
-        <li>Audiovisual</li>
-      </ul>
-    </div>
-    <div class="fact" data-reveal>
-      <h2 class="label">Likes</h2>
-      <!-- EDITA -->
-      <ul class="plain">
-        <li>Tomatoes, obviously</li>
-        <li>Tech</li>
-        <li>Almodóvar</li>
-        <li>Pokémon</li>
-      </ul>
-      <h2 class="label label-gap">Dislikes</h2>
-      <ul class="plain">
-        <li>Stock photos</li>
-        <li>Templates</li>
-        <li>Mondays</li>
-      </ul>
-    </div>
-    <!-- Lo mismo que la estantería de The room: actualízalo a la vez que js/room.js 
-    <a class="fact now-playing" href="/room.html" data-reveal>
-      <h2 class="label">Now playing</h2>
-      <img src="/assets/room/vinyl-cover.webp" width="400" height="400" alt="Romance, by Fontaines D.C." loading="lazy">
-      <p><strong>Bug</strong><br>Fontaines D.C. — Romance</p>
-      <img class="film" src="/assets/room/film-poster.webp" width="400" height="571" alt="La Bola Negra poster" loading="lazy">
-      <p class="more">Last watched<br><strong>La Bola Negra</strong><br>See the room →</p>
-    </a>-->
+  <!-- 2. Qué hace · lo que le gusta · lo que no. Cada bloque es una fila con su línea fina -->
+  <section class="ab-row" aria-labelledby="do-title">
+    <h2 class="ab-label" id="do-title">What I do</h2>
+    <!-- EDITA: una <li> por capacidad (las mismas que la tira de la home) -->
+    <ul class="ab-big">
+      <li>Art direction</li>
+      <li>AI creative</li>
+      <li>Visual design</li>
+      <li>3D</li>
+      <li>Audiovisual</li>
+    </ul>
+  </section>
+
+  <section class="ab-row" aria-labelledby="likes-title">
+    <h2 class="ab-label" id="likes-title">Likes</h2>
+    <!-- EDITA -->
+    <ul class="ab-mid">
+      <li>Tomatoes, obviously</li>
+      <li>Tech</li>
+      <li>Almodóvar</li>
+      <li>Pokémon</li>
+    </ul>
+  </section>
+
+  <section class="ab-row" aria-labelledby="dislikes-title">
+    <h2 class="ab-label" id="dislikes-title">Dislikes</h2>
+    <!-- EDITA -->
+    <ul class="ab-mid">
+      <li>Stock photos</li>
+      <li>Templates</li>
+      <li>Mondays</li>
+    </ul>
   </section>
 
   <!-- 3. Marcas con las que ha trabajado: solo sus logos (en /assets/brands, en color crema). Solo reales; cada una enlaza a su proyecto -->
-  <section class="clients" aria-labelledby="clients-title">
-    <h2 class="section-title" id="clients-title" data-reveal>Selected clients</h2>
+  <section class="ab-row" aria-labelledby="clients-title">
+    <h2 class="ab-label" id="clients-title">Selected clients</h2>
     <ul class="client-list">
-      <li data-reveal>
+      <li>
         <a href="/project/lexus-electrified/">
           <img class="client-logo client-logo-wide" src="/assets/brands/lexus.svg" width="567" height="96" alt="Lexus">
         </a>
       </li>
-      <li data-reveal>
+      <li>
         <a href="/project/soap-and-glory-vanilla/">
           <img class="client-logo" src="/assets/brands/soap-and-glory.svg" width="626" height="134" alt="Soap &amp; Glory">
         </a>
@@ -96,16 +101,16 @@
     </ul>
   </section>
 
-  <!-- 4. Preguntas frecuentes, en dos columnas. EDITA: preguntas y respuestas -->
-  <section class="faq" aria-labelledby="faq-title">
-    <h2 class="section-title" id="faq-title" data-reveal>Commonly asked</h2>
+  <!-- 4. Preguntas frecuentes. EDITA: preguntas y respuestas -->
+  <section class="ab-row" aria-labelledby="faq-title">
+    <h2 class="ab-label" id="faq-title">Commonly asked</h2>
     <dl class="faq-list">
-      <div data-reveal><dt>What kind of projects do you take on?</dt><dd>Key visuals, campaign imagery, product shots and short films for brands.</dd></div>
-      <div data-reveal><dt>Do you use AI?</dt><dd>Yes, as one tool among photography, 3D and retouching. Real products stay real.</dd></div>
-      <div data-reveal><dt>Where are you based?</dt><dd>Madrid, Spain. Working with brands everywhere.</dd></div>
-      <div data-reveal><dt>Are you taking on new work?</dt><dd>Yes. Say hello on the contact page.</dd></div>
-      <div data-reveal><dt>Where did you study?</dt><dd>Placeholder answer: school and degree.</dd></div>
-      <div data-reveal><dt>Why a tomato?</dt><dd>Placeholder answer: the story behind the tomato.</dd></div>
+      <div><dt>What kind of projects do you take on?</dt><dd>Key visuals, campaign imagery, product shots and short films for brands.</dd></div>
+      <div><dt>Do you use AI?</dt><dd>Yes, as one tool among photography, 3D and retouching. Real products stay real.</dd></div>
+      <div><dt>Where are you based?</dt><dd>Madrid, Spain. Working with brands everywhere.</dd></div>
+      <div><dt>Are you taking on new work?</dt><dd>Yes. Say hello on the contact page.</dd></div>
+      <div><dt>Where did you study?</dt><dd>Placeholder answer: school and degree.</dd></div>
+      <div><dt>Why a tomato?</dt><dd>Placeholder answer: the story behind the tomato.</dd></div>
     </dl>
   </section>
 
@@ -113,11 +118,11 @@
 
 <!-- 5. Cierre: el nombre vuelve a todo el ancho -->
 <footer class="close">
-  <a class="close-link" href="/#work">See selected work →</a>
+  <a class="close-link" href="/#work">See selected work <span aria-hidden="true">→</span></a>
   <p class="close-name" aria-hidden="true">Mario Diz</p>
   <p class="close-meta">Madrid · © 2026</p>
 </footer>
 
-<script src="/js/about.js?v=20261018" defer></script>
+<script src="/js/about.js?v=20261020a" defer></script>
 </body>
 </html>
