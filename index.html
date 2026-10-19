@@ -32,12 +32,9 @@
   {"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://www.dizmar.xyz/#mario", "name": "Mario Diz", "alternateName": "dizmar", "jobTitle": "Art director and visual designer", "url": "https://www.dizmar.xyz/", "image": "https://www.dizmar.xyz/assets/images/og-image.jpg", "address": {"@type": "PostalAddress", "addressLocality": "Madrid", "addressCountry": "ES"}, "knowsAbout": ["Art direction", "Visual design", "Key visuals", "Product imagery", "Audiovisual"]}, {"@type": "WebSite", "@id": "https://www.dizmar.xyz/#website", "name": "dizmar", "alternateName": "Mario Diz portfolio", "url": "https://www.dizmar.xyz/", "author": {"@id": "https://www.dizmar.xyz/#mario"}, "inLanguage": "en"}]}
   </script>
   <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-  <link rel="stylesheet" href="/css/home.css?v=20261018">
+  <link rel="stylesheet" href="/css/home.css?v=20261019">
   <!-- Al pasar el ratón por una card, Chrome prepara la página del proyecto por adelantado:
        se abre al instante y la animación de apertura siempre llega a tiempo -->
-  <script type="speculationrules">
-    { "prerender": [{ "where": { "href_matches": "/project/*" }, "eagerness": "moderate" }] }
-  </script>
   <script type="importmap">
     {
       "imports": {
@@ -47,7 +44,7 @@
     }
   </script>
 </head>
-<body>
+<body class="no-scroll">
   <div class="sky" aria-hidden="true"></div>
   <!-- Lienzo del tomate 3D (lo dibuja /js/home-tomato.js) -->
   <canvas id="scene" aria-hidden="true"></canvas>
@@ -56,7 +53,6 @@
   <nav class="nav" aria-label="Main">
     <a class="nav-logo" href="#top" aria-label="Back to top"></a>
     <ul class="nav-links">
-      <li><a href="#first-project" data-section="work">Work</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/contact">Contact</a></li>
       <li><a href="/room.html">Room</a></li>
@@ -70,89 +66,16 @@
       <h1 class="sr-only" id="site-title">Mario Diz — art direction &amp; visual design, Madrid</h1>
       <!-- Tomate plano que se ve al instante mientras carga el 3D (luego se funde con él) -->
       <img class="tomato-placeholder" src="/assets/images/tomato.webp" width="595" height="640" alt="" aria-hidden="true" fetchpriority="high">
-      <div class="scroll-hint" id="hint">Scroll</div>
+      <div class="scroll-hint" id="hint" hidden>Scroll</div> <!-- oculto: ahora no hay nada debajo -->
     </section>
 
-    <!-- ========== 3. Selected work (papel verde) ========== -->
-    <section class="work" id="work" aria-labelledby="work-title">
-      <div class="paper-shadow" aria-hidden="true"><div class="paper" id="paper"></div></div>
-      <div class="work-inner">
-        <!-- Tira blanca con las capacidades pasando en bucle.
-             EDITA: una <li> por capacidad. Cada lista repite las capacidades tres veces (para
-             llenar pantallas anchas) y la lista va dos veces (la segunda es una copia para
-             que el bucle no tenga cortes): cambia todas igual. -->
-        <header class="work-intro">
-          <h2 class="sr-only" id="work-title">Selected work</h2>
-          <div class="ticker">
-            <div class="ticker-track">
-              <ul class="ticker-list" aria-label="Capabilities"><li>Art director</li><li>AI creative</li><li>Visual designer</li><li>3D artist</li><li>Tech enthusiast</li><li aria-hidden="true">Art director</li><li aria-hidden="true">AI creative</li><li aria-hidden="true">Visual designer</li><li aria-hidden="true">3D artist</li><li aria-hidden="true">Tech enthusiast</li><li aria-hidden="true">Art director</li><li aria-hidden="true">AI creative</li><li aria-hidden="true">Visual designer</li><li aria-hidden="true">3D artist</li><li aria-hidden="true">Tech enthusiast</li></ul>
-              <ul class="ticker-list" aria-hidden="true"><li>Art director</li><li>AI creative</li><li>Visual designer</li><li>3D artist</li><li>Tech enthusiast</li><li>Art director</li><li>AI creative</li><li>Visual designer</li><li>3D artist</li><li>Tech enthusiast</li><li>Art director</li><li>AI creative</li><li>Visual designer</li><li>3D artist</li><li>Tech enthusiast</li></ul>
-            </div>
-          </div>
-        </header>
-
-        <!-- ==========================================================================
-             LISTA DE PROYECTOS  (las "cards" blancas de la home)
-
-             - Para CAMBIAR un texto: edita el <p class="project-brand"> (marca),
-               el <h2> (nombre del proyecto) o los <li> (etiquetas / año).
-             - Para AÑADIR un proyecto: copia una <article class="project"> entera
-               (o la plantilla templates/project-card.html) y pégala donde quieras
-               que aparezca. El orden en el código es el orden en la página.
-             - Para que la card ABRA la página del proyecto: envuelve el contenido
-               en <a class="project-link" href="/project/NOMBRE-DEL-PROYECTO/"> como
-               en la card de Soap & Glory, y pon en su <div class="project-media">
-               style="view-transition-name: NOMBRE-DEL-PROYECTO" (el mismo nombre que en
-               la imagen principal de su página) para que se anime al abrir y cerrar.
-             ========================================================================== -->
-        <div class="project-grid">
-
-          <!-- ===== Proyecto 1: Lexus · Electrified (con vídeo y enlace a su página) ===== -->
-          <article class="project" id="first-project">
-            <a class="project-link" href="/project/lexus-electrified/">
-              <header class="project-caption">
-                <p class="project-brand">Lexus</p>
-                <h2>Electrified</h2>
-                <ul class="project-tags" aria-label="Project type">
-                  <li>Audiovisual</li>
-                  <li class="project-year">2025</li>
-                </ul>
-              </header>
-              <div class="project-media" style="view-transition-name: lexus-electrified">
-                <video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video>
-              </div>
-            </a>
-          </article>
-
-          <!-- ===== Proyecto 2: Soap & Glory · Vanillalicious (con enlace a su página) ===== -->
-          <article class="project" id="soap-and-glory">
-            <a class="project-link" href="/project/soap-and-glory-vanilla/">
-              <header class="project-caption">
-                <p class="project-brand">Soap &amp; Glory</p>
-                <h2>Vanillalicious</h2>
-                <ul class="project-tags" aria-label="Project type">
-                  <li>Key visuals</li>
-                </ul>
-              </header>
-              <div class="project-media" style="view-transition-name: soap-and-glory-vanilla"><img src="/assets/projects/soap-and-glory-vanilla/sg3-800.webp" style="object-position: 50% 42%" width="800" height="800" loading="lazy" decoding="async" alt="Soap &amp; Glory body lotions with vanilla cream, caramel and lime"></div>
-            </a>
-          </article>
-
-        </div>
-      </div>
-    </section>
+    <!-- Los proyectos y la tira de capacidades están quitados por ahora (la portada no hace scroll).
+         Para recuperarlos, mira el historial de este archivo en GitHub. -->
   </main>
 
-  <!-- ========== 4. Footer ========== -->
-  <footer class="footer">
-    <div class="fallen" id="fallen" aria-hidden="true"></div>
-    <span>Mario Diz, Madrid</span> <!-- texto del footer -->
-  </footer>
 
-  <!-- Scripts: nav (enlace activo y contraste) · papel con agujeros · tomate 3D -->
-  <script src="/js/home-nav.js?v=20261018"></script>
-  <script src="/js/home-paper.js?v=20261018"></script>
+  <!-- Script: tomate 3D (js/home-nav.js no se carga mientras no haya proyectos en la portada) -->
 
-  <script type="module" src="/js/home-tomato.js?v=20261018"></script>
+  <script type="module" src="/js/home-tomato.js?v=20261019"></script>
 </body>
 </html>
