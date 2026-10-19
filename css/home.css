@@ -19,14 +19,14 @@ body {
   background-color: #8cc0ef;
 }
 
-/* Al dejar atrás la portada, una capa negra tapa el cielo poco a poco (como un atardecer). Se queda fija para que
+/* Al dejar atrás la portada, una capa casi negra tapa el cielo poco a poco (como un atardecer). Se queda fija para que
    todos los proyectos se acumulen sobre el mismo fondo limpio. --light-progress lo mueve JS. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: #000;
+  background: #161614;
   opacity: var(--light-progress);
   pointer-events: none;
 }
@@ -570,7 +570,7 @@ body::before {
   z-index: 11;
   padding: 9px 14px 8px;
   background: #fff;
-  color: #000;
+  color: #161614;
   pointer-events: none;
   white-space: nowrap;
   opacity: 0;
