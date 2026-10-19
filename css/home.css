@@ -4,6 +4,15 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Fuentes de las palabras de "Creative ___" (js/home-intro.js). Alojadas aquí; licencia SIL OFL en assets/fonts/OFL.txt */
+@font-face { font-family: "Jacquard 12"; src: url("/assets/fonts/Jacquard12-Regular.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Jacquard 24"; src: url("/assets/fonts/Jacquard24-Regular.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Rubik Glitch"; src: url("/assets/fonts/RubikGlitch-Regular.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Rubik Wet Paint"; src: url("/assets/fonts/RubikWetPaint-Regular.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Rubik Distressed"; src: url("/assets/fonts/RubikDistressed-Regular.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Rubik Moonrocks"; src: url("/assets/fonts/RubikMoonrocks-Regular.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Bungee Shade"; src: url("/assets/fonts/BungeeShade-Regular.woff2") format("woff2"); font-display: block; }
+
 /* Mientras el tomate sube al menú no se puede hacer scroll (js/home-intro.js quita la clase) */
 html:has(body.intro-lock), body.intro-lock { height: 100%; overflow: hidden; overscroll-behavior: none; }
 
