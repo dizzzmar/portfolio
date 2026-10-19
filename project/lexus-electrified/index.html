@@ -20,17 +20,13 @@
 <meta property="og:image" content="https://www.dizmar.xyz/assets/projects/lexus-electrified/thumb.webp">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-<link rel="stylesheet" href="/css/case.css?v=20261019ah">
+<link rel="stylesheet" href="/css/case.css?v=20261019am">
 <link rel="stylesheet" href="/css/typography.css?v=20261019a">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body id="top">
-<div class="case-sky" aria-hidden="true"></div>
-<div class="case-grain" aria-hidden="true"></div>
 <!-- Barra: el tomate vuelve a la portada; los enlaces, como en el resto de la web -->
 <a class="case-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" width="44" height="47" alt=""></a>
-<!-- Botón "Back": vuelve a la lista de proyectos de la portada -->
-<a class="case-back" href="/#work"><span aria-hidden="true">←</span> Back</a>
 <nav class="case-nav" aria-label="Main">
   <ul>
     <li><a href="/#work">Work</a></li>
@@ -39,52 +35,50 @@
     <li><a href="/room.html">Room</a></li>
   </ul>
 </nav>
+<!-- La X cierra el proyecto: vuelve a la lista de la portada justo donde estabas (js/case.js) -->
+<a class="case-back" href="/#work" aria-label="Close project and go back to work"></a>
+
+<div class="case-head">
+  <h1 class="case-name">Lexus Electrified</h1>
+  <p class="case-meta date">2025</p>
+  <p class="case-meta client">Lexus Singapore</p>
+</div>
 
 <main>
-  <header class="case-heading">
-    <p class="case-kicker">01 / Audiovisual / 2025</p>
-    <h1>Lexus<span>Electrified</span></h1>
-  </header>
+  <!-- Primera pantalla: galería horizontal (esquinas rectas) y, debajo, los datos y la descripción -->
+  <div class="case-first">
+    <section class="p-gallery" aria-label="Project gallery">
+      <div class="p-track" tabindex="0" role="region" aria-label="Project gallery, scroll sideways">
+        <!-- La película completa, con la barra de reproducción propia (js/case.js). No arranca sola: se pulsa Play (con sonido).
+             Archivo: assets/projects/lexus-electrified/film.mp4 (30 s, 1080p) y su imagen film-poster.webp -->
+        <figure class="p-card" style="--ar: 16 / 9" id="film"><video src="/assets/projects/lexus-electrified/film.mp4" poster="/assets/projects/lexus-electrified/film-poster.webp" width="1920" height="1080" controls data-player playsinline preload="metadata" aria-label="Lexus Electrified — film"></video></figure>
+        <figure class="p-card" style="--ar: 16 / 9"><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video></figure>
+      </div>
+      <div class="p-progress" aria-hidden="true"><i></i></div>
+    </section>
 
-  <!-- 2. Texto y ficha. EDITA: el texto del proyecto -->
-  <section class="case-about">
-    <h2 class="case-label">[ About the project ]</h2>
-    <dl class="case-facts" data-reveal>
-      <dt>Client</dt><dd>Lexus Singapore</dd>
-      <dt>Project</dt><dd>Electrified</dd>
-      <dt>Discipline</dt><dd>Audiovisual</dd>
-      <dt>Year</dt><dd>2025</dd>
-    </dl>
-    <div class="case-text" data-reveal>
-      <p class="case-lead">Lexus Electrified.</p>
-      <p>Project text coming soon.</p> <!-- EDITA -->
-      <a class="case-link" href="#film">Watch the film</a>
-    </div>
-  </section>
+    <!-- EDITA: datos y texto del proyecto -->
+    <section class="case-info" aria-label="About the project">
+      <ul class="case-tags"><li>Audiovisual</li><li>Lexus Singapore</li><li>2025</li></ul>
+      <div class="case-text">
+        <p class="case-lead">Lexus Electrified.</p>
+        <p>Project text coming soon.</p>
+      </div>
+    </section>
+  </div>
 
-  <section class="case-feature" aria-label="Film preview">
-    <figure data-reveal><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Lexus Electrified film preview"></video></figure>
-  </section>
-
-  <!-- 3. La película completa, con la barra de reproducción propia (js/case.js). No arranca sola: se pulsa Play (con sonido).
-       Archivo: assets/projects/lexus-electrified/film.mp4 (30 s, 1080p) y su imagen film-poster.webp -->
-  <section class="case-wide vertical case-landscape" id="film" data-reveal>
-    <figure><video src="/assets/projects/lexus-electrified/film.mp4" poster="/assets/projects/lexus-electrified/film-poster.webp" width="1920" height="1080" controls data-player playsinline preload="metadata" aria-label="Lexus Electrified — film"></video></figure>
-  </section>
-
-  <!-- 3. La película (post de Instagram incrustado: Instagram añade su cabecera y su pie, no se pueden quitar) -->
-  <section class="case-embed" id="instagram" aria-label="Lexus Electrified film" data-reveal>
+  <!-- La película en Instagram (post incrustado: Instagram añade su cabecera y su pie, no se pueden quitar) -->
+  <section class="case-embed" id="instagram" aria-label="Lexus Electrified film on Instagram" data-reveal>
+    <h2>Film on Instagram</h2>
     <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DUk54nFkTu_/" data-instgrm-version="14">
       <a href="https://www.instagram.com/p/DUk54nFkTu_/">Watch Lexus Electrified on Instagram</a>
     </blockquote>
   </section>
-
-
 </main>
 <footer class="case-foot"><span>Mario Diz, Madrid</span><a href="#top">Back to top ↑</a></footer>
 
 <!-- Script oficial de Instagram: convierte el bloque de arriba en el reproductor -->
 <script async src="https://www.instagram.com/embed.js"></script>
-<script src="/js/case.js?v=20261019w" defer></script>
+<script src="/js/case.js?v=20261019x" defer></script>
 </body>
 </html>
