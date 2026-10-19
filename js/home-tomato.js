@@ -187,8 +187,9 @@ const AUTO = document.body.dataset.intro === 'auto';
 const INTRO_DELAY = 1.2;  // seconds the big tomato spins in the middle before flying up
 const AUTO_TIME = 1.1;    // a slower, showier trip than the scroll one
 let introAt = Infinity;   // set when the model has loaded
-// Arriving at /#work (the Back button of a project): the tomato is already in the nav, no intro
-const SKIP_INTRO = AUTO && location.hash === '#work';
+// Arriving at /#work or coming back with Atrás from a project: the tomato is already in the nav, no intro
+const BACK = performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+const SKIP_INTRO = AUTO && (location.hash === '#work' || BACK);
 if (SKIP_INTRO) introAt = 0;
 let announced = false;
 if (AUTO) { docked = false; shown = 0; }

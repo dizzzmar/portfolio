@@ -12,6 +12,15 @@ const SPEED = 950;     // milisegundos entre una palabra y la siguiente: tras de
 const BURST = 6000;    // cuánto dura cada ronda de palabras
 const HOLD = 3200;     // cuánto se queda en "Designer" antes de la siguiente ronda
 
+// Volver con Atrás (desde un proyecto): el navegador lo marca como "back_forward". La portada vuelve entonces
+// a la posición donde estaba al salir (guardada en sessionStorage) y sin la entrada del tomate.
+// Lo hacemos nosotros porque la portada bloquea el scroll al cargar y el navegador no lo restauraba.
+const BACK = performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+let SAVED_Y = 0;
+try { SAVED_Y = Number(sessionStorage.getItem('dizmar-home-y')) || 0; } catch (e) { /* storage blocked */ }
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y', String(scrollY)); } catch (e) { /* ignore */ } });
+
 (() => {
   const word = document.querySelector('.intro-word');
   const first = document.querySelector('.intro-line > span:first-child');
@@ -84,10 +93,14 @@ const HOLD = 3200;     // cuánto se queda en "Designer" antes de la siguiente r
   document.addEventListener('tomato-docked', start, { once: true });
   // Si el tomate 3D no carga (navegador sin WebGL, conexión lenta), el texto sale igual
   setTimeout(start, 6000);
-  // Al volver de un proyecto (/#work) no hay entrada: el texto y el scroll van directos a los proyectos
+  // Llegar a Work (/#work, desde el menú de un proyecto) no tiene entrada: el texto aparece y la página baja
+  // hasta los proyectos con un desplazamiento suave. Volver con Atrás deja la portada donde estaba (ver arriba).
   if (location.hash === '#work') {
     start();
-    requestAnimationFrame(() => document.getElementById('work').scrollIntoView());
+    requestAnimationFrame(() => document.getElementById('work').scrollIntoView({ behavior: 'smooth' }));
+  } else if (BACK) {
+    start();
+    scrollTo({ top: SAVED_Y, behavior: 'instant' });
   }
 
   // La ráfaga solo corre mientras el texto se ve
