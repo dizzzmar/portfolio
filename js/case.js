@@ -176,7 +176,42 @@
 // Si se llegó desde la web, usa el historial (js/home-intro.js guarda y restaura la posición).
 // Si no (por ejemplo, abriendo el proyecto directamente), el enlace lleva a /#work como siempre.
 (() => {
-  const back = document.querySelector('.case-back');
-  if (!back || history.length < 2 || !document.referrer.startsWith(location.origin + '/')) return;
-  back.addEventListener('click', (e) => { e.preventDefault(); history.back(); });
+  if (history.length < 2 || !document.referrer.startsWith(location.origin + '/')) return;
+  document.querySelectorAll('.case-back').forEach((back) => back.addEventListener('click', (e) => { e.preventDefault(); history.back(); }));
+})();
+
+// ---------- El nombre del proyecto se mezcla y pasa a "Back to projects" al pasar el ratón ----------
+// Mismo efecto de letras al azar que "Creative ___" de la portada: las letras se van fijando de izquierda a derecha.
+(() => {
+  const link = document.querySelector('.case-name .case-back');
+  const label = link && link.querySelector('.cb-text');
+  if (!label) return;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const original = label.textContent;
+  const back = 'Back to projects';
+  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
+  let raf = 0, goal = original;
+  const scramble = (text, ms = 560) => {
+    if (text === goal) return;
+    goal = text;
+    cancelAnimationFrame(raf);
+    if (reduced) { label.textContent = text; return; }
+    const start = performance.now();
+    let last = -Infinity;
+    const step = (now) => {
+      const p = Math.min(1, (now - start) / ms);
+      if (p >= 1) { label.textContent = text; return; }
+      if (now - last >= 35) {
+        last = now;
+        const fixed = Math.floor(p * text.length * 1.2);
+        label.textContent = [...text].map((ch, i) => (ch === ' ' || i < fixed ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0])).join('');
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  };
+  link.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') scramble(back); });
+  link.addEventListener('pointerleave', () => scramble(original));
+  link.addEventListener('focus', () => { if (link.matches(':focus-visible')) scramble(back); });
+  link.addEventListener('blur', () => scramble(original));
 })();

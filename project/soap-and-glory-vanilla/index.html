@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://www.dizmar.xyz/assets/projects/soap-and-glory-vanilla/sg3-1600.webp">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-<link rel="stylesheet" href="/css/case.css?v=20261019am">
+<link rel="stylesheet" href="/css/case.css?v=20261019ao">
 <link rel="stylesheet" href="/css/typography.css?v=20261019a">
 <script>document.documentElement.classList.add('js')</script>
 </head>
@@ -34,11 +34,12 @@
     <li><a href="/room.html">Room</a></li>
   </ul>
 </nav>
-<!-- La X cierra el proyecto: vuelve a la lista de la portada justo donde estabas (js/case.js) -->
-<a class="case-back" href="/#work" aria-label="Close project and go back to work"></a>
 
 <div class="case-head">
-  <h1 class="case-name">Soap &amp; Glory</h1>
+  <!-- El nombre es el botón de volver: al pasar el ratón se mezcla y pasa a "Back to projects" (js/case.js). Vuelve a la lista justo donde estabas -->
+  <h1 class="case-name"><a class="case-back" href="/#work"><span class="cb-text" aria-hidden="true">Soap &amp; Glory</span><span class="sr-only">Soap &amp; Glory — back to projects</span></a></h1>
+  <!-- En pantallas táctiles no hay "pasar por encima": se ve siempre un enlace pequeño -->
+  <a class="case-back case-back-touch" href="/#work">← Back to projects</a>
   <p class="case-meta date">2026</p>
   <p class="case-meta client">Vanillalicious</p>
 </div>
@@ -70,6 +71,6 @@
   </div>
 </main>
 <footer class="case-foot"><span>Mario Diz, Madrid</span><a href="#top">Back to top ↑</a></footer>
-<script src="/js/case.js?v=20261019x" defer></script>
+<script src="/js/case.js?v=20261019y" defer></script>
 </body>
 </html>

@@ -33,18 +33,19 @@ img, video { display: block; }
 .case-meta { font-size: 15px; font-weight: 500; line-height: 1.25; }
 .case-meta.date { left: 41%; }
 .case-meta.client { left: 58%; }
-/* Enlaces y cierre: fijos arriba a la derecha; en blanco con "difference" se ven oscuros sobre blanco y claros sobre una foto */
-.case-nav { position: fixed; inset: 0 0 auto; z-index: 20; height: var(--nav-h); display: flex; align-items: center; justify-content: flex-end; padding: 0 calc(var(--edge) + 60px) 0 var(--edge); color: #fff; mix-blend-mode: difference; pointer-events: none; }
+/* Enlaces: fijos arriba a la derecha; en blanco con "difference" se ven oscuros sobre blanco y claros sobre una foto */
+.case-nav { position: fixed; inset: 0 0 auto; z-index: 20; height: var(--nav-h); display: flex; align-items: center; justify-content: flex-end; padding: 0 var(--edge); color: #fff; mix-blend-mode: difference; pointer-events: none; }
 .case-nav ul { display: flex; gap: clamp(16px, 2.2vw, 32px); list-style: none; pointer-events: auto; }
 .case-nav a { font-size: 14px; font-weight: 500; text-decoration: none; }
 .case-nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
-/* La X: cierra el proyecto y vuelve a la lista justo donde estabas (js/case.js) */
-.case-back { position: fixed; z-index: 21; top: calc((var(--nav-h) - 36px) / 2); right: var(--edge); width: 36px; height: 36px; color: #fff; mix-blend-mode: difference; }
-.case-back::before, .case-back::after { content: ""; position: absolute; top: 50%; left: 50%; width: 34px; height: 1.5px; margin: -.75px 0 0 -17px; background: currentColor; transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
-.case-back::before { transform: rotate(45deg); }
-.case-back::after { transform: rotate(-45deg); }
-.case-back:hover::before { transform: rotate(135deg); }
-.case-back:hover::after { transform: rotate(45deg); }
+/* El nombre del proyecto es el botón de volver: al pasar el ratón se mezcla y pasa a "Back to projects" (js/case.js) */
+.case-back { color: inherit; text-decoration: none; cursor: pointer; }
+.case-name .case-back { font: inherit; letter-spacing: inherit; text-transform: none; } /* si no, typography.css lo deja en 14px como los demás enlaces */
+.case-name .case-back:focus-visible { outline-offset: 6px; }
+.cb-text { display: inline-block; font-variant-ligatures: none; }
+/* En pantallas táctiles no hay "pasar por encima": se ve siempre un enlace pequeño bajo el nombre */
+.case-back-touch { display: none; font-size: 14px; font-weight: 500; }
+@media (hover: none) { .case-back-touch { display: inline-block; position: absolute; left: calc(var(--edge) + 56px); top: calc(100% + 2px); transform: none; } }
 
 /* ---------- Primera pantalla: cabecera, galería horizontal y datos ---------- */
 .case-first { min-height: 100vh; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr auto; padding: var(--nav-h) 0 0; }
@@ -149,6 +150,8 @@ img, video { display: block; }
   .case-head { height: auto; position: relative; inset: auto; padding: calc(var(--nav-h) + 8px) var(--edge) 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
   .case-head > * { position: static; transform: none; }
   .case-name { grid-column: 1 / -1; font-size: clamp(34px, 11vw, 52px); white-space: normal; }
+  .case-back-touch { position: static; grid-column: 1 / -1; order: 2; margin-bottom: 8px; }
+  .case-meta { order: 3; }
   .case-first { padding-top: 0; }
   .case-nav { display: none; } /* en el móvil hay solo la X y el tomate: Work, About, Contact y Room están en la portada */
   .p-track { --h: min(52vh, 460px); padding-left: var(--edge); }
