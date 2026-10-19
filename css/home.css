@@ -505,7 +505,7 @@ body::before {
 .work-item { border-top: 1px solid rgba(32, 32, 29, .2); background: rgba(255, 255, 255, .72); }
 .work-item > a, .work-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) minmax(100px, .35fr) 24px; align-items: center; gap: clamp(16px, 2vw, 32px); min-height: 132px; padding: 20px 0; color: inherit; text-decoration: none; }
 .work-info { min-width: 0; }
-.work-title { font-family: Georgia, "Times New Roman", serif; font-size: clamp(25px, 2.6vw, 42px); font-weight: 400; letter-spacing: -.05em; line-height: 1.05; }
+.work-title { font-family: var(--font-ui); font-size: clamp(26px, 2.8vw, 42px); font-weight: 500; letter-spacing: -.045em; line-height: 1.1; }
 .work-info > p { margin-top: 10px; font-size: 11px; letter-spacing: .045em; text-transform: uppercase; }
 .work-num { align-self: start; padding-top: 18px; font-size: 10px; font-variant-numeric: tabular-nums; }
 .work-num::after { content: "."; }

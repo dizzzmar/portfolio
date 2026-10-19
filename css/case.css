@@ -2,8 +2,7 @@
    Fondo: blanco, continuación del fondo de la lista de trabajos.
    Orden: colores y base · barra · portada con márgenes · texto "About" con el número y el título a los lados · imagen grande ·
    galería en parejas descompensadas · siguiente proyecto · móvil · movimiento.
-   El párrafo en Georgia va casi sin espaciado (.005em, como la referencia); los textos pequeños, algo abiertos
-   (.05em–.08em); el título enorme de "Next project" queda apretado. */
+   Familia y estilos de navegación y etiquetas compartidos en typography.css. */
 
 :root {
   --bg: #fff;
@@ -119,8 +118,8 @@ img, video { display: block; width: 100%; height: auto; }
 /* ---------- Título y ficha editorial ---------- */
 .case-heading { padding: clamp(104px, 8vw, 128px) var(--edge) 0; }
 .case-kicker { margin-bottom: 16px; color: var(--soft); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
-.case-heading h1 { max-width: 16ch; font-size: clamp(56px, 9vw, 144px); font-weight: 700; letter-spacing: -.065em; line-height: .92; }
-.case-heading h1 span { display: block; margin-top: 14px; font-family: Georgia, "Times New Roman", serif; font-size: .5em; font-weight: 400; letter-spacing: -.045em; }
+.case-heading h1 { max-width: 18ch; font-size: clamp(52px, 8vw, 112px); font-weight: 500; letter-spacing: -.055em; line-height: 1; }
+.case-heading h1 span { display: block; margin-top: 10px; font-family: inherit; font-size: .5em; font-weight: 400; letter-spacing: -.035em; line-height: 1.1; }
 .case-about {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -131,11 +130,11 @@ img, video { display: block; width: 100%; height: auto; }
 .case-label { grid-column: 1; grid-row: 1; color: var(--soft); font-size: 11px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
 .case-text { grid-column: 1; grid-row: 2; max-width: 46ch; }
 .case-text p {
-  font-size: clamp(15px, 1.2vw, 18px);
-  letter-spacing: -.015em;
-  line-height: 1.5;
+  font-size: var(--type-body);
+  letter-spacing: -.01em;
+  line-height: 1.55;
 }
-.case-text .case-lead { font-family: Georgia, "Times New Roman", serif; font-size: clamp(23px, 2.3vw, 34px); line-height: 1.15; letter-spacing: -.035em; }
+.case-text .case-lead { font-family: inherit; font-size: clamp(22px, 2vw, 30px); font-weight: 400; line-height: 1.25; letter-spacing: -.025em; }
 .case-text p + p { margin-top: 1.1em; }
 /* Ficha: cliente, proyecto, disciplina y año */
 .case-facts { grid-column: 2; grid-row: 2; align-self: start; display: grid; grid-template-columns: auto 1fr; gap: 0 32px; width: 100%; max-width: 46ch; font-size: 12px; letter-spacing: .025em; }
@@ -189,8 +188,8 @@ img, video { display: block; width: 100%; height: auto; }
   justify-items: start;
   gap: 2px;
   color: #fff;
-  font-family: Georgia, "Times New Roman", serif !important;
-  font-size: 15px !important;
+  font-family: var(--font-ui);
+  font-size: var(--type-label);
   text-transform: uppercase;
   mix-blend-mode: difference;
   text-shadow: none;
@@ -265,7 +264,7 @@ img, video { display: block; width: 100%; height: auto; }
   .case-side { display: none; } /* en el móvil taparían el contenido */
   .case-back { top: var(--nav-h); height: 32px; left: var(--edge); }
   .case-heading { padding-top: 108px; }
-  .case-heading h1 { font-size: clamp(48px, 12vw, 88px); }
+  .case-heading h1 { font-size: clamp(44px, 11vw, 80px); }
   .case-about { grid-template-columns: 1fr; row-gap: 24px; padding: 32px var(--edge) 36px; }
   .case-label, .case-text, .case-facts { grid-column: 1; grid-row: auto; }
   .case-media-grid, .case-gallery { grid-template-columns: 1fr; gap: 24px; }
