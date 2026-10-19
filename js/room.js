@@ -10,6 +10,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const canvas = document.getElementById('room');
@@ -21,21 +22,23 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 // AgX is Blender's default view transform, so colours roll off like the Blender render
 renderer.toneMapping = THREE.AgXToneMapping;
-renderer.toneMappingExposure = 1;
+renderer.toneMappingExposure = 0.95;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
-// Cozy evening: dim warm ambience, a soft warm key from the front left,
-// a faint cool rim, and the tomato lamp doing most of the work (added on load).
+// Cinematic, cozy evening: very little ambient light so the shadows stay deep, a narrow warm "sunset"
+// spotlight raking across the wall from the left, a cool moonlight rim from behind for contrast
+// (warm/cool, like a film still), and the tomato lamp doing most of the work (added on load).
+// On top: a soft bloom, a vignette, a warm grade and a little film grain (see `grade` below).
 scene.background = new THREE.Color('#140d09');
 const reflections = new THREE.PMREMGenerator(renderer);
 scene.environment = reflections.fromScene(new RoomEnvironment(renderer)).texture;
 reflections.dispose();
 // three 0.160 has no scene.environmentIntensity, so the reflections are dimmed per material on load
-const ENV_INTENSITY = 0.06;
-scene.add(new THREE.HemisphereLight(0xffe2c4, 0x2a1a12, 0.13));
-const key = new THREE.DirectionalLight(0xffc89a, 0.25);
+const ENV_INTENSITY = 0.04;
+scene.add(new THREE.HemisphereLight(0xffd2a8, 0x1a0f0a, 0.07));
+const key = new THREE.DirectionalLight(0xffb27a, 0.12);
 key.position.set(-4, 5, 6);
 key.castShadow = true;
 key.shadow.mapSize.set(2048, 2048);
@@ -44,9 +47,17 @@ key.shadow.normalBias = 0.02;
 key.shadow.radius = 4;
 scene.add(key);
 scene.add(key.target);
-const rim = new THREE.DirectionalLight(0x8fb4ff, 0.18);
+const rim = new THREE.DirectionalLight(0x7fa6ff, 0.3);
 rim.position.set(4, 3, -2);
 scene.add(rim);
+// Warm low "sunset" beam from the left, with a soft edge: a band of light across the wall and shelf
+const sunset = new THREE.SpotLight(0xff9a52, 0, 0, Math.PI / 16, 0.6, 1.4);
+sunset.castShadow = true;
+sunset.shadow.mapSize.set(2048, 2048);
+sunset.shadow.bias = -0.0005;
+sunset.shadow.radius = 5;
+scene.add(sunset);
+scene.add(sunset.target);
 const camera = new THREE.PerspectiveCamera(35, 1, .1, 1000);
 // The visitor doesn't orbit the shelf: the camera eases between an overview and a
 // closer look at whichever object is hovered in the list on the left.
@@ -64,9 +75,28 @@ outline.hiddenEdgeColor.set('#7a4a2a');
 composer.addPass(outline);
 // Soft glow around the brightest things (the lamp), like Blender's bloom
 // High threshold: only the emissive lamp is bright enough to bloom, not the lit wall
-const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.35, 0.4, 2.2);
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.4, 0.45, 2.6);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
+// Film look, after tone mapping: warm shadows and highlights, a vignette and fine moving grain
+const grade = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, time: { value: 0 }, vignette: { value: 0.42 }, grain: { value: 0.035 } },
+  vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `
+    uniform sampler2D tDiffuse; uniform float time, vignette, grain; varying vec2 vUv;
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+    void main() {
+      vec3 c = texture2D(tDiffuse, vUv).rgb;
+      float l = dot(c, vec3(0.299, 0.587, 0.114));
+      c = mix(c, c * vec3(1.06, 0.98, 0.9), 0.6);                       // warm grade
+      c = mix(c, c * vec3(0.92, 0.95, 1.08), (1.0 - smoothstep(0.0, 0.35, l)) * 0.35); // slightly cool deep shadows
+      float d = distance(vUv, vec2(0.5));
+      c *= 1.0 - vignette * smoothstep(0.35, 0.85, d);                  // vignette
+      c += (hash(vUv * 1000.0 + time) - 0.5) * grain;                    // film grain
+      gl_FragColor = vec4(c, 1.0);
+    }`,
+});
+composer.addPass(grade);
 
 // Only these five things in the room can be selected. Add an href to one when
 // its section exists; until then it opens its own detail state.
@@ -265,7 +295,7 @@ function openItem(item) {
 
 const sleeves = [];  // materials of the displayed vinyl sleeve, whose glow follows the lamp
 let lampLevel = 1;   // 0 = lamp off, 1 = fully lit
-new GLTFLoader().load('/assets/room/shelf.glb?v=20261019', gltf => {
+new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
   const model = gltf.scene;
   scene.add(model);
   model.updateMatrixWorld(true); // world positions are needed below to place the lamp light
@@ -274,7 +304,11 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019', gltf => {
     if (!object.isMesh) return;
     object.castShadow = true;
     object.receiveShadow = true;
-    for (const material of [].concat(object.material)) material.envMapIntensity = ENV_INTENSITY;
+    for (const material of [].concat(object.material)) {
+      material.envMapIntensity = ENV_INTENSITY;
+      // Cut-out images (the fish sticker…) cast their shape, not a square, in the light beams' shadows
+      if (material.transparent || material.alphaMap) material.alphaTest = material.alphaTest || 0.5;
+    }
     if (/^footwear\b/.test(words(object.name))) { object.visible = false; return; }
     if (/^room\b/.test(words(object.name))) return;
     if (/^lamp tomato diffuser\b/.test(words(object.name))) {
@@ -293,10 +327,18 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019', gltf => {
     }
     meshes.push(object);
   });
+  // Aim the sunset beam at the wall from the front left, scaled to the model's size
+  {
+    const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3()), mid = box.getCenter(new THREE.Vector3());
+    sunset.position.set(mid.x - size.x * 1.6, mid.y + size.y * 0.55, mid.z + size.z * 1.8);
+    sunset.target.position.set(mid.x + size.x * 0.15, mid.y + size.y * 0.12, box.min.z);
+    sunset.intensity = 4 * size.y * size.y; // physical falloff: brightness grows with the distance it has to travel
+  }
   if (tomato) {
     const center = new THREE.Box3().setFromObject(tomato).getCenter(new THREE.Vector3());
     // The lamp lights the wall and shelf in a warm pool, like the Blender render
-    const lamp = new THREE.PointLight(0xff9a5c, 3.8, 0, 2);
+    const lamp = new THREE.PointLight(0xff8a45, 4.3, 0, 2);
     lamp.position.copy(center).add(new THREE.Vector3(0, .02, .12));
     lamp.castShadow = true;
     lamp.shadow.mapSize.set(1024, 1024);
@@ -539,7 +581,12 @@ function frame() {
     lampFlicker.start = true;
     setLamp(flickerLevel(lampFlicker.t));
     if (lampFlicker.t > FLICKER[FLICKER.length - 1][0]) { setLamp(1); lampFlicker.start = false; }
+  } else if (lampFlicker && !reduced && lampFlicker.start === false) {
+    // Once on, the lamp breathes very slightly, like a warm bulb
+    const t = now / 1000;
+    setLamp(1 + Math.sin(t * 1.3) * 0.025 + Math.sin(t * 3.7) * 0.012);
   }
+  grade.uniforms.time.value = reduced ? 0 : (now / 1000) % 100;
   updatePoster(now);
   // Ease the camera towards its goal (overview or a focused object)
   const ease = reduced ? 1 : 1 - Math.exp(-dt * 4);
