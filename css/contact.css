@@ -66,8 +66,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .ct-slider {
   position: relative;
   width: min(84vw, 460px);
-  height: 88px;
-  margin-top: 4px;
+  height: 120px;            /* la zona donde el cursor «entra» en la barra: el punto rojo se convierte en el tirador */
+  margin-top: 0;
   touch-action: none;       /* arrastrar el tirador no desplaza la página */
   user-select: none;
   -webkit-user-select: none;
@@ -78,12 +78,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   position: absolute;
   left: 0;
   top: 50%;
-  width: 32px;
-  height: 32px;
-  margin-top: -16px;
+  width: 28px;
+  height: 28px;
+  margin-top: -14px;
   border-radius: 50%;
   background: #f83d0c;
-  box-shadow: 0 0 0 3px #fff, 0 8px 20px -4px rgba(0, 30, 70, .45);
+  box-shadow: 0 0 0 2px #fff, 0 8px 20px -4px rgba(0, 30, 70, .45);
   will-change: transform;
 }
 .ct-thumb:focus-visible { outline: 2px solid #fff; outline-offset: 6px; }

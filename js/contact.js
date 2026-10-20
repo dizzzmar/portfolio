@@ -77,7 +77,8 @@ let pos = 0, vel = 0, target = 0, dragging = false, raf = 0, last = 0;
 function wake() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(step); } }
 function step(now) {
   const dt = Math.min(0.033, (now - last) / 1000); last = now;
-  const k = dragging ? 900 : 220, zeta = reduced ? 1 : dragging ? 0.9 : 0.5;     // al arrastrar sigue al dedo casi pegado; al soltar, rebota
+  const follow = dragging || inside;
+  const k = follow ? 900 : 220, zeta = reduced ? 1 : follow ? 0.9 : 0.5;         // siguiendo al ratón o al dedo va casi pegado; al soltarlo, vuelve con rebote
   vel += (k * (target - pos) - 2 * zeta * Math.sqrt(k) * vel) * dt;
   pos += vel * dt;
   pos = Math.min(travel * 1.02, Math.max(-travel * 0.02, pos));                   // un pequeño pasillo para el rebote
@@ -91,32 +92,39 @@ function step(now) {
     ticks[i].style.opacity = (0.4 + 0.6 * g).toFixed(2);
   }
   if (!done && dragging && pos >= travel * 0.985) { dragging = false; confirm(); }
-  if (dragging || Math.abs(target - pos) > 0.3 || Math.abs(vel) > 2) raf = requestAnimationFrame(step); else raf = 0;
+  if (dragging || inside || Math.abs(target - pos) > 0.3 || Math.abs(vel) > 2) raf = requestAnimationFrame(step); else raf = 0;
 }
 
-// Arrastrar: el objetivo sigue al puntero (restando el punto donde se agarró el tirador)
-let grab = 0;
-thumb.addEventListener('pointerdown', (e) => {
+// CON RATÓN el tirador ES el cursor: al entrar en la zona de la regla, el punto rojo entra en la barra (css/cursor.js lo esconde ahí)
+// y el tirador lo sigue de lado a lado, con las marcas creciendo a su paso. Para confirmar se mantiene pulsado y se arrastra hasta el final;
+// si se suelta antes, el tirador sigue al ratón y, al salir de la zona, vuelve al principio.
+// CON DEDO no hay cursor: se agarra el propio tirador y se arrastra.
+let grab = 0, inside = false;
+const xOf = (e) => Math.min(travel, Math.max(0, e.clientX - slider.getBoundingClientRect().left - r));
+const isMouse = (e) => e.pointerType === 'mouse';
+slider.addEventListener('pointerenter', (e) => { if (!isMouse(e) || done) return; inside = true; target = xOf(e); wake(); });
+slider.addEventListener('pointerleave', (e) => { if (!isMouse(e) || dragging) return; inside = false; if (!done) target = 0; wake(); });
+slider.addEventListener('pointerdown', (e) => {
   if (done) return;
+  if (!isMouse(e) && e.target !== thumb) return;                     // con el dedo, solo agarrando el tirador
   dragging = true;
-  try { thumb.setPointerCapture(e.pointerId); } catch { /* sin puntero activo: no pasa nada */ }
-  grab = e.clientX - slider.getBoundingClientRect().left - r - pos;
-  target = pos; wake();
+  try { slider.setPointerCapture(e.pointerId); } catch { /* sin puntero activo: no pasa nada */ }
+  grab = isMouse(e) ? 0 : e.clientX - slider.getBoundingClientRect().left - r - pos;
+  target = Math.min(travel, Math.max(0, xOf(e) - grab)); wake();
 });
-thumb.addEventListener('pointermove', (e) => {
-  if (!dragging) return;
-  target = Math.min(travel, Math.max(0, e.clientX - slider.getBoundingClientRect().left - r - grab));
+slider.addEventListener('pointermove', (e) => {
+  if (done || !(dragging || (isMouse(e) && inside))) return;
+  target = Math.min(travel, Math.max(0, xOf(e) - grab));
   wake();
 });
-const release = () => { if (!dragging) return; dragging = false; if (!done) target = 0; wake(); };
-thumb.addEventListener('pointerup', release);
-thumb.addEventListener('pointercancel', release);
-// Pulsar en la regla también lleva el tirador hasta ahí (y lo agarra)
-slider.addEventListener('pointerdown', (e) => {
-  if (done || e.target === thumb) return;
-  thumb.dispatchEvent(new PointerEvent('pointerdown', { pointerId: e.pointerId, clientX: e.clientX, bubbles: true }));
-  target = Math.min(travel, Math.max(0, e.clientX - slider.getBoundingClientRect().left - r)); grab = 0; wake();
-});
+const release = (e) => {
+  if (!dragging) return;
+  dragging = false;
+  if (!done) { const rect = slider.getBoundingClientRect(); inside = isMouse(e) && e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom; if (!inside) target = 0; }
+  wake();
+};
+slider.addEventListener('pointerup', release);
+slider.addEventListener('pointercancel', release);
 // Teclado: flechas mueven el tirador un 10 %, Inicio lo devuelve y Fin confirma
 thumb.addEventListener('keydown', (e) => {
   if (done) return;
