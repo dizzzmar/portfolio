@@ -12,20 +12,16 @@ html:has(body.intro-lock), body.intro-lock { height: 100%; overflow: hidden; ove
 html.smooth-scroll { scroll-behavior: smooth; }
 
 body {
-  --light-progress: 0;
   overflow-x: clip; /* que nada ensanche la página más allá de la pantalla */
   color: #fff;
   font-family: "Helvetica Neue", Arial, sans-serif;
   background-color: #8cc0ef;
 }
 
-/* Del cielo al negro: al bajar, el cielo se "revela" en negativo y después se apaga hasta el negro del fondo. Son dos capas fijas que
-   mueve js/home-intro.js: una blanca con "difference", que invierte los colores de lo que hay debajo (el azul pasa a naranja oscuro y
-   las nubes a negro; --invert la mezcla de 0 a 1), y encima otra de tinta casi negra (--dark). Se quedan fijas para que todos los
-   proyectos se acumulen sobre el mismo fondo limpio. */
-body::before, body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-body::before { background: #fff; mix-blend-mode: difference; opacity: var(--invert, 0); }
-body::after { background: #0c0c0b; opacity: var(--dark, 0); }
+/* Del cielo al negro: al bajar, el cielo se acerca (las nubes crecen y se difuminan) y al atravesarlas todo se funde en negro.
+   js/home-intro.js mueve dos variables: --zoom (0 a 1, el acercamiento y el desenfoque) y --dark (0 a 1, el fundido a negro).
+   La capa negra es fija, así que todos los proyectos se acumulan sobre el mismo fondo limpio. */
+body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #0c0c0b; opacity: var(--dark, 0); }
 
 /* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes */
 .sky {
@@ -36,13 +32,11 @@ body::after { background: #0c0c0b; opacity: var(--dark, 0); }
   background:
     url("/assets/images/sky.webp") center / cover,
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
-  transition: filter 0.8s ease;
+  scale: calc(1 + var(--zoom, 0) * 1.5);
+  filter: blur(calc(var(--zoom, 0) * 10px));
   animation: drift 40s ease-in-out infinite alternate;
   will-change: transform;
 }
-
-/* Al bajar a los proyectos el cielo se emborrona un poco (clase sky-soft, la pone js/home-intro.js) */
-.sky-soft .sky { filter: blur(10px); }
 
 /* El grano va en su propia capa, encima del cielo, para que siga nítido aunque el cielo se emborrone */
 .grain {
@@ -483,9 +477,11 @@ body::after { background: #0c0c0b; opacity: var(--dark, 0); }
   text-shadow: 0 2px 30px rgba(0, 20, 40, 0.25);
   opacity: 0;
   transform: translateY(16px);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2, .8, .2, 1), color .45s ease, text-shadow .45s ease;
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2, .8, .2, 1);
   pointer-events: none;
 }
+/* Tras la entrada, el texto se mueve con el scroll sin transición: así sigue el dedo o la rueda sin retraso */
+.intro-line.is-live { transition: color .45s ease, text-shadow .45s ease; }
 .intro-on .intro-line { opacity: 1; transform: none; }
 .light-on .intro-line { color: #fff; text-shadow: none; }
 .intro-word { font-variant-ligatures: none; }
@@ -601,10 +597,10 @@ body::after { background: #0c0c0b; opacity: var(--dark, 0); }
 @media (prefers-reduced-motion: no-preference) {
   .wi-slot img, .wi-slot video { transition: scale 1.1s cubic-bezier(.2, .8, .2, 1); }
   .wi-slot { transition: translate .7s cubic-bezier(.2, .8, .2, 1) calc(var(--i, 0) * 22ms); }
-  .work-motion .work-item::before { transition: transform 1.4s cubic-bezier(.77, 0, .18, 1); }
+  .work-motion .work-item::before { transition: transform .9s cubic-bezier(.77, 0, .18, 1); }
   .work-motion .wi-name > span { transition: translate 1.1s cubic-bezier(.2, .8, .2, 1) .15s; }
   .work-motion .wi-date, .work-motion .wi-tags { transition: color .5s ease, opacity .9s ease .45s, translate .9s cubic-bezier(.2, .8, .2, 1) .45s; }
-  .work-motion .wi-slot { transition: clip-path 1.1s cubic-bezier(.77, 0, .18, 1) calc(.35s + var(--i, 0) * 70ms), translate .7s cubic-bezier(.2, .8, .2, 1) calc(var(--i, 0) * 22ms); }
+  .work-motion .wi-slot { transition: clip-path .8s cubic-bezier(.77, 0, .18, 1) calc(.35s + var(--i, 0) * 70ms), translate .7s cubic-bezier(.2, .8, .2, 1) calc(var(--i, 0) * 22ms); }
   /* Antes de entrar: la línea sin dibujar, el nombre escondido bajo su máscara y las miniaturas tapadas */
   .work-motion .work-item:not(.is-in)::before { transform: scaleX(0); }
   .work-motion .work-item:not(.is-in) .wi-name > span { translate: 0 112%; }
