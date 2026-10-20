@@ -1,0 +1,90 @@
+<!doctype html>
+<!--
+  PROYECTO: Schweppes  ·  www.dizmar.xyz/project/schweppes/
+  Título, ficha editorial y galería sobre fondo blanco. Estilos comunes en /css/case.css.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Título de la pestaña del navegador y descripción para buscadores -->
+<title>Schweppes · Mario Diz</title>
+<meta name="description" content="Schweppes, an AI film (2026) by Mario Diz, art director and visual designer based in Madrid.">
+<link rel="canonical" href="https://www.dizmar.xyz/project/schweppes/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="dizmar — Mario Diz">
+<meta property="og:title" content="Schweppes · Mario Diz">
+<meta property="og:description" content="Schweppes, an AI film (2026) by Mario Diz, art director and visual designer based in Madrid.">
+<meta property="og:url" content="https://www.dizmar.xyz/project/schweppes/">
+<meta property="og:image" content="https://www.dizmar.xyz/assets/projects/schweppes/thumb.webp">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
+<link rel="stylesheet" href="/css/case.css?v=20261020b">
+<link rel="stylesheet" href="/css/nav-logo.css?v=20261020a">
+<link rel="stylesheet" href="/css/nav-links.css?v=20261020a">
+<link rel="stylesheet" href="/css/typography.css?v=20261019a">
+<script>document.documentElement.classList.add('js')</script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+</head>
+<body id="top">
+<!-- Barra: el tomate vuelve a la portada; los enlaces, como en el resto de la web (no hace falta tocar nada) -->
+<a class="case-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" width="44" height="47" alt=""></a>
+<nav class="case-nav" aria-label="Main">
+  <ul>
+    <li><a href="/#work" aria-current="page">Work</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/contact">Contact</a></li>
+    <li><a href="/room.html">Room</a></li>
+  </ul>
+</nav>
+
+<div class="case-head">
+  <!-- El nombre es el botón de volver: al pasar el ratón se mezcla y pasa a "Back to projects" (js/case.js). Vuelve a la lista justo donde estabas -->
+  <h1 class="case-name"><a class="case-back" href="/#work"><span class="cb-text" aria-hidden="true">Schweppes</span><span class="sr-only">Schweppes — back to projects</span></a></h1>
+  <!-- En pantallas táctiles no hay "pasar por encima": se ve siempre un enlace pequeño (no hace falta tocarlo) -->
+  <a class="case-back case-back-touch" href="/#work">← Back to projects</a>
+  <p class="case-meta date">2026</p>
+  <p class="case-meta client">Schweppes</p>
+</div>
+
+<main>
+  <!-- Primera pantalla: galería horizontal (esquinas rectas) y, debajo, los datos y la descripción -->
+  <div class="case-first">
+    <section class="p-gallery" aria-label="Project gallery">
+      <div class="p-track" tabindex="0" role="region" aria-label="Project gallery, scroll sideways">
+        <!-- Avance en bucle, sin sonido. FALTA la película completa: cuando esté subida a assets/projects/schweppes/film.mp4 (con su imagen film-poster.webp),
+             añade aquí delante la tarjeta de película y el enlace "Go to film" (ver templates/project-template/index.html, ejemplo A) -->
+        <figure class="p-card" style="--ar: 16 / 9"><video src="/assets/projects/schweppes/thumb.mp4" poster="/assets/projects/schweppes/thumb.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Schweppes film preview"></video></figure>
+        <figure class="p-card" style="--ar: 16 / 9"><img src="/assets/projects/schweppes/frame-1-800.webp" srcset="/assets/projects/schweppes/frame-1-800.webp 800w, /assets/projects/schweppes/frame-1-1600.webp 1600w" sizes="(max-width: 760px) 90vw, 1000px" width="1600" height="900" alt="Close-up of a leopard paw dressed as a gentleman holding a Schweppes tonic water bottle" loading="lazy" decoding="async"></figure>
+        <figure class="p-card" style="--ar: 16 / 9"><img src="/assets/projects/schweppes/frame-2-800.webp" srcset="/assets/projects/schweppes/frame-2-800.webp 800w, /assets/projects/schweppes/frame-2-1600.webp 1600w" sizes="(max-width: 760px) 90vw, 1000px" width="1600" height="900" alt="A leopard in a tweed three-piece suit holding a Schweppes bottle at a black-tie party" loading="lazy" decoding="async"></figure>
+        <figure class="p-card" style="--ar: 16 / 9"><img src="/assets/projects/schweppes/frame-3-800.webp" srcset="/assets/projects/schweppes/frame-3-800.webp 800w, /assets/projects/schweppes/frame-3-1600.webp 1600w" sizes="(max-width: 760px) 90vw, 1000px" width="1600" height="900" alt="A leopard in a tweed suit with a Schweppes bottle in a grand ballroom with a chandelier" loading="lazy" decoding="async"></figure>
+      </div>
+      <div class="p-progress" aria-hidden="true"><i></i></div>
+    </section>
+
+    <!-- Datos y texto del proyecto -->
+    <section class="case-info" aria-label="About the project">
+      <ul class="case-tags"><li>Audiovisual</li><li>AI film</li><li>2026</li></ul>
+      <div class="case-text">
+        <p>A film made 100% with AI, where every frame was finished with professional retouching before being animated. I helped lead the image side: keeping the look consistent from shot to shot, fixing textures that AI tends to get wrong, and polishing each frame by hand. We also integrated the product into the scenes so it looks shot, not pasted in.</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- Aviso de propiedad: va en todos los proyectos -->
+<div class="case-credit"><p>These projects belong to WPP Production / WPP Holding. I'm showing them here to share the part I played in the production and creative team.</p></div>
+<footer class="case-foot"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
+
+<script src="/js/case.js?v=20261020d" defer></script>
+<script type="module" src="/js/nav-tomato.js?v=20261020b"></script>
+</body>
+</html>
