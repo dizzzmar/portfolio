@@ -6,7 +6,6 @@
   --bg: #0c0c0b;
   --dim: rgba(255, 255, 255, .6);
   --faint: rgba(255, 255, 255, .32);
-  --line: rgba(255, 255, 255, .18);
   --font-ui: "Helvetica Neue", Arial, sans-serif;
   --nav-h: 64px;
   --gutter: clamp(16px, 1.2vw, 24px);
@@ -35,14 +34,14 @@ main { padding: 0 var(--gutter); }
 .pv-updated { margin-top: clamp(14px, 1.6vw, 24px); color: var(--faint); font-size: 15px; font-weight: 500; }
 
 /* ---------- Filas: línea fina arriba, título a la izquierda y texto a la derecha ---------- */
-.pv-row { display: grid; grid-template-columns: 25% minmax(0, 1fr); column-gap: 16px; padding: clamp(28px, 3.4vw, 52px) 0; border-top: 1px solid var(--line); }
+.pv-row { display: grid; grid-template-columns: 25% minmax(0, 1fr); column-gap: 16px; padding: clamp(28px, 3.4vw, 52px) 0; }
 .pv-row h2 { font-size: 15px; font-weight: 500; line-height: 1.5; color: var(--faint); transition: color .5s ease; }
 .pv-row:hover h2 { color: rgba(255, 255, 255, .95); }
 .pv-row p { max-width: 38em; }
 .pv-row p a { text-decoration-thickness: 1px; }
 .pv-row p a:hover { text-decoration-thickness: 2px; }
 
-.pv-back { padding: clamp(28px, 3.4vw, 52px) 0; border-top: 1px solid var(--line); font-size: clamp(20px, 2vw, 30px); font-weight: 500; letter-spacing: -.03em; }
+.pv-back { padding: clamp(28px, 3.4vw, 52px) 0; font-size: clamp(20px, 2vw, 30px); font-weight: 500; letter-spacing: -.03em; }
 .pv-back a { text-decoration: none; }
 .pv-back a:hover { text-decoration: underline; }
 
