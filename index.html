@@ -14,6 +14,20 @@
 <html lang="en">
 <head>
   <script>document.documentElement.classList.add('js')</script>
+  <!-- Pantalla de carga (css/loader.css, js/loader.js): solo la primera vez de cada visita a la portada limpia (no con #work, ni al volver atrás,
+       ni llegando desde el tomate de otra página, ni con «reducir movimiento»). -->
+  <script>
+    (function () {
+      try {
+        var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+        if (sessionStorage.getItem('dizmar-loaded') || sessionStorage.getItem('dizmar-land-fly') || location.hash ||
+            (nav && nav.type === 'back_forward') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        document.documentElement.classList.add('ld-on');
+      } catch (e) { /* sin almacenamiento: no hay pantalla de carga */ }
+    })();
+  </script>
+  <link rel="stylesheet" href="/css/loader.css?v=20261021b">
+  <link rel="preload" href="/assets/models/tomato.glb" as="fetch" crossorigin> <!-- el tomate 3D empieza a bajarse ya, sin esperar a three.js -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mario Diz — Art director &amp; visual designer in Madrid · dizmar</title>
@@ -54,6 +68,9 @@
   <div class="sky" aria-hidden="true"><div class="sky-sharp"></div><div class="sky-soft"></div></div>
   <div class="fade" aria-hidden="true"></div> <!-- el fundido a blanco al llegar a Work (js/home-intro.js) -->
   <div class="grain" aria-hidden="true"></div> <!-- grano encima del cielo (se queda nítido aunque el cielo se emborrone) -->
+  <!-- Pantalla de carga: fondo blanco y la silueta del tomate que se llena de rojo (solo con la clase ld-on en <html>; js/loader.js).
+       Va ANTES del lienzo del tomate 3D para que el 3D quede por encima del blanco. -->
+  <div id="loader" aria-hidden="true"><div class="ld-tomato"><div class="ld-fill" id="ld-fill"><div class="ld-wave"></div></div></div></div>
   <!-- Lienzo del tomate 3D (lo dibuja /js/home-tomato.js) -->
   <canvas id="scene" aria-hidden="true"></canvas>
 
@@ -153,9 +170,10 @@
 
 
   <!-- Scripts: texto "Creative ___" y vídeos · tomate 3D -->
+  <script src="/js/loader.js?v=20261021b" defer></script> <!-- antes que home-intro.js: bloquea el desplazamiento mientras carga -->
   <script src="/js/home-intro.js?v=20261021a" defer></script>
   <script src="/js/home-work.js?v=20261020s" defer></script>
-  <script type="module" src="/js/home-tomato.js?v=20261020p"></script>
+  <script type="module" src="/js/home-tomato.js?v=20261021a"></script>
 <script src="/js/cursor.js?v=20261020h" defer></script>
 </body>
 </html>
