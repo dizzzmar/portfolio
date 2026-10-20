@@ -1,0 +1,102 @@
+/* CONTACT — estilos de contact/index.html: el cielo de la portada, un tomate grande que se gira para confirmar y dos botones.
+   Orden: base · cielo · barra · contenido · tomate y anillo · botones · movimiento. Tamaños y curva: css/tokens.css */
+
+:root { --nav-h: 64px; --ink: #111; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { min-height: 100svh; overflow-x: clip; color: #fff; background: #4f8fd8; font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-underline-offset: 4px; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---------- Cielo (el mismo de la portada y de Stamps) ---------- */
+.sky {
+  position: fixed;
+  inset: -8%;
+  z-index: -1;
+  background:
+    url("/assets/images/sky.webp") center / cover,
+    linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
+  animation: drift 40s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes drift {
+  0%   { transform: translate(-3%, 1%) scale(1); }
+  50%  { transform: translate(1%, -1.5%) scale(1.04); }
+  100% { transform: translate(3%, 1%) scale(1.02); }
+}
+
+/* ---------- Barra de navegación: fija arriba (tamaños y colores comunes en nav-logo.css y nav-links.css) ---------- */
+.nav { position: fixed; inset: 0 0 auto; z-index: 9; height: var(--nav-h); display: flex; align-items: center; }
+
+/* ---------- Contenido: centrado en la pantalla ---------- */
+.ct {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: calc(var(--nav-h) + 16px) 24px 72px;
+  text-align: center;
+}
+.ct h1 { max-width: 14em; font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.05em; line-height: var(--lh-tight); text-wrap: balance; }
+.ct-lead { margin-top: 16px; font-size: var(--fs-lead); font-weight: 500; line-height: var(--lh-ui); letter-spacing: -.01em; text-shadow: 0 1px 12px rgba(0, 30, 70, .25); }
+
+/* ---------- El tomate y su anillo: una vuelta entera completa el anillo ---------- */
+.ct-spin {
+  --size: min(54vw, 42vh, 380px);
+  position: relative;
+  width: var(--size);
+  height: var(--size);
+  margin: clamp(20px, 4vh, 40px) 0 8px;
+}
+.ct-canvas, .ct-fallback { position: absolute; inset: 8%; width: 84%; height: 84%; }
+.ct-canvas { touch-action: none; /* arrastrar el tomate no desplaza la página */ opacity: 0; }
+.ct-fallback { object-fit: contain; }
+.ct-spin.is-ready .ct-canvas { opacity: 1; }
+.ct-spin.is-ready .ct-fallback { opacity: 0; }
+.ct-ring { position: absolute; inset: 0; width: 100%; height: 100%; rotate: -90deg; overflow: visible; pointer-events: none; }
+.ct-ring circle { fill: none; stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+.ct-ring-bg { stroke: rgba(255, 255, 255, .35); stroke-dasharray: .006 .012; }
+.ct-ring-fg { stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.ct-meter { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } /* solo para lectores de pantalla */
+
+/* Al confirmar, el tomate da un pequeño salto */
+.ct-spin.is-done { animation: ct-pop .6s var(--ease-out); }
+@keyframes ct-pop { 40% { transform: scale(1.07); } }
+
+/* ---------- Botones ---------- */
+.ct-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; min-height: 44px; }
+.ct-btn {
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font-size: var(--fs-s);
+  font-weight: 600;
+  transition: transform .25s var(--ease-out), opacity .2s;
+}
+.ct-btn:disabled { opacity: .5; cursor: default; }
+.ct-btn-ghost { background: rgba(255, 255, 255, .18); color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .7); }
+@media (hover: hover) and (pointer: fine) { .ct-btn:not(:disabled):hover { transform: translateY(-2px); } }
+.ct-btn:not(:disabled):active { transform: scale(.97); }
+.ct-address { margin-top: 12px; font-size: var(--fs-m); font-weight: 600; user-select: all; }
+
+@media (max-width: 700px) {
+  .ct h1 { font-size: clamp(32px, 9vw, 40px); }
+  .ct-spin { --size: min(70vw, 40vh, 320px); }
+}
+
+/* ---------- Movimiento: se quita con "reducir movimiento" ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .sky { animation: none; }
+  .ct-spin.is-done { animation: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ct > * { animation: ct-in .8s var(--ease-out) backwards; }
+  .ct > :nth-child(2) { animation-delay: .08s; }
+  .ct > :nth-child(3) { animation-delay: .16s; }
+  .ct > :nth-child(n+4) { animation-delay: .24s; }
+}
+@keyframes ct-in { from { opacity: 0; translate: 0 16px; } }

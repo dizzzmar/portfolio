@@ -72,6 +72,9 @@ Están en `js/room.js` (objetos `nowPlaying` y `lastWatched`, y lista `destinati
 2. Borra la línea `noindex` de `machine/index.html` y añade `/machine/` a `sitemap.xml`.
 3. Revisa que sus textos sigan al día con la web.
 
+### Cambiar el correo de «Contact»
+«Contact» del menú lleva a `/contact/`, una página de confirmación: el visitante gira el tomate una vuelta (o pulsa «Open it for me») y se abre su programa de correo. La dirección y el asunto están en las dos primeras líneas de `js/contact.js` (y la dirección escrita en `contact/index.html` y en la página de Privacy).
+
 ### Cambiar el texto de la página 404
 `404.html`, el párrafo con clase `message`.
 
