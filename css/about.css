@@ -94,12 +94,13 @@ main, .close { padding: 0 var(--margin); }
   line-height: 1.22;
 }
 
-/* Recuadro de la foto (hasta que haya foto real): ocupa la cuarta columna */
+/* La foto ocupa la cuarta columna */
 .portrait {
   grid-area: portrait;
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
+  object-position: 50% 25%; /* la cara arriba */
 }
 .portrait-placeholder {
   display: flex;
