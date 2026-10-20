@@ -17,6 +17,8 @@ const openBtn = document.getElementById('ct-open');
 const copyBtn = document.getElementById('ct-copy');
 const address = document.getElementById('ct-address');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Cada texto nuevo se «escribe» (js/contact-type.js); si ese script no está, se pone sin más
+const write = (el, text, opts) => (window.ctType ? window.ctType(el, text, opts) : (el.textContent = text));
 
 let progress = 0;      // 0 → 1: una vuelta entera del tomate
 let done = false;
@@ -27,13 +29,13 @@ function confirm() {
   done = true;
   setProgress(1);
   spin.classList.add('is-done');
-  title.textContent = title.dataset.stateDone;
+  write(title, title.dataset.stateDone);
   openBtn.disabled = true;
   setTimeout(() => { location.href = MAIL; }, reduced ? 200 : 900);
   // Si no se ha abierto nada (sin programa de correo), se ofrece copiar la dirección
   setTimeout(() => {
-    title.textContent = 'Did your mail app open?';
-    lead.textContent = lead.dataset.stateDone;
+    const end = write(title, 'Did your mail app open?');
+    write(lead, lead.dataset.stateDone, { delay: Math.max(0, end - 300) });
     address.hidden = false;
     copyBtn.hidden = false;
     openBtn.disabled = false;

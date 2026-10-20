@@ -43,6 +43,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .ct h1 { max-width: 14em; font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.05em; line-height: var(--lh-tight); text-wrap: balance; }
 .ct-lead { margin-top: 16px; font-size: var(--fs-lead); font-weight: 500; line-height: var(--lh-ui); letter-spacing: -.01em; text-shadow: 0 1px 12px rgba(0, 30, 70, .25); }
 
+/* Texto que se escribe solo (js/contact-type.js): palabras que no se parten y letras de ancho fijo mientras se mezclan */
+.ct-w { display: inline-block; white-space: nowrap; }
+.ct-c { display: inline-block; text-align: center; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
 /* ---------- El tomate y su anillo: una vuelta entera completa el anillo ---------- */
 .ct-spin {
   --size: min(54vw, 42vh, 380px);
