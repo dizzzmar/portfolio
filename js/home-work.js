@@ -37,8 +37,8 @@
     try { from = sessionStorage.getItem('dizmar-from'); sessionStorage.removeItem('dizmar-from'); } catch (e) { /* storage blocked */ }
     const row = rows.find((r) => r.querySelector('a')?.getAttribute('href') === from);
     if (!row) return;
-    // Con transición de página (is-vt) la miniatura todavía está llegando a su sitio: la fila se enciende cuando termina
-    const settle = document.documentElement.classList.contains('is-vt') ? 450 : 0;
+    // Con transición de página (is-vt) la lista se está fundiendo: la fila se enciende cuando termina
+    const settle = document.documentElement.classList.contains('is-vt') ? 300 : 0;
     work.classList.add('arriving');
     setTimeout(() => row.classList.add('is-back'), settle);
     setTimeout(() => work.classList.remove('arriving'), 600);

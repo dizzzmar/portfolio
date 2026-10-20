@@ -2,9 +2,8 @@
    Lo que se busca: que se note de dónde viene cada cosa y adónde va, y nada más.
    · La página nueva aparece con un fundido corto sobre la que se va (sin que ninguna se vea a medias).
    · El tomate del menú se queda quieto: tiene el mismo tamaño y sitio en todas las páginas.
-   · De la lista Work a un proyecto, la miniatura de la fila se agranda hasta ser la primera tarjeta de la galería; con Atrás, al revés
-     (js/transitions.js le pone el nombre "work-hero" a esas dos piezas). Es lo único que "vuela".
-   Las animaciones de entrada de cada página se mantienen; solo la pieza que vuela no se anima aparte (clase has-hero). */
+   Las animaciones de entrada de cada página (las imágenes que se destapan una a una, los textos que suben...) se mantienen tal cual:
+   la transición solo cuida el paso de una página a otra. */
 @view-transition { navigation: auto; }
 
 :root {
@@ -22,16 +21,6 @@
 ::view-transition-group(site-logo) { animation-duration: 0s; }
 ::view-transition-old(site-logo) { display: none; }
 ::view-transition-new(site-logo) { animation: none; }
-
-/* La pieza que vuela: la miniatura de la fila <-> la primera tarjeta de la galería. Cambia de forma (vertical <-> horizontal): se recorta, no se deforma */
-::view-transition-group(work-hero) { animation-duration: 420ms; animation-timing-function: var(--vt-ease-in-out); }
-::view-transition-image-pair(work-hero) { overflow: hidden; }
-::view-transition-old(work-hero), ::view-transition-new(work-hero) { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: normal; }
-
-/* Las animaciones de entrada de cada página (las tarjetas que se destapan una a una, los textos que suben, los sellos...) se mantienen
-   al llegar con transición. Solo la pieza que vuela (la primera tarjeta de la galería) no se anima aparte: ya llega volando. */
-html.has-hero.js .p-gallery .p-card:first-child, html.has-hero.js .p-gallery .p-card:first-child img, html.has-hero.js .p-gallery .p-card:first-child video { animation: none; }
-html.has-hero .work-grid.arriving { animation: none; } /* la lista no se vuelve a fundir: la miniatura vuelve a su sitio */
 
 /* "Reducir movimiento": solo el fundido, sin que nada se agrande ni vuele */
 @media (prefers-reduced-motion: reduce) {
