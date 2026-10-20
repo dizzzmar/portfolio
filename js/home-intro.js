@@ -176,6 +176,7 @@ function createWordCycler(word, { visible = true } = {}) {
   // Los enlaces explícitos a Work entran directamente en la lista, sin deslizar la landing.
   if (BACK && SAVED_Y > 0) {
     document.body.classList.add('work-engaged');
+    line.classList.add('is-live'); // sin entrada animada: el texto ya está donde toca (o escondido) desde el primer fotograma
     start();
     unlock();
     // Se repite al terminar de cargar: hasta entonces la altura de la página aún cambia y el salto se vería
@@ -184,6 +185,7 @@ function createWordCycler(word, { visible = true } = {}) {
     addEventListener('load', restore, { once: true });
   } else if (location.hash === '#work') {
     document.body.classList.add('work-engaged');
+    line.classList.add('is-live');
     start();
     unlock();
     requestAnimationFrame(() => document.getElementById('work').scrollIntoView({ behavior: 'instant' }));
@@ -205,7 +207,10 @@ function createWordCycler(word, { visible = true } = {}) {
   let queued = false;
   const update = () => {
     queued = false;
-    const q = clamp01(scrollY / Math.max(1, work ? work.offsetTop : innerHeight)); // 0 en la portada, 1 al llegar a Work
+    // Mientras la página carga y se restaura la posición (Atrás o #work), se usa la posición de destino: así no hay un destello del texto grande
+    const loading = document.readyState !== 'complete';
+    const y = loading && BACK && SAVED_Y > 0 ? SAVED_Y : loading && location.hash === '#work' && work ? work.offsetTop : scrollY;
+    const q = clamp01(y / Math.max(1, work ? work.offsetTop : innerHeight)); // 0 en la portada, 1 al llegar a Work
     const zoom = still ? 0 : smooth(clamp01(q / 0.85));  // el cielo se acerca; las nubes se agrandan y se difuminan
     const dark = smooth(clamp01((q - 0.5) / 0.45));       // al atravesarlas, todo se funde en negro
     document.body.style.setProperty('--zoom', zoom.toFixed(3));
@@ -215,11 +220,12 @@ function createWordCycler(word, { visible = true } = {}) {
     if (!still) line.style.setProperty('--blur', (q * 10).toFixed(1) + 'px');
     line.style.translate = still ? '' : `0 ${(-q * 48).toFixed(1)}px`;
     // Al llegar a Work, el "Creative ___" del centro desaparece: la palabra sigue en el título fijo de la izquierda
-    const workOn = !!work && work.getBoundingClientRect().top < innerHeight * 0.5;
+    const workOn = !!work && work.offsetTop - y < innerHeight * 0.5;
     document.body.classList.toggle('work-on', workOn);
     line.style.opacity = workOn ? '0' : document.body.classList.contains('intro-on') ? String(1 - smooth(clamp01(q / 0.5))) : '';
   };
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
   addEventListener('resize', update);
+  addEventListener('load', update);
   update();
 })();
