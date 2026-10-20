@@ -8,6 +8,17 @@
 (() => {
   const work = document.getElementById('work');
   if (!work) return;
+  // La hora de Madrid bajo "Based in Madrid" (sea cual sea la zona del visitante), puesta al minuto
+  const clock = document.querySelector('[data-madrid-time]');
+  if (clock) {
+    const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+    const tick = () => {
+      const parts = Object.fromEntries(fmt.formatToParts(new Date()).map(p => [p.type, p.value]));
+      clock.textContent = `${parts.hour}:${parts.minute} ${parts.timeZoneName}`;
+      setTimeout(tick, 60000 - (Date.now() % 60000) + 50);
+    };
+    tick();
+  }
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const rows = [...work.querySelectorAll('.work-item')];
