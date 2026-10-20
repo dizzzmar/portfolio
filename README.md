@@ -72,6 +72,9 @@ Están en `js/room.js` (objetos `nowPlaying` y `lastWatched`, y lista `destinati
 2. Borra la línea `noindex` de `machine/index.html` y añade `/machine/` a `sitemap.xml`.
 3. Revisa que sus textos sigan al día con la web.
 
+### Cambiar el correo del enlace «Contact»
+«Contact» del menú abre el programa de correo del visitante (`mailto:`). Está en el menú de todas las páginas (home, About, Privacy, Stamps, Room, los proyectos y la plantilla). Para cambiar la dirección, busca `mailto:hey.mariodiz@gmail.com` y cámbialo en todos los archivos (y en la página de Privacy, donde también aparece escrita).
+
 ### Cambiar el texto de la página 404
 `404.html`, el párrafo con clase `message`.
 
