@@ -574,7 +574,7 @@ body {
   inset: 0 auto auto 0;
   z-index: 11;
   padding: 9px 14px 8px;
-  background: #0c0c0b;
+  background: #f83d0c; /* el rojo de la marca, el mismo del punto del cursor */
   color: #fff;
   pointer-events: none;
   white-space: nowrap;
