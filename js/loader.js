@@ -14,8 +14,6 @@
   const steps = { dom: false, sky: false, load: false, tomato: false };
   let shown = 0, last = start, finished = false;
 
-  loader.dataset.mode = window.CSS && CSS.registerProperty ? 'iris' : 'fade';
-
   // Mientras dura la carga no se puede empezar a desplazar la portada
   const block = (e) => { if (!finished) { e.stopImmediatePropagation(); if (e.cancelable) e.preventDefault(); } };
   ['wheel', 'touchstart', 'touchmove'].forEach((t) => addEventListener(t, block, { capture: true, passive: false }));
@@ -48,20 +46,20 @@
   }
   requestAnimationFrame(frame);
 
-  // ---- Final: aparece el 3D y gira sobre Z, se abre el cielo y entra el menú ----
+  // ---- Final: aparece el 3D y gira sobre Z, el blanco se funde sobre el cielo y entra el menú ----
   function finish() {
     finished = true;
     fill.style.transform = 'translateY(-10%)';
     root.classList.add('ld-swap');
     document.dispatchEvent(new Event('loader-swap'));              // js/home-tomato.js: el giro sobre el eje Z
-    setTimeout(() => root.classList.add('ld-iris'), 650);          // el cielo se abre cuando el tomate ya va asentándose
-    setTimeout(() => root.classList.add('ld-nav'), 1050);          // el menú entra con el cielo ya a medias
+    setTimeout(() => root.classList.add('ld-reveal'), 600);        // el cielo aparece cuando el tomate ya va asentándose
+    setTimeout(() => root.classList.add('ld-nav'), 1000);          // el menú entra con el cielo ya a medias
     setTimeout(() => {
       loader.remove();
-      root.classList.remove('ld-on', 'ld-swap', 'ld-iris');
+      root.classList.remove('ld-on', 'ld-swap', 'ld-reveal');
       ['wheel', 'touchstart', 'touchmove'].forEach((t) => removeEventListener(t, block, { capture: true }));
       setTimeout(() => root.classList.remove('ld-nav'), 1200);
       try { sessionStorage.setItem('dizmar-loaded', '1'); } catch (e) { /* storage blocked */ }
-    }, 650 + 1100);
+    }, 600 + 1500);
   }
 })();

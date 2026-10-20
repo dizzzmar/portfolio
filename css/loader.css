@@ -1,7 +1,7 @@
 /* LOADER — la pantalla de carga de la portada (solo la primera vez de cada visita; la activa un script del <head> con la clase ld-on en <html>).
    1) fondo blanco y la silueta del tomate que se llena de rojo según carga la página (js/loader.js);
    2) cuando todo está listo, aparece el tomate 3D y da una vuelta sobre el eje Z (js/home-tomato.js, evento loader-swap);
-   3) un círculo de cielo se abre desde el tomate y se muestra el cielo; después entran el menú y los textos.
+   3) el blanco se funde y el cielo se asienta en su sitio; después entran el menú y los textos.
    Sin la clase ld-on (otras visitas, volver atrás, reducir movimiento, sin JavaScript) nada de esto existe. */
 
 #loader { display: none; }
@@ -48,17 +48,10 @@
 /* La silueta se va en cuanto aparece el 3D */
 .ld-swap .ld-tomato { visibility: hidden; }
 
-/* El cielo se abre desde el centro (el tomate): un círculo transparente en el blanco que crece */
-@property --ld-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
-.ld-iris #loader {
-  -webkit-mask: radial-gradient(circle at 50% 50%, transparent var(--ld-r), #000 calc(var(--ld-r) + 70px));
-  mask: radial-gradient(circle at 50% 50%, transparent var(--ld-r), #000 calc(var(--ld-r) + 70px));
-  animation: ld-iris 1.05s var(--ease-out) forwards;
-}
-@keyframes ld-iris { to { --ld-r: 80vmax; } }
-/* Si el navegador no sabe animar el círculo, el blanco se funde sin más */
-#loader[data-mode="fade"] { transition: opacity .8s var(--ease-out); }
-.ld-iris #loader[data-mode="fade"] { -webkit-mask: none; mask: none; animation: none; opacity: 0; }
+/* El cielo aparece: el blanco se funde y el cielo, que esperaba un poco más cerca, se asienta en su sitio (solo opacity y scale) */
+.ld-on .sky-sharp { scale: 1.12; }
+.ld-reveal .sky-sharp { scale: 1; transition: scale 1.4s var(--ease-out); }
+.ld-reveal #loader { opacity: 0; transition: opacity .9s var(--ease-out); }
 
 /* El menú entra después del cielo, uno a uno */
 .ld-on:not(.ld-nav) .nav-links a { opacity: 0; }
