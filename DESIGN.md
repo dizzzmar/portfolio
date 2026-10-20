@@ -5,7 +5,7 @@ Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, pr
 
 ## 1. Tipografía
 
-**Una sola letra:** Helvetica Neue (en Apple) o Arial (en el resto). Es la del sistema: no se descarga nada y no se envía ningún dato a terceros. **No hay serif.** Las únicas excepciones son `machine/` (otro modo, a propósito) y el texto de las miniaturas de los sellos, que se escala con el propio sello.
+**Una sola letra:** Helvetica Neue (en Apple) o Arial (en el resto). Es la del sistema: no se descarga nada y no se envía ningún dato a terceros. Las excepciones son `machine/` (otro modo, a propósito), la palabra cambiante de Creative (fuentes libres locales) y el texto de las miniaturas de los sellos, que se escala con el propio sello.
 
 | Variable | Tamaño | Para qué |
 | --- | --- | --- |
@@ -26,6 +26,8 @@ Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, pr
 - **Mayúsculas:** solo en etiquetas pequeñas (`--fs-xs`).
 
 ## 2. Color
+
+La vista Machine es una excepción solicitada: fondo blanco, texto monoespaciado rojo oscuro `#c52020` para mantener el contraste al leer. El selector Human / Machine usa los mismos colores. El título Creative alterna Jacquard 12, Rubik Glitch y Bungee Shade (fuentes locales); el resto mantiene la familia compartida.
 
 | Uso | Valor |
 | --- | --- |
