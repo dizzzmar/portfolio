@@ -59,7 +59,7 @@ copyBtn.addEventListener('click', async () => {
 });
 
 // ---- La regla de marcas ----
-const TICKS = 41, SIGMA = 52, AMP = 2.4;   // marcas, ancho del bulto (px) y cuánto crecen (×) las más cercanas al tirador
+const TICKS = 41, SIGMA = 52, AMP = 2.4, CUT = 7;   // marcas, ancho del bulto (px), cuánto crecen (×) las más cercanas al tirador y hueco libre alrededor de este (px)
 for (let i = 0; i < TICKS; i++) ticksEl.append(document.createElement('span'));
 const ticks = [...ticksEl.children];
 let tickX = [], travel = 0, r = 16;        // centro de cada marca, recorrido del tirador (px) y radio del tirador
@@ -87,9 +87,13 @@ function step(now) {
   thumb.setAttribute('aria-valuenow', String(Math.round(prog * 100)));
   const c = pos;                                                                  // centro del tirador, en coordenadas del recorrido
   for (let i = 0; i < ticks.length; i++) {
-    const d = (tickX[i] - c) / SIGMA, g = Math.exp(-d * d);
-    ticks[i].style.transform = g > 0.004 ? `scaleY(${(1 + AMP * g).toFixed(3)})` : '';
+    const dx = tickX[i] - c, d = dx / SIGMA, g = Math.exp(-d * d), s = 1 + AMP * g;
+    ticks[i].style.transform = g > 0.004 ? `scaleY(${s.toFixed(3)})` : '';
     ticks[i].style.opacity = (0.4 + 0.6 * g).toFixed(2);
+    // Las marcas se cortan alrededor del tirador: no lo tocan, dejan un hueco redondo (radio del tirador + CUT px)
+    const hole = Math.sqrt(Math.max(0, (r + CUT) * (r + CUT) - dx * dx)) / s;     // medio alto del corte, en px de la marca sin estirar
+    const mask = hole > 0 ? `linear-gradient(#000 calc(50% - ${hole.toFixed(2)}px), transparent calc(50% - ${hole.toFixed(2)}px) calc(50% + ${hole.toFixed(2)}px), #000 calc(50% + ${hole.toFixed(2)}px))` : '';
+    ticks[i].style.maskImage = ticks[i].style.webkitMaskImage = mask;
   }
   if (!done && dragging && pos >= travel * 0.985) { dragging = false; confirm(); }
   if (dragging || inside || Math.abs(target - pos) > 0.3 || Math.abs(vel) > 2) raf = requestAnimationFrame(step); else raf = 0;
