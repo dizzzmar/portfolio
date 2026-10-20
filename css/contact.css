@@ -92,8 +92,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   height: 28px;
   margin-top: -14px;
   border-radius: 50%;
-  background: #f83d0c;
-  box-shadow: 0 0 0 2px #fff, 0 8px 20px -4px rgba(0, 30, 70, .45);
+  background: #f83d0c;      /* rojo liso, sin borde blanco: las marcas se cortan alrededor y dejan un hueco */
   will-change: transform;
 }
 .ct-thumb:focus-visible { outline: 2px solid #fff; outline-offset: 6px; }
