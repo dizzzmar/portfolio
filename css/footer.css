@@ -9,7 +9,7 @@
   gap: 16px;
   padding: clamp(48px, 8vh, 96px) 24px 24px;
   color: rgba(255, 255, 255, .7);
-  font-size: 14px;
+  font-size: var(--fs-s);
   font-weight: 400;
   line-height: 1.4;
   letter-spacing: 0;
