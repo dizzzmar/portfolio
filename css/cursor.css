@@ -28,7 +28,10 @@
 .cursor-dot.is-down i { transform: scale(.8); transition-duration: .12s; }
 .cursor-dot.is-hot.is-down i { transform: scale(2.1); }
 /* Donde el cursor ya es otra cosa (fila de proyecto con "View project", vídeo con PLAY/PAUSE, formulario): se aparta */
-.cursor-dot.is-hide i { transform: scale(.2); opacity: 0; transition: transform .3s cubic-bezier(.23, 1, .32, 1), opacity .2s ease; }
+.cursor-dot.is-hide i,
+.cursor-dot.is-hide.is-hot i,
+.cursor-dot.is-hide.is-down i,
+.cursor-dot.is-hide.is-hot.is-down i { transform: scale(.2); opacity: 0; transition: transform .3s cubic-bezier(.23, 1, .32, 1), opacity .2s ease; } /* gana también al pulsar (is-down) y sobre enlaces (is-hot) */
 
 /* Sobre algo rojo (el tomate): se hace pequeño, cambia a blanco mientras es un puntito y vuelve a crecer con rebote */
 .cursor-dot.to-white b { animation: dot-to-white 1.1s both; }
