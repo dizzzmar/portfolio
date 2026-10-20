@@ -1,0 +1,69 @@
+/* LOADER — la pantalla de carga de la portada (solo la primera vez de cada visita; la activa un script del <head> con la clase ld-on en <html>).
+   1) fondo blanco y la silueta del tomate que se llena de rojo según carga la página (js/loader.js);
+   2) cuando todo está listo, aparece el tomate 3D y da una vuelta sobre el eje Z (js/home-tomato.js, evento loader-swap);
+   3) un círculo de cielo se abre desde el tomate y se muestra el cielo; después entran el menú y los textos.
+   Sin la clase ld-on (otras visitas, volver atrás, reducir movimiento, sin JavaScript) nada de esto existe. */
+
+#loader { display: none; }
+
+/* El blanco va por encima de la barra y del cielo (z-index 9 y menos) pero por DEBAJO del tomate 3D (#scene, z-index 10 y más tarde en el HTML) */
+.ld-on #loader {
+  display: grid;
+  place-items: center;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: #fff;
+}
+/* El tomate 3D espera su turno y entonces aparece rápido */
+.ld-on:not(.ld-swap) #scene { opacity: 0 !important; }
+.ld-on #scene { transition-duration: .25s; }
+
+/* La silueta: el mismo tamaño y sitio que el tomate plano que se ve mientras carga (css/home.css) */
+.ld-tomato {
+  position: relative;
+  overflow: hidden;
+  height: calc(min(100vw, 100vh) * 0.5);
+  height: calc(min(100vw, 100svh) * 0.5);
+  aspect-ratio: 595 / 640;
+  background: #ececec;
+  -webkit-mask: url("/assets/images/tomato.webp") center / contain no-repeat;
+  mask: url("/assets/images/tomato.webp") center / contain no-repeat;
+  animation: ld-in .5s var(--ease-out) backwards;
+}
+.ld-fill { position: absolute; inset: 0; background: #f83d0c; transform: translateY(112%); will-change: transform; }
+/* La ola de la superficie: dos olas por tomate, que se desplazan sin parar */
+.ld-wave {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% - 1px);
+  width: 200%;
+  height: 7%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'%3E%3Cpath d='M0 6 Q12.5 0 25 6 T50 6 T75 6 T100 6 V10 H0Z' fill='%23f83d0c'/%3E%3C/svg%3E") repeat-x 0 0 / 25% 100%;
+  animation: ld-wave 1.1s linear infinite;
+}
+@keyframes ld-wave { to { transform: translateX(-50%); } }
+@keyframes ld-in { from { opacity: 0; scale: .94; } }
+
+/* La silueta se va en cuanto aparece el 3D */
+.ld-swap .ld-tomato { visibility: hidden; }
+
+/* El cielo se abre desde el centro (el tomate): un círculo transparente en el blanco que crece */
+@property --ld-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
+.ld-iris #loader {
+  -webkit-mask: radial-gradient(circle at 50% 50%, transparent var(--ld-r), #000 calc(var(--ld-r) + 70px));
+  mask: radial-gradient(circle at 50% 50%, transparent var(--ld-r), #000 calc(var(--ld-r) + 70px));
+  animation: ld-iris 1.05s var(--ease-out) forwards;
+}
+@keyframes ld-iris { to { --ld-r: 80vmax; } }
+/* Si el navegador no sabe animar el círculo, el blanco se funde sin más */
+#loader[data-mode="fade"] { transition: opacity .8s var(--ease-out); }
+.ld-iris #loader[data-mode="fade"] { -webkit-mask: none; mask: none; animation: none; opacity: 0; }
+
+/* El menú entra después del cielo, uno a uno */
+.ld-on:not(.ld-nav) .nav-links a { opacity: 0; }
+.ld-nav .nav-links a { animation: ld-nav-in .7s var(--ease-out) backwards; }
+.ld-nav .nav-links li:nth-child(2) a { animation-delay: .07s; }
+.ld-nav .nav-links li:nth-child(3) a { animation-delay: .14s; }
+.ld-nav .nav-links li:nth-child(4) a { animation-delay: .21s; }
+@keyframes ld-nav-in { from { opacity: 0; translate: 0 -8px; } }
