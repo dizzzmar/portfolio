@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+  CONTACT · www.dizmar.xyz/contact/ — la página de confirmación antes de abrir el correo.
+  El visitante gira el tomate una vuelta entera (o pulsa «Open it for me») y entonces se abre su programa de correo (mailto:).
+  Estilos: /css/contact.css · Comportamiento y tomate 3D: /js/contact.js (la dirección y el asunto están al principio de ese archivo).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — Mario Diz</title>
+<meta name="description" content="Get in touch with Mario Diz, art director and visual designer based in Madrid. Spin the tomato to open your mail app.">
+<link rel="canonical" href="https://www.dizmar.xyz/contact/">
+<link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
+<link rel="stylesheet" href="/css/tokens.css?v=20261021g">
+<link rel="stylesheet" href="/css/contact.css?v=20261021h">
+<link rel="stylesheet" href="/css/nav-logo.css?v=20261021g">
+<link rel="stylesheet" href="/css/nav-links.css?v=20261021g">
+<link rel="stylesheet" href="/css/footer.css?v=20261021g">
+<link rel="stylesheet" href="/css/transitions.css?v=20261021g">
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+<script src="/js/transitions.js?v=20261020p"></script>
+<link rel="stylesheet" href="/css/cursor.css?v=20261021g">
+</head>
+<body id="top">
+<div class="sky" aria-hidden="true"></div>
+
+<!-- Barra de navegación (igual que la del resto de la web) -->
+<nav class="nav" aria-label="Main">
+  <a class="nav-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" alt="" width="44" height="47"></a>
+  <ul class="nav-links">
+    <li><a href="/#work">Work</a></li>
+    <li><a href="/about/">About</a></li>
+    <li><a href="/contact/" aria-current="page">Contact</a></li>
+    <li><a href="/room.html">Room</a></li>
+  </ul>
+</nav>
+
+<main class="ct">
+  <h1 id="ct-title" data-state-idle="We’re going to open your mail app." data-state-done="Opening your mail app…">We’re going to open your mail app.</h1>
+  <p class="ct-lead" id="ct-lead" aria-live="polite" data-state-idle="Spin the tomato to confirm." data-state-done="If not, copy my address below.">Spin the tomato to confirm.</p>
+
+  <!-- El tomate: se gira arrastrando; el anillo se completa con una vuelta entera. Hasta que cargue el 3D se ve la foto. -->
+  <div class="ct-spin" id="ct-spin" data-cursor="red">
+    <svg class="ct-ring" viewBox="0 0 100 100" aria-hidden="true">
+      <circle class="ct-ring-bg" cx="50" cy="50" r="48" pathLength="1"></circle>
+      <circle class="ct-ring-fg" id="ct-ring" cx="50" cy="50" r="48" pathLength="1"></circle>
+    </svg>
+    <img class="ct-fallback" src="/assets/images/tomato.webp" alt="" width="595" height="640">
+    <canvas class="ct-canvas" id="ct-canvas" role="img" aria-label="A 3D tomato you can spin by dragging it"></canvas>
+  </div>
+  <div class="ct-meter" id="ct-meter" role="progressbar" aria-label="Spin progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+
+  <div class="ct-actions">
+    <button type="button" class="ct-btn" id="ct-open" disabled>Open it for me</button>
+    <button type="button" class="ct-btn ct-btn-ghost" id="ct-copy" hidden>Copy address</button>
+  </div>
+  <p class="ct-address" id="ct-address" hidden>hey.mariodiz@gmail.com</p>
+  <noscript><p class="ct-lead"><a href="mailto:hey.mariodiz@gmail.com?subject=Hello%20from%20dizmar.xyz">Open your mail app</a> · hey.mariodiz@gmail.com</p></noscript>
+</main>
+
+<footer class="site-foot on-sky"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
+
+<script src="/js/contact-type.js?v=20261021a" defer></script>
+<script type="module" src="/js/contact.js?v=20261021b"></script>
+<script type="module" src="/js/nav-tomato.js?v=20261020b"></script>
+<script src="/js/cursor.js?v=20261020h" defer></script>
+</body>
+</html>
