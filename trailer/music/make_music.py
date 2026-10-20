@@ -6,7 +6,7 @@ import numpy as np
 SR = 44100
 BPM = 120
 BEAT = 60 / BPM            # 0,5 s = 15 fotogramas a 30 fps
-TOTAL = 24.5               # segundos (lo mismo que el vídeo)
+TOTAL = 30.0               # segundos (lo mismo que el vídeo)
 N = int(SR * TOTAL)
 rng = np.random.default_rng(7)
 L = np.zeros(N); R = np.zeros(N)
@@ -91,13 +91,24 @@ CHORDS = [(57, 60, 64), (53, 57, 60), (48, 55, 64), (55, 59, 62)]
 ROOTS = [45, 41, 48, 43]
 def chord_at(beat): return (beat // 4) % 4
 
-place(impact(1.8), 0.0, 0.9)
-place(stab((57, 60, 64, 69), 0.6, 4000), 0.0, 0.6)
-# Riser corto antes de que entre el ritmo
-place(riser(0.95), 0.05, 0.5)
+DRUMS_START, BREAK_A, BREAK_B, OUTRO = 6, 28, 30, 47
+FINAL = 53  # golpe final: 26,5 s, cuando el clic del buscador abre la web
 
-DRUMS_START, BREAK_A, BREAK_B, OUTRO = 2, 20, 22, 34
-FINAL = 40  # golpe final: 20 s, cuando el clic del buscador abre la web
+# Intro (0–3 s, tomate ASCII): colchón de acordes, chisporroteo digital y subida hasta el golpe de los 3 s
+def pad(notes, sec):
+    x = t(sec); s = np.zeros(len(x))
+    for n in notes:
+        for d in (-0.1, 0.0, 0.1):
+            s += saw(note(n + d), sec)
+    env = np.minimum(1, x / 1.2) * np.minimum(1, (sec - x) / 0.3)
+    return lowpass(s / (len(notes) * 3) * env, 900) * 0.6
+place(pad((57, 60, 64), 3.0), 0.0, 0.55)
+for i in range(22):
+    place(blip(84 + int(rng.integers(0, 24)), 0.04), 0.1 + i * 0.12 + rng.uniform(0, 0.05), 0.25, rng.uniform(-0.6, 0.6))
+place(riser(1.5), 1.5, 0.6)
+place(impact(1.8), DRUMS_START * BEAT, 0.9)
+place(stab((57, 60, 64, 69), 0.6, 4000), DRUMS_START * BEAT, 0.6)
+
 for b in range(DRUMS_START, OUTRO):
     if BREAK_A <= b < BREAK_B:
         continue
@@ -117,21 +128,21 @@ for b in range(DRUMS_START, OUTRO):
     if b % 4 == 0:
         place(stab(CHORDS[chord_at(b)], 1.2), at, 0.45, 0.0)
 
-# Parón (10–11 s): riser y golpe en la vuelta
+# Parón (14–15 s): riser y golpe en la vuelta
 place(riser(BEAT * 2), BREAK_A * BEAT, 0.7)
 place(impact(1.5), BREAK_B * BEAT, 0.8)
-# Lámpara de la habitación encendiéndose (13,5 s): dos chispazos
-place(blip(96, 0.06), 405 / 30, 0.8); place(blip(91, 0.08), 408 / 30, 0.6)
-# Buscador (17–20 s): sin batería, solo charles, tecleo, sugerencias y clic
+# Lámpara de la habitación encendiéndose (19 s): dos chispazos
+place(blip(96, 0.06), 570 / 30, 0.8); place(blip(91, 0.08), 573 / 30, 0.6)
+# Buscador (23,5–26,5 s): sin batería, solo charles, tecleo, sugerencias y clic
 for b in range(OUTRO, FINAL):
     for k in (1, 3):
         place(hat(), b * BEAT + k * BEAT / 4, 0.4, 0.3 if k == 1 else -0.3)
 for i in range(9):  # "mario diz": una tecla cada 2,6 fotogramas
-    at = (510 + 6 + i * 2.6) / 30
+    at = (705 + 6 + i * 2.6) / 30
     place(hat(), at, 0.55, 0.2 * (-1) ** i); place(blip(100 + (i % 3), 0.03), at, 0.7)
 for i, n in enumerate((76, 79, 83)):  # aparecen las sugerencias
-    place(blip(n, 0.15), (542 + i * 2) / 30, 0.6)
-place(blip(88, 0.05), 582 / 30, 1.0); place(blip(76, 0.05), 582 / 30, 1.0)  # clic
+    place(blip(n, 0.15), (737 + i * 2) / 30, 0.6)
+place(blip(88, 0.05), 777 / 30, 1.0); place(blip(76, 0.05), 777 / 30, 1.0)  # clic
 place(riser(BEAT * 4), (FINAL - 4) * BEAT, 0.6)
 # Final: golpe grande y acorde largo con el tomate
 place(impact(3.0), FINAL * BEAT, 1.0)

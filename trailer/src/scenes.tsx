@@ -2,92 +2,108 @@
 // La estructura imita el ritmo del showreel analizado: revelado de marca → aplicaciones en cortes de un pulso → corte seco.
 import React from 'react';
 import {AbsoluteFill, Easing, OffthreadVideo, interpolate, useCurrentFrame} from 'remotion';
-import {C, JACQUARD, MONO, Fill, Grain, Push, RiseLetters, asset, easeOut, hash, ramp, scramble, snap} from './lib';
+import {C, JACQUARD, Fill, Grain, Push, RiseLetters, asset, easeOut, hash, ramp, scramble, snap} from './lib';
 import ASCII from './tomato-ascii.json';
 import {Room3D, Tomato3D} from './three-d';
 
 // ─────────────────────────────────────────────────────────────
-// 1 · Estallido: un pétalo blanco gira y se clona en 8 (el ❊ de la cartela "Mario Diz"). Fondo rojo marca.
+// 1 · Tomate ASCII (0–3 s): empieza en un primer plano de letras grandes, la cámara se aleja hasta ver el tomate
+// entero y las letras se deshacen dejando paso al tomate 3D, del mismo tamaño y en el mismo sitio.
+// Se dibuja en un <canvas> (casi 7.000 caracteres con el color de cada punto de tomato.webp).
 // ─────────────────────────────────────────────────────────────
-const Petal: React.FC<{angle: number; scale?: number}> = ({angle, scale = 1}) => (
-  <g transform={`rotate(${angle}) scale(${scale})`}>
-    {/* Punta de flecha hacia fuera con muesca: lectura gráfica del ❊ */}
-    <path d="M0 -18 L-26 -62 L-12 -62 L-12 -150 L12 -150 L12 -62 L26 -62 Z" fill={C.white} />
-  </g>
-);
+type AsciiData = {cols: number; rows: number; cells: [number, number, number, string][]};
+const DATA = ASCII as AsciiData;
+const RAMP = '.:-=+*#%@';
+const NAME = 'dizmar';
+const CELL_H = 7.3; // alto de cada carácter con la cámara alejada: el tomate mide lo mismo que el 3D (≈ 583 px)
+const CELL_W = CELL_H * 0.6;
 
-export const Burst: React.FC = () => {
-  const f = useCurrentFrame();
-  const enter = ramp(f, 0, 6, snap);
-  const spread = ramp(f, 5, 20, easeOut);
-  const punch = interpolate(f, [21, 25, 30], [1, 1.45, 1.38], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: snap});
-  const spin = interpolate(f, [0, 20], [-140, 0], {extrapolateRight: 'clamp', easing: easeOut});
-  return (
-    <Fill bg={C.red}>
-      <svg viewBox="-200 -200 400 400" width={620} height={620} style={{transform: `scale(${enter * punch}) rotate(${spin}deg)`}}>
-        {Array.from({length: 8}, (_, i) => {
-          const delay = i * 0.06;
-          const p = Math.max(0, Math.min(1, (spread - delay) / (1 - delay)));
-          return <Petal key={i} angle={i * 45 * p} scale={i === 0 ? 1 : p} />;
-        })}
-      </svg>
-      <Grain />
-    </Fill>
-  );
+// Cámara: [fotograma, zoom, columna, fila] a la que mira
+const CAM: [number, number, number, number][] = [
+  [0, 10, 84, 44],
+  [44, 7.5, 74, 40],
+  [72, 1, 62, 40],
+  [90, 1, 62, 40],
+];
+const camAt = (f: number) => {
+  const k = CAM.findIndex(([t]) => t > f);
+  if (k <= 0) return CAM[k === 0 ? 0 : CAM.length - 1].slice(1) as number[];
+  const [t0, z0, x0, y0] = CAM[k - 1];
+  const [t1, z1, x1, y1] = CAM[k];
+  const e = k === 2 ? Easing.bezier(0.65, 0, 0.25, 1)((f - t0) / (t1 - t0)) : (f - t0) / (t1 - t0);
+  // el zoom se interpola en escala logarítmica para que el alejamiento se sienta constante
+  return [Math.exp(Math.log(z0) + (Math.log(z1) - Math.log(z0)) * e), x0 + (x1 - x0) * e, y0 + (y1 - y0) * e];
 };
 
-// ─────────────────────────────────────────────────────────────
-// 2 · Tomate ASCII: el tomate de la portada dibujado con letras de "dizmar", con desfase de color y zoom brusco.
-// ─────────────────────────────────────────────────────────────
-const CHARS = 'dizmar01';
 export const AsciiTomato: React.FC = () => {
   const f = useCurrentFrame();
-  const reveal = ramp(f, 0, 12, Easing.linear);
-  const zoom = f < 22 ? interpolate(f, [0, 22], [0.62, 0.7]) : interpolate(f, [22, 26], [1.25, 1.55], {extrapolateRight: 'clamp', easing: snap});
-  const grid = ASCII as number[][];
-  const layer = (color: string, dx: number) => (
-    <div style={{position: 'absolute', fontFamily: MONO, fontSize: 30, lineHeight: '32px', letterSpacing: 2, color, whiteSpace: 'pre', transform: `translateX(${dx}px)`, mixBlendMode: 'screen', fontWeight: 700}}>
-      {grid.map((row, y) => (
-        <div key={y}>
-          {row
-            .map((v, x) => {
-              if (v <= 0.04 || hash(x * 31 + y * 17) > reveal * 1.15) return ' ';
-              const flick = hash(x * 7 + y * 13 + Math.floor(f / 2) * 3);
-              return v > 0.55 ? CHARS[Math.floor(flick * 4)] : CHARS[4 + Math.floor(flick * 4)];
-            })
-            .join('')}
-        </div>
-      ))}
-    </div>
-  );
-  const shift = f >= 22 ? 9 : 4;
+  const ref = React.useRef<HTMLCanvasElement>(null);
+  const [z, camX, camY] = camAt(f);
+  const speed = f > 44 && f < 72 ? Math.sin(((f - 44) / 28) * Math.PI) : 0; // 0 → 1 → 0 durante el alejamiento
+  const dissolve = ramp(f, 72, 86, Easing.linear);
+  const show3D = ramp(f, 76, 88, Easing.linear);
+
+  React.useLayoutEffect(() => {
+    const cv = ref.current;
+    if (!cv) return;
+    const g = cv.getContext('2d')!;
+    g.fillStyle = '#000';
+    g.fillRect(0, 0, 1920, 1080);
+    const fs = CELL_H * z * 1.05;
+    g.font = `700 ${fs}px "JetBrains Mono", monospace`;
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    const draw = (dx: number, color: string | null, alpha: number) => {
+      g.globalAlpha = alpha;
+      for (const [x, y, lum, hex] of DATA.cells) {
+        const sx = 960 + (x - camX) * CELL_W * z + dx;
+        const sy = 540 + (y - camY) * CELL_H * z;
+        if (sx < -fs || sx > 1920 + fs || sy < -fs || sy > 1080 + fs) continue;
+        const seed = x * 131 + y * 71;
+        if (hash(seed) * 10 > f) continue; // aparecen en los primeros 10 fotogramas
+        if (hash(seed + 5) < dissolve * 1.05) continue; // se deshacen al pasar a 3D
+        const tick = Math.floor(f / 3);
+        const flick = hash(seed + tick * 17) < 0.12;
+        const ch = hash(seed + 9) < 0.14 || flick ? NAME[Math.floor(hash(seed + tick) * NAME.length)] : RAMP[Math.min(RAMP.length - 1, Math.floor(lum * 1.25 * RAMP.length))];
+        g.fillStyle = color ?? hex;
+        g.fillText(ch, sx, sy);
+      }
+    };
+    // Desfase de color (rojo y cian) que crece con la velocidad del alejamiento
+    const ab = 2 + speed * 14;
+    g.globalCompositeOperation = 'lighter';
+    draw(-ab, '#ff1a00', 0.35);
+    draw(ab, '#00b7ff', 0.3);
+    g.globalCompositeOperation = 'source-over';
+    draw(0, null, 1);
+    g.globalAlpha = 1;
+  }, [f, z, camX, camY, speed, dissolve]);
+
   return (
     <Fill bg="#000">
-      <div style={{position: 'relative', width: 1900, height: 960, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${zoom})`}}>
-        {layer('#ff2a00', -shift)}
-        {layer('#00c8ff', shift)}
-        {layer('rgba(255,255,255,0.85)', 0)}
-      </div>
-      {/* líneas de escaneo */}
-      <AbsoluteFill style={{background: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0 2px, transparent 2px 5px)'}} />
+      <canvas ref={ref} width={1920} height={1080} style={{position: 'absolute', inset: 0, width: '100%', height: '100%'}} />
+      <AbsoluteFill style={{background: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.3) 0 2px, transparent 2px 5px)'}} />
+      <AbsoluteFill style={{opacity: show3D}}>
+        <Tomato3D spin={(f - 90) / 90} scale={3.4} ring={false} />
+      </AbsoluteFill>
     </Fill>
   );
 };
 
 // ─────────────────────────────────────────────────────────────
-// 5 · "Creative ___": la frase de la portada, con la palabra que se descifra cada medio pulso.
+// 5 · "Creative ___": la frase de la portada, con la palabra que se descifra en cada pulso (gris oscuro, nunca rojo).
 // ─────────────────────────────────────────────────────────────
 const WORDS = ['Director', 'Coder', 'Maximalist', 'Storyteller', '3D Artist', 'Designer'];
 export const Creative: React.FC = () => {
   const f = useCurrentFrame();
-  const per = 5;
+  const per = 10;
   const i = Math.min(WORDS.length - 1, Math.floor(f / per));
   const word = scramble(WORDS[i], f, i * per, i === WORDS.length - 1 ? 6 : 3, i);
   return (
     <Fill bg={i % 2 ? C.paper : C.white}>
       <div style={{fontSize: 210, fontWeight: 700, letterSpacing: '-0.05em', color: C.ink, lineHeight: 1.0, width: 1600}}>
         <RiseLetters text="Creative" frame={f} start={0} stagger={0.6} dur={6} />
-        <div style={{color: C.red, transform: `rotate(${(hash(i + 3) - 0.5) * 8}deg) scale(${1 + ((f - i * per) < 2 ? 0.08 : 0)})`, transformOrigin: 'left center', fontFamily: i === 2 || i === 5 ? JACQUARD : undefined, fontWeight: i === 2 || i === 5 ? 400 : 700, fontSize: i === 2 || i === 5 ? 250 : undefined}}>{word}</div>
+        <div style={{color: C.grey, transform: `rotate(${(hash(i + 3) - 0.5) * 6}deg) scale(${1 + ((f - i * per) < 2 ? 0.06 : 0)})`, transformOrigin: 'left center'}}>{word}</div>
       </div>
     </Fill>
   );
@@ -135,12 +151,12 @@ export const Glitch: React.FC<{src: string; dur?: number}> = ({src, dur = 15}) =
 // 9 · Soap & Glory · Vanillalicious: letras que caen con rebote, rejilla de bodegones y golpe a sangre.
 // ─────────────────────────────────────────────────────────────
 const PINK = '#f6c9cd';
-const CARAMEL = '#9a4f1c';
+const TITLE = '#222222';
 export const SoapTitle: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <Fill bg={PINK}>
-      <div style={{display: 'flex', fontSize: 230, fontWeight: 700, letterSpacing: '-0.05em', color: CARAMEL}}>
+      <div style={{display: 'flex', fontSize: 230, fontWeight: 700, letterSpacing: '-0.05em', color: TITLE}}>
         {[...'Vanillalicious'].map((ch, i) => {
           const p = ramp(f, i * 1.1, i * 1.1 + 10, Easing.bezier(0.34, 1.7, 0.64, 1));
           return (
@@ -185,20 +201,19 @@ export const SoapHero: React.FC = () => {
 // ─────────────────────────────────────────────────────────────
 // 10 · Schweppes: el film en formato cine (bandas negras) y el título que se descifra.
 // ─────────────────────────────────────────────────────────────
-const GOLD = '#f2c94c';
 export const Schweppes: React.FC = () => {
   const f = useCurrentFrame();
-  const bars = interpolate(f, [0, 8, 37, 45], [540, 138, 138, 540], {extrapolateRight: 'clamp', easing: easeOut});
-  const second = f >= 22;
+  const bars = interpolate(f, [0, 8, 67, 75], [540, 138, 138, 540], {extrapolateRight: 'clamp', easing: easeOut});
+  const second = f >= 37;
   return (
     <Fill bg="#000">
       <AbsoluteFill>
-        <OffthreadVideo src={asset('projects/schweppes/film.mp4')} startFrom={second ? 420 - 22 : 60} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+        <OffthreadVideo src={asset('projects/schweppes/film.mp4')} startFrom={second ? 420 - 37 : 60} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
       </AbsoluteFill>
       <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: bars, background: '#000'}} />
       <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: bars, background: '#000'}} />
-      <div style={{position: 'absolute', left: 90, bottom: 30, display: 'flex', alignItems: 'baseline', gap: 40, opacity: f < 38 ? 1 : 0}}>
-        <div style={{fontFamily: MONO, fontSize: 64, fontWeight: 700, color: GOLD, letterSpacing: '0.04em'}}>{scramble('SCHWEPPES', f, 6, 12, 3)}</div>
+      <div style={{position: 'absolute', left: 90, bottom: 30, display: 'flex', alignItems: 'baseline', gap: 40, opacity: f < 66 ? 1 : 0}}>
+        <div style={{fontSize: 72, fontWeight: 700, color: C.white, letterSpacing: '-0.02em'}}>{scramble('Schweppes', f, 6, 12, 3)}</div>
       </div>
     </Fill>
   );
@@ -228,7 +243,7 @@ export const About: React.FC = () => {
 
 
 // ─────────────────────────────────────────────────────────────
-// 3 · El tomate 3D de la portada con su anillo "MARIO DIZ". Da un acelerón en cada golpe y al final sale volando hacia arriba.
+// 2 · El tomate 3D de la portada con su anillo "MARIO DIZ" sobre rojo. Da un acelerón en cada golpe y al final sale volando hacia arriba.
 // ─────────────────────────────────────────────────────────────
 export const TomatoSpin: React.FC = () => {
   const f = useCurrentFrame();
@@ -238,15 +253,8 @@ export const TomatoSpin: React.FC = () => {
   const spin = f / 90 + (beat + inBeat) * 0.5;
   const punch = 1 + (1 - ramp(f % 15, 0, 6)) * 0.12;
   const fly = ramp(f, 46, 60, Easing.in(Easing.cubic));
-  const marquee = (dir: number, top: number) => (
-    <div style={{position: 'absolute', top, whiteSpace: 'nowrap', fontFamily: JACQUARD, fontSize: 260, lineHeight: 1, color: 'rgba(255,255,255,0.16)', transform: `translateX(${dir * (f * 22) - (dir > 0 ? 2400 : 0)}px)`}}>
-      dizmar dizmar dizmar dizmar dizmar dizmar
-    </div>
-  );
   return (
     <Fill bg={C.red}>
-      {marquee(1, 60)}
-      {marquee(-1, 760)}
       <AbsoluteFill style={{transform: `scale(${punch})`}}>
         <Tomato3D spin={spin} scale={3.4} y={fly * 6} tilt={Math.sin(f / 9) * 0.15} />
       </AbsoluteFill>
@@ -268,7 +276,7 @@ export const SkyDive: React.FC = () => {
       <AbsoluteFill style={{transform: `scale(${z})`, filter: `blur(${blur}px)`}}>
         <img src={asset('images/sky.webp')} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '60% 40%'}} />
       </AbsoluteFill>
-      <div style={{position: 'absolute', fontFamily: JACQUARD, fontSize: 200, color: C.white, transform: `scale(${1 + f * 0.04})`, opacity: 1 - white}}>dizmar.xyz</div>
+      <div style={{position: 'absolute', fontSize: 190, fontWeight: 700, letterSpacing: '-0.05em', color: C.white, transform: `scale(${1 + f * 0.04})`, opacity: 1 - white}}>dizmar.xyz</div>
       <AbsoluteFill style={{background: C.white, opacity: white}} />
       <Grain opacity={0.14} />
     </Fill>
@@ -276,7 +284,7 @@ export const SkyDive: React.FC = () => {
 };
 
 // ─────────────────────────────────────────────────────────────
-// 6 · Montón de proyectos: las imágenes caen sobre la mesa una por pulso medio, giradas, con sacudida al aterrizar.
+// 6 · Montón de proyectos: las imágenes caen sobre la mesa una cada 7 fotogramas, giradas, con sacudida al aterrizar.
 // ─────────────────────────────────────────────────────────────
 const PILE = [
   {src: 'projects/lexus-electrified/poised-640.webp', w: 380, h: 675, x: -560, y: 10, r: -8},
@@ -288,15 +296,15 @@ const PILE = [
 ];
 export const Pile: React.FC = () => {
   const f = useCurrentFrame();
-  const last = Math.floor(f / 5);
-  const sinceLand = f - last * 5;
+  const last = Math.floor(f / 7);
+  const sinceLand = f - last * 7;
   const shake = sinceLand < 3 ? (hash(last) - 0.5) * 18 : 0;
   return (
     <Fill bg={C.black}>
       <AbsoluteFill style={{transform: `translate(${shake}px, ${-shake * 0.6}px)`, alignItems: 'center', justifyContent: 'center'}}>
         {PILE.map((c, i) => {
-          const p = ramp(f, i * 5, i * 5 + 5, Easing.bezier(0.2, 0.9, 0.3, 1.15));
-          if (f < i * 5) return null;
+          const p = ramp(f, i * 7, i * 7 + 6, Easing.bezier(0.2, 0.9, 0.3, 1.15));
+          if (f < i * 7) return null;
           return (
             <img key={i} src={asset(c.src)} style={{position: 'absolute', width: c.w, height: c.h, objectFit: 'cover', boxShadow: '0 30px 60px rgba(0,0,0,0.5)', transform: `translate(${c.x}px, ${c.y + (1 - p) * -900}px) rotate(${c.r + (1 - p) * 40}deg) scale(${1 + (1 - p) * 0.4})`}} />
           );
@@ -319,7 +327,7 @@ export const RoomShot: React.FC = () => {
   return (
     <Fill bg="#140d09">
       <Room3D dur={75} lampAt={15} />
-      <div style={{position: 'absolute', left: 90, top: 70, fontFamily: JACQUARD, fontSize: 170, color: '#ffd9b8', opacity: ramp(f, 15, 18, Easing.linear)}}>the room</div>
+      <div style={{position: 'absolute', left: 90, top: 70, fontSize: 130, fontWeight: 700, letterSpacing: '-0.04em', color: C.white, opacity: ramp(f, 15, 18, Easing.linear)}}>the room</div>
       {sticker('room/now-playing-sticker.webp', 45, 1240, 690, -7, 520)}
       {sticker('room/film-poster.webp', 55, 120, 520, 6, 300)}
       <Grain opacity={0.12} />
@@ -355,7 +363,7 @@ export const Search: React.FC = () => {
         <div style={{width: 1200, transform: `translateY(${(1 - enter) * 300}px) scale(${0.9 + enter * 0.1})`, opacity: enter, marginTop: -60}}>
           <div style={{background: C.white, borderRadius: drop > 0.01 ? '48px 48px 0 0' : 999, height: 120, display: 'flex', alignItems: 'center', gap: 32, padding: '0 50px', fontSize: 54, color: C.ink, boxShadow: '0 30px 80px rgba(0,0,0,0.18)'}}>
             <svg width={50} height={50} viewBox="0 0 24 24"><circle cx={10} cy={10} r={7} stroke="#888" strokeWidth={2.4} fill="none" /><path d="M15 15 L21 21" stroke="#888" strokeWidth={2.4} strokeLinecap="round" /></svg>
-            <span>{typed}<span style={{color: C.red, opacity: Math.floor(f / 4) % 2 === 0 && f < 40 ? 1 : 0}}>|</span></span>
+            <span>{typed}<span style={{color: C.ink, opacity: Math.floor(f / 4) % 2 === 0 && f < 40 ? 1 : 0}}>|</span></span>
           </div>
           <div style={{background: C.white, borderRadius: '0 0 48px 48px', overflow: 'hidden', height: drop * 330, boxShadow: '0 30px 80px rgba(0,0,0,0.18)'}}>
             {SUGGEST.map((t, i) => (

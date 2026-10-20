@@ -1,4 +1,4 @@
-// Tráiler de lanzamiento de dizmar.xyz · 1920×1080 · 30 fps · 24,5 s.
+// Tráiler de lanzamiento de dizmar.xyz · 1920×1080 · 30 fps · 30 s.
 // Montado sobre una música de 120 BPM: 1 pulso = 15 fotogramas. Todos los cortes caen en pulsos o medios pulsos.
 // Para cambiar el orden o la duración de una escena, edita la lista SHOTS (desde, hasta, escena).
 import React, {useEffect, useState} from 'react';
@@ -7,26 +7,26 @@ import '@fontsource/jacquard-24';
 import * as S from './scenes';
 import {asset} from './lib';
 
+// Ningún plano con imagen o vídeo dura menos de 1 s (salvo el glitch, que es una transición).
 const SHOTS: [number, number, React.FC][] = [
-  [0, 30, S.Burst],          // 0,0 s  estallido ❊ sobre rojo
-  [30, 60, S.AsciiTomato],   // 1,0 s  tomate en ASCII
-  [60, 120, S.TomatoSpin],   // 2,0 s  tomate 3D con el anillo MARIO DIZ, acelerón en cada golpe
-  [120, 150, S.SkyDive],     // 4,0 s  el cielo se acerca y se funde en blanco
-  [150, 180, S.Creative],    // 5,0 s  "Creative ___"
-  [180, 210, S.Pile],        // 6,0 s  los proyectos caen sobre la mesa
-  [210, 245, S.LexusFilm],   // 7,0 s  Lexus Electrified
-  [245, 255, () => <S.Glitch src={asset('projects/lexus-electrified/kv-building-1600.webp')} dur={10} />],
-  [255, 300, S.SoapTitle],   // 8,5 s  Soap & Glory (parón de la música en 10 s)
-  [300, 330, S.SoapGrid],
-  [330, 345, S.SoapHero],    // 11 s   golpe: vuelve el ritmo
-  [345, 390, S.Schweppes],   // 11,5 s Schweppes
-  [390, 465, S.RoomShot],    // 13 s   la habitación 3D, la lámpara se enciende en el golpe
-  [465, 510, S.About],       // 15,5 s About
-  [510, 600, S.Search],      // 17 s   buscador → clic en dizmar.xyz
-  [600, 735, S.Home],        // 20 s   final: cielo + tomate + dirección (golpe final en 20 s)
+  [0, 90, S.AsciiTomato],    // 0 s    tomate ASCII: primer plano → se aleja → se convierte en 3D
+  [90, 150, S.TomatoSpin],   // 3 s    golpe: tomate 3D sobre rojo, acelerón en cada pulso
+  [150, 195, S.SkyDive],     // 5 s    el cielo se acerca y se funde en blanco
+  [195, 255, S.Creative],    // 6,5 s  "Creative ___"
+  [255, 300, S.Pile],        // 8,5 s  los proyectos caen sobre la mesa
+  [300, 360, S.LexusFilm],   // 10 s   Lexus Electrified
+  [360, 375, () => <S.Glitch src={asset('projects/lexus-electrified/kv-building-1600.webp')} dur={15} />],
+  [375, 420, S.SoapTitle],   // 12,5 s Soap & Glory
+  [420, 450, S.SoapGrid],    // 14 s   parón de la música
+  [450, 480, S.SoapHero],    // 15 s   golpe: vuelve el ritmo
+  [480, 555, S.Schweppes],   // 16 s   Schweppes
+  [555, 645, S.RoomShot],    // 18,5 s la habitación 3D, la lámpara se enciende en el golpe
+  [645, 705, S.About],       // 21,5 s About
+  [705, 795, S.Search],      // 23,5 s buscador → clic en dizmar.xyz
+  [795, 900, S.Home],        // 26,5 s final: cielo + tomate + dirección (golpe final)
 ];
 
-export const TOTAL_FRAMES = 735;
+export const TOTAL_FRAMES = 900;
 
 export const Trailer: React.FC = () => {
   // Espera a que la letra Jacquard esté cargada antes de pintar ningún fotograma.

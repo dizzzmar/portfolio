@@ -1,6 +1,6 @@
 # Tráiler de lanzamiento de dizmar.xyz
 
-Vídeo de 24,5 s (1920×1080, 30 fps) hecho con [Remotion](https://www.remotion.dev): React que se convierte en MP4.
+Vídeo de 30 s (1920×1080, 30 fps) hecho con [Remotion](https://www.remotion.dev): React que se convierte en MP4.
 Sigue la estructura del showreel "Branding agency showreel" (@jacksonfall, MotionVideo): revelado de marca → aplicaciones en cortes de un pulso → corte seco, con un estilo de movimiento distinto en cada bloque. El contenido son los assets de la web (carpeta `../assets`, enlazada en `public/assets`).
 
 No forma parte de la web: aquí solo está el código fuente del vídeo.

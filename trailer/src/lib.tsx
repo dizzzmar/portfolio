@@ -3,11 +3,12 @@ import React from 'react';
 import {AbsoluteFill, Easing, interpolate, staticFile} from 'remotion';
 
 export const C = {
-  red: '#f83d0c',
+  red: '#c8180d',     // rojo más profundo que el de la web para que en vídeo se lea rojo y no naranja
   aboutRed: '#f04a30',
   black: '#0c0c0b',
   white: '#ffffff',
   ink: '#111111',
+  grey: '#2b2b2b',    // texto: solo negro o gris oscuro
   paper: '#fbfaf6',
   sky: '#4f8fd8',
 };
