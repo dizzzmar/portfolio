@@ -518,7 +518,7 @@ body::after { background: #0c0c0b; opacity: var(--dark, 0); }
 }
 .work-top p > strong { display: block; font-weight: inherit; }
 .work-top p > span { display: block; color: rgba(255, 255, 255, .6); }
-.work-top .wt-creative > strong { color: #f04a30; white-space: nowrap; } /* el rojo va por clase, no por el orden de los bloques */
+.work-top .wt-creative > strong { color: #fff; white-space: nowrap; } /* la marca va por clase, no por el orden de los bloques */
 .wb-word { display: inline; font-variant-ligatures: none; }
 .wb-word .ch { display: inline-block; }
 @media (max-width: 1000px) {
