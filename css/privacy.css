@@ -46,7 +46,6 @@ main { padding: 0 var(--gutter); }
 .pv-back a:hover { text-decoration: underline; }
 
 /* ---------- Pie ---------- */
-.pv-foot { padding: 20px var(--gutter) 24px; color: var(--dim); font-size: 12px; }
 
 /* ---------- Móvil ---------- */
 @media (max-width: 760px) {

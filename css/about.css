@@ -60,7 +60,7 @@ ul { list-style: none; }
 .nav-links a:hover, .nav-links a[aria-current="page"] { opacity: 1; }
 .nav-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 
-main, .close { padding: 0 var(--margin); }
+main { padding: 0 var(--margin); }
 
 /* ---------- 1. Primera pantalla ---------- */
 /* Toda la página usa la misma rejilla de 4 columnas, para que todo quede alineado:
@@ -183,17 +183,6 @@ main, .close { padding: 0 var(--margin); }
   mask: var(--logo) center / contain no-repeat;
 }
 
-/* ---------- Pie ---------- */
-.close {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--gutter);
-  margin-top: clamp(48px, 8vh, 96px);
-  padding-bottom: 24px;
-  opacity: .85;
-}
-.close a { color: inherit; text-underline-offset: 3px; }
-
 /* ---------- Móvil ---------- */
 @media (max-width: 760px) {
   :root { --gutter: 16px; }
@@ -207,7 +196,6 @@ main, .close { padding: 0 var(--margin); }
   .portrait { width: 55%; margin-top: 32px; }
   .facts { row-gap: 32px; }
   .fact h2 { margin-bottom: .6em; }
-  .close { flex-direction: column; }
 }
 
 /* ---------- Movimiento: cada bloque sube y aparece al entrar en pantalla (js/about.js) ----------

@@ -561,12 +561,9 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events
 .wi-strip { grid-area: strip; display: flex; justify-content: center; gap: 4px; margin-top: clamp(20px, 2.2vw, 34px); }
 .wi-slot { position: relative; flex: none; width: clamp(34px, 6.4vw, 118px); aspect-ratio: 9 / 16; overflow: hidden; background: rgba(255, 255, 255, .07); }
 .wi-gap { visibility: hidden; }
-.wi-ph { background: none; outline: 1px solid rgba(255, 255, 255, .14); outline-offset: -1px; }
 .wi-slot img, .wi-slot video { display: block; width: 100%; height: 100%; object-fit: cover; scale: var(--sz, 1); }
 .wi-strip { translate: var(--dx, 0px) 0; }
 
-.is-placeholder .wi-name { opacity: .32; }
-.is-placeholder .wi-date, .is-placeholder .wi-tags { opacity: .6; }
 
 /* Al volver de un proyecto (js/home-work.js): la lista llega con un fundido corto y la fila de ese proyecto se enciende un momento */
 .work-grid.arriving { animation: work-arrive .6s ease both; }
@@ -580,7 +577,6 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events
 .work-item > a:focus-visible .wi-date, .work-item > a:focus-visible .wi-tags,
 .work-item.is-hot .wi-date, .work-item.is-hot .wi-tags { color: rgba(255, 255, 255, .95); }
 
-.work-foot { padding: 7vh 0 24px; font-size: 12px; color: rgba(255, 255, 255, .55); }
 
 /* "View project": sigue al ratón con retraso (js/home-work.js) */
 .work-cursor {

@@ -27,5 +27,4 @@ body, button, input, select, textarea { font-family: var(--font-ui); }
   text-transform: uppercase;
 }
 .case-facts { font-size: 12px; letter-spacing: 0; }
-.case-foot, .work-foot { font-size: 12px; letter-spacing: 0; }
 .player-time { font-family: var(--font-ui); font-size: var(--type-label); font-weight: 400; letter-spacing: .02em; }
