@@ -581,7 +581,8 @@ function frame() {
   grade.uniforms.time.value = reduced ? 0 : (now / 1000) % 100;
   updatePoster(now);
   // Ease the camera towards its goal (overview or a focused object)
-  const ease = reduced ? 1 : 1 - Math.exp(-dt * (returning ? 12 : 4));
+  // Rate per second of the ease: the camera reaches 90% of the way in ln(10)/rate seconds (acercarse ≈0.3 s, alejarse ≈0.14 s)
+  const ease = reduced ? 1 : 1 - Math.exp(-dt * (returning ? 16 : 8));
   view.pos.lerp(goal.pos, ease);
   view.target.lerp(goal.target, ease);
   camera.position.copy(view.pos);
