@@ -492,7 +492,7 @@ body::before {
 }
 .intro-on .intro-line { opacity: 1; transform: none; }
 .light-on .intro-line { color: #111; text-shadow: none; }
-.intro-word { font-variant-ligatures: none; }
+.intro-word { font-variant-ligatures: none; height: 1.1em; line-height: 1.1; transform: scaleX(var(--word-fit, 1)); }
 .intro-line .ch { display: inline-block; }
 
 /* ---------- Work: lista editorial con miniaturas en movimiento ---------- */

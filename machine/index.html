@@ -1,228 +1,118 @@
 <!doctype html>
-<!--
-  MODO MÁQUINA  ·  www.dizmar.xyz/machine/
-  Versión ligera de toda la web en una sola página de texto: carga al instante con conexiones lentas
-  y la pueden leer buscadores y agentes de IA. Sin 3D ni fotos (las imágenes son enlaces); solo un poco de JavaScript para el botón de fondo negro.
-  El nombre y los títulos de sección son SVG en punto de cruz (cada píxel de la letra es una cruz).
-  Cuando cambies algo en la web (un proyecto nuevo, la canción de "Now playing"…), actualízalo también aquí.
-  Los textos marcados con EDITA son de ejemplo.
--->
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mario Diz (dizmar) — machine-readable index</title>
-<meta name="description" content="Plain-text mirror of dizmar.xyz, the portfolio of Mario Diz, art director and visual designer based in Madrid.">
-<meta name="robots" content="noindex"> <!-- Oculto por ahora: borra esta línea al volver a activar el modo máquina -->
-<link rel="canonical" href="https://www.dizmar.xyz/machine/">
-<meta property="og:title" content="Mario Diz (dizmar) — machine-readable index">
-<meta property="og:image" content="https://www.dizmar.xyz/assets/images/og-image.jpg">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-<script>
-  // Recuerda si el visitante eligió el fondo negro (antes de pintar, para que no parpadee)
-  try { if (localStorage.getItem('dizmar-machine-bg') === 'black') document.documentElement.classList.add('black'); } catch (e) {}
-</script>
-<style>
-  /* Todo el estilo va aquí mismo para no hacer más peticiones.
-     Todo en un rojo tomate sólido sobre el cielo; el nombre y los títulos, bordados en punto de cruz (SVG).
-     Con el botón de arriba se cambia a fondo negro. */
-  :root {
-    /* Un solo rojo sólido para todo: texto, líneas y puntadas */
-    --red: #e3241a; --dim: var(--red); --line: var(--red);
-    --thread: var(--red); --thread-dark: var(--red); --thread-light: var(--red);
-    --halo: none;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { background: #6fa7e6 linear-gradient(to bottom, #4f8fd8, #8cc0ef 55%, #d8ecfb); min-height: 100%; }
-  /* El cielo (la misma foto que la home), fijo detrás de todo */
-  body::before { content: ""; position: fixed; inset: 0; z-index: -1; background: url("/assets/images/sky.webp") center / cover; }
-  body { color: var(--red); font: 13px/1.6 ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", "Courier New", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: .02em; text-shadow: var(--halo); -webkit-font-smoothing: antialiased; }
-  a { color: var(--red); text-underline-offset: 3px; }
-  a:hover { background: var(--red); color: #fff; text-decoration: none; text-shadow: none; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
-  .wrap { width: min(720px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 120px; }
-  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
-
-  /* Botón de arriba: cielo / fondo negro */
-  .bg-toggle { display: flex; justify-content: flex-end; margin-bottom: 28px; }
-  .bg-toggle button { appearance: none; border: 1px solid var(--red); border-radius: 999px; padding: 6px 12px 5px; background: transparent; color: var(--red); font: inherit; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; text-shadow: none; }
-  .bg-toggle button:hover { background: var(--red); color: #fff; }
-
-  /* Punto de cruz: cada píxel de las letras es una cruz de dos puntadas */
-  .stitch { display: block; height: 40px; width: auto; max-width: 100%; overflow: visible; }
-  .stitch-title { height: clamp(58px, 14vw, 104px); }
-
-  nav ul { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 28px 0 32px; list-style: none; }
-  nav a[aria-current] { background: var(--red); color: #fff; text-decoration: none; padding: 0 4px; text-shadow: none; }
-  .dim { color: var(--dim); }
-  p { margin: 0 0 14px; max-width: 64ch; }
-  h2 { display: flex; align-items: flex-end; gap: 14px; margin: 52px 0 20px; }
-  h2::after { content: ""; flex: 1; margin-bottom: 4px; border-top: 2px dashed var(--line); } /* una línea de hilvanado */
-  dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 0; margin-bottom: 18px; }
-  dt { color: var(--dim); white-space: pre; overflow: hidden; width: 15ch; }
-  dt::after { content: " ............"; }
-  dd { padding-left: 1ch; }
-  .project { margin: 0 0 30px; }
-  .project h3 { font-size: inherit; font-weight: 700; margin-bottom: 4px; }
-  .project h3::before { content: "✕ "; }
-  .tags { color: var(--dim); margin-bottom: 8px; }
-  .links { list-style: none; margin-top: 6px; }
-  .links li::before { content: "→ "; color: var(--dim); }
-  .images { display: flex; flex-wrap: wrap; gap: 0 10px; list-style: none; }
-  footer { margin-top: 56px; padding-top: 14px; border-top: 2px dashed var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: var(--dim); }
-
-  /* Píldora para volver al modo humano */
-  .mode { position: fixed; right: 16px; bottom: 16px; display: flex; padding: 3px; border-radius: 999px; background: #fff; font-size: 11px; box-shadow: 0 6px 20px rgba(0, 30, 80, .25); text-shadow: none; }
-  .mode a, .mode span { padding: 5px 11px 4px; border-radius: 999px; text-decoration: none; color: var(--red); }
-  .mode span { background: var(--red); color: #fff; }
-  .mode a:hover { background: rgba(227, 36, 26, .12); color: var(--red); }
-
-  /* ---------- Fondo negro: rojo tomate sobre negro, sin la foto del cielo ---------- */
-  html.black { background: #0b0807; }
-  html.black body { font-weight: 400; }
-  html.black body::before { content: none; }
-  html.black { --red: #ff4434; }
-  html.black .bg-toggle button { background: transparent; }
-  html.black .bg-toggle button:hover { background: var(--red); color: #0b0807; }
-  html.black a:hover, html.black nav a[aria-current] { color: #0b0807; }
-  html.black .mode { background: #0b0807; box-shadow: none; border: 1px solid var(--red); }
-  html.black .mode span { color: #0b0807; }
-
-  @media (max-width: 520px) { body { font-size: 12px; } dt { width: 12ch; } .stitch:not(.stitch-title) { height: 30px; } }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="/js/mode-switch.js?v=20261020a"></script>
+  <title>Machine view — Mario Diz · dizmar</title>
+  <meta name="description" content="The lightweight, text-only version of Mario Diz's portfolio: art direction, projects and the room.">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/machine.css?v=20261020a">
+  <script src="/js/machine.js?v=20261020a" defer></script>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="x" overflow="visible"><path d="M1.8 8.2 8.2 1.8" style="stroke:var(--thread-dark)" stroke-width="2.9" stroke-linecap="round"/><path d="M1.8 1.8 8.2 8.2" style="stroke:var(--thread)" stroke-width="2.9" stroke-linecap="round"/><path d="M2.9 2.6 7.4 7.1" style="stroke:var(--thread-light)" stroke-width=".8" stroke-linecap="round" opacity=".8"/></symbol></defs></svg>
-<div class="wrap">
-<header>
-<!-- Botón para ver el texto sobre fondo negro (o volver al cielo) -->
-<div class="bg-toggle"><button type="button" id="bg-toggle" aria-pressed="false">Black background</button></div>
-<h1 class="sr-only">dizmar — Mario Diz, machine-readable index</h1>
-<svg class="stitch stitch-title" viewBox="-2 -2 334 74" aria-hidden="true" focusable="false"><use href="#x" x="0" y="0"/><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="0" y="10"/><use href="#x" x="40" y="10"/><use href="#x" x="0" y="20"/><use href="#x" x="40" y="20"/><use href="#x" x="0" y="30"/><use href="#x" x="40" y="30"/><use href="#x" x="0" y="40"/><use href="#x" x="40" y="40"/><use href="#x" x="0" y="50"/><use href="#x" x="40" y="50"/><use href="#x" x="0" y="60"/><use href="#x" x="10" y="60"/><use href="#x" x="20" y="60"/><use href="#x" x="30" y="60"/><use href="#x" x="60" y="0"/><use href="#x" x="70" y="0"/><use href="#x" x="80" y="0"/><use href="#x" x="70" y="10"/><use href="#x" x="70" y="20"/><use href="#x" x="70" y="30"/><use href="#x" x="70" y="40"/><use href="#x" x="70" y="50"/><use href="#x" x="60" y="60"/><use href="#x" x="70" y="60"/><use href="#x" x="80" y="60"/><use href="#x" x="100" y="0"/><use href="#x" x="110" y="0"/><use href="#x" x="120" y="0"/><use href="#x" x="130" y="0"/><use href="#x" x="140" y="0"/><use href="#x" x="140" y="10"/><use href="#x" x="130" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="110" y="40"/><use href="#x" x="100" y="50"/><use href="#x" x="100" y="60"/><use href="#x" x="110" y="60"/><use href="#x" x="120" y="60"/><use href="#x" x="130" y="60"/><use href="#x" x="140" y="60"/><use href="#x" x="160" y="0"/><use href="#x" x="200" y="0"/><use href="#x" x="160" y="10"/><use href="#x" x="170" y="10"/><use href="#x" x="190" y="10"/><use href="#x" x="200" y="10"/><use href="#x" x="160" y="20"/><use href="#x" x="180" y="20"/><use href="#x" x="200" y="20"/><use href="#x" x="160" y="30"/><use href="#x" x="180" y="30"/><use href="#x" x="200" y="30"/><use href="#x" x="160" y="40"/><use href="#x" x="200" y="40"/><use href="#x" x="160" y="50"/><use href="#x" x="200" y="50"/><use href="#x" x="160" y="60"/><use href="#x" x="200" y="60"/><use href="#x" x="230" y="0"/><use href="#x" x="240" y="0"/><use href="#x" x="250" y="0"/><use href="#x" x="220" y="10"/><use href="#x" x="260" y="10"/><use href="#x" x="220" y="20"/><use href="#x" x="260" y="20"/><use href="#x" x="220" y="30"/><use href="#x" x="230" y="30"/><use href="#x" x="240" y="30"/><use href="#x" x="250" y="30"/><use href="#x" x="260" y="30"/><use href="#x" x="220" y="40"/><use href="#x" x="260" y="40"/><use href="#x" x="220" y="50"/><use href="#x" x="260" y="50"/><use href="#x" x="220" y="60"/><use href="#x" x="260" y="60"/><use href="#x" x="280" y="0"/><use href="#x" x="290" y="0"/><use href="#x" x="300" y="0"/><use href="#x" x="310" y="0"/><use href="#x" x="280" y="10"/><use href="#x" x="320" y="10"/><use href="#x" x="280" y="20"/><use href="#x" x="320" y="20"/><use href="#x" x="280" y="30"/><use href="#x" x="290" y="30"/><use href="#x" x="300" y="30"/><use href="#x" x="310" y="30"/><use href="#x" x="280" y="40"/><use href="#x" x="300" y="40"/><use href="#x" x="280" y="50"/><use href="#x" x="310" y="50"/><use href="#x" x="280" y="60"/><use href="#x" x="320" y="60"/></svg>
-<nav aria-label="Sections">
-<ul>
-<li><a href="#about" aria-current="true">/about</a></li>
-<li><a href="#work">/work</a></li>
-<li><a href="#room">/room</a></li>
-<li><a href="#contact">/contact</a></li>
-<li><a href="#sitemap">/sitemap</a></li>
-<li><a href="/">human ↗</a></li>
-</ul>
-</nav>
-<p>dizmar.xyz :: machine-readable index</p>
-<p class="dim"># Plain-text mirror of dizmar.xyz for slow connections, crawlers, AI agents and humans who prefer it raw.</p>
-</header>
+<main class="machine-shell">
+  <a class="machine-logo" href="/machine/" aria-label="dizmar — Machine home"><pre aria-hidden="true">██████╗ ██╗███████╗███╗   ███╗ █████╗ ██████╗
+██╔══██╗██║╚══███╔╝████╗ ████║██╔══██╗██╔══██╗
+██║  ██║██║  ███╔╝ ██╔████╔██║███████║██████╔╝
+██║  ██║██║ ███╔╝  ██║╚██╔╝██║██╔══██║██╔══██╗
+██████╔╝██║███████╗██║ ╚═╝ ██║██║  ██║██║  ██║
+╚═════╝ ╚═╝╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝</pre></a>
+  <nav class="machine-nav" aria-label="Main">
+    <a href="/machine/" data-route="/">/Home</a>
+    <a href="/machine/?page=%2F%23work" data-route="/#work">/Work</a>
+    <a href="/machine/?page=%2Fabout%2F" data-route="/about/">/About</a>
+    <a href="/machine/?page=%2Froom.html" data-route="/room.html">/Room</a>
+  </nav>
+  <h1>Dizmar.xyz :: <span id="machine-title">Machine-readable index</span></h1>
+  <p id="machine-notice" class="machine-status" role="status" hidden></p>
+  <p># A plain-text portfolio for humans and machines.<br># Same work. Fewer bytes.</p>
 
-<main>
-<section id="about" aria-labelledby="h-about">
-<h2 id="h-about"><span class="sr-only">About</span><svg class="stitch" viewBox="-2 -2 294 74" aria-hidden="true" focusable="false"><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="0" y="10"/><use href="#x" x="40" y="10"/><use href="#x" x="0" y="20"/><use href="#x" x="40" y="20"/><use href="#x" x="0" y="30"/><use href="#x" x="10" y="30"/><use href="#x" x="20" y="30"/><use href="#x" x="30" y="30"/><use href="#x" x="40" y="30"/><use href="#x" x="0" y="40"/><use href="#x" x="40" y="40"/><use href="#x" x="0" y="50"/><use href="#x" x="40" y="50"/><use href="#x" x="0" y="60"/><use href="#x" x="40" y="60"/><use href="#x" x="60" y="0"/><use href="#x" x="70" y="0"/><use href="#x" x="80" y="0"/><use href="#x" x="90" y="0"/><use href="#x" x="60" y="10"/><use href="#x" x="100" y="10"/><use href="#x" x="60" y="20"/><use href="#x" x="100" y="20"/><use href="#x" x="60" y="30"/><use href="#x" x="70" y="30"/><use href="#x" x="80" y="30"/><use href="#x" x="90" y="30"/><use href="#x" x="60" y="40"/><use href="#x" x="100" y="40"/><use href="#x" x="60" y="50"/><use href="#x" x="100" y="50"/><use href="#x" x="60" y="60"/><use href="#x" x="70" y="60"/><use href="#x" x="80" y="60"/><use href="#x" x="90" y="60"/><use href="#x" x="130" y="0"/><use href="#x" x="140" y="0"/><use href="#x" x="150" y="0"/><use href="#x" x="120" y="10"/><use href="#x" x="160" y="10"/><use href="#x" x="120" y="20"/><use href="#x" x="160" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="160" y="30"/><use href="#x" x="120" y="40"/><use href="#x" x="160" y="40"/><use href="#x" x="120" y="50"/><use href="#x" x="160" y="50"/><use href="#x" x="130" y="60"/><use href="#x" x="140" y="60"/><use href="#x" x="150" y="60"/><use href="#x" x="180" y="0"/><use href="#x" x="220" y="0"/><use href="#x" x="180" y="10"/><use href="#x" x="220" y="10"/><use href="#x" x="180" y="20"/><use href="#x" x="220" y="20"/><use href="#x" x="180" y="30"/><use href="#x" x="220" y="30"/><use href="#x" x="180" y="40"/><use href="#x" x="220" y="40"/><use href="#x" x="180" y="50"/><use href="#x" x="220" y="50"/><use href="#x" x="190" y="60"/><use href="#x" x="200" y="60"/><use href="#x" x="210" y="60"/><use href="#x" x="240" y="0"/><use href="#x" x="250" y="0"/><use href="#x" x="260" y="0"/><use href="#x" x="270" y="0"/><use href="#x" x="280" y="0"/><use href="#x" x="260" y="10"/><use href="#x" x="260" y="20"/><use href="#x" x="260" y="30"/><use href="#x" x="260" y="40"/><use href="#x" x="260" y="50"/><use href="#x" x="260" y="60"/></svg></h2>
-<dl>
-<dt>Name</dt><dd>Mario Diz</dd>
-<dt>Aka</dt><dd>dizmar</dd>
-<dt>Role</dt><dd>Art direction &amp; visual design</dd>
-<dt>Based</dt><dd>Madrid, Spain</dd>
-<dt>Work</dt><dd>Key visuals, audiovisual, campaigns</dd>
-<dt>Site</dt><dd><a href="https://www.dizmar.xyz/">dizmar.xyz</a></dd>
-</dl>
-<!-- EDITA: tu presentación (2-3 frases), la misma que en About -->
-<p>Mario Diz is an art director and visual designer based in Madrid, working on key visuals, product imagery and films for brands.</p>
-</section>
-
-<section id="work" aria-labelledby="h-work">
-<h2 id="h-work"><span class="sr-only">Selected work</span><svg class="stitch" viewBox="-2 -2 744 74" aria-hidden="true" focusable="false"><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="40" y="0"/><use href="#x" x="0" y="10"/><use href="#x" x="0" y="20"/><use href="#x" x="10" y="30"/><use href="#x" x="20" y="30"/><use href="#x" x="30" y="30"/><use href="#x" x="40" y="40"/><use href="#x" x="40" y="50"/><use href="#x" x="0" y="60"/><use href="#x" x="10" y="60"/><use href="#x" x="20" y="60"/><use href="#x" x="30" y="60"/><use href="#x" x="60" y="0"/><use href="#x" x="70" y="0"/><use href="#x" x="80" y="0"/><use href="#x" x="90" y="0"/><use href="#x" x="100" y="0"/><use href="#x" x="60" y="10"/><use href="#x" x="60" y="20"/><use href="#x" x="60" y="30"/><use href="#x" x="70" y="30"/><use href="#x" x="80" y="30"/><use href="#x" x="90" y="30"/><use href="#x" x="60" y="40"/><use href="#x" x="60" y="50"/><use href="#x" x="60" y="60"/><use href="#x" x="70" y="60"/><use href="#x" x="80" y="60"/><use href="#x" x="90" y="60"/><use href="#x" x="100" y="60"/><use href="#x" x="120" y="0"/><use href="#x" x="120" y="10"/><use href="#x" x="120" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="120" y="40"/><use href="#x" x="120" y="50"/><use href="#x" x="120" y="60"/><use href="#x" x="130" y="60"/><use href="#x" x="140" y="60"/><use href="#x" x="150" y="60"/><use href="#x" x="160" y="60"/><use href="#x" x="180" y="0"/><use href="#x" x="190" y="0"/><use href="#x" x="200" y="0"/><use href="#x" x="210" y="0"/><use href="#x" x="220" y="0"/><use href="#x" x="180" y="10"/><use href="#x" x="180" y="20"/><use href="#x" x="180" y="30"/><use href="#x" x="190" y="30"/><use href="#x" x="200" y="30"/><use href="#x" x="210" y="30"/><use href="#x" x="180" y="40"/><use href="#x" x="180" y="50"/><use href="#x" x="180" y="60"/><use href="#x" x="190" y="60"/><use href="#x" x="200" y="60"/><use href="#x" x="210" y="60"/><use href="#x" x="220" y="60"/><use href="#x" x="250" y="0"/><use href="#x" x="260" y="0"/><use href="#x" x="270" y="0"/><use href="#x" x="240" y="10"/><use href="#x" x="280" y="10"/><use href="#x" x="240" y="20"/><use href="#x" x="240" y="30"/><use href="#x" x="240" y="40"/><use href="#x" x="240" y="50"/><use href="#x" x="280" y="50"/><use href="#x" x="250" y="60"/><use href="#x" x="260" y="60"/><use href="#x" x="270" y="60"/><use href="#x" x="300" y="0"/><use href="#x" x="310" y="0"/><use href="#x" x="320" y="0"/><use href="#x" x="330" y="0"/><use href="#x" x="340" y="0"/><use href="#x" x="320" y="10"/><use href="#x" x="320" y="20"/><use href="#x" x="320" y="30"/><use href="#x" x="320" y="40"/><use href="#x" x="320" y="50"/><use href="#x" x="320" y="60"/><use href="#x" x="360" y="0"/><use href="#x" x="370" y="0"/><use href="#x" x="380" y="0"/><use href="#x" x="390" y="0"/><use href="#x" x="400" y="0"/><use href="#x" x="360" y="10"/><use href="#x" x="360" y="20"/><use href="#x" x="360" y="30"/><use href="#x" x="370" y="30"/><use href="#x" x="380" y="30"/><use href="#x" x="390" y="30"/><use href="#x" x="360" y="40"/><use href="#x" x="360" y="50"/><use href="#x" x="360" y="60"/><use href="#x" x="370" y="60"/><use href="#x" x="380" y="60"/><use href="#x" x="390" y="60"/><use href="#x" x="400" y="60"/><use href="#x" x="420" y="0"/><use href="#x" x="430" y="0"/><use href="#x" x="440" y="0"/><use href="#x" x="450" y="0"/><use href="#x" x="420" y="10"/><use href="#x" x="460" y="10"/><use href="#x" x="420" y="20"/><use href="#x" x="460" y="20"/><use href="#x" x="420" y="30"/><use href="#x" x="460" y="30"/><use href="#x" x="420" y="40"/><use href="#x" x="460" y="40"/><use href="#x" x="420" y="50"/><use href="#x" x="460" y="50"/><use href="#x" x="420" y="60"/><use href="#x" x="430" y="60"/><use href="#x" x="440" y="60"/><use href="#x" x="450" y="60"/><use href="#x" x="510" y="0"/><use href="#x" x="550" y="0"/><use href="#x" x="510" y="10"/><use href="#x" x="550" y="10"/><use href="#x" x="510" y="20"/><use href="#x" x="550" y="20"/><use href="#x" x="510" y="30"/><use href="#x" x="530" y="30"/><use href="#x" x="550" y="30"/><use href="#x" x="510" y="40"/><use href="#x" x="530" y="40"/><use href="#x" x="550" y="40"/><use href="#x" x="510" y="50"/><use href="#x" x="520" y="50"/><use href="#x" x="540" y="50"/><use href="#x" x="550" y="50"/><use href="#x" x="510" y="60"/><use href="#x" x="550" y="60"/><use href="#x" x="580" y="0"/><use href="#x" x="590" y="0"/><use href="#x" x="600" y="0"/><use href="#x" x="570" y="10"/><use href="#x" x="610" y="10"/><use href="#x" x="570" y="20"/><use href="#x" x="610" y="20"/><use href="#x" x="570" y="30"/><use href="#x" x="610" y="30"/><use href="#x" x="570" y="40"/><use href="#x" x="610" y="40"/><use href="#x" x="570" y="50"/><use href="#x" x="610" y="50"/><use href="#x" x="580" y="60"/><use href="#x" x="590" y="60"/><use href="#x" x="600" y="60"/><use href="#x" x="630" y="0"/><use href="#x" x="640" y="0"/><use href="#x" x="650" y="0"/><use href="#x" x="660" y="0"/><use href="#x" x="630" y="10"/><use href="#x" x="670" y="10"/><use href="#x" x="630" y="20"/><use href="#x" x="670" y="20"/><use href="#x" x="630" y="30"/><use href="#x" x="640" y="30"/><use href="#x" x="650" y="30"/><use href="#x" x="660" y="30"/><use href="#x" x="630" y="40"/><use href="#x" x="650" y="40"/><use href="#x" x="630" y="50"/><use href="#x" x="660" y="50"/><use href="#x" x="630" y="60"/><use href="#x" x="670" y="60"/><use href="#x" x="690" y="0"/><use href="#x" x="730" y="0"/><use href="#x" x="690" y="10"/><use href="#x" x="720" y="10"/><use href="#x" x="690" y="20"/><use href="#x" x="710" y="20"/><use href="#x" x="690" y="30"/><use href="#x" x="700" y="30"/><use href="#x" x="690" y="40"/><use href="#x" x="710" y="40"/><use href="#x" x="690" y="50"/><use href="#x" x="720" y="50"/><use href="#x" x="690" y="60"/><use href="#x" x="730" y="60"/></svg></h2>
-
-<article class="project">
-<h3>Lexus — Electrified</h3>
-<p class="tags">[audiovisual] [2025]</p>
-<!-- EDITA: el texto del proyecto, cuando esté escrito en su página -->
-<p class="dim">Project description coming soon.</p>
-<ul class="links">
-<li><a href="/project/lexus-electrified/">Project page (human mode)</a></li>
-<li><a href="https://www.instagram.com/p/DUk54nFkTu_/" rel="noopener">Watch the film on Instagram ↗</a></li>
-</ul>
-</article>
-
-<article class="project">
-<h3>Soap &amp; Glory — Vanillalicious</h3>
-<p class="tags">[key visuals]</p>
-<p>This project focused on developing high-quality key visuals and product shots that integrate real products into a fantasy, food-inspired world. The goal was to combine the realism of product photography with the freedom of AI-generated environments, so that the final images feel like a single, cohesive piece rather than a composite.</p>
-<ul class="links">
-<li><a href="/project/soap-and-glory-vanilla/">Project page (human mode)</a></li>
-<li><a href="/assets/projects/soap-and-glory-vanilla/video.mp4">Watch the video (mp4)</a></li>
-<li>Images (open one at a time):
-<ul class="images">
-<li><a href="/assets/projects/soap-and-glory-vanilla/sg1-800.webp">01</a></li>
-<li><a href="/assets/projects/soap-and-glory-vanilla/sg2-800.webp">02</a></li>
-<li><a href="/assets/projects/soap-and-glory-vanilla/sg3-800.webp">03</a></li>
-<li><a href="/assets/projects/soap-and-glory-vanilla/sg4-800.webp">04</a></li>
-<li><a href="/assets/projects/soap-and-glory-vanilla/sg5-800.webp">05</a></li>
-</ul>
-</li>
-</ul>
-</article>
-</section>
-
-<section id="room" aria-labelledby="h-room">
-<h2 id="h-room"><span class="sr-only">The room</span><svg class="stitch" viewBox="-2 -2 444 74" aria-hidden="true" focusable="false"><use href="#x" x="0" y="0"/><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="40" y="0"/><use href="#x" x="20" y="10"/><use href="#x" x="20" y="20"/><use href="#x" x="20" y="30"/><use href="#x" x="20" y="40"/><use href="#x" x="20" y="50"/><use href="#x" x="20" y="60"/><use href="#x" x="60" y="0"/><use href="#x" x="100" y="0"/><use href="#x" x="60" y="10"/><use href="#x" x="100" y="10"/><use href="#x" x="60" y="20"/><use href="#x" x="100" y="20"/><use href="#x" x="60" y="30"/><use href="#x" x="70" y="30"/><use href="#x" x="80" y="30"/><use href="#x" x="90" y="30"/><use href="#x" x="100" y="30"/><use href="#x" x="60" y="40"/><use href="#x" x="100" y="40"/><use href="#x" x="60" y="50"/><use href="#x" x="100" y="50"/><use href="#x" x="60" y="60"/><use href="#x" x="100" y="60"/><use href="#x" x="120" y="0"/><use href="#x" x="130" y="0"/><use href="#x" x="140" y="0"/><use href="#x" x="150" y="0"/><use href="#x" x="160" y="0"/><use href="#x" x="120" y="10"/><use href="#x" x="120" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="130" y="30"/><use href="#x" x="140" y="30"/><use href="#x" x="150" y="30"/><use href="#x" x="120" y="40"/><use href="#x" x="120" y="50"/><use href="#x" x="120" y="60"/><use href="#x" x="130" y="60"/><use href="#x" x="140" y="60"/><use href="#x" x="150" y="60"/><use href="#x" x="160" y="60"/><use href="#x" x="210" y="0"/><use href="#x" x="220" y="0"/><use href="#x" x="230" y="0"/><use href="#x" x="240" y="0"/><use href="#x" x="210" y="10"/><use href="#x" x="250" y="10"/><use href="#x" x="210" y="20"/><use href="#x" x="250" y="20"/><use href="#x" x="210" y="30"/><use href="#x" x="220" y="30"/><use href="#x" x="230" y="30"/><use href="#x" x="240" y="30"/><use href="#x" x="210" y="40"/><use href="#x" x="230" y="40"/><use href="#x" x="210" y="50"/><use href="#x" x="240" y="50"/><use href="#x" x="210" y="60"/><use href="#x" x="250" y="60"/><use href="#x" x="280" y="0"/><use href="#x" x="290" y="0"/><use href="#x" x="300" y="0"/><use href="#x" x="270" y="10"/><use href="#x" x="310" y="10"/><use href="#x" x="270" y="20"/><use href="#x" x="310" y="20"/><use href="#x" x="270" y="30"/><use href="#x" x="310" y="30"/><use href="#x" x="270" y="40"/><use href="#x" x="310" y="40"/><use href="#x" x="270" y="50"/><use href="#x" x="310" y="50"/><use href="#x" x="280" y="60"/><use href="#x" x="290" y="60"/><use href="#x" x="300" y="60"/><use href="#x" x="340" y="0"/><use href="#x" x="350" y="0"/><use href="#x" x="360" y="0"/><use href="#x" x="330" y="10"/><use href="#x" x="370" y="10"/><use href="#x" x="330" y="20"/><use href="#x" x="370" y="20"/><use href="#x" x="330" y="30"/><use href="#x" x="370" y="30"/><use href="#x" x="330" y="40"/><use href="#x" x="370" y="40"/><use href="#x" x="330" y="50"/><use href="#x" x="370" y="50"/><use href="#x" x="340" y="60"/><use href="#x" x="350" y="60"/><use href="#x" x="360" y="60"/><use href="#x" x="390" y="0"/><use href="#x" x="430" y="0"/><use href="#x" x="390" y="10"/><use href="#x" x="400" y="10"/><use href="#x" x="420" y="10"/><use href="#x" x="430" y="10"/><use href="#x" x="390" y="20"/><use href="#x" x="410" y="20"/><use href="#x" x="430" y="20"/><use href="#x" x="390" y="30"/><use href="#x" x="410" y="30"/><use href="#x" x="430" y="30"/><use href="#x" x="390" y="40"/><use href="#x" x="430" y="40"/><use href="#x" x="390" y="50"/><use href="#x" x="430" y="50"/><use href="#x" x="390" y="60"/><use href="#x" x="430" y="60"/></svg></h2>
-<p class="dim"># A 3D shelf of personal interests. Here, the short version.</p>
-<dl>
-<dt>Now playing</dt><dd>Bug — Fontaines D.C. (Romance)</dd>
-<dt>Last watched</dt><dd>La Bola Negra</dd>
-<dt>Pokemon</dt><dd>Mimikyu plush</dd>
-<dt>Lamp</dt><dd>A tomato lamp</dd>
-<dt>Plant</dt><dd>Eucalyptus in a fluted vase</dd>
-</dl>
-<ul class="links">
-<li><a href="/room.html">Enter the 3D room (heavy, human mode)</a></li>
-</ul>
-</section>
-
-<section id="contact" aria-labelledby="h-contact">
-<h2 id="h-contact"><span class="sr-only">Contact</span><svg class="stitch" viewBox="-2 -2 414 74" aria-hidden="true" focusable="false"><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="0" y="10"/><use href="#x" x="40" y="10"/><use href="#x" x="0" y="20"/><use href="#x" x="0" y="30"/><use href="#x" x="0" y="40"/><use href="#x" x="0" y="50"/><use href="#x" x="40" y="50"/><use href="#x" x="10" y="60"/><use href="#x" x="20" y="60"/><use href="#x" x="30" y="60"/><use href="#x" x="70" y="0"/><use href="#x" x="80" y="0"/><use href="#x" x="90" y="0"/><use href="#x" x="60" y="10"/><use href="#x" x="100" y="10"/><use href="#x" x="60" y="20"/><use href="#x" x="100" y="20"/><use href="#x" x="60" y="30"/><use href="#x" x="100" y="30"/><use href="#x" x="60" y="40"/><use href="#x" x="100" y="40"/><use href="#x" x="60" y="50"/><use href="#x" x="100" y="50"/><use href="#x" x="70" y="60"/><use href="#x" x="80" y="60"/><use href="#x" x="90" y="60"/><use href="#x" x="120" y="0"/><use href="#x" x="160" y="0"/><use href="#x" x="120" y="10"/><use href="#x" x="130" y="10"/><use href="#x" x="160" y="10"/><use href="#x" x="120" y="20"/><use href="#x" x="140" y="20"/><use href="#x" x="160" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="150" y="30"/><use href="#x" x="160" y="30"/><use href="#x" x="120" y="40"/><use href="#x" x="160" y="40"/><use href="#x" x="120" y="50"/><use href="#x" x="160" y="50"/><use href="#x" x="120" y="60"/><use href="#x" x="160" y="60"/><use href="#x" x="180" y="0"/><use href="#x" x="190" y="0"/><use href="#x" x="200" y="0"/><use href="#x" x="210" y="0"/><use href="#x" x="220" y="0"/><use href="#x" x="200" y="10"/><use href="#x" x="200" y="20"/><use href="#x" x="200" y="30"/><use href="#x" x="200" y="40"/><use href="#x" x="200" y="50"/><use href="#x" x="200" y="60"/><use href="#x" x="250" y="0"/><use href="#x" x="260" y="0"/><use href="#x" x="270" y="0"/><use href="#x" x="240" y="10"/><use href="#x" x="280" y="10"/><use href="#x" x="240" y="20"/><use href="#x" x="280" y="20"/><use href="#x" x="240" y="30"/><use href="#x" x="250" y="30"/><use href="#x" x="260" y="30"/><use href="#x" x="270" y="30"/><use href="#x" x="280" y="30"/><use href="#x" x="240" y="40"/><use href="#x" x="280" y="40"/><use href="#x" x="240" y="50"/><use href="#x" x="280" y="50"/><use href="#x" x="240" y="60"/><use href="#x" x="280" y="60"/><use href="#x" x="310" y="0"/><use href="#x" x="320" y="0"/><use href="#x" x="330" y="0"/><use href="#x" x="300" y="10"/><use href="#x" x="340" y="10"/><use href="#x" x="300" y="20"/><use href="#x" x="300" y="30"/><use href="#x" x="300" y="40"/><use href="#x" x="300" y="50"/><use href="#x" x="340" y="50"/><use href="#x" x="310" y="60"/><use href="#x" x="320" y="60"/><use href="#x" x="330" y="60"/><use href="#x" x="360" y="0"/><use href="#x" x="370" y="0"/><use href="#x" x="380" y="0"/><use href="#x" x="390" y="0"/><use href="#x" x="400" y="0"/><use href="#x" x="380" y="10"/><use href="#x" x="380" y="20"/><use href="#x" x="380" y="30"/><use href="#x" x="380" y="40"/><use href="#x" x="380" y="50"/><use href="#x" x="380" y="60"/></svg></h2>
-<!-- EDITA: tu email y tus redes -->
-<dl>
-<dt>Email</dt><dd><a href="mailto:hello@dizmar.xyz">hello@dizmar.xyz</a></dd>
-<dt>Based</dt><dd>Madrid, Spain</dd>
-</dl>
-</section>
-
-<section id="sitemap" aria-labelledby="h-sitemap">
-<h2 id="h-sitemap"><span class="sr-only">Sitemap</span><svg class="stitch" viewBox="-2 -2 394 74" aria-hidden="true" focusable="false"><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="40" y="0"/><use href="#x" x="0" y="10"/><use href="#x" x="0" y="20"/><use href="#x" x="10" y="30"/><use href="#x" x="20" y="30"/><use href="#x" x="30" y="30"/><use href="#x" x="40" y="40"/><use href="#x" x="40" y="50"/><use href="#x" x="0" y="60"/><use href="#x" x="10" y="60"/><use href="#x" x="20" y="60"/><use href="#x" x="30" y="60"/><use href="#x" x="60" y="0"/><use href="#x" x="70" y="0"/><use href="#x" x="80" y="0"/><use href="#x" x="70" y="10"/><use href="#x" x="70" y="20"/><use href="#x" x="70" y="30"/><use href="#x" x="70" y="40"/><use href="#x" x="70" y="50"/><use href="#x" x="60" y="60"/><use href="#x" x="70" y="60"/><use href="#x" x="80" y="60"/><use href="#x" x="100" y="0"/><use href="#x" x="110" y="0"/><use href="#x" x="120" y="0"/><use href="#x" x="130" y="0"/><use href="#x" x="140" y="0"/><use href="#x" x="120" y="10"/><use href="#x" x="120" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="120" y="40"/><use href="#x" x="120" y="50"/><use href="#x" x="120" y="60"/><use href="#x" x="160" y="0"/><use href="#x" x="170" y="0"/><use href="#x" x="180" y="0"/><use href="#x" x="190" y="0"/><use href="#x" x="200" y="0"/><use href="#x" x="160" y="10"/><use href="#x" x="160" y="20"/><use href="#x" x="160" y="30"/><use href="#x" x="170" y="30"/><use href="#x" x="180" y="30"/><use href="#x" x="190" y="30"/><use href="#x" x="160" y="40"/><use href="#x" x="160" y="50"/><use href="#x" x="160" y="60"/><use href="#x" x="170" y="60"/><use href="#x" x="180" y="60"/><use href="#x" x="190" y="60"/><use href="#x" x="200" y="60"/><use href="#x" x="220" y="0"/><use href="#x" x="260" y="0"/><use href="#x" x="220" y="10"/><use href="#x" x="230" y="10"/><use href="#x" x="250" y="10"/><use href="#x" x="260" y="10"/><use href="#x" x="220" y="20"/><use href="#x" x="240" y="20"/><use href="#x" x="260" y="20"/><use href="#x" x="220" y="30"/><use href="#x" x="240" y="30"/><use href="#x" x="260" y="30"/><use href="#x" x="220" y="40"/><use href="#x" x="260" y="40"/><use href="#x" x="220" y="50"/><use href="#x" x="260" y="50"/><use href="#x" x="220" y="60"/><use href="#x" x="260" y="60"/><use href="#x" x="290" y="0"/><use href="#x" x="300" y="0"/><use href="#x" x="310" y="0"/><use href="#x" x="280" y="10"/><use href="#x" x="320" y="10"/><use href="#x" x="280" y="20"/><use href="#x" x="320" y="20"/><use href="#x" x="280" y="30"/><use href="#x" x="290" y="30"/><use href="#x" x="300" y="30"/><use href="#x" x="310" y="30"/><use href="#x" x="320" y="30"/><use href="#x" x="280" y="40"/><use href="#x" x="320" y="40"/><use href="#x" x="280" y="50"/><use href="#x" x="320" y="50"/><use href="#x" x="280" y="60"/><use href="#x" x="320" y="60"/><use href="#x" x="340" y="0"/><use href="#x" x="350" y="0"/><use href="#x" x="360" y="0"/><use href="#x" x="370" y="0"/><use href="#x" x="340" y="10"/><use href="#x" x="380" y="10"/><use href="#x" x="340" y="20"/><use href="#x" x="380" y="20"/><use href="#x" x="340" y="30"/><use href="#x" x="350" y="30"/><use href="#x" x="360" y="30"/><use href="#x" x="370" y="30"/><use href="#x" x="340" y="40"/><use href="#x" x="340" y="50"/><use href="#x" x="340" y="60"/></svg></h2>
-<ul class="links">
-<li><a href="/">/ — home (3D tomato, selected work)</a></li>
-<li><a href="/project/lexus-electrified/">/project/lexus-electrified/</a></li>
-<li><a href="/project/soap-and-glory-vanilla/">/project/soap-and-glory-vanilla/</a></li>
-<li><a href="/room.html">/room.html — the 3D room</a></li>
-<li><a href="/machine/">/machine/ — this page</a></li>
-</ul>
-</section>
+  <section data-page="home about">
+    <h2>About</h2>
+    <dl>
+      <dt>Name</dt><dd>Mario Diz</dd>
+      <dt>Aka</dt><dd>dizmar</dd>
+      <dt>Based</dt><dd>Madrid, Spain</dd>
+      <dt>Role</dt><dd>Art director &amp; visual designer</dd>
+      <dt>Work</dt><dd>Key visuals, product imagery &amp; films</dd>
+    </dl>
+    <p>Art director and visual designer in Madrid. I make key visuals, product imagery and films for brands, mixing photography, 3D and AI.</p>
+  </section>
+  <section data-page="about">
+    <h2>Capabilities</h2>
+    <p>[ Art direction ] [ AI creative ] [ Visual design ] [ 3D ] [ Audiovisual ]</p>
+    <h2>Likes</h2>
+    <p>Tomatoes, tech, Almodóvar, Pokémon.</p>
+    <h2>Dislikes</h2>
+    <p>Stock photos, templates, Mondays.</p>
+  </section>
+  <section data-page="home work">
+    <h2>Selected_work</h2>
+    <ul>
+      <li><a href="/machine/?page=%2Fproject%2Flexus-electrified%2F">Lexus — Electrified</a><br>&nbsp; Audiovisual / 2025 / Lexus Singapore</li>
+      <li><a href="/machine/?page=%2Fproject%2Fsoap-and-glory-vanilla%2F">Soap &amp; Glory — Vanillalicious</a><br>&nbsp; Key visuals / 2026 / Soap &amp; Glory</li>
+    </ul>
+  </section>
+  <section data-page="lexus">
+    <h2>Lexus — Electrified</h2>
+    <dl>
+      <dt>Client</dt><dd>Lexus Singapore</dd>
+      <dt>Project</dt><dd>Electrified</dd>
+      <dt>Discipline</dt><dd>Audiovisual</dd>
+      <dt>Year</dt><dd>2025</dd>
+    </dl>
+    <p>Project description coming soon.</p>
+    <h2>Media_files</h2>
+    <p># Media only loads when you open a file.</p>
+    <ul>
+      <li><a href="/assets/projects/lexus-electrified/film.mp4">Open film [MP4] ↗</a></li>
+      <li><a href="/assets/projects/lexus-electrified/thumb.webp">Open project still [WebP] ↗</a></li>
+      <li><a href="https://www.instagram.com/p/DUk54nFkTu_/" rel="noreferrer">View on Instagram ↗</a></li>
+    </ul>
+    <p><a href="/machine/?page=%2Fproject%2Fsoap-and-glory-vanilla%2F">Next project: Soap &amp; Glory →</a></p>
+  </section>
+  <section data-page="soap">
+    <h2>Soap &amp; Glory — Vanillalicious</h2>
+    <dl>
+      <dt>Client</dt><dd>Soap &amp; Glory</dd>
+      <dt>Project</dt><dd>Vanillalicious</dd>
+      <dt>Discipline</dt><dd>Key visuals</dd>
+      <dt>Year</dt><dd>2026</dd>
+    </dl>
+    <p>Real products in a fantasy, food-inspired world.</p>
+    <p>This project focused on developing high-quality key visuals and product shots that integrate real products into a fantasy, food-inspired world. The goal was to combine the realism of product photography with the freedom of AI-generated environments, so that the final images feel like a single, cohesive piece rather than a composite.</p>
+    <h2>Media_files</h2>
+    <p># Media only loads when you open a file.</p>
+    <ul>
+      <li><a href="/assets/projects/soap-and-glory-vanilla/video.mp4">Open film [MP4] ↗</a></li>
+      <li><a href="/assets/projects/soap-and-glory-vanilla/sg3-800.webp">01 / Body lotions, vanilla cream, caramel &amp; lime [WebP] ↗</a></li>
+      <li><a href="/assets/projects/soap-and-glory-vanilla/sg1-800.webp">02 / Vanilla collection on golden petals [WebP] ↗</a></li>
+      <li><a href="/assets/projects/soap-and-glory-vanilla/sg4-800.webp">03 / Shower creams, petals &amp; lime [WebP] ↗</a></li>
+      <li><a href="/assets/projects/soap-and-glory-vanilla/sg5-800.webp">04 / Body lotion with flowing caramel [WebP] ↗</a></li>
+      <li><a href="/assets/projects/soap-and-glory-vanilla/sg2-800.webp">05 / Clean On Me against a pink sunset [WebP] ↗</a></li>
+    </ul>
+    <p><a href="/machine/?page=%2Fproject%2Flexus-electrified%2F">Next project: Lexus →</a></p>
+  </section>
+  <section data-page="home room">
+    <h2>The_room</h2>
+    <p>A shelf of the things I love, in text.</p>
+    <dl>
+      <dt>Now playing</dt><dd>Bug — Fontaines D.C. / Romance</dd>
+      <dt>Last watched</dt><dd>La Bola Negra</dd>
+      <dt>Pokémon</dt><dd>Mimikyu plush</dd>
+      <dt>Light</dt><dd>Tomato lamp</dd>
+      <dt>Plant</dt><dd>Eucalyptus in a fluted vase</dd>
+    </dl>
+  </section>
+  <section data-page="missing" hidden>
+    <h2>Page_not_found</h2>
+    <p>This page is not available. <a href="/machine/">Return home →</a></p>
+  </section>
+  <footer>
+    <p>© Mario Diz · Madrid<br><a id="human-page" href="/?view=human">Back to the human site →</a></p>
+    <p class="machine-end">/* EOF */</p>
+  </footer>
 </main>
-
-<footer>
-<span>© Mario Diz — Madrid</span>
-<span>Last updated 2026-10-17</span>
-</footer>
-</div>
-
-<!-- Píldora HUMAN | MACHINE -->
-<nav class="mode" aria-label="View mode"><a href="/">Human</a><span aria-current="page">Machine</span></nav>
-<script>
-  // Cambia entre el cielo y el fondo negro, y lo recuerda para la próxima visita
-  (function () {
-    var root = document.documentElement, button = document.getElementById('bg-toggle');
-    function sync() {
-      var black = root.classList.contains('black');
-      button.setAttribute('aria-pressed', black);
-      button.textContent = black ? 'Sky background' : 'Black background';
-    }
-    button.addEventListener('click', function () {
-      root.classList.toggle('black');
-      try { localStorage.setItem('dizmar-machine-bg', root.classList.contains('black') ? 'black' : 'sky'); } catch (e) {}
-      sync();
-    });
-    sync();
-  })();
-</script>
 </body>
 </html>

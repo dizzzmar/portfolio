@@ -9,7 +9,7 @@ index.html                 La home (el tomate gira; al pulsar Work sube al menú
 room.html                  La página "The room" (habitación 3D)
 about/index.html           About (nombre grande, presentación, foto, gustos, clientes, preguntas). Estilos: css/about.css. Textos de ejemplo marcados con EDITA
 404.html                   Página de "no encontrada"
-machine/index.html         Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
+machine/index.html         Modo máquina: versión ligera en texto de cada página
 robots.txt · sitemap.xml · llms.txt   Para buscadores y agentes de IA
 CLAUDE.md                  Reglas para Claude (seguridad: nunca publicar claves; avisar antes de acciones con riesgo)
 .github/workflows/secret-scan.yml  Comprueba en cada cambio que no se suba ninguna clave (gitleaks)
@@ -64,11 +64,13 @@ Súbelas a `assets/projects/<proyecto>/` y cambia la ruta (`src`) y la descripci
 ### Cambiar los textos de la habitación o la canción de "Now playing"
 Están en `js/room.js` (objetos `nowPlaying` y `lastWatched`, y lista `destinations`). La imagen de la pegatina es `assets/room/now-playing-sticker.webp`; el póster de la última película vista, que aparece al acercarse al póster de la pared, es `assets/room/film-poster.webp` (vertical, unos 840×1200).
 
-### Modo máquina (oculto por ahora)
-`machine/index.html` es una versión en texto de toda la web, ligera para conexiones lentas. Ahora mismo está **oculta**: no hay enlaces a ella, no está en `sitemap.xml` y lleva `noindex`. Para volver a activarla:
-1. Añade antes de `</body>` en cada página (home, proyectos, room, 404 y la plantilla): `<script src="/js/mode-switch.js" defer></script>` (pone la píldora HUMAN | MACHINE y el aviso de conexión lenta).
-2. Borra la línea `noindex` de `machine/index.html` y añade `/machine/` a `sitemap.xml`.
-3. Revisa que sus textos sigan al día con la web.
+### Modo máquina
+El selector HUMAN | MACHINE está en todas las páginas, incluida la landing. Mantiene la página actual: por ejemplo, `/machine/?page=%2Fproject%2Flexus-electrified%2F` muestra la ficha de Lexus. El contenido está en `machine/index.html`, las correspondencias de páginas en `js/machine.js` y el diseño blanco y rojo en `css/machine.css`. Al editar proyectos o la habitación, actualiza también sus textos aquí. Los archivos multimedia son enlaces; no se descargan hasta abrirlos. Conserva `noindex` para evitar duplicar el contenido de las páginas principales en buscadores.
+
+`js/mode-switch.js` se carga al principio del `<head>`, antes de recursos pesados. Cambia automáticamente a texto con ahorro de datos, conexiones 2G/3G o menos de 0,8 Mbps. Si el navegador no informa de la conexión, una página que sigue cargando a los ocho segundos también activa la vista ligera. La elección manual se recuerda en `localStorage` (`dizmar-view`); Human evita el cambio automático. El enlace `?view=human` permite volver a la página completa incluso en una conexión lenta.
+
+### Tipos del título Creative
+La palabra cambiante alterna Jacquard 12, Rubik Glitch y Bungee Shade en `js/home-intro.js`. Son fuentes libres alojadas en `assets/fonts/`, con sus licencias OFL; no envían peticiones a Google. Sus reglas están en `css/creative-fonts.css`.
 
 ### Cambiar el texto de la página 404
 `404.html`, el párrafo con clase `message`.

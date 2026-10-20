@@ -7,6 +7,12 @@
 // Código propio, sin librerías.
 // EDITA aquí las palabras (la primera es en la que se para):
 const WORDS = ['Designer', 'Director', 'Coder', 'Enthusiast', 'Thinker', 'Technologist', 'Maximalist', 'Storyteller', 'Retoucher', '3D Artist', 'Mind', 'Nerd'];
+// Fuentes libres alojadas aquí; Creative conserva la tipografía de la web.
+const WORD_TYPES = [
+  { family: '"Jacquard 12", serif', weight: '400', style: 'normal' },
+  { family: '"Rubik Glitch", sans-serif', weight: '400', style: 'normal' },
+  { family: '"Bungee Shade", sans-serif', weight: '400', style: 'normal' },
+];
 const SCRAMBLE = 480;  // milisegundos que tarda cada palabra en descifrarse al aparecer
 const SPEED = 950;     // milisegundos entre una palabra y la siguiente: tras descifrarse, la palabra se queda quieta (se lee) el resto
 const BURST = 6000;    // cuánto dura cada ronda de palabras
@@ -31,6 +37,13 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   const word = document.querySelector('.intro-word');
   const first = document.querySelector('.intro-line > span:first-child');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('work-requested', () => {
+    WORD_TYPES.forEach(type => document.fonts.load('400 48px ' + type.family).then(fitWord).catch(() => {}));
+  }, { once: true });
+  function fitWord() {
+    word.style.setProperty('--word-fit', Math.min(1, (innerWidth - 32) / Math.max(1, word.offsetWidth)));
+  }
+  addEventListener('resize', fitWord);
   let started = false, timer = 0, visible = true;
 
   // ---- Letras sueltas: cada palabra se pinta como una fila de <span> (uno por letra) ----
@@ -43,17 +56,25 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
       c.textContent = ch === ' ' ? NBSP : ch;
       el.append(c);
     }
+    if (el === word) fitWord();
   }
   split(first, first.textContent.trim());
 
   // ---- Mezclar la palabra actual antes de revelar la siguiente ----
   const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
   let scrambleRaf = 0;
+  function applyWordType(text) {
+    const index = Math.max(0, WORDS.indexOf(text));
+    const type = WORD_TYPES[index % WORD_TYPES.length];
+    word.style.fontFamily = type.family;
+    word.style.fontWeight = type.weight;
+    word.style.fontStyle = type.style;
+  }
   function setWord(text, ms = SCRAMBLE) {
     cancelAnimationFrame(scrambleRaf);
-    if (reduced) { split(word, text); return; }
+    if (reduced) { applyWordType(text); split(word, text); return; }
     const previous = word.textContent.replaceAll(NBSP, ' ');
-    if (previous === text) { split(word, text); return; }
+    if (previous === text) { applyWordType(text); split(word, text); return; }
     const start = performance.now();
     const mixDuration = ms * 0.35;
     let revealing = false, lastFrame = -Infinity;
@@ -61,11 +82,12 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     if (!chars.length) { split(word, previous); chars = [...word.children]; }
     const step = (now) => {
       const elapsed = now - start;
-      if (elapsed >= ms) { split(word, text); return; }
+      if (elapsed >= ms) { applyWordType(text); split(word, text); return; }
       // Limitar el ruido a 25 fps mantiene las letras legibles entre cambios.
       if (now - lastFrame >= 40) {
         lastFrame = now;
         if (elapsed >= mixDuration && !revealing) {
+          applyWordType(text);
           split(word, text);
           chars = [...word.children];
           revealing = true;
