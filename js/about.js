@@ -18,7 +18,7 @@
   items.forEach((el) => io.observe(el));
 })();
 
-// FOTO HOLOGRÁFICA · como una carta coleccionable: con ratón, la foto se inclina hacia el cursor, el arcoíris se desplaza
+// FOTO HOLOGRÁFICA · como una carta coleccionable: con ratón, la foto se inclina hacia el cursor, el brillo del fondo se desplaza
 // y un reflejo de luz lo sigue; al salir vuelve a su sitio. En pantallas táctiles se mueve sola, despacio, mientras se ve.
 // Con "reducir movimiento" no se hace nada (la foto se ve normal). Los estilos están en css/about.css (.holo).
 (() => {
