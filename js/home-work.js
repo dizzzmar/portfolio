@@ -100,13 +100,15 @@
     document.body.append(pill);
     let mouse = null;
     const over = () => !!mouse && !!document.elementFromPoint(mouse.x, mouse.y)?.closest('.work-item > a');
-    work.addEventListener('pointermove', (e) => {
+    // En la ventana entera (no solo en la sección): así, al entrar en una fila la etiqueta ya está donde está el ratón y no llega desde donde se quedó
+    addEventListener('pointermove', (e) => {
       if (e.pointerType !== 'mouse') return;
       mouse = { x: e.clientX, y: e.clientY };
-      pill.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      // Posición con la propiedad "translate" (no "transform"): así el crecimiento de "scale" se hace desde el centro de la etiqueta y no desde la esquina de la pantalla
+      pill.style.translate = `calc(${e.clientX}px - 50%) calc(${e.clientY}px - 50%)`;
       pill.classList.toggle('is-on', over());
     }, { passive: true });
-    work.addEventListener('pointerleave', () => { mouse = null; pill.classList.remove('is-on'); });
+    document.documentElement.addEventListener('pointerleave', () => { mouse = null; pill.classList.remove('is-on'); });
     addEventListener('scroll', () => { if (mouse) pill.classList.toggle('is-on', over()); }, { passive: true });
   }
   arrive();

@@ -9,12 +9,11 @@
   dot.setAttribute('aria-hidden', 'true');
   dot.innerHTML = '<i><b></b></i>';
   document.body.appendChild(dot);
-  root.classList.add('has-dot');
 
   const HOT = 'a, button, summary, label, select, [role="button"], [data-cursor="hot"]';
   const HIDE = '.work-item, .player, dialog.st-form';
   const RED = '.nav-logo, [data-cursor="red"]';
-  let white = false, shown = false;
+  let white = false, shown = false, swapTimer = 0;
 
   const set = (cls, on) => dot.classList.toggle(cls, on);
   const move = (x, y) => { dot.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
@@ -48,12 +47,17 @@
     set('is-hide', formOpen || !!(t && t.closest(HIDE)));
     set('is-hot', root.classList.contains('dot-hot') || !!(t && t.closest(HOT)));
     const nowWhite = !!(t && (t.closest(RED) || onRedBackground(t))) || overHomeTomato(e.clientX, e.clientY);
+    // El cambio de color espera 90 ms a confirmarse: al cruzar el borde blanco de un sello el punto no se reinicia a cada paso
     if (nowWhite !== white) {
-      white = nowWhite;
-      set('to-white', white); set('to-red', !white);
-    }
+      clearTimeout(swapTimer);
+      swapTimer = setTimeout(() => { white = nowWhite; set('to-white', white); set('to-red', !white); }, 90);
+    } else clearTimeout(swapTimer);
     try { sessionStorage.setItem('dizmar-dot', e.clientX + ',' + e.clientY); } catch (_) {}
   }
+
+  // Las ventanas (dialog) viven en la capa superior del navegador, por encima de todo: mientras hay una abierta el punto se mete dentro
+  const home = () => { const d = document.querySelector('dialog[open]'); (d || document.body).appendChild(dot); };
+  new MutationObserver(home).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'] });
 
   addEventListener('pointermove', e => { if (e.pointerType === 'mouse') update(e); }, { passive: true });
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') set('is-down', true); }, { passive: true });
