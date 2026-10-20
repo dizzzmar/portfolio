@@ -56,7 +56,26 @@
   html dialog.st-form, html dialog.st-form *, html dialog.st-form::backdrop { cursor: auto !important; }
 }
 
+/* Enlaces del menú, del pie y de los proyectos: con ratón no crece el punto (se esconde); el enlace se subraya.
+   La raya sale por el lado por el que entra el ratón y se retira por el lado por el que sale (referencia: yzavoku.com).
+   js/cursor.js pone mouse-left en <html> cuando el ratón va hacia la izquierda. Con táctil se queda como estaba (subrayado normal). */
+@media (hover: hover) and (pointer: fine) {
+  .nav-links a, .case-nav a, .site-foot a, .case-back, .case-link {
+    --o: 100%; --y: 100%;
+    background: linear-gradient(currentColor, currentColor) no-repeat var(--o) var(--y) / 0% 1px content-box;
+    text-decoration: none;
+    transition: background-size .4s cubic-bezier(.23, 1, .32, 1), color .2s;
+  }
+  .nav-links a, .case-nav a { --y: calc(50% + 11px); }           /* los enlaces del menú miden toda la barra: la raya va bajo el texto */
+  .site-foot a { --y: calc(100% - 1px); }
+  html.mouse-left :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .case-link) { --o: 0%; }
+  :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .case-link):is(:hover, :focus-visible),
+  :is(.nav-links a, .case-nav a)[aria-current="page"] { --o: 0%; background-size: 100% 1px; text-decoration: none; }
+  html.mouse-left :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .case-link):is(:hover, :focus-visible) { --o: 100%; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .nav-links a, .case-nav a, .site-foot a, .case-back, .case-link { transition: color .2s; }
   .cursor-dot i, .cursor-dot.is-hot i, .cursor-dot.is-hide i { transition: opacity .15s ease; }
   .cursor-dot.is-hot i { transform: scale(2.5); }
   .cursor-dot.to-white b, .cursor-dot.to-red b { animation: none; }
