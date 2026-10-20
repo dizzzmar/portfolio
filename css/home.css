@@ -638,3 +638,29 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events
   .intro-line { transition: none; transform: none; }
   body::before { transition: none; }
 }
+
+/* ---------- Variante blanca de Work (prueba): se activa con  /?work=white  (ver el script del <head> de index.html) ----------
+   Mismo diseño, pero el cielo se funde a BLANCO en vez de a negro (las nubes se acercan y se disuelven en blanco) y los textos pasan
+   a oscuro. Los textos siguen blancos mientras el fondo es azul y cambian a oscuro cuando ya es claro (clase light-on, que pone
+   js/home-intro.js). Sin el añadido en la dirección, todo sigue como siempre. */
+.work-white body::after { background: #fff; }
+.work-white .work-grid, .work-white .work-top p > span, .work-white .wi-date, .work-white .wi-tags { transition: color .4s ease; }
+.work-white .light-on .work-grid { color: #0c0c0b; }
+.work-white .light-on .work-top p > span { color: rgba(12, 12, 11, .55); }
+.work-white .light-on .work-top .wt-creative > strong { color: #0c0c0b; }
+.work-white .light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
+.work-white .light-on .work-item::before { background: rgba(12, 12, 11, .16); }
+.work-white .light-on .work-item > a:focus-visible { outline-color: #0c0c0b; }
+.work-white .light-on .wi-date, .work-white .light-on .wi-tags { color: rgba(12, 12, 11, .4); }
+.work-white .light-on .wi-slot { background: rgba(12, 12, 11, .06); }
+.work-white .light-on .work-item > a:hover .wi-date, .work-white .light-on .work-item > a:hover .wi-tags,
+.work-white .light-on .work-item > a:focus-visible .wi-date, .work-white .light-on .work-item > a:focus-visible .wi-tags,
+.work-white .light-on .work-item.is-hot .wi-date, .work-white .light-on .work-item.is-hot .wi-tags,
+.work-white .light-on .work-item.is-back .wi-date, .work-white .light-on .work-item.is-back .wi-tags { color: rgba(12, 12, 11, .9); }
+.work-white .work-cursor { background: #0c0c0b; color: #fff; }
+/* Al fundirse a blanco, el menú, el "Creative ___" del centro y el pie pasan a oscuro */
+.work-white .light-on .nav-links a { color: rgba(12, 12, 11, .55); }
+.work-white .light-on .nav-links a:hover, .work-white .light-on .nav-links a[aria-current="true"] { color: #0c0c0b; }
+.work-white .light-on .intro-line { color: #0c0c0b; }
+.work-white .light-on .site-foot { color: rgba(12, 12, 11, .55); }
+.work-white .light-on .site-foot a:hover { color: #0c0c0b; }
