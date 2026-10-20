@@ -29,8 +29,23 @@
     videos.forEach((v) => io.observe(v));
   }
 
+  // ---- Volver desde un proyecto: la lista llega con un fundido corto, la fila de ese proyecto se enciende un momento
+  //      y la lista no repite su entrada (js/case.js guarda el proyecto al salir) ----
+  const cameBack = () => { try { return !!sessionStorage.getItem('dizmar-from'); } catch (e) { return false; } };
+  const arrive = () => {
+    let from = null;
+    try { from = sessionStorage.getItem('dizmar-from'); sessionStorage.removeItem('dizmar-from'); } catch (e) { /* storage blocked */ }
+    const row = rows.find((r) => r.querySelector('a')?.getAttribute('href') === from);
+    if (!row) return;
+    work.classList.add('arriving');
+    row.classList.add('is-back');
+    setTimeout(() => work.classList.remove('arriving'), 600);
+    setTimeout(() => row.classList.remove('is-back'), 1600);
+  };
+  addEventListener('pageshow', (e) => { if (e.persisted) arrive(); });
+
   // ---- Aparecer: cada fila entra una sola vez ----
-  if (!reduced) {
+  if (!reduced && !cameBack()) {
     document.documentElement.classList.add('work-motion');
     const io = new IntersectionObserver((entries) => entries.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
@@ -99,4 +114,5 @@
     work.addEventListener('pointerleave', () => { mouse = null; pill.classList.remove('is-on'); });
     addEventListener('scroll', () => { if (mouse) pill.classList.toggle('is-on', over()); }, { passive: true });
   }
+  arrive();
 })();

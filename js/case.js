@@ -187,7 +187,16 @@
 // Si no (por ejemplo, abriendo el proyecto directamente), el enlace lleva a /#work como siempre.
 (() => {
   if (history.length < 2 || !document.referrer.startsWith(location.origin + '/')) return;
-  document.querySelectorAll('.case-back').forEach((back) => back.addEventListener('click', (e) => { e.preventDefault(); history.back(); }));
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.case-back').forEach((back) => back.addEventListener('click', (e) => {
+    e.preventDefault();
+    // La portada sabe de qué proyecto llegamos (js/home-work.js) para encender su fila al volver
+    try { sessionStorage.setItem('dizmar-from', location.pathname); } catch (err) { /* storage blocked */ }
+    if (reduced) { history.back(); return; }
+    // Antes de volver, el proyecto se despide (css/case.css, clase is-leaving) y después se vuelve atrás
+    document.body.classList.add('is-leaving');
+    setTimeout(() => history.back(), 300);
+  }));
 })();
 
 // ---------- El nombre del proyecto se mezcla y pasa a "Back to projects" al pasar el ratón ----------

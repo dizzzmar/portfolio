@@ -566,6 +566,13 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events
 .is-placeholder .wi-name { opacity: .32; }
 .is-placeholder .wi-date, .is-placeholder .wi-tags { opacity: .6; }
 
+/* Al volver de un proyecto (js/home-work.js): la lista llega con un fundido corto y la fila de ese proyecto se enciende un momento */
+.work-grid.arriving { animation: work-arrive .6s ease both; }
+@keyframes work-arrive { from { opacity: 0; } }
+.work-list:has(.work-item.is-back) .work-item:not(.is-back) .wi-name { opacity: .28; }
+.work-item.is-back .wi-date, .work-item.is-back .wi-tags { color: rgba(255, 255, 255, .95); }
+.work-item.is-back .wi-slot:not(.wi-gap) { translate: 0 -8px; }
+
 /* Se enciende la fila bajo el ratón (o la del centro de la pantalla, en el móvil) */
 .work-item > a:hover .wi-date, .work-item > a:hover .wi-tags,
 .work-item > a:focus-visible .wi-date, .work-item > a:focus-visible .wi-tags,
