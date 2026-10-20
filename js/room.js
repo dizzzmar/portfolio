@@ -234,6 +234,7 @@ function highlight(selection) {
   for (const button of nav.querySelectorAll('button')) button.classList.toggle('active', !!selection && button.textContent === selection.item.label);
   if (selection && !track) label.textContent = selection.item.poster ? selection.item.poster.title : selection.item.label + ' +';
   canvas.style.cursor = selection ? 'pointer' : 'default';
+  document.documentElement.classList.toggle('dot-hot', !!selection); // el punto rojo (js/cursor.js) crece sobre un objeto
 }
 
 // Hovering an object in the room brings the camera closer, like hovering its name in the list.
