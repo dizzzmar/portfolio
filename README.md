@@ -23,8 +23,10 @@ templates/                 Plantillas para copiar (no son páginas de la web)
   project-card.html             La fila de la lista Work de la home para un proyecto nuevo (8 miniaturas)
 
 css/                       Diseño (colores, tipografías, tamaños)
-  home.css · room.css · not-found.css
-  case.css                 Común a TODAS las páginas de proyecto  ·  nav-logo.css: el tomate de la barra, igual en todas las páginas
+  home.css · room.css · not-found.css · stamps.css
+  footer.css               El pie de página, igual en todas las páginas (ver la clase del color en cada <footer>)
+  nav-logo.css · nav-links.css   El tomate y los enlaces de la barra, iguales en todas las páginas
+  case.css                 Común a TODAS las páginas de proyecto
 
 js/                        Comportamiento (animaciones, tomate 3D, carrusel…)
   home-*.js · room.js · not-found-*.js
@@ -54,7 +56,7 @@ Abre `project/<nombre>/index.html`. Los trozos editables están marcados con com
 1. Duplica `templates/project-template` y muévela a `project/<nombre-del-proyecto>/` (sin espacios ni acentos, con guiones).
 2. Crea `assets/projects/<nombre-del-proyecto>/` y sube allí las imágenes (`.webp`, en dos tamaños: 800 y 1600 px de ancho) y los vídeos (`.mp4`).
 3. En el nuevo `index.html`, cambia `nombre-del-proyecto` por el nombre real (Ctrl+F, "reemplazar todo") y edita los textos marcados con `EDITA:`. La plantilla trae ejemplos de película, clip en bucle e imágenes: deja los que uses y borra el resto.
-4. Abre `templates/project-card.html`, copia el `<li>` y pégalo en la lista `work-list` de `index.html` (lo normal es sustituir una fila "Project title / Coming soon"). Cada fila lleva siempre 8 miniaturas, sin huecos.
+4. Abre `templates/project-card.html`, copia el `<li>` y pégalo en la lista `work-list` de `index.html`, donde quieras que salga (el orden en el código = el orden en la página). Cada fila lleva siempre 8 miniaturas, sin huecos.
 5. Cuando esté listo, borra la línea `<meta name="robots" content="noindex">` de la página del proyecto y añade su dirección a `sitemap.xml`.
 6. Si cambias un `.css` o un `.js`, sube el número `?v=` de sus enlaces en todas las páginas.
 

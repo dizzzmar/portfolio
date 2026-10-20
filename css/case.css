@@ -153,7 +153,6 @@ img, video { display: block; }
 .case-credit p { grid-column: 2; max-width: 56ch; color: var(--soft); font-size: 12px; line-height: 1.5; }
 
 /* ---------- Pie ---------- */
-.case-foot { display: flex; justify-content: space-between; padding: clamp(48px, 6vw, 80px) var(--edge) 24px; color: var(--soft); font-size: 12px; }
 
 /* ---------- Móvil: el nombre pasa a su propia línea y las tarjetas se recorren con el dedo ---------- */
 @media (max-width: 760px) {
@@ -189,7 +188,6 @@ img, video { display: block; }
 /* ---------- Salida: al volver a la lista, la galería se va hacia la derecha, el nombre sube y el resto se apaga (js/case.js) ---------- */
 .is-leaving .p-track { animation: leave-track .3s cubic-bezier(.4, 0, 1, 1) both; }
 .is-leaving .case-head { animation: leave-up .3s cubic-bezier(.4, 0, 1, 1) both; }
-.is-leaving .case-info, .is-leaving .case-embed, .is-leaving .case-credit, .is-leaving .case-foot { animation: leave-fade .25s ease-in both; }
-@keyframes leave-track { to { transform: translateX(8vw); opacity: 0; } }
+.is-leaving .case-info, .is-leaving .case-embed, .is-leaving .case-credit, .is-leaving @keyframes leave-track { to { transform: translateX(8vw); opacity: 0; } }
 @keyframes leave-up { to { transform: translateY(-14px); opacity: 0; } }
 @keyframes leave-fade { to { opacity: 0; } }

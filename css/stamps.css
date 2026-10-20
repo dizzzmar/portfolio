@@ -142,7 +142,6 @@ main { width: var(--w); margin: 0 auto; }
 .st-soon { padding: 32px; font-size: 18px; font-weight: 600; }
 
 /* ---------- Pie ---------- */
-.st-foot { display: flex; justify-content: space-between; gap: 16px; padding: 0 var(--margin) 24px; font-size: 14px; text-shadow: 0 1px 8px rgba(0, 30, 70, .25); }
 
 /* ---------- Móvil: dos columnas ---------- */
 @media (max-width: 700px) {
