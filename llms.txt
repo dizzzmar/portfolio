@@ -4,6 +4,10 @@
 
 ## Pages
 - [Home](https://www.dizmar.xyz/): selected work
+- [About](https://www.dizmar.xyz/about/): biography, what Mario does, selected clients
 - [Lexus — Electrified](https://www.dizmar.xyz/project/lexus-electrified/): audiovisual, 2025
 - [Soap & Glory — Vanillalicious](https://www.dizmar.xyz/project/soap-and-glory-vanilla/): key visuals
 - [Schweppes](https://www.dizmar.xyz/project/schweppes/): AI film, audiovisual, 2026
+- [The room](https://www.dizmar.xyz/room.html): interactive 3D shelf of the music, films and things Mario likes
+- [Contact](https://www.dizmar.xyz/contact/): how to get in touch (email and LinkedIn)
+- [Privacy](https://www.dizmar.xyz/privacy/): no cookies, no analytics
