@@ -59,24 +59,33 @@
   const home = () => { const d = document.querySelector('dialog[open]'); (d || document.body).appendChild(dot); };
   new MutationObserver(home).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'] });
 
-  // Al desplazar con rueda o trackpad, el punto se estira en la dirección del movimiento y vuelve a ser redondo al parar
+  // Al desplazar con rueda o trackpad, el punto se vuelve una gota: más largo hacia donde se desplaza, con la parte delantera redonda y llena
+  // y la trasera más fina (nunca una punta), con una pequeña ondulación; al parar vuelve a ser un círculo
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const blob = dot.firstChild; // la capa "i" (la de dentro, "b", ya tiene su propia animación de color)
-    let energy = 0, shown = 0, angle = 0, ux = 0, uy = 1, raf = 0, lastWheel = 0, lastY = scrollY, last = 0;
+    const blob = dot.firstChild, shape = blob.firstChild; // "i" se estira y gira; "b" cambia de forma (y de color, con su propia animación)
+    let energy = 0, shown = 0, angle = 0, target = 0, raf = 0, lastWheel = 0, lastY = scrollY, last = 0;
     const kick = (dx, dy) => {
       const m = Math.hypot(dx, dy);
       if (!m) return;
       energy = Math.min(1, energy + m / 350);
-      if (m > 3) { ux = dx / m; uy = dy / m; angle = Math.atan2(uy, ux); }
-      if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); }
+      if (m > 3) target = Math.atan2(dy, dx);
+      if (!raf) { last = performance.now(); angle = target; raf = requestAnimationFrame(tick); }
     };
     const tick = (now) => {
       const dt = Math.min(.05, (now - last) / 1000); last = now;
       energy *= Math.exp(-dt * 7);
-      shown += (energy - shown) * .35;
-      if (shown < .01 && energy < .01) { blob.style.scale = ''; blob.style.rotate = ''; shown = energy = 0; raf = 0; return; }
+      shown += (energy - shown) * .3;
+      if (shown < .01 && energy < .01) {
+        blob.style.scale = ''; blob.style.rotate = ''; shape.style.borderRadius = '';
+        shown = energy = 0; raf = 0; return;
+      }
+      const turn = Math.atan2(Math.sin(target - angle), Math.cos(target - angle)); // el giro más corto: al invertir el sentido la gota no da un salto
+      angle += turn * .25;
+      const wob = Math.sin(now / 90) * 5 * shown;                                  // ondulación suave, solo mientras se mueve
       blob.style.rotate = angle + 'rad';
-      blob.style.scale = `${1 + .9 * shown} ${1 / (1 + .55 * shown)}`; // largo hacia donde se desplaza, más fino de lado
+      blob.style.scale = `${1 + .5 * shown} ${1 / (1 + .22 * shown)}`;
+      const back = 50 + 10 * shown + wob, front = 50 - 14 * shown - wob;          // radios horizontales: delante más abierto y lleno, atrás más cerrado
+      shape.style.borderRadius = `${back}% ${front}% ${front}% ${back}% / ${50 + wob}% ${50 - wob}% ${50 + wob}% ${50 - wob}%`;
       raf = requestAnimationFrame(tick);
     };
     addEventListener('wheel', e => { lastWheel = performance.now(); kick(e.deltaX, e.deltaY); }, { passive: true });
