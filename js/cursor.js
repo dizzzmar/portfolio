@@ -11,7 +11,7 @@
   document.body.appendChild(dot);
 
   const HOT = 'a, button, summary, label, select, [role="button"], [data-cursor="hot"]';
-  const HIDE = '.work-item, .player, dialog.st-form, .nav-links a, .case-nav a, .site-foot a, .case-back, .case-film-link, .pv-back a, .pv-row p a, .np-more, .now-playing'; // sitios con otro aviso del enlace: la fila, el vídeo, la raya del subrayado
+  const HIDE = '.work-item, .player, dialog.st-form, .nav-links a, .case-nav a, .site-foot a, .case-back, .case-film-link, .pv-back a, .pv-row p a, .contact-row a, .np-more, .now-playing'; // sitios con otro aviso del enlace: la fila, el vídeo, la raya del subrayado
   const RED = '.nav-logo, [data-cursor="red"]';
   let white = false, shown = false, swapTimer = 0;
 
