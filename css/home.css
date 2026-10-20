@@ -646,7 +646,8 @@ body {
 .white-on .work-grid { background-color: #fff; }
 .white-on .work-top, .white-on .nav { mix-blend-mode: difference; }
 /* Blanco puro (sin grises): con "difference" cada trozo de una letra sale negro o blanco según lo que tenga justo detrás, aunque sea dentro de una misma palabra */
-.white-on .work-top, .white-on .work-top p > span, .white-on .work-top .wt-creative > strong { color: #fff; }
+.white-on .work-top, .white-on .work-top .wt-creative > strong { color: #fff; }
+.white-on .work-top p > span { color: rgba(255, 255, 255, .55); } /* la hora y "Selected work": en gris, como antes (el gris se ve igual de legible sobre blanco y sobre negro) */
 .light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
 .light-on .work-item::before { background: rgba(12, 12, 11, .16); }
 .light-on .work-item > a:focus-visible { outline-color: #0c0c0b; }
