@@ -55,11 +55,6 @@ const ring = new THREE.Group();     // spins
 ringTilt.add(ring);
 pivot.add(ringTilt);
 
-// Pantalla de carga (js/loader.js): al aparecer, el tomate da una vuelta sobre el eje Z (como una rueda) y se asienta derecho
-let rollAt = -1;
-const ROLL_TIME = 1.4, ROLL_TURNS = 1;
-document.addEventListener('loader-swap', () => { rollAt = clock.elapsedTime; });
-
 const ringTex = nameTexture();
 // Radius 0.6: just outside the tomato, whose body reaches 0.47 from its axis
 const ringGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.15, 128, 1, true);
@@ -232,13 +227,6 @@ function frame(now) {
   // Docked and settled: draw only the small box around the tomato
   if ((shown >= 1) !== cropped) setCrop(shown >= 1);
   if (AUTO && shown >= 1 && !announced) { announced = true; document.dispatchEvent(new Event('tomato-docked')); }
-
-  // Entrada tras la pantalla de carga: giro sobre Z que frena en suave (ease-out quint) hasta quedar derecho
-  if (rollAt >= 0) {
-    const u = Math.min(1, (t - rollAt) / ROLL_TIME);
-    pivot.rotation.z = Math.pow(1 - u, 5) * ROLL_TURNS * Math.PI * 2;
-    if (u >= 1) { pivot.rotation.z = 0; rollAt = -1; }
-  }
 
   // Keep spinning, with a gentle flying wobble
   spinner.rotation.y += dt * (reduced ? 0.3 : 0.9);

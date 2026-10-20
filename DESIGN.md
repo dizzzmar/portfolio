@@ -50,7 +50,6 @@ Texto sobre oscuro: blanco, o blanco al 70 % para lo secundario y al 60 % para l
 - **Enlace de texto** (menú, pie, privacidad, volver, «Go to film»…): sin subrayado fijo. Al pasar el ratón se dibuja una raya de 1 px que entra por el lado por el que llega el ratón y sale por el lado por el que se va (0,4 s). En un párrafo lleva además una raya tenue fija. La página actual en el menú lleva la raya completa. En táctil: subrayado normal.
 - **Botón:** píldora, texto `--fs-s`, blanco con texto oscuro (o contorno blanco sobre el cielo).
 - **Cursor (solo con ratón):** punto rojo de 24 px. Sobre botones, tarjetas y objetos crece ×2,5 con un pequeño rebote; sobre enlaces de texto, sobre «View project» y sobre vídeos se oculta (la raya, la etiqueta o PLAY/PAUSE hacen de indicador); sobre fondo rojo se encoge, pasa a blanco y vuelve a crecer; al desplazar se estira como una gota.
-- **Pantalla de carga (solo portada, primera vez de cada visita):** fondo blanco y la silueta del tomate que se llena de rojo según carga la página de verdad; cuando está todo, aparece el tomate 3D y da una vuelta sobre el eje Z, un círculo de cielo se abre desde él y entra el menú. No sale al volver atrás, con #work, llegando desde otra página ni con «reducir movimiento». Archivos: `css/loader.css`, `js/loader.js`.
 - **Sellos (Stamps):** papel troquelado con el texto escalado al tamaño del sello (`cqmin`); es la única parte con tamaños propios.
 
 ## 5. Movimiento
