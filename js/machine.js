@@ -6,9 +6,13 @@
     '/': ['home', 'Machine-readable index'],
     '/#work': ['work', 'Selected work'],
     '/about/': ['about', 'About'],
+    '/contact/': ['contact', 'Contact'],
     '/room.html': ['room', 'The room'],
+    '/stamps/': ['stamps', 'Stamps'],
+    '/privacy/': ['privacy', 'Privacy'],
     '/project/lexus-electrified/': ['lexus', 'Lexus — Electrified'],
     '/project/soap-and-glory-vanilla/': ['soap', 'Soap & Glory — Vanillalicious'],
+    '/project/schweppes/': ['schweppes', 'Schweppes'],
   };
   const normalized = view.page.replace(/\/index\.html(?=#|$)/, '/');
   const [key, title] = routes[normalized] || routes[normalized.split('#')[0]] || ['missing', 'Page not found'];
@@ -18,7 +22,7 @@
     section.hidden = !section.dataset.page.split(' ').includes(key);
   }
   for (const link of document.querySelectorAll('[data-route]')) {
-    if (link.dataset.route === normalized || (['lexus', 'soap'].includes(key) && link.dataset.route === '/#work')) link.setAttribute('aria-current', 'page');
+    if (link.dataset.route === normalized || (['lexus', 'soap', 'schweppes'].includes(key) && link.dataset.route === '/#work')) link.setAttribute('aria-current', 'page');
   }
   document.getElementById('human-page').href = view.humanURL(view.page);
   const reason = new URLSearchParams(location.search).get('reason');

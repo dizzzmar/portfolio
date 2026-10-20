@@ -1,82 +1,110 @@
-// PÁGINAS DE PROYECTO · hace aparecer cada bloque marcado con data-reveal al entrar en pantalla
-// y deja quietos los vídeos si el visitante pide menos movimiento.
-// Los vídeos con data-player llevan una barra de reproducción propia (como en cipher.tv).
+// PÁGINAS DE PROYECTO · aparición de los bloques con data-reveal, galería horizontal y reproductor propio.
+// La galería se recorre con la rueda del ratón o el trackpad mientras está entera en pantalla, esté el cursor donde esté; al llegar a un extremo, tras una pausa, la página vuelve a desplazarse.
+// Con el dedo no se interviene: la página se desplaza sola. Además, se puede arrastrar con el ratón, con el dedo o con las flechas del teclado. Sin script, la tira se desliza de forma nativa.
+// Arrastrando con el ratón, con el dedo o con las flechas del teclado. Sin script, la tira se desliza de forma nativa.
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced) document.querySelectorAll('video[autoplay]').forEach((v) => { v.autoplay = false; v.pause(); });
 
   const items = document.querySelectorAll('[data-reveal]');
-  if (reduced || !('IntersectionObserver' in window)) { items.forEach((el) => el.classList.add('is-in')); return; }
-  items.forEach((el, i) => {
-    if (el.matches('figure, .case-wide')) el.classList.add('media-reveal');
-    el.style.setProperty('--reveal-delay', (i % 3) * 55 + 'ms');
-  });
+  if (!('IntersectionObserver' in window)) { items.forEach((el) => el.classList.add('is-in')); return; }
   const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) e.target.classList.add('is-in');
-      else {
-        e.target.classList.toggle('is-above', e.boundingClientRect.bottom <= 0);
-        e.target.classList.remove('is-in');
-      }
-    });
-  }, { threshold: 0 });
+    entries.filter((e) => e.isIntersecting).forEach((e) => { e.target.classList.add('is-in'); io.unobserve(e.target); });
+  }, { rootMargin: '0px 0px -10% 0px' });
   items.forEach((el) => io.observe(el));
 })();
 
-// ---------- Movimiento al hacer scroll ----------
-// Solo transform / translate / clip-path (baratos para el navegador) y solo si el visitante no pide menos movimiento:
-//  · portada y fotos: la imagen se mueve dentro de su marco más despacio que la página (paralaje) y la portada
-//    hace un zoom suave hacia atrás al bajar;
-// La galería mantiene sus columnas alineadas sin desplazar cada foto por separado.
-// Los marcos y su proporción están en css/case.css (.px); sin JS o con "reducir movimiento" todo queda quieto.
+// ---------- Galería horizontal ----------
 (() => {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const frames = [...document.querySelectorAll('.case-cover, .case-wide:not(.vertical) figure')];
-  const cover = document.querySelector('.case-cover');
-  frames.forEach((f) => f.classList.add('px'));
-  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-  let queued = false;
-  function update() {
-    queued = false;
-    const vh = innerHeight;
-    for (const f of frames) {
-      const r = f.getBoundingClientRect();
-      if (r.bottom < -100 || r.top > vh + 100) continue;
-      const p = clamp((r.top + r.height / 2 - vh / 2) / (vh / 2 + r.height / 2), -1, 1); // -1 abajo del todo · 1 arriba del todo
-      f.style.setProperty('--py', (p * -r.height * 0.07).toFixed(1) + 'px');
-      if (f === cover) f.style.setProperty('--ps', (1 + clamp(scrollY / vh, 0, 1) * -0.06 + 0.08).toFixed(4));
-    }
-  }
-  const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
-  addEventListener('scroll', queue, { passive: true });
-  addEventListener('resize', queue);
-  update();
-})();
+  const track = document.querySelector('.p-track');
+  if (!track) return;
+  const bar = document.querySelector('.p-progress i');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  track.querySelectorAll('.p-card').forEach((card, i) => card.style.setProperty('--i', i));
 
-// ---------- Barra y lados en blanco mientras hay una imagen por detrás ----------
-// Número y título de los lados: cada uno comprueba qué hay justo detrás de él (una foto, un vídeo o el fondo)
-// y se pone blanco sobre las imágenes y oscuro sobre el fondo. La barra, solo cuando la portada pasa por debajo.
-(() => {
-  const cover = document.querySelector('.case-cover');
-  const sides = [...document.querySelectorAll('.case-side')];
-  const navH = () => document.querySelector('.case-nav').offsetHeight;
-  let queued = false;
-  const check = () => {
-    queued = false;
-    for (const side of sides) {
-      const r = side.getBoundingClientRect();
-      const under = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-      side.classList.toggle('on-img', under.some((el) => el.closest('.px, .case-wide figure, .case-embed .instagram-media, video')));
-    }
-    if (cover) {
-      const r = cover.getBoundingClientRect();
-      document.body.classList.toggle('over-cover-nav', r.top < navH() / 2 && r.bottom > navH() / 2);
-    }
+  const max = () => Math.max(0, track.scrollWidth - track.clientWidth);
+  let target = track.scrollLeft, raf = 0, dragging = false;
+  const paint = () => { if (bar) bar.style.transform = `scaleX(${max() ? track.scrollLeft / max() : 0})`; };
+  // Llega a su destino con inercia: cada fotograma recorre una parte de lo que falta
+  const step = () => {
+    raf = 0;
+    const d = target - track.scrollLeft;
+    if (Math.abs(d) < 0.5) { track.scrollLeft = target; return; }
+    track.scrollLeft += d * 0.14;
+    raf = requestAnimationFrame(step);
   };
-  const queue = () => { if (!queued) { queued = true; requestAnimationFrame(check); } };
-  addEventListener('scroll', queue, { passive: true });
-  addEventListener('resize', queue);
-  check();
+  const goTo = (x) => {
+    target = Math.max(0, Math.min(max(), x));
+    if (reduced) track.scrollLeft = target;
+    else if (!raf) raf = requestAnimationFrame(step);
+  };
+  // Si algo más mueve la tira (el dedo, el teclado), el destino se sincroniza
+  track.addEventListener('scroll', () => { if (!raf && !dragging) target = track.scrollLeft; paint(); }, { passive: true });
+  addEventListener('resize', paint);
+  paint();
+
+  // Rueda (ratón y trackpad): mientras la galería está entera en pantalla, la rueda la recorre esté el cursor donde esté.
+  // Al llegar a un extremo, la página vuelve a desplazarse; la inercia del trackpad que aún llega no la mueve de golpe (pausa de 300 ms).
+  let lastUsed = 0;
+  const gallery = document.querySelector('.p-gallery');
+  if (gallery && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    addEventListener('wheel', (e) => {
+      if (e.defaultPrevented || e.ctrlKey || !e.cancelable || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      const r = gallery.getBoundingClientRect();
+      if (r.top < 0 || r.bottom > innerHeight) return; // la galería no está entera en pantalla: se desplaza la página
+      const down = e.deltaY > 0;
+      if ((down && target >= max() - 1) || (!down && target <= 0)) {
+        if (performance.now() - lastUsed < 300) e.preventDefault();
+        return;
+      }
+      lastUsed = performance.now();
+      e.preventDefault();
+      goTo(target + e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1));
+    }, { passive: false });
+  }
+
+  // Arrastrar con el ratón (con el dedo ya funciona de forma nativa)
+  let startX = 0, startLeft = 0, moved = false;
+  track.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('.player-bar, .player-toggle')) return;
+    dragging = true;
+    moved = false;
+    startX = e.clientX;
+    startLeft = track.scrollLeft;
+    // Sin captura todavía: capturar el puntero al pulsar desviaba el clic a la galería y el vídeo no recibía su Play/Pause
+  });
+  track.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    if (!moved && Math.abs(e.clientX - startX) > 4) {
+      moved = true; // ahora sí es un arrastre: se captura el puntero para seguir aunque salga de la galería
+      track.setPointerCapture(e.pointerId);
+      track.classList.add('is-dragging');
+    }
+    if (!moved) return;
+    track.scrollLeft = startLeft - (e.clientX - startX);
+    target = track.scrollLeft;
+  });
+  const stop = () => { dragging = false; track.classList.remove('is-dragging'); };
+  track.addEventListener('pointerup', stop);
+  track.addEventListener('pointercancel', stop);
+  track.addEventListener('click', (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true); // arrastrar no cuenta como pulsar
+
+  // Flechas del teclado
+  track.addEventListener('keydown', (e) => {
+    const k = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+    if (!k || e.target !== track) return;
+    e.preventDefault();
+    goTo(target + k * track.clientWidth * 0.6);
+  });
+
+  // "Go to film": la tira se desliza hasta la película (y, si hace falta, la página sube hasta la galería)
+  document.querySelectorAll('[data-go-film]').forEach((link) => link.addEventListener('click', (e) => {
+    const film = track.querySelector('#film');
+    if (!film) return;
+    e.preventDefault();
+    goTo(film.offsetLeft - parseFloat(getComputedStyle(track).paddingLeft));
+    track.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
+  }));
 })();
 
 // ---------- Barra de reproducción propia ----------
@@ -135,17 +163,6 @@
     video.addEventListener('pointermove', pointer);
     video.addEventListener('pointerleave', () => box.classList.remove('pointer-inside'));
 
-    // La rueda recorre la película; al llegar a los extremos vuelve a desplazar la página.
-    video.addEventListener('wheel', (e) => {
-      if (e.ctrlKey || !e.cancelable || !Number.isFinite(video.duration) || !video.duration || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-      const delta = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? video.clientHeight : 1);
-      const next = Math.max(0, Math.min(video.duration, video.currentTime + delta * 0.01));
-      if (Math.abs(next - video.currentTime) < 0.01) return;
-      e.preventDefault();
-      video.pause();
-      video.currentTime = next;
-      paint();
-    }, { passive: false });
     sound.addEventListener('click', () => { video.muted = !video.muted; if (!video.muted && video.paused) video.play().catch(() => {}); });
     box.querySelector('.player-full').addEventListener('click', () => {
       if (document.fullscreenElement) document.exitFullscreen();
@@ -174,7 +191,52 @@
 // Si se llegó desde la web, usa el historial (js/home-intro.js guarda y restaura la posición).
 // Si no (por ejemplo, abriendo el proyecto directamente), el enlace lleva a /#work como siempre.
 (() => {
-  const back = document.querySelector('.case-back');
-  if (!back || history.length < 2 || !document.referrer.startsWith(location.origin + '/')) return;
-  back.addEventListener('click', (e) => { e.preventDefault(); history.back(); });
+  if (history.length < 2 || !document.referrer.startsWith(location.origin + '/')) return;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.case-back').forEach((back) => back.addEventListener('click', (e) => {
+    e.preventDefault();
+    // La portada sabe de qué proyecto llegamos (js/home-work.js) para encender su fila al volver
+    try { sessionStorage.setItem('dizmar-from', location.pathname); } catch (err) { /* storage blocked */ }
+    // Con View Transitions (css/transitions.css) la vuelta se anima sola: la primera tarjeta se encoge hasta su miniatura. Sin ellas, se despide aquí
+    if (reduced || 'onpageswap' in window) { history.back(); return; }
+    // Antes de volver, el proyecto se despide (css/case.css, clase is-leaving) y después se vuelve atrás
+    document.body.classList.add('is-leaving');
+    setTimeout(() => history.back(), 300);
+  }));
+})();
+
+// ---------- El nombre del proyecto se mezcla y pasa a "Back to projects" al pasar el ratón ----------
+// Mismo efecto de letras al azar que "Creative ___" de la portada: las letras se van fijando de izquierda a derecha.
+(() => {
+  const link = document.querySelector('.case-name .case-back');
+  const label = link && link.querySelector('.cb-text');
+  if (!label) return;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const original = label.textContent;
+  const back = 'Back to projects';
+  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
+  let raf = 0, goal = original;
+  const scramble = (text, ms = 560) => {
+    if (text === goal) return;
+    goal = text;
+    cancelAnimationFrame(raf);
+    if (reduced) { label.textContent = text; return; }
+    const start = performance.now();
+    let last = -Infinity;
+    const step = (now) => {
+      const p = Math.min(1, (now - start) / ms);
+      if (p >= 1) { label.textContent = text; return; }
+      if (now - last >= 35) {
+        last = now;
+        const fixed = Math.floor(p * text.length * 1.2);
+        label.textContent = [...text].map((ch, i) => (ch === ' ' || i < fixed ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0])).join('');
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  };
+  link.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') scramble(back); });
+  link.addEventListener('pointerleave', () => scramble(original));
+  link.addEventListener('focus', () => { if (link.matches(':focus-visible')) scramble(back); });
+  link.addEventListener('blur', () => scramble(original));
 })();

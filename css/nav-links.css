@@ -1,0 +1,36 @@
+/* ENLACES DEL MENÚ · iguales en todas las páginas, como en la portada sobre Work:
+   14 px, blancos al 70 % (blancos del todo al pasar el ratón), 32 px entre enlaces y el último a 24 px del borde derecho
+   (14 px en móvil). La página en la que estás lleva el enlace subrayado (aria-current="page" en el HTML).
+   Los enlaces miden toda la altura de la barra, así el texto queda siempre centrado en vertical.
+   Lo usan About, Privacy, los proyectos y The room (en los proyectos la barra se mezcla con "difference": ver css/case.css). */
+.nav, .case-nav { padding: 0 24px; }
+.nav-links, .case-nav ul { display: flex; align-self: stretch; gap: 0; margin: 0 -16px 0 auto; list-style: none; }
+.nav-links a, .case-nav a {
+  display: flex;
+  align-items: center;
+  height: var(--nav-h);
+  padding: 0 16px;
+  color: rgba(255, 255, 255, .7);
+  font-size: var(--fs-s);
+  font-weight: 400;
+  line-height: 1.4;
+  text-decoration: none;
+  text-shadow: none;
+  opacity: 1;
+  transition: color .2s;
+}
+.nav-links a:hover, .case-nav a:hover { color: #fff; text-decoration: none; }
+.nav-links a[aria-current="page"], .case-nav a[aria-current="page"] {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
+}
+
+@media (max-width: 700px) {
+  .nav, .case-nav { padding: 0 14px; }
+  .nav-links, .case-nav ul { margin-right: -7px; }
+  .nav-links a, .case-nav a { padding: 0 7px; }
+}
+/* En los proyectos, el móvil también lleva los enlaces (antes solo se veía el tomate) */
+@media (max-width: 760px) { .case-nav { display: flex; } }

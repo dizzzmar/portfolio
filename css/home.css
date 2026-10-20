@@ -12,41 +12,39 @@ html:has(body.intro-lock), body.intro-lock { height: 100%; overflow: hidden; ove
 html.smooth-scroll { scroll-behavior: smooth; }
 
 body {
-  --light-progress: 0;
   overflow-x: clip; /* que nada ensanche la página más allá de la pantalla */
   color: #fff;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-ui);
   background-color: #8cc0ef;
 }
 
-/* Al dejar atrás la portada, una capa blanca tapa el cielo poco a poco. Se queda fija para que
-   todos los proyectos se acumulen sobre el mismo fondo limpio. --light-progress lo mueve JS. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  background: #fff;
-  opacity: var(--light-progress);
-  pointer-events: none;
-}
+/* Del cielo al blanco: al bajar, el cielo se acerca (las nubes crecen y se difuminan) y al atravesarlas todo se funde en blanco.
+   js/home-intro.js escribe directamente en tres elementos (sin variables CSS, que se heredan y obligan a recalcular toda la página
+   en cada fotograma): el zoom en .sky (scale), el desenfoque en .sky-soft (opacity de una capa ya desenfocada) y el fundido en .fade (opacity).
+   La capa blanca es fija, así que todos los proyectos se acumulan sobre el mismo fondo limpio. */
+.fade { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #fff; opacity: 0; }
 
-/* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes */
+/* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes.
+   Son dos capas iguales: la nítida y encima una desenfocada (el desenfoque se calcula una sola vez); al bajar, la desenfocada
+   aparece con opacity, que no cuesta nada (animar blur() cada fotograma sí). */
 .sky {
   position: fixed;
   inset: -8%;
   z-index: -1;
+  animation: drift 40s ease-in-out infinite alternate;
+  will-change: transform, scale;
+}
+/* Con la página ya del todo blanca, el cielo no se ve: se esconde y su movimiento se detiene (no gasta nada mientras se ven los proyectos) */
+.white-on .sky { visibility: hidden; animation-play-state: paused; }
+.sky-sharp, .sky-soft {
+  position: absolute;
+  inset: 0;
   /* El grano va en .grain, una capa aparte, para que no se emborrone con el cielo */
   background:
     url("/assets/images/sky.webp") center / cover,
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
-  transition: filter 0.8s ease;
-  animation: drift 40s ease-in-out infinite alternate;
-  will-change: transform;
 }
-
-/* Al bajar a los proyectos el cielo se emborrona un poco (clase sky-soft, la pone js/home-intro.js) */
-.sky-soft .sky { filter: blur(10px); }
+.sky-soft { filter: blur(10px); opacity: 0; }
 
 /* El grano va en su propia capa, encima del cielo, para que siga nítido aunque el cielo se emborrone */
 .grain {
@@ -112,7 +110,7 @@ body::before {
   height: 100%;
   padding: 0 16px;
   color: rgba(255, 255, 255, 0.78);
-  font-size: 15px;
+  font-size: var(--fs-s);
   text-decoration: none;
   text-shadow: 0 1px 8px rgba(0, 20, 40, 0.25);
   transition: color 0.2s, text-shadow 0.2s;
@@ -120,11 +118,13 @@ body::before {
 
 .nav-links a:hover,
 .nav-links a[aria-current="true"] { color: #fff; }
+/* La sección en la que estás (Work) lleva el enlace subrayado, como la página actual en el resto de la web (css/nav-links.css) */
+.nav-links a[aria-current="true"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 
-/* Al entrar en el fondo blanco, toda la barra cambia a tinta oscura. */
-.light-on .nav-links a { color: rgba(32, 32, 29, .62); text-shadow: none; }
+/* Sobre el fondo oscuro de Work, los enlaces de la barra se quedan claros. */
+.light-on .nav-links a { color: rgba(255, 255, 255, .7); text-shadow: none; }
 .light-on .nav-links a:hover,
-.light-on .nav-links a[aria-current="true"] { color: #20201d; }
+.light-on .nav-links a[aria-current="true"] { color: #fff; }
 
 /* Un enlace que pasa por encima de una card clara se oscurece */
 .nav-links a.on-light { color: rgba(17, 17, 17, 0.6); text-shadow: none; }
@@ -166,6 +166,10 @@ body::before {
 }
 .tomato-ready .tomato-placeholder { opacity: 0; }
 .work-engaged .tomato-placeholder { opacity: 0; }
+/* Llegando desde el tomate de otra página (land-fly): mientras carga el 3D, el tomate plano ya está en la barra (no el grande del centro) */
+.land-fly .tomato-placeholder { opacity: 0; animation: none; }
+.land-fly .nav-logo { background: url("/assets/images/tomato.webp") center / contain no-repeat; }
+.land-fly.tomato-ready .nav-logo { background: none; }
 @keyframes placeholder-float {
   50% { transform: translate(-50%, calc(-50% - 10px)) rotate(-3deg); }
 }
@@ -203,7 +207,7 @@ body::before {
   left: 50%;
   bottom: 28px;
   transform: translateX(-50%);
-  font-size: 13px;
+  font-size: var(--fs-s);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   opacity: 0.85;
@@ -262,7 +266,7 @@ body::before {
   display: flex;
   align-items: center;
   padding: 9px 0 8px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1;
@@ -311,8 +315,8 @@ body::before {
 .project-caption { display: grid; gap: 6px; padding: 20px 12px 30px; } /* aire alrededor del texto: arriba, a los lados y antes de la imagen */
 
 .project-brand {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(17px, 1.5vw, 24px);
+  font-family: var(--font-ui);
+  font-size: var(--fs-lead);
   letter-spacing: -0.035em;
   line-height: 1;
   margin-top: -0.18em; /* la caja de texto deja un hueco sobre las mayúsculas; lo recortamos para que la tinta quede a la distancia correcta */
@@ -320,7 +324,7 @@ body::before {
 }
 
 .project-caption h2 {
-  font-size: clamp(40px, 4.6vw, 78px);
+  font-size: var(--fs-h2);
   font-weight: 700;
   letter-spacing: -0.06em;
   line-height: 0.88;
@@ -341,7 +345,7 @@ body::before {
   padding: 5px 11px 4px;
   border: 1px solid #171717;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 0.06em;
   line-height: 1.2;
@@ -354,11 +358,11 @@ body::before {
   margin-left: auto;
   padding: 0;
   border: 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 14px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-s);
   font-weight: 400;
   transform: translateY(2.5px); /* centra el año con el texto de las etiquetas */
-  font-variant-numeric: lining-nums; /* los números por defecto de Georgia bajan de la línea base */
+  font-variant-numeric: lining-nums; /* números alineados a la línea base */
   letter-spacing: -0.02em;
 }
 
@@ -386,7 +390,7 @@ body::before {
 
 .image-placeholder {
   color: #8b8b83;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   letter-spacing: 0.05em;
 }
 
@@ -403,9 +407,9 @@ body::before {
   text-decoration: none;
   transition: background 0.2s, box-shadow 0.2s;
 }
-.room-entry span { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
-.room-entry strong { display: block; margin-top: 12px; font-size: clamp(42px, 8vw, 120px); line-height: .85; font-weight: 400; letter-spacing: -.07em; }
-.room-entry .room-arrow { font-size: clamp(28px, 5vw, 64px); line-height: 1; }
+.room-entry span { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .08em; }
+.room-entry strong { display: block; margin-top: 12px; font-size: var(--fs-h1); line-height: .85; font-weight: 400; letter-spacing: -.07em; }
+.room-entry .room-arrow { font-size: var(--fs-h2); line-height: 1; }
 .room-entry:hover, .room-entry:focus-visible { background: rgba(233, 239, 228, .08); box-shadow: 0 0 0 3px #91c9ff, 0 0 25px #62b9ff77; outline: none; }
 
 /* ---------- Footer: acaba el papel y vuelve a verse el cielo ---------- */
@@ -415,7 +419,7 @@ body::before {
   display: flex;
   align-items: flex-end;
   padding: 120px 30px 24px;
-  font-size: 13px;
+  font-size: var(--fs-s);
   line-height: 1.4;
 }
 
@@ -426,9 +430,9 @@ body::before {
   .nav-logo { width: 36px; height: 36px; }
   .nav-links { margin-right: -7px; }
   .nav-links a { padding: 0 7px; }
-  .nav-links a { font-size: 13px; }
+  .nav-links a { font-size: var(--fs-s); }
   .work-intro { margin-bottom: 20px; }
-  .ticker-list li { padding: 8px 0 7px; font-size: 11px; }
+  .ticker-list li { padding: 8px 0 7px; font-size: var(--fs-xs); }
   .ticker-list li::after { width: 4px; height: 4px; margin: 0 14px; }
   .project-grid { grid-template-columns: 1fr; gap: 8px; }
   .project { border-radius: 20px; }
@@ -437,8 +441,8 @@ body::before {
 .project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
 .project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 
-  .project-caption h2 { font-size: clamp(32px, 11vw, 60px); }
-  .project-brand { font-size: 18px; }
+  .project-caption h2 { font-size: var(--fs-h2); }
+  .project-brand { font-size: var(--fs-m); }
   .project-media { border-radius: 14px; }
   .room-entry { min-height: 210px; margin: 64px 8px 0; padding: 20px; }
   .footer { padding: 96px 20px 16px; }
@@ -447,26 +451,6 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   html.smooth-scroll { scroll-behavior: auto; }
   .scroll-hint::after, .sky, .ticker-track, .tomato-placeholder, .project-media::after { animation: none; }
-}
-
-/* ---------- Transición al abrir y cerrar un proyecto (View Transitions) ----------
-   La imagen de la card de la home y la imagen principal del proyecto llevan el mismo
-   view-transition-name (en el HTML, style="view-transition-name: NOMBRE-DEL-PROYECTO"),
-   así que el navegador anima una hasta la otra. El resto de la página se funde.
-   Chrome, Edge y Safari 18.2+; en Firefox la página cambia sin animación. */
-@view-transition { navigation: auto; }
-::view-transition-group(*) { animation-duration: .6s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
-/* La imagen cambia de forma (16:9 en la card, cuadrada en el proyecto): se recorta en vez de deformarse */
-::view-transition-old(*), ::view-transition-new(*) { height: 100%; object-fit: cover; }
-::view-transition-image-pair(*) { overflow: hidden; border-radius: 18px; }
-/* El resto de la página: la que se va se funde; la que llega sube un poco mientras aparece */
-::view-transition-image-pair(root) { overflow: visible; border-radius: 0; }
-::view-transition-old(root) { animation: .3s ease both vt-fade-out; height: auto; }
-::view-transition-new(root) { animation: .5s cubic-bezier(.2, .8, .2, 1) .1s both vt-rise-in; height: auto; }
-@keyframes vt-fade-out { to { opacity: 0; } }
-@keyframes vt-rise-in { from { opacity: 0; transform: translateY(24px); } }
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: .01s !important; animation-delay: 0s !important; }
 }
 
 /* ---------- "Creative ___": aparece en el centro cuando el tomate llega al menú ----------
@@ -479,7 +463,7 @@ body::before {
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: clamp(48px, 9vw, 150px);
+  font-size: var(--fs-h1);
   font-weight: 700;
   letter-spacing: -0.055em;
   line-height: 0.9;
@@ -487,94 +471,196 @@ body::before {
   text-shadow: 0 2px 30px rgba(0, 20, 40, 0.25);
   opacity: 0;
   transform: translateY(16px);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2, .8, .2, 1), color .45s ease, text-shadow .45s ease;
+  transition: opacity 0.6s ease, transform 0.6s var(--ease-out);
   pointer-events: none;
 }
+/* Tras la entrada, el texto se mueve con el scroll sin transición: así sigue el dedo o la rueda sin retraso */
+.intro-line.is-live { transition: color .45s ease, text-shadow .45s ease; }
 .intro-on .intro-line { opacity: 1; transform: none; }
-.light-on .intro-line { color: #111; text-shadow: none; }
+.light-on .intro-line { color: #fff; text-shadow: none; }
 .intro-word { font-variant-ligatures: none; height: 1.1em; line-height: 1.1; transform: scaleX(var(--word-fit, 1)); }
 .intro-line .ch { display: inline-block; }
 
-/* ---------- Work: lista editorial con miniaturas en movimiento ---------- */
-.work-grid { position: relative; z-index: 5; padding: 28px clamp(16px, 2.8vw, 40px) 0; color: #20201d; }
-.work-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 20px; }
-.work-heading h2, .work-preview-toggle { font: 11px "Helvetica Neue", Arial, sans-serif; text-transform: uppercase; letter-spacing: .07em; }
-.work-preview-toggle { border: 0; padding: 8px 0 8px 12px; background: none; color: inherit; cursor: pointer; }
-.work-preview-toggle:hover { text-decoration: underline; text-underline-offset: 4px; }
-.work-grid ol { list-style: none; border-bottom: 1px solid rgba(32, 32, 29, .2); }
-.work-item { border-top: 1px solid rgba(32, 32, 29, .2); background: rgba(255, 255, 255, .72); }
-.work-item > a, .work-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) minmax(100px, .35fr) 24px; align-items: center; gap: clamp(16px, 2vw, 32px); min-height: 132px; padding: 20px 0; color: inherit; text-decoration: none; }
-.work-info { min-width: 0; }
-.work-title { font-family: var(--font-ui); font-size: clamp(26px, 2.8vw, 42px); font-weight: 500; letter-spacing: -.045em; line-height: 1.1; }
-.work-info > p { margin-top: 10px; font-size: 11px; letter-spacing: .045em; text-transform: uppercase; }
-.work-num { align-self: start; padding-top: 18px; font-size: 10px; font-variant-numeric: tabular-nums; }
-.work-num::after { content: "."; }
-.work-item .work-media { display: none; }
-.work-media img, .work-media video { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.2, .8, .2, 1), opacity .22s ease; }
-.work-media img.preview-next { position: absolute; inset: 0; opacity: 0; }
-.work-media img.preview-next.is-active { opacity: 1; }
-.work-item a:hover .work-media img, .work-item a:hover .work-media video,
-.work-item a:focus-visible .work-media img, .work-item a:focus-visible .work-media video { transform: scale(1.035); }
-.work-type { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; text-align: right; }
-.work-type span { display: block; margin-top: 8px; color: #72726c; font-variant-numeric: tabular-nums; }
-.work-open { position: relative; justify-self: end; width: 18px; height: 18px; font-size: 0; transition: transform .25s; }
-.work-open::before { content: ""; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; border-top: 1px solid currentColor; border-right: 1px solid currentColor; }
-.work-open::after { content: ""; position: absolute; top: 9px; left: 0; width: 19px; border-top: 1px solid currentColor; transform: rotate(-45deg); }
-.work-item a:hover .work-open { transform: translate(3px, -3px); }
-.work-item a:focus-visible { outline: 2px solid #20201d; outline-offset: 6px; }
-.work-foot { padding: 48px 0 24px; font-size: 12px; }
-.work-ph { display: grid; place-items: center; background: rgba(32, 32, 29, .035); }
-.work-ph span { font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: #777770; }
-.is-placeholder .work-info, .is-placeholder .work-num, .is-placeholder .work-type { color: #777770; }
+/* ---------- Work: lista de proyectos ----------
+   Referencia: 13322566869.com/works, con el estilo de esta web (tinta oscura, Helvetica apretada, esquinas rectas).
+   Cada fila: fecha (izquierda), nombre gigante (centro), etiquetas (derecha) y una tira de miniaturas verticales debajo.
+   Los textos pequeños están apagados y se encienden al pasar el ratón. Los movimientos (aparecer, inercia, hover) están al final
+   y se apagan con "reducir movimiento". Sin JavaScript todo se ve completo y quieto. */
+.work-grid { position: relative; z-index: 5; padding: 0 clamp(16px, 1.2vw, 24px); color: #fff; scroll-margin-top: 0; } /* al llegar con el enlace Work, la barra de arriba queda justo en el borde de la pantalla */
 
-/* Work: la preview activa llena la pantalla, como la miniatura bajo el cursor. */
-.work-backdrop { position: fixed; inset: 0; z-index: 2; background: #111; opacity: 0; pointer-events: none; transition: opacity .5s ease; }
-.work-backdrop.is-visible { opacity: 1; }
-.work-backdrop-frame { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .45s ease; }
-.work-backdrop-frame.is-active { opacity: 1; }
-.work-backdrop::after { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, .5); }
-.work-preview-on .work-grid { color: #fff; }
-.work-preview-on .work-item { background: transparent; border-color: rgba(255, 255, 255, .23); }
-.work-preview-on .work-grid ol { border-color: rgba(255, 255, 255, .23); }
-.work-preview-on .work-item.is-active { background: rgba(255, 255, 255, .045); }
-.work-preview-on .work-type span,
-.work-preview-on .is-placeholder .work-info,
-.work-preview-on .is-placeholder .work-num,
-.work-preview-on .is-placeholder .work-type,
-.work-preview-on .work-ph span { color: rgba(255, 255, 255, .62); }
-.work-preview-on .work-ph { background: rgba(255, 255, 255, .06); }
-.work-preview-on .nav-links a { color: rgba(255, 255, 255, .8); text-shadow: none; }
-.work-preview-on .nav-links a:hover { color: #fff; }
-.work-preview-on .intro-line { visibility: hidden; }
-.work-preview-on .work-item a:focus-visible { outline-color: #fff; }
-.work-preview-on .work-preview-toggle:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
-.work-cursor { position: fixed; inset: 0 auto auto 0; z-index: 11; color: #fff; mix-blend-mode: difference; pointer-events: none; opacity: 0; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
-.work-cursor::before { content: ""; display: inline-block; width: 5px; height: 5px; margin: 0 7px 1px 0; border-radius: 50%; background: currentColor; }
-@media (hover: hover) and (pointer: fine) {
-  .work-cursor-on .work-cursor { opacity: 1; }
-  .work-cursor-on .work-item > a { cursor: none; }
+/* Barra de arriba, fija: se queda pegada arriba al llegar y los proyectos pasan por debajo. Misma tipografía y tamaño en todo;
+   "Creative ___" en rojo (la palabra la cambia js/home-work.js). A la izquierda deja sitio al tomate (44 px + margen) y a la
+   derecha a los enlaces de la barra, que van encima. */
+.work-top {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: 1.1fr 1.2fr 1fr;
+  column-gap: 24px;
+  align-items: center;
+  height: var(--nav-h);
+  margin: 0 calc(-1 * clamp(16px, 1.2vw, 24px));
+  padding: 0 clamp(300px, 24vw, 360px) 0 92px;
+  background: transparent; /* sin relleno: no se ve ninguna barra, los proyectos pasan por debajo del texto */
+  font: 500 var(--fs-s)/1.3 var(--font-ui);
+  letter-spacing: -.005em;
 }
+.work-top p > strong { display: block; font-weight: inherit; }
+.work-top p > span { display: block; color: rgba(255, 255, 255, .6); }
+.work-top .wt-creative > strong { color: #fff; white-space: nowrap; } /* la marca va por clase, no por el orden de los bloques */
+.wb-word { display: inline; font-variant-ligatures: none; }
+.wb-word .ch { display: inline-block; }
+@media (max-width: 1000px) {
+  .work-top { grid-template-columns: 1fr 1fr; }
+}
+
+.work-list { margin-top: clamp(24px, 4vw, 64px); list-style: none; border-bottom: 1px solid rgba(255, 255, 255, .18); }
+.work-item { position: relative; }
+.work-item::before { content: ""; position: absolute; inset: 0 0 auto; height: 1px; background: rgba(255, 255, 255, .18); transform-origin: left; }
+.work-item > a, .work-link {
+  display: grid;
+  grid-template-columns: minmax(70px, 1fr) auto minmax(70px, 1fr);
+  grid-template-areas: "date name tags" "strip strip strip";
+  align-items: start;
+  column-gap: 16px;
+  padding: clamp(52px, 6.6vw, 104px) 0 clamp(34px, 3.4vw, 52px);
+  color: inherit;
+  text-decoration: none;
+}
+.work-item > a:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+
+.wi-date, .wi-tags { margin-top: clamp(4px, .9vw, 14px); font-size: var(--fs-s); font-weight: 500; line-height: 1.32; color: rgba(255, 255, 255, .3); transition: color .5s ease; }
+.wi-date { grid-area: date; justify-self: start; font-variant-numeric: lining-nums; }
+.wi-tags { grid-area: tags; justify-self: end; text-align: right; list-style: none; }
+.wi-name {
+  grid-area: name;
+  min-width: 0;
+  padding: 0 .02em .1em;
+  margin-bottom: -.1em;
+  overflow: hidden; /* máscara: el nombre sube desde abajo al aparecer */
+  font-family: var(--font-ui);
+  font-size: var(--fs-h1);
+  font-weight: 700;
+  letter-spacing: -.055em;
+  line-height: .95;
+  text-align: center;
+  transition: opacity .5s ease;
+}
+.wi-name > span { display: block; }
+
+/* Tira de miniaturas verticales (9:16), esquinas rectas */
+.wi-strip { grid-area: strip; display: flex; justify-content: center; gap: 4px; margin-top: clamp(20px, 2.2vw, 34px); }
+.wi-slot { position: relative; flex: none; width: clamp(34px, 6.4vw, 118px); aspect-ratio: 9 / 16; overflow: hidden; background: rgba(255, 255, 255, .07); }
+.wi-gap { visibility: hidden; }
+.wi-slot img, .wi-slot video { display: block; width: 100%; height: 100%; object-fit: cover; scale: var(--sz, 1); }
+.wi-strip { translate: 0 0; } /* js/home-work.js lo mueve directamente (la variable se heredaría a todas las miniaturas) */
+
+
+/* Al volver de un proyecto (js/home-work.js): la lista llega con un fundido corto y la fila de ese proyecto se enciende un momento */
+.work-grid.arriving { animation: work-arrive .6s ease both; }
+@keyframes work-arrive { from { opacity: 0; } }
+.work-list:has(.work-item.is-back) .work-item:not(.is-back) .wi-name { opacity: .28; }
+.work-item.is-back .wi-date, .work-item.is-back .wi-tags { color: rgba(255, 255, 255, .95); }
+.work-item.is-back .wi-slot:not(.wi-gap) { translate: 0 -8px; }
+
+/* Se enciende la fila bajo el ratón (o la del centro de la pantalla, en el móvil) */
+.work-item > a:hover .wi-date, .work-item > a:hover .wi-tags,
+.work-item > a:focus-visible .wi-date, .work-item > a:focus-visible .wi-tags,
+.work-item.is-hot .wi-date, .work-item.is-hot .wi-tags { color: rgba(255, 255, 255, .95); }
+
+
+/* "View project": sigue al ratón con retraso (js/home-work.js) */
+.work-cursor {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 11;
+  padding: 9px 14px 8px;
+  background: #f83d0c; /* el rojo de la marca, el mismo del punto del cursor */
+  color: #fff;
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0;
+  scale: .6;
+  translate: -50% -50%; /* el centro del botón está justo en la punta del ratón: es el cursor */
+  transition: opacity .2s ease, scale .3s var(--ease-out);
+}
+.work-cursor.is-on { opacity: 1; scale: 1; }
+/* Sobre una fila, el cursor del sistema se esconde y "View project" ocupa su sitio (js/home-work.js pone has-pill solo con ratón) */
+.has-pill .work-item > a { cursor: none; }
 
 /* "Creative ___" se queda fijo en el centro mientras los proyectos pasan por encima; al bajar se
-   desenfoca un poco (js/home-intro.js pone --blur) */
-.intro-line { position: fixed; z-index: 1; filter: blur(var(--blur, 0px)); }
+   sube y se apaga (js/home-intro.js) al llegar a Work, donde sigue en la cabecera */
+.intro-line { position: fixed; z-index: 1; }
 
-@media (max-width: 700px) {
-  .work-item > a, .work-row { grid-template-columns: 20px minmax(0, 1fr); gap: 10px; min-height: 112px; padding: 18px 0; }
-  .work-title { font-size: clamp(21px, 5.5vw, 30px); }
-  .work-num { padding-top: 4px; }
-  .work-info > p { font-size: 9px; margin-top: 7px; }
-  .work-type { grid-column: 2; grid-row: 2; display: flex; justify-content: space-between; text-align: left; font-size: 9px; }
-  .work-type span { margin-top: 0; }
-  .work-open { display: none; }
+/* ---------- Work: movimiento (solo con JavaScript y sin "reducir movimiento") ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .wi-slot img, .wi-slot video { transition: scale 1.1s var(--ease-out); }
+  .wi-slot { transition: translate .7s var(--ease-out) calc(var(--i, 0) * 22ms); }
+  .work-motion .work-item::before { transition: transform .9s cubic-bezier(.77, 0, .18, 1); }
+  .work-motion .wi-name > span { transition: translate 1.1s var(--ease-out) .15s; }
+  .work-motion .wi-date, .work-motion .wi-tags { transition: color .5s ease, opacity .9s ease .45s, translate .9s var(--ease-out) .45s; }
+  .work-motion .wi-slot { transition: clip-path .8s cubic-bezier(.77, 0, .18, 1) calc(.35s + var(--i, 0) * 70ms), translate .7s var(--ease-out) calc(var(--i, 0) * 22ms); }
+  /* Antes de entrar: la línea sin dibujar, el nombre escondido bajo su máscara y las miniaturas tapadas */
+  .work-motion .work-item:not(.is-in)::before { transform: scaleX(0); }
+  .work-motion .work-item:not(.is-in) .wi-name > span { translate: 0 112%; }
+  .work-motion .work-item:not(.is-in) .wi-date, .work-motion .work-item:not(.is-in) .wi-tags { opacity: 0; translate: 0 14px; }
+  .work-motion .work-item:not(.is-in) .wi-slot { clip-path: inset(100% 0 0 0); }
+  .work-motion .work-item:not(.is-in) .wi-slot img, .work-motion .work-item:not(.is-in) .wi-slot video { --sz: 1.3; }
 }
-.work-motion .work-item { opacity: 1; transform: none; transition: opacity .6s ease, transform .7s cubic-bezier(.2, .8, .2, 1); }
-.work-motion .work-item:not(.is-in):not(:focus-within) { opacity: 0; transform: translateY(20px); }
-.work-motion .work-item.is-above:not(.is-in):not(:focus-within) { transform: translateY(-20px); }
+/* Al pasar el ratón: las miniaturas suben una tras otra y se acercan, y las demás filas se apagan */
+@media (hover: hover) and (pointer: fine) {
+  .work-item > a:hover .wi-slot:not(.wi-gap), .work-item > a:focus-visible .wi-slot:not(.wi-gap) { translate: 0 -8px; }
+  .work-item > a:hover .wi-slot img, .work-item > a:hover .wi-slot video { --sz: 1.1; }
+  .work-list:has(.work-item > a:hover) .work-item:not(:has(> a:hover)) .wi-name { opacity: .28; }
+}
+
+/* ---------- Móvil: nombre a todo lo ancho y la tira de miniaturas se desliza con el dedo ---------- */
+@media (max-width: 760px) {
+  /* La barra fija ocupa también el hueco de la barra de enlaces (así los proyectos no pasan por detrás) y solo lleva "Creative ___" */
+  .work-top { grid-template-columns: 1fr; height: auto; padding: var(--nav-h) clamp(16px, 1.2vw, 24px) 12px; font-size: var(--fs-s); }
+  .work-top p:not(.wt-creative) { display: none; }
+  .work-item > a, .work-link { grid-template-columns: 1fr auto; grid-template-areas: "date tags" "name name" "strip strip"; row-gap: 12px; padding: 26px 0 30px; }
+  .wi-date, .wi-tags { margin-top: 0; font-size: var(--fs-s); }
+  .wi-name { text-align: left; font-size: var(--fs-h1); }
+  .wi-strip { justify-content: flex-start; overflow-x: auto; margin-right: calc(-1 * clamp(16px, 1.2vw, 24px)); margin-top: 8px; scrollbar-width: none; translate: none; }
+  .wi-strip::-webkit-scrollbar { display: none; }
+  .wi-slot { width: 26vw; }
+  .wi-gap { display: none; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .intro-line { transition: none; transform: none; }
   body::before { transition: none; }
-  .work-media img, .work-media video, .work-open { transition: none; }
-  .work-backdrop, .work-backdrop-frame { transition: none; }
 }
+
+/* ---------- Work sobre fondo blanco: los textos siguen blancos mientras el fondo es azul y pasan a oscuro cuando ya es claro
+   (clase light-on, que pone js/home-intro.js). ---------- */
+.work-grid, .work-top p > span, .wi-date, .wi-tags { transition: color .4s ease; }
+.light-on .work-grid { color: #0c0c0b; }
+.light-on .work-top p > span { color: rgba(12, 12, 11, .55); }
+.light-on .work-top .wt-creative > strong { color: #0c0c0b; }
+/* Cuando la página ya es del todo blanca (clase white-on, que pone js/home-intro.js) la barra de arriba (textos de Work y menú) se mezcla con
+   "difference": negra sobre blanco y blanca sobre un nombre de proyecto o una foto oscuros. El fondo blanco va dentro de la propia sección (la capa
+   blanca de la página queda fuera de ella y la barra no la "ve"); se pone solo ahora, sin transición, porque antes taparía el cielo que aún se funde. */
+.white-on .work-grid { background-color: #fff; }
+.white-on .work-top, .white-on .nav { mix-blend-mode: difference; }
+/* Blanco puro (sin grises): con "difference" cada trozo de una letra sale negro o blanco según lo que tenga justo detrás, aunque sea dentro de una misma palabra */
+.white-on .work-top, .white-on .work-top .wt-creative > strong { color: #fff; }
+.white-on .work-top p > span { color: rgba(255, 255, 255, .55); } /* la hora y "Selected work": en gris, como antes (el gris se ve igual de legible sobre blanco y sobre negro) */
+.light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
+.light-on .work-item::before { background: rgba(12, 12, 11, .16); }
+.light-on .work-item > a:focus-visible { outline-color: #0c0c0b; }
+.light-on .wi-date, .light-on .wi-tags { color: rgba(12, 12, 11, .4); }
+.light-on .wi-slot { background: rgba(12, 12, 11, .06); }
+.light-on .work-item > a:hover .wi-date, .light-on .work-item > a:hover .wi-tags,
+.light-on .work-item > a:focus-visible .wi-date, .light-on .work-item > a:focus-visible .wi-tags,
+.light-on .work-item.is-hot .wi-date, .light-on .work-item.is-hot .wi-tags,
+.light-on .work-item.is-back .wi-date, .light-on .work-item.is-back .wi-tags { color: rgba(12, 12, 11, .9); }
+/* Al fundirse a blanco, el menú, el "Creative ___" del centro y el pie pasan a oscuro */
+.light-on .nav-links a { color: rgba(12, 12, 11, .55); }
+.light-on .nav-links a:hover, .light-on .nav-links a[aria-current="true"] { color: #0c0c0b; }
+.white-on .nav-links a, .white-on .nav-links a:hover, .white-on .nav-links a[aria-current="true"] { color: #fff; }
+.light-on .intro-line { color: #0c0c0b; }
+.light-on .site-foot { color: rgba(12, 12, 11, .55); }
+.light-on .site-foot a:hover { color: #0c0c0b; }

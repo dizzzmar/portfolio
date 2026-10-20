@@ -1,0 +1,30 @@
+/* TOKENS · la tipografía de toda la web en un solo sitio (la guía completa está en DESIGN.md).
+   Se carga la primera en todas las páginas (menos "machine", que es a propósito otro estilo). Para cambiar un tamaño de texto, cámbialo aquí:
+   no pongas tamaños sueltos (14px, 15px…) en los demás css; usa estas variables. */
+:root {
+  /* Letra: una sola, la del sistema (Helvetica Neue en Apple, Arial en el resto). Sin serif. */
+  --font-ui: "Helvetica Neue", Arial, sans-serif;
+
+  /* Tamaños fijos: 6 escalones */
+  --fs-xs: 11px;   /* etiquetas en mayúsculas, créditos, pies pequeños */
+  --fs-s: 14px;    /* menú, enlaces, botones, fechas, textos secundarios */
+  --fs-m: 16px;    /* texto corrido */
+  --fs-l: 20px;    /* destacados cortos */
+  --fs-xl: 24px;   /* subtítulos */
+  --fs-2xl: 32px;  /* títulos pequeños de paneles */
+
+  /* Tamaños que crecen con la pantalla: texto destacado y 3 niveles de título */
+  --fs-lead: clamp(18px, 1.6vw, 24px);    /* párrafos de entrada, frases destacadas */
+  --fs-h3: clamp(24px, 2.8vw, 44px);      /* títulos de sección y de proyecto (barra) */
+  --fs-h2: clamp(40px, 5vw, 76px);        /* títulos grandes */
+  --fs-h1: clamp(56px, 9vw, 140px);       /* título de página y nombres de proyecto */
+
+  /* Movimiento: una sola curva de salida para todo (rápida al empezar, frena suave). Duraciones en DESIGN.md */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* Resto de la tipografía */
+  --tracking-label: .06em;                /* etiquetas en mayúsculas */
+  --lh-tight: 1.05;                       /* titulares */
+  --lh-ui: 1.3;                           /* menús y textos cortos */
+  --lh-body: 1.45;                        /* texto corrido */
+}

@@ -1,183 +1,126 @@
-// WORK · fondo en vídeo o secuencias de imágenes con transición pixelada.
-// Solo se animan mientras están visibles; se pueden pausar y respetan reducir movimiento.
+// WORK · lista de proyectos (referencia: 13322566869.com/works, con el estilo de esta web).
+//  · la cabecera tiene "Creative ___": su palabra se descifra con la animación de la portada (createWordCycler, js/home-intro.js);
+//  · cada fila aparece una vez al entrar: la línea se dibuja, el nombre sube desde su máscara y las miniaturas se destapan una a una;
+//  · al hacer scroll la tira de miniaturas se desplaza un poco de lado, con inercia (la fila se mueve distinto que la página);
+//  · al pasar el ratón: se encienden los textos, suben las miniaturas y "View project" hace de cursor (la parte visual está en css/home.css);
+//  · los vídeos de las miniaturas solo se reproducen mientras se ven.
+// Todo se apaga con "reducir movimiento". Sin este script, la lista se ve completa y quieta.
 (() => {
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const button = document.querySelector('.work-preview-toggle');
-  let paused = false;
-  const previews = [...document.querySelectorAll('.work-media')].map((box) => {
-    const video = box.querySelector('video');
-    const sources = (box.dataset.previewImages || '').split(/\s+/).filter(Boolean);
-    const image = box.querySelector('img');
-    let index = 0, timer = 0, generation = 0, running = false, visible = false, transition = null;
-    if (image) image.loading = 'eager';
-    const finishTransition = () => {
-      if (!transition) return;
-      image.src = transition.image.src;
-      index = transition.index;
-      transition = null;
-    };
-    const cycle = async () => {
-      const ticket = generation;
-      const target = (index + 1) % sources.length;
-      const preload = new Image();
-      preload.src = sources[target];
-      try { await preload.decode(); } catch { /* Keep the current image on a failed download. */ }
-      if (!running || ticket !== generation) return;
-      if (preload.naturalWidth) {
-        transition = { image: preload, index: target, startedAt: performance.now(), duration: 680 };
-        timer = setTimeout(() => {
-          finishTransition();
-          timer = setTimeout(cycle, 1800);
-        }, transition.duration);
-      } else timer = setTimeout(cycle, 2000);
-    };
-    const update = () => {
-      const shouldRun = visible && !paused && !reduced.matches && !document.hidden;
-      if (shouldRun === running) return;
-      running = shouldRun;
-      generation++;
-      clearTimeout(timer);
-      if (video) {
-        video.autoplay = false;
-        if (running) video.play().catch(() => {});
-        else video.pause();
-      }
-      if (image && sources.length > 1) {
-        finishTransition();
-        if (running) timer = setTimeout(cycle, 1800);
-      }
-    };
-    if (video) { video.autoplay = false; video.pause(); }
-    return { box, video, image, link: box.closest('a'), get transition() { return transition; }, update, setVisible(value) { visible = value; update(); } };
-  });
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => previews.find((p) => p.box.closest('.work-item') === entry.target)?.setVisible(entry.isIntersecting));
-  });
-  previews.forEach((p) => observer.observe(p.box.closest('.work-item')));
-  const updateAll = () => {
-    if (button) {
-      button.hidden = reduced.matches;
-      button.textContent = paused ? 'Play previews' : 'Pause previews';
-      button.setAttribute('aria-pressed', String(paused));
-    }
-    previews.forEach((p) => p.update());
-  };
-  button?.addEventListener('click', () => { paused = !paused; updateAll(); });
-  document.addEventListener('visibilitychange', updateAll);
-  reduced.addEventListener('change', updateAll);
-  updateAll();
-
-  // Los medios ocultos alimentan el fondo; el vídeo solo se decodifica una vez.
   const work = document.getElementById('work');
-  const projects = previews.filter((p) => p.link);
-  if (!work || !projects.length) return;
-  const backdrop = document.createElement('div');
-  backdrop.className = 'work-backdrop';
-  backdrop.setAttribute('aria-hidden', 'true');
-  const frames = [0, 1].map(() => {
-    const canvas = document.createElement('canvas');
-    canvas.className = 'work-backdrop-frame';
-    backdrop.append(canvas);
-    return { canvas, context: canvas.getContext('2d', { alpha: false }) };
-  });
-  if (frames.some((f) => !f.context)) return;
-  const pixels = document.createElement('canvas');
-  const pixelContext = pixels.getContext('2d');
-  const cursor = document.createElement('div');
-  cursor.className = 'work-cursor';
-  cursor.textContent = 'View project';
-  cursor.setAttribute('aria-hidden', 'true');
-  document.body.append(backdrop, cursor);
-  projects.forEach((p) => {
-    if (p.video) {
-      p.poster = new Image();
-      p.poster.src = p.video.poster;
-    }
-  });
-  const fine = matchMedia('(hover: hover) and (pointer: fine)');
-  let active = projects[0], frame = 0, inWork = false, raf = 0, lastPaint = 0, lastKey = '';
-  let mouse = null;
-  const fit = (context, source, width, height) => {
-    const sw = source.videoWidth || source.naturalWidth;
-    const sh = source.videoHeight || source.naturalHeight;
-    if (!sw || !sh) return false;
-    const scale = Math.max(width / sw, height / sh);
-    context.drawImage(source, (width - sw * scale) / 2, (height - sh * scale) / 2, sw * scale, sh * scale);
-    return true;
+  if (!work) return;
+  // La hora de Madrid bajo "Based in Madrid" (sea cual sea la zona del visitante), puesta al minuto
+  const clock = document.querySelector('[data-madrid-time]');
+  if (clock) {
+    const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+    const tick = () => {
+      const parts = Object.fromEntries(fmt.formatToParts(new Date()).map(p => [p.type, p.value]));
+      clock.textContent = `${parts.hour}:${parts.minute} ${parts.timeZoneName}`;
+      setTimeout(tick, 60000 - (Date.now() % 60000) + 50);
+    };
+    tick();
+  }
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const rows = [...work.querySelectorAll('.work-item')];
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+  // ---- Cabecera: palabra cambiante ----
+  const top = work.querySelector('.work-top');
+  const word = work.querySelector('.wb-word');
+  if (top && word) createWordCycler(word, { visible: false }).watch(top);
+
+  // ---- Miniaturas: cada una sabe su posición (--i) para destaparse en cadena ----
+  rows.forEach((row) => row.querySelectorAll('.wi-slot').forEach((slot, i) => slot.style.setProperty('--i', i)));
+
+  // ---- Vídeos: solo se reproducen mientras se ven ----
+  const videos = [...work.querySelectorAll('.wi-slot video')];
+  videos.forEach((v) => { v.autoplay = false; v.pause(); });
+  if (!reduced && videos.length) {
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())));
+    videos.forEach((v) => io.observe(v));
+  }
+
+  // ---- Volver desde un proyecto: la lista llega con un fundido corto, la fila de ese proyecto se enciende un momento
+  //      y la lista no repite su entrada (js/case.js guarda el proyecto al salir) ----
+  const cameBack = () => { try { return !!sessionStorage.getItem('dizmar-from'); } catch (e) { return false; } };
+  const arrive = () => {
+    let from = null;
+    try { from = sessionStorage.getItem('dizmar-from'); sessionStorage.removeItem('dizmar-from'); } catch (e) { /* storage blocked */ }
+    const row = rows.find((r) => r.querySelector('a')?.getAttribute('href') === from);
+    if (!row) return;
+    // Con transición de página (is-vt) la lista se está fundiendo: la fila se enciende cuando termina
+    const settle = document.documentElement.classList.contains('is-vt') ? 300 : 0;
+    work.classList.add('arriving');
+    setTimeout(() => row.classList.add('is-back'), settle);
+    setTimeout(() => work.classList.remove('arriving'), 600);
+    setTimeout(() => row.classList.remove('is-back'), settle + 1600);
   };
-  const draw = () => {
-    const { canvas, context } = frames[frame];
-    const width = Math.min(innerWidth, 1920), height = Math.round(width * innerHeight / innerWidth);
-    if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; lastKey = ''; }
-    const transition = active.transition;
-    const progress = transition ? Math.min(1, (performance.now() - transition.startedAt) / transition.duration) : 0;
-    const source = transition && progress >= .5 ? transition.image : active.video && active.video.readyState >= 2 ? active.video : active.image || active.poster;
-    if (!source || !(source.videoWidth || source.naturalWidth)) return;
-    const block = transition && !reduced.matches ? 1 + Math.max(14, width * .045) * Math.pow(Math.sin(progress * Math.PI), 1.4) : 1;
-    const key = [frame, active.link.href, source.currentSrc || source.src, source.currentTime || 0, block].join('|');
-    if (key === lastKey) return;
-    context.globalAlpha = 1;
-    if (pixelContext && block > 1.5) {
-      pixels.width = Math.max(1, Math.round(width / block));
-      pixels.height = Math.max(1, Math.round(height / block));
-      fit(pixelContext, source, pixels.width, pixels.height);
-      context.imageSmoothingEnabled = false;
-      context.drawImage(pixels, 0, 0, width, height);
-    } else {
-      context.imageSmoothingEnabled = true;
-      fit(context, source, width, height);
-    }
-    lastKey = key;
-    frames.forEach((f, i) => f.canvas.classList.toggle('is-active', i === frame));
-  };
-  const render = (now) => {
-    raf = 0;
-    if (!inWork || document.hidden) return;
-    if (now - lastPaint > 33) { draw(); lastPaint = now; }
-    raf = requestAnimationFrame(render);
-  };
-  const select = (project) => {
-    if (!project || project === active) return;
-    active = project;
-    frame = 1 - frame;
-    lastKey = '';
-    projects.forEach((p) => p.link.closest('.work-item').classList.toggle('is-active', p === active));
-    draw();
-  };
-  const updateView = () => {
-    const r = work.getBoundingClientRect();
-    inWork = r.top <= innerHeight * .45 && r.bottom > 0;
-    document.body.classList.toggle('work-preview-on', inWork);
-    backdrop.classList.toggle('is-visible', inWork);
-    const hovered = mouse && fine.matches && document.elementFromPoint(mouse.x, mouse.y)?.closest('.work-item > a');
-    const selected = projects.find((p) => p.link === hovered);
-    const focused = projects.find((p) => p.link === document.activeElement && p.link.matches(':focus-visible'));
-    document.body.classList.toggle('work-cursor-on', inWork && !!selected);
-    if (focused) select(focused);
-    else if (selected) select(selected);
-    else if (!fine.matches && inWork) {
-      const visible = projects.filter((p) => { const r = p.link.getBoundingClientRect(); return r.bottom > 64 && r.top < innerHeight; });
-      if (visible.length) select(visible.reduce((a, b) => {
-        const center = (p) => { const r = p.link.getBoundingClientRect(); return Math.abs(r.top + r.height / 2 - innerHeight * .4); };
-        return center(a) < center(b) ? a : b;
-      }));
-    }
-    if (inWork && !raf && !document.hidden) raf = requestAnimationFrame(render);
-  };
-  projects[0].link.closest('.work-item').classList.add('is-active');
-  projects.forEach((p) => {
-    p.link.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') select(p); });
-    p.link.addEventListener('focus', () => { select(p); updateView(); });
-  });
-  document.addEventListener('pointermove', (e) => {
-    if (e.pointerType !== 'mouse') return;
-    mouse = { x: e.clientX, y: e.clientY };
-    cursor.style.transform = `translate3d(${Math.min(e.clientX + 18, innerWidth - 124)}px, ${Math.min(e.clientY + 18, innerHeight - 28)}px, 0)`;
-    updateView();
-  }, { passive: true });
-  document.documentElement.addEventListener('pointerleave', () => { mouse = null; document.body.classList.remove('work-cursor-on'); });
-  addEventListener('scroll', updateView, { passive: true });
-  addEventListener('resize', updateView);
-  document.addEventListener('visibilitychange', updateView);
-  updateView();
+  addEventListener('pageshow', (e) => { if (e.persisted) arrive(); });
+
+  // ---- Aparecer: cada fila entra una sola vez ----
+  if (!reduced && !cameBack()) {
+    document.documentElement.classList.add('work-motion');
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+    }), { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+    rows.forEach((row) => io.observe(row));
+  }
+
+  // ---- Móvil: la fila del centro de la pantalla se enciende (no hay ratón para hacerlo) ----
+  if (!fine) {
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('is-hot', e.isIntersecting)), { rootMargin: '-42% 0px -42% 0px' });
+    rows.forEach((row) => io.observe(row));
+  }
+
+  // ---- Inercia: la tira de cada fila se desplaza de lado algo por detrás del scroll (se escribe directamente en la tira: una variable CSS se heredaría a todas sus miniaturas) ----
+  if (!reduced && matchMedia('(min-width: 761px)').matches) {
+    const strips = rows.map((row) => row.querySelector('.wi-strip'));
+    const now = rows.map(() => 0);
+    let raf = 0, last = 0;
+    const frame = (t) => {
+      raf = 0;
+      const k = 1 - Math.exp(-(t - (last || t - 16)) / 120);
+      last = t;
+      let moving = false;
+      const vh = innerHeight;
+      rows.forEach((row, i) => {
+        const r = row.getBoundingClientRect();
+        const off = r.top + r.height / 2 - vh / 2;
+        if (Math.abs(off) > vh * 1.6) return;
+        const to = clamp(off * -0.07, -70, 70) * (i % 2 ? -1 : 1); // las filas pares van hacia un lado y las impares hacia el otro
+        now[i] += (to - now[i]) * k;
+        if (Math.abs(to - now[i]) > 0.05) moving = true;
+        strips[i].style.translate = now[i].toFixed(2) + 'px 0';
+      });
+      if (moving) raf = requestAnimationFrame(frame);
+      else last = 0;
+    };
+    const wake = () => { if (!raf) raf = requestAnimationFrame(frame); };
+    addEventListener('scroll', wake, { passive: true });
+    addEventListener('resize', wake);
+    wake();
+  }
+
+  // ---- "View project": es el propio cursor sobre una fila (sin retraso: se escribe en cada movimiento del ratón) ----
+  if (fine && !reduced) {
+    document.documentElement.classList.add('has-pill');
+    const pill = document.createElement('div');
+    pill.className = 'work-cursor';
+    pill.textContent = 'View project';
+    pill.setAttribute('aria-hidden', 'true');
+    document.body.append(pill);
+    let mouse = null;
+    const over = () => !!mouse && !!document.elementFromPoint(mouse.x, mouse.y)?.closest('.work-item > a');
+    // En la ventana entera (no solo en la sección): así, al entrar en una fila la etiqueta ya está donde está el ratón y no llega desde donde se quedó
+    addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      mouse = { x: e.clientX, y: e.clientY };
+      // Posición con la propiedad "translate" (no "transform"): así el crecimiento de "scale" se hace desde el centro de la etiqueta y no desde la esquina de la pantalla
+      pill.style.translate = `calc(${e.clientX}px - 50%) calc(${e.clientY}px - 50%)`;
+      pill.classList.toggle('is-on', over());
+    }, { passive: true });
+    document.documentElement.addEventListener('pointerleave', () => { mouse = null; pill.classList.remove('is-on'); });
+    addEventListener('scroll', () => { if (mouse) pill.classList.toggle('is-on', over()); }, { passive: true });
+  }
+  arrive();
 })();

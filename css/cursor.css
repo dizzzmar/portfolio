@@ -1,0 +1,91 @@
+/* CURSOR — un punto rojo que sustituye al cursor del sistema (solo con ratón). Lo mueve js/cursor.js.
+   Tres capas para que las animaciones no se pisen: .cursor-dot (posición) › i (crecer al pasar por un enlace, ocultarse) › b (el color y el "encoger" al pasar por algo rojo).
+   Referencia de movimiento: el cursor de danielgamble.com.au (círculo de 1.5rem, ×2.5 con rebote sobre enlaces, encoge y cambia de color sobre lo rojo). */
+.cursor-dot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 2147483000;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+.cursor-dot.is-on { opacity: 1; }
+.cursor-dot i {
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  opacity: .92;
+  transition: transform .45s cubic-bezier(.85, 0, .15, 1), opacity .3s ease; /* al volver: ease-in-out circ */
+}
+.cursor-dot b { display: block; width: 100%; height: 100%; border-radius: 50%; background: #f83d0c; }
+
+/* Sobre enlaces y botones: crece ×2.5 con un pequeño rebote y se vuelve algo transparente */
+.cursor-dot.is-hot i { transform: scale(2.5); opacity: .7; transition: transform .5s cubic-bezier(.34, 1.56, .64, 1), opacity .3s ease; }
+.cursor-dot.is-down i { transform: scale(.8); transition-duration: .12s; }
+.cursor-dot.is-hot.is-down i { transform: scale(2.1); }
+/* Donde el cursor ya es otra cosa (fila de proyecto con "View project", vídeo con PLAY/PAUSE, formulario): se aparta */
+.cursor-dot.is-hide i,
+.cursor-dot.is-hide.is-hot i,
+.cursor-dot.is-hide.is-down i,
+.cursor-dot.is-hide.is-hot.is-down i { transform: scale(.2); opacity: 0; transition: transform .3s cubic-bezier(.23, 1, .32, 1), opacity .2s ease; } /* gana también al pulsar (is-down) y sobre enlaces (is-hot) */
+
+/* Sobre algo rojo (el tomate): se hace pequeño, cambia a blanco mientras es un puntito y vuelve a crecer con rebote */
+.cursor-dot.to-white b { animation: dot-to-white 1.1s both; }
+.cursor-dot.to-red b { animation: dot-to-red 1.1s both; }
+@keyframes dot-to-white {
+  0%   { scale: 1;  background: #f83d0c; animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
+  30%  { scale: .2; background: #f83d0c; animation-timing-function: step-end; }
+  32%  { scale: .2; background: #fff; animation-timing-function: linear(0, .4 8%, .9 17%, 1.14 28%, 1.1 36%, .97 50%, 1.02 66%, 1); }
+  100% { scale: 1;  background: #fff; }
+}
+@keyframes dot-to-red {
+  0%   { scale: 1;  background: #fff; animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
+  30%  { scale: .2; background: #fff; animation-timing-function: step-end; }
+  32%  { scale: .2; background: #f83d0c; animation-timing-function: linear(0, .4 8%, .9 17%, 1.14 28%, 1.1 36%, .97 50%, 1.02 66%, 1); }
+  100% { scale: 1;  background: #f83d0c; }
+}
+
+/* Solo con ratón: se esconde el cursor del sistema desde el primer fotograma de cada página (sin esperar al JavaScript), también en las
+   transiciones entre páginas y detrás de las ventanas. Menos en el formulario de Stamps, que es de otro servicio. */
+@media (hover: hover) and (pointer: fine) {
+  html, html *, html ::backdrop, ::view-transition, ::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { cursor: none !important; }
+  html dialog.st-form, html dialog.st-form *, html dialog.st-form::backdrop { cursor: auto !important; }
+}
+
+/* TODOS LOS ENLACES DE TEXTO, UN SOLO ESTILO: con ratón no crece el punto (se esconde) y el enlace se subraya con una raya de 1 px.
+   La raya sale por el lado por el que entra el ratón y se retira por el lado por el que sale (referencia: yzavoku.com).
+   js/cursor.js pone mouse-left en <html> cuando el ratón va hacia la izquierda. Con táctil se queda como estaba (subrayado normal).
+   Los enlaces dentro de un párrafo (privacidad) llevan además una raya tenue fija, para que se reconozcan sin pasar el ratón.
+   Si añades un enlace de texto nuevo, añade su selector aquí y en HIDE de js/cursor.js. */
+@media (hover: hover) and (pointer: fine) {
+  :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .case-film-link, .pv-back a, .pv-row p a, .contact-row a, .ct-link, .np-more) {
+    --o: 100%; --y: calc(100% - .1em);
+    background: linear-gradient(currentColor, currentColor) no-repeat var(--o) var(--y) / 0% 1px content-box;
+    text-decoration: none;
+    transition: background-size .4s var(--ease-out), color .2s;
+  }
+  html :is(.nav-links a, .case-nav a) { --y: calc(50% + 11px); }  /* los enlaces del menú miden toda la barra: la raya va bajo el texto (el "html" delante le da más peso que la regla general de arriba, que si no gana) */
+  :is(.pv-row p a) {
+    background:
+      linear-gradient(currentColor, currentColor) no-repeat var(--o) var(--y) / 0% 1px content-box,
+      linear-gradient(color-mix(in srgb, currentColor 40%, transparent), color-mix(in srgb, currentColor 40%, transparent)) no-repeat 0 var(--y) / 100% 1px content-box;
+  }
+  html.mouse-left :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .case-film-link, .pv-back a, .pv-row p a, .contact-row a, .ct-link, .np-more) { --o: 0%; }
+  :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .case-film-link, .pv-back a, .pv-row p a, .contact-row a, .ct-link, .np-more):is(:hover, :focus-visible), .now-playing:hover .np-more,
+  .nav-links a[aria-current]:not([aria-current="false"]), .case-nav a[aria-current]:not([aria-current="false"]) { --o: 0%; background-size: 100% 1px; text-decoration: none; }
+  :is(.pv-row p a):is(:hover, :focus-visible) { background-size: 100% 1px, 100% 1px; }
+  html.mouse-left :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .case-film-link, .pv-back a, .pv-row p a, .contact-row a, .ct-link, .np-more):is(:hover, :focus-visible), html.mouse-left .now-playing:hover .np-more { --o: 100%; }
+  .np-more { display: inline-block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .case-film-link, .pv-back a, .pv-row p a, .contact-row a, .ct-link, .np-more) { transition: color .2s; }
+  .cursor-dot i, .cursor-dot.is-hot i, .cursor-dot.is-hide i { transition: opacity .15s ease; }
+  .cursor-dot.is-hot i { transform: scale(2.5); }
+  .cursor-dot.to-white b, .cursor-dot.to-red b { animation: none; }
+  .cursor-dot.to-white b { background: #fff; }
+}

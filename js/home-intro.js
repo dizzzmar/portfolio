@@ -17,7 +17,6 @@ const SCRAMBLE = 480;  // milisegundos que tarda cada palabra en descifrarse al 
 const SPEED = 950;     // milisegundos entre una palabra y la siguiente: tras descifrarse, la palabra se queda quieta (se lee) el resto
 const BURST = 6000;    // cuánto dura cada ronda de palabras
 const HOLD = 3200;     // cuánto se queda en "Designer" antes de la siguiente ronda
-
 // Volver con Atrás (desde un proyecto): el navegador lo marca como "back_forward". La portada vuelve entonces
 // a la posición donde estaba al salir (guardada en sessionStorage) y sin la entrada del tomate.
 // Lo hacemos nosotros porque la portada bloquea el scroll al cargar y el navegador no lo restauraba.
@@ -33,62 +32,62 @@ try { SAVED_Y = Number(sessionStorage.getItem('dizmar-home-y')) || 0; } catch (e
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y', String(scrollY)); } catch (e) { /* ignore */ } });
 
-(() => {
-  const word = document.querySelector('.intro-word');
-  const first = document.querySelector('.intro-line > span:first-child');
+// ---- Letras sueltas: cada palabra se pinta como una fila de <span> (uno por letra) ----
+const NBSP = ' ';
+function splitLetters(el, text) {
+  el.textContent = '';
+  for (const ch of text) {
+    const c = document.createElement('span');
+    c.className = 'ch';
+    c.textContent = ch === ' ' ? NBSP : ch;
+    el.append(c);
+  }
+  if (el.classList.contains('intro-word')) {
+    el.style.setProperty('--word-fit', Math.min(1, (innerWidth - 32) / Math.max(1, el.offsetWidth)));
+  }
+}
+
+// ---- Palabra cambiante: se mezcla la actual y se descifra la siguiente ----
+// La usan la portada (aquí) y el título fijo de Work (js/home-work.js). Cada una corre solo mientras se ve (watch).
+function createWordCycler(word, { visible = true } = {}) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  document.addEventListener('work-requested', () => {
-    WORD_TYPES.forEach(type => document.fonts.load('400 48px ' + type.family).then(fitWord).catch(() => {}));
-  }, { once: true });
-  function fitWord() {
-    word.style.setProperty('--word-fit', Math.min(1, (innerWidth - 32) / Math.max(1, word.offsetWidth)));
-  }
-  addEventListener('resize', fitWord);
-  let started = false, timer = 0, visible = true;
-
-  // ---- Letras sueltas: cada palabra se pinta como una fila de <span> (uno por letra) ----
-  const NBSP = '\u00a0';
-  function split(el, text) {
-    el.textContent = '';
-    for (const ch of text) {
-      const c = document.createElement('span');
-      c.className = 'ch';
-      c.textContent = ch === ' ' ? NBSP : ch;
-      el.append(c);
-    }
-    if (el === word) fitWord();
-  }
-  split(first, first.textContent.trim());
-
-  // ---- Mezclar la palabra actual antes de revelar la siguiente ----
   const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
-  let scrambleRaf = 0;
+  let timer = 0, scrambleRaf = 0, shown = visible;
+
   function applyWordType(text) {
-    const index = Math.max(0, WORDS.indexOf(text));
-    const type = WORD_TYPES[index % WORD_TYPES.length];
+    const type = WORD_TYPES[Math.max(0, WORDS.indexOf(text)) % WORD_TYPES.length];
     word.style.fontFamily = type.family;
     word.style.fontWeight = type.weight;
     word.style.fontStyle = type.style;
   }
+  const fit = () => {
+    if (word.classList.contains('intro-word')) word.style.setProperty('--word-fit', Math.min(1, (innerWidth - 32) / Math.max(1, word.offsetWidth)));
+  };
+  document.addEventListener('work-requested', () => {
+    WORD_TYPES.forEach(type => document.fonts.load('400 48px ' + type.family).then(fit).catch(() => {}));
+  }, { once: true });
+  document.fonts.ready.then(fit);
+  addEventListener('resize', fit);
+
   function setWord(text, ms = SCRAMBLE) {
     cancelAnimationFrame(scrambleRaf);
-    if (reduced) { applyWordType(text); split(word, text); return; }
+    if (reduced) { applyWordType(text); splitLetters(word, text); return; }
     const previous = word.textContent.replaceAll(NBSP, ' ');
-    if (previous === text) { applyWordType(text); split(word, text); return; }
+    if (previous === text) { applyWordType(text); splitLetters(word, text); return; }
     const start = performance.now();
     const mixDuration = ms * 0.35;
     let revealing = false, lastFrame = -Infinity;
     let chars = [...word.children];
-    if (!chars.length) { split(word, previous); chars = [...word.children]; }
+    if (!chars.length) { splitLetters(word, previous); chars = [...word.children]; }
     const step = (now) => {
       const elapsed = now - start;
-      if (elapsed >= ms) { applyWordType(text); split(word, text); return; }
+      if (elapsed >= ms) { applyWordType(text); splitLetters(word, text); return; }
       // Limitar el ruido a 25 fps mantiene las letras legibles entre cambios.
       if (now - lastFrame >= 40) {
         lastFrame = now;
         if (elapsed >= mixDuration && !revealing) {
           applyWordType(text);
-          split(word, text);
+          splitLetters(word, text);
           chars = [...word.children];
           revealing = true;
         }
@@ -106,10 +105,9 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     scrambleRaf = requestAnimationFrame(step);
   }
 
-
   function burst() {
     clearTimeout(timer);
-    if (!visible || reduced) { setWord(WORDS[0], 450); return; }
+    if (!shown || reduced) { setWord(WORDS[0], 450); return; }
     const end = performance.now() + BURST;
     let i = 1;
     const tick = () => {
@@ -125,11 +123,35 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     tick();
   }
 
+  function stop() { clearTimeout(timer); setWord(WORDS[0]); }
+
+  // La ráfaga solo corre mientras la palabra se ve (y, si se indica, mientras active() sea verdadero)
+  function watch(target, active = () => true) {
+    new IntersectionObserver(([e]) => {
+      shown = e.isIntersecting && !document.hidden;
+      if (active()) shown ? burst() : stop();
+    }).observe(target);
+  }
+
+  return { setWord, burst, stop, watch };
+}
+
+(() => {
+  const word = document.querySelector('.intro-word');
+  const line = document.querySelector('.intro-line');
+  const first = document.querySelector('.intro-line > span:first-child');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let started = false;
+  splitLetters(first, first.textContent.trim());
+  const cycler = createWordCycler(word);
+
   function start() {
     if (started) return;
     started = true;
     document.body.classList.add('intro-on');
-    burst();
+    cycler.burst();
+    // Cuando termina la entrada del texto, pasa a seguir el scroll sin transición
+    setTimeout(() => line.classList.add('is-live'), reduced ? 0 : 700);
   }
 
   // Work inicia el viaje del tomate, muestra Creative y después entra en la lista.
@@ -140,18 +162,14 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     workRevealed = true;
     clearTimeout(dockFallback);
     start();
+    // La página no baja sola: se desbloquea y el visitante hace scroll hasta los proyectos
     setTimeout(() => {
       unlock();
       document.body.classList.remove('work-entering');
-      document.getElementById('work').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
     }, reduced ? 0 : 650);
   };
-  document.querySelector('.nav-links a[href="#work"]')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (workRequested || document.body.classList.contains('work-engaged')) {
-      if (!document.body.classList.contains('work-entering')) document.getElementById('work').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
-      return;
-    }
+  // Pulsar Work, o bajar con la rueda o el dedo en la portada, inicia el mismo viaje del tomate
+  const startWork = () => {
     workRequested = true;
     document.body.classList.add('work-engaged', 'work-entering');
     history.replaceState(null, '', '#work');
@@ -159,6 +177,47 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     // También funciona si WebGL o la librería 3D no están disponibles.
     dockFallback = setTimeout(revealWork, 1300);
     if (reduced) revealWork();
+  };
+  document.querySelector('.nav-links a[href="#work"]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (workRequested || document.body.classList.contains('work-engaged')) {
+      if (!document.body.classList.contains('work-entering')) document.getElementById('work').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
+      return;
+    }
+    startWork();
+  });
+  // Con la landing bloqueada, bajar la rueda o deslizar el dedo hacia arriba la inicia. Después estos oyentes no hacen nada.
+  let touchY = 0;
+  const goDown = () => {
+    if (workRequested || !document.body.classList.contains('intro-lock')) return;
+    startWork();
+  };
+  addEventListener('wheel', (e) => { if (e.deltaY > 0 && !e.ctrlKey) goDown(); }, { passive: true });
+  addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+  addEventListener('touchmove', (e) => { if (touchY - e.touches[0].clientY > 12) goDown(); }, { passive: true });
+
+  // Pulsar el tomate de la barra lleva a la portada: el tomate vuelve volando al centro (js/home-tomato.js), el texto grande se apaga,
+  // la página sube sola y la portada queda bloqueada otra vez hasta que el visitante vuelva a empezar (Work, rueda o dedo).
+  const goLanding = () => {
+    clearTimeout(dockFallback);
+    document.dispatchEvent(new Event('landing-requested'));
+    line.classList.remove('is-live');
+    document.body.classList.remove('intro-on', 'work-engaged', 'work-entering');
+    cycler.stop();
+    started = false; workRequested = false; workRevealed = false;
+    history.replaceState(null, '', location.pathname + location.search);
+    const relock = () => { document.body.classList.add('intro-lock'); scrollTo({ top: 0, behavior: 'instant' }); };
+    if (scrollY < 2) { relock(); return; }
+    scrollTo({ top: 0, behavior: reduced ? 'instant' : 'smooth' });
+    let done = false;
+    const finish = () => { if (done) return; done = true; removeEventListener('scroll', check); clearTimeout(timer); relock(); };
+    const check = () => { if (scrollY < 2) finish(); };
+    const timer = setTimeout(finish, 1200); // si algo impide llegar arriba, se bloquea igualmente
+    addEventListener('scroll', check, { passive: true });
+  };
+  document.querySelector('.nav-logo')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!document.body.classList.contains('intro-lock')) goLanding(); // si ya está en la portada, no hay nada que hacer
   });
 
   document.addEventListener('tomato-docked', revealWork);
@@ -166,6 +225,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   // Los enlaces explícitos a Work entran directamente en la lista, sin deslizar la landing.
   if (BACK && SAVED_Y > 0) {
     document.body.classList.add('work-engaged');
+    line.classList.add('is-live'); // sin entrada animada: el texto ya está donde toca (o escondido) desde el primer fotograma
     start();
     unlock();
     // Se repite al terminar de cargar: hasta entonces la altura de la página aún cambia y el salto se vería
@@ -174,58 +234,52 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     addEventListener('load', restore, { once: true });
   } else if (location.hash === '#work') {
     document.body.classList.add('work-engaged');
+    line.classList.add('is-live');
     start();
     unlock();
     requestAnimationFrame(() => document.getElementById('work').scrollIntoView({ behavior: 'instant' }));
   }
 
   // La ráfaga solo corre mientras el texto se ve
-  new IntersectionObserver(([e]) => {
-    visible = e.isIntersecting && !document.hidden;
-    if (started) visible ? burst() : (clearTimeout(timer), setWord(WORDS[0]));
-  }).observe(word.parentElement);
-
-  // Los vídeos de los proyectos quedan quietos si el visitante pide menos movimiento
-  if (reduced) document.querySelectorAll('.work-media video').forEach((v) => { v.autoplay = false; v.pause(); });
+  cycler.watch(word.parentElement, () => started);
 })();
 
-// ---------- Al bajar, "Creative ___" y el cielo se desenfocan (los proyectos pasan por encima) ----------
+// ---------- Al bajar: el cielo se acerca (las nubes crecen y se desenfocan), se funde en blanco y "Creative ___" sube ----------
+// Todo sigue el scroll hasta llegar a Work. Al subir, se deshace exactamente al revés.
 (() => {
   const line = document.querySelector('.intro-line');
   if (!line) return;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const work = document.getElementById('work');
+  const sky = document.querySelector('.sky');
+  const skySoft = document.querySelector('.sky-soft');
+  const fadeEl = document.querySelector('.fade');
+  const clamp01 = (v) => Math.min(1, Math.max(0, v));
+  const smooth = (v) => v * v * (3 - 2 * v);
   let queued = false;
   const update = () => {
     queued = false;
-    const p = Math.min(1, Math.max(0, scrollY / innerHeight));
-    const light = Math.min(1, Math.max(0, (p - 0.32) / 0.58));
-    const easedLight = light * light * (3 - 2 * light);
-    document.body.style.setProperty('--light-progress', easedLight.toFixed(3));
-    document.body.classList.toggle('light-on', light > 0.55);
-    if (!still) line.style.setProperty('--blur', (p * 10).toFixed(1) + 'px');
-    document.body.classList.toggle('sky-soft', scrollY > innerHeight * 0.3);
-    line.style.opacity = document.body.classList.contains('intro-on') ? String(1 - p * 0.35) : '';
+    // Mientras la página carga y se restaura la posición (Atrás o #work), se usa la posición de destino: así no hay un destello del texto grande
+    const loading = document.readyState !== 'complete';
+    const y = loading && BACK && SAVED_Y > 0 ? SAVED_Y : loading && location.hash === '#work' && work ? work.offsetTop : scrollY;
+    const q = clamp01(y / Math.max(1, work ? work.offsetTop : innerHeight)); // 0 en la portada, 1 al llegar a Work
+    const zoom = still ? 0 : smooth(clamp01(q / 0.85));  // el cielo se acerca; las nubes se agrandan y se difuminan
+    const fade = smooth(clamp01((q - 0.5) / 0.45));       // al atravesarlas, todo se funde en blanco
+    // Se escribe directamente en cada elemento (nada de variables CSS en body: se heredan y recalcularían toda la página)
+    sky.style.scale = (1 + zoom * 1.5).toFixed(3);
+    skySoft.style.opacity = zoom.toFixed(3);
+    fadeEl.style.opacity = fade.toFixed(3);
+    document.body.classList.toggle('light-on', fade > 0.5); // el menú y los textos pasan a oscuro cuando el fondo ya es claro
+    document.body.classList.toggle('white-on', fade > 0.999); // la página ya es del todo blanca: ahora sí la barra se mezcla con "difference" (si fuera antes, el blanco de la sección taparía el cielo)
+    // El "Creative ___" sube según avanza el scroll
+    line.style.translate = still ? '' : `0 ${(-q * 48).toFixed(1)}px`;
+    // Al llegar a Work, el "Creative ___" del centro desaparece: la palabra sigue en el título fijo de la izquierda
+    const workOn = !!work && work.offsetTop - y < innerHeight * 0.5;
+    document.body.classList.toggle('work-on', workOn);
+    line.style.opacity = workOn ? '0' : document.body.classList.contains('intro-on') ? String(1 - smooth(clamp01(q / 0.5))) : '';
   };
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
   addEventListener('resize', update);
+  addEventListener('load', update);
   update();
-})();
-
-// ---------- Work: entrada de las filas en ambas direcciones ----------
-// La lista mantiene su alineación y cada fila aparece al entrar en pantalla.
-(() => {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const items = [...document.querySelectorAll('.work-item')];
-  if (!items.length) return;
-  document.documentElement.classList.add('work-motion');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) e.target.classList.add('is-in');
-      else {
-        e.target.classList.toggle('is-above', e.boundingClientRect.bottom <= 0);
-        e.target.classList.remove('is-in');
-      }
-    });
-  }, { threshold: 0 });
-  items.forEach((el) => io.observe(el));
 })();
