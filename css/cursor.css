@@ -46,9 +46,12 @@
   100% { scale: 1;  background: #f83d0c; }
 }
 
-/* Solo con ratón: se esconde el cursor del sistema (menos en el formulario de Stamps, que es de otro servicio) */
-html.has-dot, html.has-dot * { cursor: none !important; }
-html.has-dot dialog.st-form, html.has-dot dialog.st-form * { cursor: auto !important; }
+/* Solo con ratón: se esconde el cursor del sistema desde el primer fotograma de cada página (sin esperar al JavaScript), también en las
+   transiciones entre páginas y detrás de las ventanas. Menos en el formulario de Stamps, que es de otro servicio. */
+@media (hover: hover) and (pointer: fine) {
+  html, html *, html ::backdrop, ::view-transition, ::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { cursor: none !important; }
+  html dialog.st-form, html dialog.st-form *, html dialog.st-form::backdrop { cursor: auto !important; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .cursor-dot i, .cursor-dot.is-hot i, .cursor-dot.is-hide i { transition: opacity .15s ease; }
