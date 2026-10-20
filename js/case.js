@@ -79,6 +79,15 @@
     e.preventDefault();
     goTo(target + k * track.clientWidth * 0.6);
   });
+
+  // "Go to film": la tira se desliza hasta la película (y, si hace falta, la página sube hasta la galería)
+  document.querySelectorAll('[data-go-film]').forEach((link) => link.addEventListener('click', (e) => {
+    const film = track.querySelector('#film');
+    if (!film) return;
+    e.preventDefault();
+    goTo(film.offsetLeft - parseFloat(getComputedStyle(track).paddingLeft));
+    track.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
+  }));
 })();
 
 // ---------- Barra de reproducción propia ----------
