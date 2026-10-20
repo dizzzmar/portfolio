@@ -59,6 +59,33 @@
   const home = () => { const d = document.querySelector('dialog[open]'); (d || document.body).appendChild(dot); };
   new MutationObserver(home).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'] });
 
+  // Al desplazar con rueda o trackpad, el punto se estira en la dirección del movimiento y vuelve a ser redondo al parar
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const blob = dot.firstChild; // la capa "i" (la de dentro, "b", ya tiene su propia animación de color)
+    let energy = 0, shown = 0, angle = 0, ux = 0, uy = 1, raf = 0, lastWheel = 0, lastY = scrollY, last = 0;
+    const kick = (dx, dy) => {
+      const m = Math.hypot(dx, dy);
+      if (!m) return;
+      energy = Math.min(1, energy + m / 350);
+      if (m > 3) { ux = dx / m; uy = dy / m; angle = Math.atan2(uy, ux); }
+      if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); }
+    };
+    const tick = (now) => {
+      const dt = Math.min(.05, (now - last) / 1000); last = now;
+      energy *= Math.exp(-dt * 7);
+      shown += (energy - shown) * .35;
+      if (shown < .01 && energy < .01) { blob.style.scale = ''; blob.style.rotate = ''; shown = energy = 0; raf = 0; return; }
+      blob.style.rotate = angle + 'rad';
+      blob.style.scale = `${1 + .9 * shown} ${1 / (1 + .55 * shown)}`; // largo hacia donde se desplaza, más fino de lado
+      raf = requestAnimationFrame(tick);
+    };
+    addEventListener('wheel', e => { lastWheel = performance.now(); kick(e.deltaX, e.deltaY); }, { passive: true });
+    addEventListener('scroll', () => { // desplazamientos sin rueda (teclado, barra, enlaces): la rueda ya cuenta los suyos
+      const dy = scrollY - lastY; lastY = scrollY;
+      if (performance.now() - lastWheel > 150) kick(0, Math.max(-60, Math.min(60, dy)));
+    }, { passive: true });
+  }
+
   addEventListener('pointermove', e => { if (e.pointerType === 'mouse') update(e); }, { passive: true });
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') set('is-down', true); }, { passive: true });
   addEventListener('pointerup', () => set('is-down', false), { passive: true });
