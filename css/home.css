@@ -164,6 +164,10 @@ body {
 }
 .tomato-ready .tomato-placeholder { opacity: 0; }
 .work-engaged .tomato-placeholder { opacity: 0; }
+/* Llegando desde el tomate de otra página (land-fly): mientras carga el 3D, el tomate plano ya está en la barra (no el grande del centro) */
+.land-fly .tomato-placeholder { opacity: 0; animation: none; }
+.land-fly .nav-logo { background: url("/assets/images/tomato.webp") center / contain no-repeat; }
+.land-fly.tomato-ready .nav-logo { background: none; }
 @keyframes placeholder-float {
   50% { transform: translate(-50%, calc(-50% - 10px)) rotate(-3deg); }
 }

@@ -11,6 +11,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const canvas = document.getElementById('scene');
 const hint = document.getElementById('hint');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Llegada desde el tomate de otra página (js/transitions.js pone land-fly): empieza en la barra y vuela al centro
+const FLY_FROM_NAV = document.documentElement.classList.contains('land-fly') && !reduced;
 
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -81,6 +83,8 @@ new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
   if (!CLICK_INTRO) introAt = clock.elapsedTime + (reduced || skipIntro ? 0 : INTRO_DELAY);
   // The 3D tomato is ready: fade it in over the flat placeholder (see .tomato-ready in home.css)
   requestAnimationFrame(() => document.documentElement.classList.add('tomato-ready'));
+  // Desde otra página: el tomate ya está en la barra; tras un momento sale volando hacia el centro de la portada
+  if (FLY_FROM_NAV) setTimeout(() => { skipIntro = false; introAt = Infinity; announced = false; document.documentElement.classList.remove('land-fly'); }, 350);
 });
 
 // ---------- Layout ----------
@@ -195,6 +199,7 @@ document.addEventListener('work-requested', () => { introAt = Math.min(introAt, 
 document.addEventListener('landing-requested', () => { introAt = Infinity; announced = false; skipIntro = false; });
 let announced = false;
 if (AUTO) { docked = false; shown = 0; }
+if (FLY_FROM_NAV && AUTO) { skipIntro = true; introAt = 0; shown = 1; announced = true; } // empieza acoplado en la barra
 
 // Docked, the 44px tomato only needs 30 frames per second; its slow spin looks the same
 const DOCKED_FPS = 30;
