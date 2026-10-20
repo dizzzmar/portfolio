@@ -72,6 +72,13 @@ Están en `js/room.js` (objetos `nowPlaying` y `lastWatched`, y lista `destinati
 2. Borra la línea `noindex` de `machine/index.html` y añade `/machine/` a `sitemap.xml`.
 3. Revisa que sus textos sigan al día con la web.
 
+### Buscadores (Google): qué tiene que llevar cada página
+Cada página pública lleva en su `<head>`: `<title>`, `<meta name="description">`, `<link rel="canonical">` (con la dirección completa y la barra final, por ejemplo `https://www.dizmar.xyz/about/`), las etiquetas `og:` y `twitter:card` (lo que se ve al compartir el enlace) y, en las páginas de proyecto, los datos estructurados (`application/ld+json`). Además:
+- Toda página nueva se añade a `sitemap.xml` (y se resume en `llms.txt`).
+- Una página en borrador lleva `<meta name="robots" content="noindex">` y NO está en el sitemap (hoy: Stamps y `machine/`; las plantillas están además bloqueadas en `robots.txt`). Al publicarla, se borra esa línea y se añade al sitemap.
+- Los enlaces del menú llevan la barra final (`/about/`) para no pasar por una redirección.
+- Google no se entera solo: hay que dar de alta la web en Google Search Console y enviar `https://www.dizmar.xyz/sitemap.xml` (con tu cuenta de Google, en search.google.com/search-console).
+
 ### Cambiar el correo de «Contact»
 «Contact» del menú lleva a `/contact/`, una página de confirmación: el visitante arrastra el tirador rojo de una regla de marcas hasta el final (o pulsa el enlace «Open it for me») y se abre su programa de correo. La dirección y el asunto están en las dos primeras líneas de `js/contact.js` (y la dirección escrita en `contact/index.html` y en la página de Privacy).
 
