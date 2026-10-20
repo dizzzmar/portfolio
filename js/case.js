@@ -1,6 +1,7 @@
 // PÁGINAS DE PROYECTO · aparición de los bloques con data-reveal, galería horizontal y reproductor propio.
-// La galería se recorre con la rueda (mientras queda recorrido; al llegar a un extremo, tras una pausa, vuelve a desplazar la página; la rueda sobre un vídeo no lo adelanta),
-// arrastrando con el ratón, con el dedo o con las flechas del teclado. Sin script, la tira se desliza de forma nativa.
+// La galería se recorre con la rueda del ratón o el trackpad mientras está entera en pantalla, esté el cursor donde esté; al llegar a un extremo, tras una pausa, la página vuelve a desplazarse.
+// Con el dedo no se interviene: la página se desplaza sola. Además, se puede arrastrar con el ratón, con el dedo o con las flechas del teclado. Sin script, la tira se desliza de forma nativa.
+// Arrastrando con el ratón, con el dedo o con las flechas del teclado. Sin script, la tira se desliza de forma nativa.
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced) document.querySelectorAll('video[autoplay]').forEach((v) => { v.autoplay = false; v.pause(); });
@@ -42,21 +43,25 @@
   addEventListener('resize', paint);
   paint();
 
-  // Rueda: la rueda vertical recorre la galería hasta el final; en los extremos deja pasar la página
-  // Al llegar al extremo, la inercia de la rueda que aún llega no pasa a la página: solo se pasa tras una pausa (300 ms)
+  // Rueda (ratón y trackpad): mientras la galería está entera en pantalla, la rueda la recorre esté el cursor donde esté.
+  // Al llegar a un extremo, la página vuelve a desplazarse; la inercia del trackpad que aún llega no la mueve de golpe (pausa de 300 ms).
   let lastUsed = 0;
-  track.addEventListener('wheel', (e) => {
-    if (e.defaultPrevented || e.ctrlKey || !e.cancelable || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-    const down = e.deltaY > 0;
-    const atEnd = (down && target >= max() - 1) || (!down && target <= 0);
-    if (atEnd) {
-      if (performance.now() - lastUsed < 300) e.preventDefault();
-      return;
-    }
-    lastUsed = performance.now();
-    e.preventDefault();
-    goTo(target + e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1));
-  }, { passive: false });
+  const gallery = document.querySelector('.p-gallery');
+  if (gallery && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    addEventListener('wheel', (e) => {
+      if (e.defaultPrevented || e.ctrlKey || !e.cancelable || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      const r = gallery.getBoundingClientRect();
+      if (r.top < 0 || r.bottom > innerHeight) return; // la galería no está entera en pantalla: se desplaza la página
+      const down = e.deltaY > 0;
+      if ((down && target >= max() - 1) || (!down && target <= 0)) {
+        if (performance.now() - lastUsed < 300) e.preventDefault();
+        return;
+      }
+      lastUsed = performance.now();
+      e.preventDefault();
+      goTo(target + e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1));
+    }, { passive: false });
+  }
 
   // Arrastrar con el ratón (con el dedo ya funciona de forma nativa)
   let startX = 0, startLeft = 0, moved = false;
