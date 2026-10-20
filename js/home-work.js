@@ -2,7 +2,7 @@
 //  · la cabecera tiene "Creative ___": su palabra se descifra con la animación de la portada (createWordCycler, js/home-intro.js);
 //  · cada fila aparece una vez al entrar: la línea se dibuja, el nombre sube desde su máscara y las miniaturas se destapan una a una;
 //  · al hacer scroll la tira de miniaturas se desplaza un poco de lado, con inercia (la fila se mueve distinto que la página);
-//  · al pasar el ratón: se encienden los textos, suben las miniaturas y aparece "View project" siguiendo al cursor (la parte visual está en css/home.css);
+//  · al pasar el ratón: se encienden los textos, suben las miniaturas y "View project" hace de cursor (la parte visual está en css/home.css);
 //  · los vídeos de las miniaturas solo se reproducen mientras se ven.
 // Todo se apaga con "reducir movimiento". Sin este script, la lista se ve completa y quieta.
 (() => {
@@ -90,28 +90,21 @@
     wake();
   }
 
-  // ---- "View project": sigue al ratón con un poco de retraso ----
+  // ---- "View project": es el propio cursor sobre una fila (sin retraso: se escribe en cada movimiento del ratón) ----
   if (fine && !reduced) {
+    document.documentElement.classList.add('has-pill');
     const pill = document.createElement('div');
     pill.className = 'work-cursor';
     pill.textContent = 'View project';
     pill.setAttribute('aria-hidden', 'true');
     document.body.append(pill);
-    let x = 0, y = 0, tx = 0, ty = 0, raf = 0, mouse = null;
-    const loop = () => {
-      x += (tx - x) * 0.2;
-      y += (ty - y) * 0.2;
-      pill.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
-      raf = Math.abs(tx - x) > 0.3 || Math.abs(ty - y) > 0.3 ? requestAnimationFrame(loop) : 0;
-    };
+    let mouse = null;
     const over = () => !!mouse && !!document.elementFromPoint(mouse.x, mouse.y)?.closest('.work-item > a');
     work.addEventListener('pointermove', (e) => {
       if (e.pointerType !== 'mouse') return;
       mouse = { x: e.clientX, y: e.clientY };
-      tx = Math.min(e.clientX + 16, innerWidth - 130);
-      ty = Math.min(e.clientY + 16, innerHeight - 40);
+      pill.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
       pill.classList.toggle('is-on', over());
-      if (!raf) raf = requestAnimationFrame(loop);
     }, { passive: true });
     work.addEventListener('pointerleave', () => { mouse = null; pill.classList.remove('is-on'); });
     addEventListener('scroll', () => { if (mouse) pill.classList.toggle('is-on', over()); }, { passive: true });

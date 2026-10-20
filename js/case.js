@@ -71,11 +71,16 @@
     moved = false;
     startX = e.clientX;
     startLeft = track.scrollLeft;
-    track.setPointerCapture(e.pointerId);
+    // Sin captura todavía: capturar el puntero al pulsar desviaba el clic a la galería y el vídeo no recibía su Play/Pause
   });
   track.addEventListener('pointermove', (e) => {
     if (!dragging) return;
-    if (Math.abs(e.clientX - startX) > 4) { moved = true; track.classList.add('is-dragging'); }
+    if (!moved && Math.abs(e.clientX - startX) > 4) {
+      moved = true; // ahora sí es un arrastre: se captura el puntero para seguir aunque salga de la galería
+      track.setPointerCapture(e.pointerId);
+      track.classList.add('is-dragging');
+    }
+    if (!moved) return;
     track.scrollLeft = startLeft - (e.clientX - startX);
     target = track.scrollLeft;
   });

@@ -576,9 +576,12 @@ body {
   white-space: nowrap;
   opacity: 0;
   scale: .6;
-  transition: opacity .25s ease, scale .4s cubic-bezier(.2, .8, .2, 1);
+  translate: -50% -50%; /* el centro del botón está justo en la punta del ratón: es el cursor */
+  transition: opacity .2s ease, scale .3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .work-cursor.is-on { opacity: 1; scale: 1; }
+/* Sobre una fila, el cursor del sistema se esconde y "View project" ocupa su sitio (js/home-work.js pone has-pill solo con ratón) */
+.has-pill .work-item > a { cursor: none; }
 
 /* "Creative ___" se queda fijo en el centro mientras los proyectos pasan por encima; al bajar se
    sube y se apaga (js/home-intro.js) al llegar a Work, donde sigue en la cabecera */

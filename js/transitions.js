@@ -4,7 +4,7 @@
 //      lista Work -> proyecto: la primera miniatura de la fila pulsada  ->  la primera tarjeta de la galería
 //      proyecto -> lista (Atrás): la primera tarjeta  ->  la primera miniatura de la fila de ese proyecto
 //    Solo si esa pieza se ve en pantalla en ese momento (si no, volaría desde un sitio que no se ve).
-//  · is-vt: la página llegó con transición; sus animaciones de entrada se apagan (css/transitions.css).
+//  · is-vt: la página llegó con transición. has-hero: además, una de sus piezas es la que vuela (solo esa se salta su animación de entrada).
 (() => {
   if (!('onpagereveal' in window)) return;
   const root = document.documentElement;
@@ -18,6 +18,7 @@
   const mark = (el, transition) => {
     if (!el || !onScreen(el)) return;
     el.style.viewTransitionName = 'work-hero';
+    root.classList.add('has-hero');
     transition.finished.finally(() => { el.style.viewTransitionName = ''; });
   };
 
@@ -30,7 +31,7 @@
 
   addEventListener('pagereveal', (e) => {
     if (!e.viewTransition) return;
-    root.classList.add('is-vt'); // se queda puesta mientras dure esta página: quitarla reiniciaría las animaciones de entrada
+    root.classList.add('is-vt'); // se queda puesta mientras dure esta página (quitarla reiniciaría animaciones)
     if (reduced) return;
     const from = path(window.navigation && navigation.activation && navigation.activation.from ? navigation.activation.from.url : '');
     if (slugOf(location.pathname) && isHome(from)) mark(galleryPiece(), e.viewTransition);

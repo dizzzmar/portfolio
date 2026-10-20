@@ -78,7 +78,7 @@ new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
   holder.traverse((o) => { o.renderOrder = 1; });
   spinner.add(holder);
   // Auto intro: the trip to the nav starts a moment after the tomato appears
-  if (!CLICK_INTRO) introAt = clock.elapsedTime + (reduced || SKIP_INTRO ? 0 : INTRO_DELAY);
+  if (!CLICK_INTRO) introAt = clock.elapsedTime + (reduced || skipIntro ? 0 : INTRO_DELAY);
   // The 3D tomato is ready: fade it in over the flat placeholder (see .tomato-ready in home.css)
   requestAnimationFrame(() => document.documentElement.classList.add('tomato-ready'));
 });
@@ -188,9 +188,11 @@ const INTRO_DELAY = 1.2;  // seconds the big tomato spins in the middle before f
 const AUTO_TIME = 1.1;    // a slower, showier trip than the scroll one
 let introAt = Infinity;   // set when the model has loaded
 // Arriving at /#work or coming back with Atrás from a project: the tomato is already in the nav, no intro
-const SKIP_INTRO = AUTO && (location.hash === '#work' || document.body.classList.contains('work-engaged'));
-if (SKIP_INTRO) introAt = 0;
+let skipIntro = AUTO && (location.hash === '#work' || document.body.classList.contains('work-engaged')); // mutable: al volver a la portada, el viaje se ve
+if (skipIntro) introAt = 0;
 document.addEventListener('work-requested', () => { introAt = Math.min(introAt, clock.elapsedTime); });
+// Pulsar el tomate de la barra (js/home-intro.js): vuelve volando al centro de la portada, con el mismo viaje, al revés
+document.addEventListener('landing-requested', () => { introAt = Infinity; announced = false; skipIntro = false; });
 let announced = false;
 if (AUTO) { docked = false; shown = 0; }
 
@@ -213,7 +215,7 @@ function frame(now) {
   } else if (!docked && scrollY > heroH * DOCK_AT) docked = true;
   else if (docked && scrollY < heroH * UNDOCK_AT) docked = false;
   const target = docked ? 1 : 0;
-  const step = AUTO ? (reduced || SKIP_INTRO ? 1 : dt / AUTO_TIME) : (reduced || !userMoved ? 1 : dt / DOCK_TIME);
+  const step = AUTO ? (reduced || skipIntro ? 1 : dt / AUTO_TIME) : (reduced || !userMoved ? 1 : dt / DOCK_TIME);
   shown = target > shown ? Math.min(target, shown + step) : Math.max(target, shown - step);
   layout(ease(shown));
 
