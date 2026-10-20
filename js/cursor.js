@@ -11,7 +11,7 @@
   document.body.appendChild(dot);
 
   const HOT = 'a, button, summary, label, select, [role="button"], [data-cursor="hot"]';
-  const HIDE = '.work-item, .player, dialog.st-form';
+  const HIDE = '.work-item, .player, dialog.st-form, .nav-links a, .case-nav a, .site-foot a, .case-back, .case-link'; // sitios con otro aviso del enlace: la fila, el vídeo, la raya del subrayado
   const RED = '.nav-logo, [data-cursor="red"]';
   let white = false, shown = false, swapTimer = 0;
 
@@ -39,8 +39,11 @@
     return lastRed;
   }
 
+  let lastX = -1;
   function update(e) {
     move(e.clientX, e.clientY);
+    if (Math.abs(e.clientX - lastX) > 1 && lastX >= 0) root.classList.toggle('mouse-left', e.clientX < lastX); // hacia dónde va el ratón: de ahí sale la raya del enlace
+    lastX = e.clientX;
     if (!shown) { shown = true; set('is-on', true); }
     const t = e.target instanceof Element ? e.target : null;
     const formOpen = !!document.querySelector('dialog.st-form[open]');
