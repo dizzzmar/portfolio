@@ -57,35 +57,44 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   margin: clamp(20px, 4vh, 40px) 0 8px;
 }
 .ct-canvas, .ct-fallback { position: absolute; inset: 8%; width: 84%; height: 84%; }
-.ct-canvas { touch-action: none; /* arrastrar el tomate no desplaza la página */ opacity: 0; }
+.ct-canvas { pointer-events: none; opacity: 0; }
 .ct-fallback { object-fit: contain; }
 .ct-spin.is-ready .ct-canvas { opacity: 1; }
 .ct-spin.is-ready .ct-fallback { opacity: 0; }
-.ct-ring { position: absolute; inset: 0; width: 100%; height: 100%; rotate: -90deg; overflow: visible; pointer-events: none; }
-.ct-ring circle { fill: none; stroke-width: 1.4; vector-effect: non-scaling-stroke; }
-.ct-ring-bg { stroke: rgba(255, 255, 255, .35); stroke-dasharray: .006 .012; }
-.ct-ring-fg { stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
-.ct-meter { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } /* solo para lectores de pantalla */
+
+/* ---------- El slider: regla de marcas con un tirador rojo; las marcas cercanas al tirador crecen (js/contact.js) ---------- */
+.ct-slider {
+  position: relative;
+  width: min(84vw, 460px);
+  height: 88px;
+  margin-top: 4px;
+  touch-action: none;       /* arrastrar el tirador no desplaza la página */
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ct-ticks { position: absolute; inset: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; pointer-events: none; }
+.ct-ticks span { width: 2px; height: 14px; border-radius: 2px; background: #fff; opacity: .4; will-change: transform; }
+.ct-thumb {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+  margin-top: -16px;
+  border-radius: 50%;
+  background: #f83d0c;
+  box-shadow: 0 0 0 3px #fff, 0 8px 20px -4px rgba(0, 30, 70, .45);
+  will-change: transform;
+}
+.ct-thumb:focus-visible { outline: 2px solid #fff; outline-offset: 6px; }
 
 /* Al confirmar, el tomate da un pequeño salto */
 .ct-spin.is-done { animation: ct-pop .6s var(--ease-out); }
 @keyframes ct-pop { 40% { transform: scale(1.07); } }
 
-/* ---------- Botones ---------- */
-.ct-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; min-height: 44px; }
-.ct-btn {
-  padding: 12px 20px;
-  border-radius: 999px;
-  background: #fff;
-  color: var(--ink);
-  font-size: var(--fs-s);
-  font-weight: 600;
-  transition: transform .25s var(--ease-out), opacity .2s;
-}
-.ct-btn:disabled { opacity: .5; cursor: default; }
-.ct-btn-ghost { background: rgba(255, 255, 255, .18); color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .7); }
-@media (hover: hover) and (pointer: fine) { .ct-btn:not(:disabled):hover { transform: translateY(-2px); } }
-.ct-btn:not(:disabled):active { transform: scale(.97); }
+/* ---------- Enlaces de texto (nada de botones): con la raya animada de toda la web (css/cursor.css); sin ratón llevan subrayado normal ---------- */
+.ct-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; margin-top: 12px; min-height: 24px; font-size: var(--fs-m); font-weight: 600; }
+.ct-link { padding: 0; font-weight: inherit; text-decoration: underline; text-underline-offset: 4px; }
 .ct-address { margin-top: 12px; font-size: var(--fs-m); font-weight: 600; user-select: all; }
 
 @media (max-width: 700px) {

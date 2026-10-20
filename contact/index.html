@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
   CONTACT · www.dizmar.xyz/contact/ — la página de confirmación antes de abrir el correo.
-  El visitante gira el tomate una vuelta entera (o pulsa «Open it for me») y entonces se abre su programa de correo (mailto:).
+  El visitante arrastra el tirador rojo hasta el final de la regla (o pulsa «Open it for me») y entonces se abre su programa de correo (mailto:).
   Estilos: /css/contact.css · Comportamiento y tomate 3D: /js/contact.js (la dirección y el asunto están al principio de ese archivo).
 -->
 <html lang="en">
@@ -9,11 +9,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Contact — Mario Diz</title>
-<meta name="description" content="Get in touch with Mario Diz, art director and visual designer based in Madrid. Spin the tomato to open your mail app.">
+<meta name="description" content="Get in touch with Mario Diz, art director and visual designer based in Madrid. Slide to open your mail app.">
 <link rel="canonical" href="https://www.dizmar.xyz/contact/">
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
 <link rel="stylesheet" href="/css/tokens.css?v=20261021g">
-<link rel="stylesheet" href="/css/contact.css?v=20261021h">
+<link rel="stylesheet" href="/css/contact.css?v=20261021k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261021g">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261021g">
 <link rel="stylesheet" href="/css/footer.css?v=20261021g">
@@ -27,7 +27,7 @@
   }
 </script>
 <script src="/js/transitions.js?v=20261020p"></script>
-<link rel="stylesheet" href="/css/cursor.css?v=20261021i">
+<link rel="stylesheet" href="/css/cursor.css?v=20261021k">
 </head>
 <body id="top">
 <div class="sky" aria-hidden="true"></div>
@@ -45,23 +45,24 @@
 
 <main class="ct">
   <h1 id="ct-title" data-state-idle="We’re going to open your mail app." data-state-done="Opening your mail app…">We’re going to open your mail app.</h1>
-  <p class="ct-lead" id="ct-lead" aria-live="polite" data-state-idle="Spin the tomato to confirm." data-state-done="If not, copy my address below.">Spin the tomato to confirm.</p>
+  <p class="ct-lead" id="ct-lead" aria-live="polite" data-state-idle="Slide to confirm." data-state-done="If not, copy my address below.">Slide to confirm.</p>
 
-  <!-- El tomate: se gira arrastrando; el anillo se completa con una vuelta entera. Hasta que cargue el 3D se ve la foto. -->
-  <div class="ct-spin" id="ct-spin" data-cursor="red">
-    <svg class="ct-ring" viewBox="0 0 100 100" aria-hidden="true">
-      <circle class="ct-ring-bg" cx="50" cy="50" r="48" pathLength="1"></circle>
-      <circle class="ct-ring-fg" id="ct-ring" cx="50" cy="50" r="48" pathLength="1"></circle>
-    </svg>
+  <!-- El tomate 3D gira según avanza el tirador. Hasta que cargue el 3D se ve la foto. -->
+  <div class="ct-spin" id="ct-spin">
     <img class="ct-fallback" src="/assets/images/tomato.webp" alt="" width="595" height="640">
-    <canvas class="ct-canvas" id="ct-canvas" role="img" aria-label="A 3D tomato you can spin by dragging it"></canvas>
+    <canvas class="ct-canvas" id="ct-canvas" aria-hidden="true"></canvas>
   </div>
-  <div class="ct-meter" id="ct-meter" role="progressbar" aria-label="Spin progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
 
-  <div class="ct-actions">
-    <button type="button" class="ct-btn" id="ct-open" disabled>Open it for me</button>
-    <button type="button" class="ct-btn ct-btn-ghost" id="ct-copy" hidden>Copy address</button>
+  <!-- El slider: una regla de marcas (las crea js/contact.js) y un tirador rojo. Las marcas cercanas al tirador crecen. -->
+  <div class="ct-slider" id="ct-slider">
+    <div class="ct-ticks" id="ct-ticks" aria-hidden="true"></div>
+    <div class="ct-thumb" id="ct-thumb" role="slider" tabindex="0" aria-label="Slide to open your mail app" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
   </div>
+
+  <p class="ct-links">
+    <button type="button" class="ct-link" id="ct-open">Open it for me</button>
+    <button type="button" class="ct-link" id="ct-copy" hidden>Copy address</button>
+  </p>
   <p class="ct-address" id="ct-address" hidden>hey.mariodiz@gmail.com</p>
   <noscript><p class="ct-lead"><a href="mailto:hey.mariodiz@gmail.com?subject=Hello%20from%20dizmar.xyz">Open your mail app</a> · hey.mariodiz@gmail.com</p></noscript>
 </main>
@@ -69,8 +70,8 @@
 <footer class="site-foot on-sky"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
 
 <script src="/js/contact-type.js?v=20261021a" defer></script>
-<script type="module" src="/js/contact.js?v=20261021b"></script>
+<script type="module" src="/js/contact.js?v=20261021c"></script>
 <script type="module" src="/js/nav-tomato.js?v=20261020b"></script>
-<script src="/js/cursor.js?v=20261021a" defer></script>
+<script src="/js/cursor.js?v=20261021b" defer></script>
 </body>
 </html>
