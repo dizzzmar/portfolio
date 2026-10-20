@@ -28,6 +28,18 @@
     return dx * dx + dy * dy < 1;
   }
 
+  // Cualquier fondo rojo: se mira el primer color de fondo con cuerpo que haya bajo el ratón (el del propio elemento o el de sus padres)
+  let lastEl = null, lastRed = false;
+  function onRedBackground(t) {
+    if (t === lastEl) return lastRed;
+    lastEl = t; lastRed = false;
+    for (let el = t; el && el !== document.documentElement; el = el.parentElement) {
+      const m = getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
+      if (m && (m.length < 4 || +m[3] > .6)) { const [r, g, b] = m.map(Number); lastRed = r > 170 && g < 110 && b < 110 && r - Math.max(g, b) > 90; break; }
+    }
+    return lastRed;
+  }
+
   function update(e) {
     move(e.clientX, e.clientY);
     if (!shown) { shown = true; set('is-on', true); }
@@ -35,7 +47,7 @@
     const formOpen = !!document.querySelector('dialog.st-form[open]');
     set('is-hide', formOpen || !!(t && t.closest(HIDE)));
     set('is-hot', root.classList.contains('dot-hot') || !!(t && t.closest(HOT)));
-    const nowWhite = !!(t && t.closest(RED)) || overHomeTomato(e.clientX, e.clientY);
+    const nowWhite = !!(t && (t.closest(RED) || onRedBackground(t))) || overHomeTomato(e.clientX, e.clientY);
     if (nowWhite !== white) {
       white = nowWhite;
       set('to-white', white); set('to-red', !white);
