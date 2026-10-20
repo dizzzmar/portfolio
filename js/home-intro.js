@@ -195,7 +195,7 @@ function createWordCycler(word, { visible = true } = {}) {
   cycler.watch(word.parentElement, () => started);
 })();
 
-// ---------- Al bajar: el cielo se acerca (las nubes crecen), se funde en negro y "Creative ___" sube y se difumina ----------
+// ---------- Al bajar: el cielo se acerca (las nubes crecen), se funde en blanco y "Creative ___" sube y se difumina ----------
 // Todo sigue el scroll hasta llegar a Work. Al subir, se deshace exactamente al revés.
 (() => {
   const line = document.querySelector('.intro-line');
@@ -212,10 +212,10 @@ function createWordCycler(word, { visible = true } = {}) {
     const y = loading && BACK && SAVED_Y > 0 ? SAVED_Y : loading && location.hash === '#work' && work ? work.offsetTop : scrollY;
     const q = clamp01(y / Math.max(1, work ? work.offsetTop : innerHeight)); // 0 en la portada, 1 al llegar a Work
     const zoom = still ? 0 : smooth(clamp01(q / 0.85));  // el cielo se acerca; las nubes se agrandan y se difuminan
-    const dark = smooth(clamp01((q - 0.5) / 0.45));       // al atravesarlas, todo se funde en negro
+    const fade = smooth(clamp01((q - 0.5) / 0.45));       // al atravesarlas, todo se funde en blanco
     document.body.style.setProperty('--zoom', zoom.toFixed(3));
-    document.body.style.setProperty('--dark', dark.toFixed(3));
-    document.body.classList.toggle('light-on', dark > 0.5); // el menú pasa a blanco cuando ya es oscuro
+    document.body.style.setProperty('--fade', fade.toFixed(3));
+    document.body.classList.toggle('light-on', fade > 0.5); // el menú y los textos pasan a oscuro cuando el fondo ya es claro
     // El "Creative ___" sube y se difumina según avanza el scroll
     if (!still) line.style.setProperty('--blur', (q * 10).toFixed(1) + 'px');
     line.style.translate = still ? '' : `0 ${(-q * 48).toFixed(1)}px`;
