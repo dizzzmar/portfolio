@@ -35,6 +35,16 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   100% { transform: translate(3%, 1%) scale(1.02); }
 }
 
+/* Grano encima del cielo, como en la portada: se queda quieto y nítido mientras el cielo se mueve debajo */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
 /* ---------- Barra de navegación: fija arriba (los tamaños y colores comunes están en nav-logo.css y nav-links.css) ---------- */
 .nav { position: fixed; inset: 0 0 auto; z-index: 9; height: var(--nav-h); display: flex; align-items: center; }
 
