@@ -68,7 +68,7 @@
     text-decoration: none;
     transition: background-size .4s cubic-bezier(.23, 1, .32, 1), color .2s;
   }
-  :is(.nav-links a, .case-nav a) { --y: calc(50% + 11px); }  /* los enlaces del menú miden toda la barra: la raya va bajo el texto */
+  html :is(.nav-links a, .case-nav a) { --y: calc(50% + 11px); }  /* los enlaces del menú miden toda la barra: la raya va bajo el texto (el "html" delante le da más peso que la regla general de arriba, que si no gana) */
   :is(.pv-row p a) {
     background:
       linear-gradient(currentColor, currentColor) no-repeat var(--o) var(--y) / 0% 1px content-box,

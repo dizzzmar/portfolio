@@ -635,12 +635,13 @@ body {
 /* ---------- Work sobre fondo blanco: los textos siguen blancos mientras el fondo es azul y pasan a oscuro cuando ya es claro
    (clase light-on, que pone js/home-intro.js). ---------- */
 .work-grid, .work-top p > span, .wi-date, .wi-tags { transition: color .4s ease; }
-.light-on .work-grid { color: #0c0c0b; }
+/* El fondo blanco va dentro de la propia sección (no solo en la capa blanca de la página): así la barra, que está dentro de ella, también lo "ve" al mezclarse con difference */
+.work-grid { transition: color .4s ease, background-color .4s ease; }
+.light-on .work-grid { color: #0c0c0b; background-color: #fff; }
 /* La barra de arriba (textos de Work y menú) se mezcla con "difference": en blanco, se ve negra sobre blanco y blanca sobre un nombre de proyecto o una foto oscuros */
 .light-on .work-top, .light-on .nav { mix-blend-mode: difference; }
-.light-on .work-top { color: #fff; }
-.light-on .work-top p > span { color: rgba(255, 255, 255, .55); }
-.light-on .work-top .wt-creative > strong { color: #fff; }
+/* Blanco puro (sin grises): con "difference" cada trozo de una letra sale negro o blanco según lo que tenga justo detrás, aunque sea dentro de una misma palabra */
+.light-on .work-top, .light-on .work-top p > span, .light-on .work-top .wt-creative > strong { color: #fff; }
 .light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
 .light-on .work-item::before { background: rgba(12, 12, 11, .16); }
 .light-on .work-item > a:focus-visible { outline-color: #0c0c0b; }
@@ -651,8 +652,7 @@ body {
 .light-on .work-item.is-hot .wi-date, .light-on .work-item.is-hot .wi-tags,
 .light-on .work-item.is-back .wi-date, .light-on .work-item.is-back .wi-tags { color: rgba(12, 12, 11, .9); }
 /* Al fundirse a blanco, el menú, el "Creative ___" del centro y el pie pasan a oscuro */
-.light-on .nav-links a { color: rgba(255, 255, 255, .55); }
-.light-on .nav-links a:hover, .light-on .nav-links a[aria-current="true"] { color: #fff; }
+.light-on .nav-links a, .light-on .nav-links a:hover, .light-on .nav-links a[aria-current="true"] { color: #fff; }
 .light-on .intro-line { color: #0c0c0b; }
 .light-on .site-foot { color: rgba(12, 12, 11, .55); }
 .light-on .site-foot a:hover { color: #0c0c0b; }
