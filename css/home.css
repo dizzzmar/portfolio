@@ -18,10 +18,10 @@ body {
   background-color: #8cc0ef;
 }
 
-/* Del cielo al negro: al bajar, el cielo se acerca (las nubes crecen y se difuminan) y al atravesarlas todo se funde en negro.
-   js/home-intro.js mueve dos variables: --zoom (0 a 1, el acercamiento y el desenfoque) y --dark (0 a 1, el fundido a negro).
+/* Del cielo al blanco: al bajar, el cielo se acerca (las nubes crecen y se difuminan) y al atravesarlas todo se funde en blanco.
+   js/home-intro.js mueve dos variables: --zoom (0 a 1, el acercamiento y el desenfoque) y --fade (0 a 1, el fundido a blanco).
    La capa negra es fija, así que todos los proyectos se acumulan sobre el mismo fondo limpio. */
-body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #0c0c0b; opacity: var(--dark, 0); }
+body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #fff; opacity: var(--fade, 0); }
 
 /* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes */
 .sky {
@@ -584,8 +584,8 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events
   inset: 0 auto auto 0;
   z-index: 11;
   padding: 9px 14px 8px;
-  background: #fff;
-  color: #0c0c0b;
+  background: #0c0c0b;
+  color: #fff;
   pointer-events: none;
   white-space: nowrap;
   opacity: 0;
@@ -639,28 +639,24 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events
   body::before { transition: none; }
 }
 
-/* ---------- Variante blanca de Work (prueba): se activa con  /?work=white  (ver el script del <head> de index.html) ----------
-   Mismo diseño, pero el cielo se funde a BLANCO en vez de a negro (las nubes se acercan y se disuelven en blanco) y los textos pasan
-   a oscuro. Los textos siguen blancos mientras el fondo es azul y cambian a oscuro cuando ya es claro (clase light-on, que pone
-   js/home-intro.js). Sin el añadido en la dirección, todo sigue como siempre. */
-.work-white body::after { background: #fff; }
-.work-white .work-grid, .work-white .work-top p > span, .work-white .wi-date, .work-white .wi-tags { transition: color .4s ease; }
-.work-white .light-on .work-grid { color: #0c0c0b; }
-.work-white .light-on .work-top p > span { color: rgba(12, 12, 11, .55); }
-.work-white .light-on .work-top .wt-creative > strong { color: #0c0c0b; }
-.work-white .light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
-.work-white .light-on .work-item::before { background: rgba(12, 12, 11, .16); }
-.work-white .light-on .work-item > a:focus-visible { outline-color: #0c0c0b; }
-.work-white .light-on .wi-date, .work-white .light-on .wi-tags { color: rgba(12, 12, 11, .4); }
-.work-white .light-on .wi-slot { background: rgba(12, 12, 11, .06); }
-.work-white .light-on .work-item > a:hover .wi-date, .work-white .light-on .work-item > a:hover .wi-tags,
-.work-white .light-on .work-item > a:focus-visible .wi-date, .work-white .light-on .work-item > a:focus-visible .wi-tags,
-.work-white .light-on .work-item.is-hot .wi-date, .work-white .light-on .work-item.is-hot .wi-tags,
-.work-white .light-on .work-item.is-back .wi-date, .work-white .light-on .work-item.is-back .wi-tags { color: rgba(12, 12, 11, .9); }
-.work-white .work-cursor { background: #0c0c0b; color: #fff; }
+/* ---------- Work sobre fondo blanco: los textos siguen blancos mientras el fondo es azul y pasan a oscuro cuando ya es claro
+   (clase light-on, que pone js/home-intro.js). ---------- */
+.work-grid, .work-top p > span, .wi-date, .wi-tags { transition: color .4s ease; }
+.light-on .work-grid { color: #0c0c0b; }
+.light-on .work-top p > span { color: rgba(12, 12, 11, .55); }
+.light-on .work-top .wt-creative > strong { color: #0c0c0b; }
+.light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
+.light-on .work-item::before { background: rgba(12, 12, 11, .16); }
+.light-on .work-item > a:focus-visible { outline-color: #0c0c0b; }
+.light-on .wi-date, .light-on .wi-tags { color: rgba(12, 12, 11, .4); }
+.light-on .wi-slot { background: rgba(12, 12, 11, .06); }
+.light-on .work-item > a:hover .wi-date, .light-on .work-item > a:hover .wi-tags,
+.light-on .work-item > a:focus-visible .wi-date, .light-on .work-item > a:focus-visible .wi-tags,
+.light-on .work-item.is-hot .wi-date, .light-on .work-item.is-hot .wi-tags,
+.light-on .work-item.is-back .wi-date, .light-on .work-item.is-back .wi-tags { color: rgba(12, 12, 11, .9); }
 /* Al fundirse a blanco, el menú, el "Creative ___" del centro y el pie pasan a oscuro */
-.work-white .light-on .nav-links a { color: rgba(12, 12, 11, .55); }
-.work-white .light-on .nav-links a:hover, .work-white .light-on .nav-links a[aria-current="true"] { color: #0c0c0b; }
-.work-white .light-on .intro-line { color: #0c0c0b; }
-.work-white .light-on .site-foot { color: rgba(12, 12, 11, .55); }
-.work-white .light-on .site-foot a:hover { color: #0c0c0b; }
+.light-on .nav-links a { color: rgba(12, 12, 11, .55); }
+.light-on .nav-links a:hover, .light-on .nav-links a[aria-current="true"] { color: #0c0c0b; }
+.light-on .intro-line { color: #0c0c0b; }
+.light-on .site-foot { color: rgba(12, 12, 11, .55); }
+.light-on .site-foot a:hover { color: #0c0c0b; }
