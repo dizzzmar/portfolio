@@ -19,7 +19,7 @@ img { display: block; max-width: 100%; height: auto; }
 
 /* ---------- Barra de navegación (como la del resto de la web) ---------- */
 .nav { position: fixed; inset: 0 0 auto; z-index: 9; height: var(--nav-h); display: flex; align-items: center; padding: 0 24px; }
-.nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+.nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s var(--ease-out); }
 .nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
 .nav-links { display: flex; align-self: stretch; margin: 0 -16px 0 auto; list-style: none; }
 .nav-links a { display: flex; align-items: center; height: 100%; padding: 0 16px; color: rgba(255, 255, 255, .7); font-size: var(--fs-s); text-decoration: none; transition: color .2s; }
@@ -56,8 +56,8 @@ main { padding: 0 var(--gutter); }
 
 /* ---------- Movimiento: el título y las filas aparecen suavemente al cargar (sin "reducir movimiento") ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .pv-head h1, .pv-updated { animation: pv-in .9s cubic-bezier(.2, .8, .2, 1) both; }
+  .pv-head h1, .pv-updated { animation: pv-in .9s var(--ease-out) both; }
   .pv-updated { animation-delay: .15s; }
-  .pv-row { animation: pv-in .9s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(.25s + var(--i, 0) * 60ms); }
+  .pv-row { animation: pv-in .9s var(--ease-out) both; animation-delay: calc(.25s + var(--i, 0) * 60ms); }
 }
 @keyframes pv-in { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: 0; } }

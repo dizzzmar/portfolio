@@ -129,7 +129,7 @@ body {
 /* El tomate llega volando desde donde estaba en la página anterior (lo calcula
    js/not-found-entrance.js), o aparece de golpe si no hay página anterior; luego entra el resto. */
 .play .zero {
-  animation: tomato-in 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: tomato-in 1.1s var(--ease-out) both;
 }
 
 @keyframes tomato-in {
@@ -142,7 +142,7 @@ body {
 .play .digit,
 .play .message,
 .play .home {
-  animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: rise 0.7s var(--ease-out) both;
 }
 
 .play .digit:first-child { animation-delay: 0.45s; }

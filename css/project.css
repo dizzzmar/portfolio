@@ -97,14 +97,14 @@ figure { margin: 0; }
    así que el navegador anima una hasta la otra. El resto de la página se funde.
    Chrome, Edge y Safari 18.2+; en Firefox la página cambia sin animación. */
 @view-transition { navigation: auto; }
-::view-transition-group(*) { animation-duration: .6s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+::view-transition-group(*) { animation-duration: .6s; animation-timing-function: var(--ease-out); }
 /* La imagen cambia de forma (16:9 en la card, cuadrada en el proyecto): se recorta en vez de deformarse */
 ::view-transition-old(*), ::view-transition-new(*) { height: 100%; object-fit: cover; }
 ::view-transition-image-pair(*) { overflow: hidden; border-radius: 18px; }
 /* El resto de la página: la que se va se funde; la que llega sube un poco mientras aparece */
 ::view-transition-image-pair(root) { overflow: visible; border-radius: 0; }
 ::view-transition-old(root) { animation: .3s ease both vt-fade-out; height: auto; }
-::view-transition-new(root) { animation: .5s cubic-bezier(.2, .8, .2, 1) .1s both vt-rise-in; height: auto; }
+::view-transition-new(root) { animation: .5s var(--ease-out) .1s both vt-rise-in; height: auto; }
 @keyframes vt-fade-out { to { opacity: 0; } }
 @keyframes vt-rise-in { from { opacity: 0; transform: translateY(24px); } }
 @media (prefers-reduced-motion: reduce) {

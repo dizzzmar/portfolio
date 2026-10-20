@@ -245,6 +245,7 @@ function createWordCycler(word, { visible = true } = {}) {
     skySoft.style.opacity = zoom.toFixed(3);
     fadeEl.style.opacity = fade.toFixed(3);
     document.body.classList.toggle('light-on', fade > 0.5); // el menú y los textos pasan a oscuro cuando el fondo ya es claro
+    document.body.classList.toggle('white-on', fade > 0.999); // la página ya es del todo blanca: ahora sí la barra se mezcla con "difference" (si fuera antes, el blanco de la sección taparía el cielo)
     // El "Creative ___" sube según avanza el scroll
     line.style.translate = still ? '' : `0 ${(-q * 48).toFixed(1)}px`;
     // Al llegar a Work, el "Creative ___" del centro desaparece: la palabra sigue en el título fijo de la izquierda

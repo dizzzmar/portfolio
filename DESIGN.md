@@ -55,7 +55,7 @@ Texto sobre oscuro: blanco, o blanco al 70 % para lo secundario y al 60 % para l
 ## 5. Movimiento
 
 - Solo se animan `transform` y `opacity` (nada de animar tamaños ni sombras).
-- Curva de salida de todo: `cubic-bezier(0.23, 1, 0.32, 1)`. Duraciones: interfaz 150–300 ms; subrayado 400 ms; entradas de sección hasta 700 ms.
+- Curva de salida de todo: `var(--ease-out)` (`cubic-bezier(0.23, 1, 0.32, 1)`, en `css/tokens.css`); no escribir otras curvas sueltas. Duraciones: interfaz 150–300 ms; subrayado 400 ms; entradas de sección hasta 700 ms.
 - Con «reducir movimiento» se quita el desplazamiento y se mantienen los cambios que ayudan a entender (opacidad, color).
 - Las animaciones largas (el tomate de la portada, las transiciones entre páginas) son raras; las de uso diario, casi invisibles.
 

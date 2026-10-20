@@ -51,7 +51,7 @@ main { width: var(--w); margin: 0 auto; }
   color: var(--ink);
   font-size: var(--fs-s);
   font-weight: 600;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s;
+  transition: transform .25s var(--ease-out), box-shadow .25s;
 }
 .st-send:hover { transform: translateY(-2px); box-shadow: 0 8px 24px -10px rgba(0, 30, 70, .5); }
 
@@ -83,7 +83,7 @@ main { width: var(--w); margin: 0 auto; }
     radial-gradient(var(--r), #0000 98%, var(--paper)) round calc(-1.5 * var(--r)) calc(-1.5 * var(--r)) / calc(3 * var(--r)) calc(3 * var(--r)),
     linear-gradient(var(--paper) 0 0) no-repeat 50% / calc(100% - 3 * var(--r)) calc(100% - 3 * var(--r));
   filter: drop-shadow(0 6px 10px rgba(0, 30, 70, .22)); /* fija: animar un filtro repinta el sello en cada fotograma */
-  transition: transform .25s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform .25s var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) { .stamp:hover { transform: translateY(-4px) rotate(-.6deg); } }
 .stamp:focus-visible { outline-offset: 2px; }
@@ -151,7 +151,7 @@ main { width: var(--w); margin: 0 auto; }
 
 /* ---------- Movimiento: los sellos aparecen uno tras otro al cargar (sin "reducir movimiento") ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .album .stamp { animation: stamp-in .7s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(var(--i, 0) * 50ms); }
+  .album .stamp { animation: stamp-in .7s var(--ease-out) backwards; animation-delay: calc(var(--i, 0) * 50ms); }
 }
 @keyframes stamp-in { from { opacity: 0; transform: translateY(18px); } }
 @media (prefers-reduced-motion: reduce) {
