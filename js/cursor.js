@@ -40,7 +40,9 @@
   }
 
   let lastX = -1;
+  let pos = null; // última posición del ratón
   function update(e) {
+    pos = { x: e.clientX, y: e.clientY };
     move(e.clientX, e.clientY);
     if (Math.abs(e.clientX - lastX) > 1 && lastX >= 0) root.classList.toggle('mouse-left', e.clientX < lastX); // hacia dónde va el ratón: de ahí sale la raya del enlace
     lastX = e.clientX;
@@ -99,6 +101,16 @@
   }
 
   addEventListener('pointermove', e => { if (e.pointerType === 'mouse') update(e); }, { passive: true });
+  // Si la página se mueve bajo un ratón quieto (desplazar con la rueda, tecla o barra), lo que hay debajo cambia sin que el ratón se mueva:
+  // se vuelve a mirar en cada desplazamiento para que el punto reaccione igual que la etiqueta "View project"
+  let pending = 0;
+  addEventListener('scroll', () => {
+    if (!pos || pending) return;
+    pending = requestAnimationFrame(() => {
+      pending = 0;
+      update({ clientX: pos.x, clientY: pos.y, target: document.elementFromPoint(pos.x, pos.y) });
+    });
+  }, { passive: true });
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') set('is-down', true); }, { passive: true });
   addEventListener('pointerup', () => set('is-down', false), { passive: true });
   root.addEventListener('pointerleave', () => { shown = false; set('is-on', false); set('is-down', false); });
@@ -106,6 +118,6 @@
   // Al cambiar de página el punto aparece donde estaba, sin esperar a que se mueva el ratón
   try {
     const p = (sessionStorage.getItem('dizmar-dot') || '').split(',').map(Number);
-    if (p.length === 2 && p.every(Number.isFinite)) { move(p[0], p[1]); shown = true; set('is-on', true); }
+    if (p.length === 2 && p.every(Number.isFinite)) { pos = { x: p[0], y: p[1] }; move(p[0], p[1]); shown = true; set('is-on', true); }
   } catch (_) {}
 })();
