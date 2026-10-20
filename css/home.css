@@ -14,7 +14,7 @@ html.smooth-scroll { scroll-behavior: smooth; }
 body {
   overflow-x: clip; /* que nada ensanche la página más allá de la pantalla */
   color: #fff;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-ui);
   background-color: #8cc0ef;
 }
 
@@ -108,7 +108,7 @@ body {
   height: 100%;
   padding: 0 16px;
   color: rgba(255, 255, 255, 0.78);
-  font-size: 15px;
+  font-size: var(--fs-s);
   text-decoration: none;
   text-shadow: 0 1px 8px rgba(0, 20, 40, 0.25);
   transition: color 0.2s, text-shadow 0.2s;
@@ -205,7 +205,7 @@ body {
   left: 50%;
   bottom: 28px;
   transform: translateX(-50%);
-  font-size: 13px;
+  font-size: var(--fs-s);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   opacity: 0.85;
@@ -264,7 +264,7 @@ body {
   display: flex;
   align-items: center;
   padding: 9px 0 8px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1;
@@ -313,8 +313,8 @@ body {
 .project-caption { display: grid; gap: 6px; padding: 20px 12px 30px; } /* aire alrededor del texto: arriba, a los lados y antes de la imagen */
 
 .project-brand {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(17px, 1.5vw, 24px);
+  font-family: var(--font-ui);
+  font-size: var(--fs-lead);
   letter-spacing: -0.035em;
   line-height: 1;
   margin-top: -0.18em; /* la caja de texto deja un hueco sobre las mayúsculas; lo recortamos para que la tinta quede a la distancia correcta */
@@ -322,7 +322,7 @@ body {
 }
 
 .project-caption h2 {
-  font-size: clamp(40px, 4.6vw, 78px);
+  font-size: var(--fs-h2);
   font-weight: 700;
   letter-spacing: -0.06em;
   line-height: 0.88;
@@ -343,7 +343,7 @@ body {
   padding: 5px 11px 4px;
   border: 1px solid #171717;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 0.06em;
   line-height: 1.2;
@@ -356,11 +356,11 @@ body {
   margin-left: auto;
   padding: 0;
   border: 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 14px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-s);
   font-weight: 400;
   transform: translateY(2.5px); /* centra el año con el texto de las etiquetas */
-  font-variant-numeric: lining-nums; /* los números por defecto de Georgia bajan de la línea base */
+  font-variant-numeric: lining-nums; /* números alineados a la línea base */
   letter-spacing: -0.02em;
 }
 
@@ -388,7 +388,7 @@ body {
 
 .image-placeholder {
   color: #8b8b83;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   letter-spacing: 0.05em;
 }
 
@@ -405,9 +405,9 @@ body {
   text-decoration: none;
   transition: background 0.2s, box-shadow 0.2s;
 }
-.room-entry span { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
-.room-entry strong { display: block; margin-top: 12px; font-size: clamp(42px, 8vw, 120px); line-height: .85; font-weight: 400; letter-spacing: -.07em; }
-.room-entry .room-arrow { font-size: clamp(28px, 5vw, 64px); line-height: 1; }
+.room-entry span { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .08em; }
+.room-entry strong { display: block; margin-top: 12px; font-size: var(--fs-h1); line-height: .85; font-weight: 400; letter-spacing: -.07em; }
+.room-entry .room-arrow { font-size: var(--fs-h2); line-height: 1; }
 .room-entry:hover, .room-entry:focus-visible { background: rgba(233, 239, 228, .08); box-shadow: 0 0 0 3px #91c9ff, 0 0 25px #62b9ff77; outline: none; }
 
 /* ---------- Footer: acaba el papel y vuelve a verse el cielo ---------- */
@@ -417,7 +417,7 @@ body {
   display: flex;
   align-items: flex-end;
   padding: 120px 30px 24px;
-  font-size: 13px;
+  font-size: var(--fs-s);
   line-height: 1.4;
 }
 
@@ -428,9 +428,9 @@ body {
   .nav-logo { width: 36px; height: 36px; }
   .nav-links { margin-right: -7px; }
   .nav-links a { padding: 0 7px; }
-  .nav-links a { font-size: 13px; }
+  .nav-links a { font-size: var(--fs-s); }
   .work-intro { margin-bottom: 20px; }
-  .ticker-list li { padding: 8px 0 7px; font-size: 11px; }
+  .ticker-list li { padding: 8px 0 7px; font-size: var(--fs-xs); }
   .ticker-list li::after { width: 4px; height: 4px; margin: 0 14px; }
   .project-grid { grid-template-columns: 1fr; gap: 8px; }
   .project { border-radius: 20px; }
@@ -439,8 +439,8 @@ body {
 .project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
 .project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 
-  .project-caption h2 { font-size: clamp(32px, 11vw, 60px); }
-  .project-brand { font-size: 18px; }
+  .project-caption h2 { font-size: var(--fs-h2); }
+  .project-brand { font-size: var(--fs-m); }
   .project-media { border-radius: 14px; }
   .room-entry { min-height: 210px; margin: 64px 8px 0; padding: 20px; }
   .footer { padding: 96px 20px 16px; }
@@ -461,7 +461,7 @@ body {
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: clamp(48px, 9vw, 150px);
+  font-size: var(--fs-h1);
   font-weight: 700;
   letter-spacing: -0.055em;
   line-height: 0.9;
@@ -501,7 +501,7 @@ body {
   margin: 0 calc(-1 * clamp(16px, 1.2vw, 24px));
   padding: 0 clamp(300px, 24vw, 360px) 0 92px;
   background: transparent; /* sin relleno: no se ve ninguna barra, los proyectos pasan por debajo del texto */
-  font: 500 15px/1.3 var(--font-ui);
+  font: 500 var(--fs-s)/1.3 var(--font-ui);
   letter-spacing: -.005em;
 }
 .work-top p > strong { display: block; font-weight: inherit; }
@@ -528,7 +528,7 @@ body {
 }
 .work-item > a:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
 
-.wi-date, .wi-tags { margin-top: clamp(4px, .9vw, 14px); font-size: 15px; font-weight: 500; line-height: 1.32; color: rgba(255, 255, 255, .3); transition: color .5s ease; }
+.wi-date, .wi-tags { margin-top: clamp(4px, .9vw, 14px); font-size: var(--fs-s); font-weight: 500; line-height: 1.32; color: rgba(255, 255, 255, .3); transition: color .5s ease; }
 .wi-date { grid-area: date; justify-self: start; font-variant-numeric: lining-nums; }
 .wi-tags { grid-area: tags; justify-self: end; text-align: right; list-style: none; }
 .wi-name {
@@ -538,7 +538,7 @@ body {
   margin-bottom: -.1em;
   overflow: hidden; /* máscara: el nombre sube desde abajo al aparecer */
   font-family: var(--font-ui);
-  font-size: clamp(48px, 8.2vw, 148px);
+  font-size: var(--fs-h1);
   font-weight: 700;
   letter-spacing: -.055em;
   line-height: .95;
@@ -616,11 +616,11 @@ body {
 /* ---------- Móvil: nombre a todo lo ancho y la tira de miniaturas se desliza con el dedo ---------- */
 @media (max-width: 760px) {
   /* La barra fija ocupa también el hueco de la barra de enlaces (así los proyectos no pasan por detrás) y solo lleva "Creative ___" */
-  .work-top { grid-template-columns: 1fr; height: auto; padding: var(--nav-h) clamp(16px, 1.2vw, 24px) 12px; font-size: 14px; }
+  .work-top { grid-template-columns: 1fr; height: auto; padding: var(--nav-h) clamp(16px, 1.2vw, 24px) 12px; font-size: var(--fs-s); }
   .work-top p:not(.wt-creative) { display: none; }
   .work-item > a, .work-link { grid-template-columns: 1fr auto; grid-template-areas: "date tags" "name name" "strip strip"; row-gap: 12px; padding: 26px 0 30px; }
-  .wi-date, .wi-tags { margin-top: 0; font-size: 13px; }
-  .wi-name { text-align: left; font-size: clamp(44px, 14vw, 84px); }
+  .wi-date, .wi-tags { margin-top: 0; font-size: var(--fs-s); }
+  .wi-name { text-align: left; font-size: var(--fs-h1); }
   .wi-strip { justify-content: flex-start; overflow-x: auto; margin-right: calc(-1 * clamp(16px, 1.2vw, 24px)); margin-top: 8px; scrollbar-width: none; translate: none; }
   .wi-strip::-webkit-scrollbar { display: none; }
   .wi-slot { width: 26vw; }

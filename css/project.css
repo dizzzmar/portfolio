@@ -5,12 +5,12 @@
 * { box-sizing: border-box; }
 :root { color-scheme: light; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: #fff; color: #20221d; font-family: 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: #fff; color: #20221d; font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-underline-offset: 4px; }
 a:focus-visible { outline: 3px solid #175cff; outline-offset: 5px; }
 /* Flecha "← Back" arriba a la izquierda: mismo estilo de texto que los enlaces del final, con un fondo
    suave para que se lea al pasar por encima de las imágenes */
-.back-link { position: fixed; z-index: 2; top: 20px; left: 20px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: rgba(255, 255, 255, .82); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-size: 14px; text-decoration: none; transition: background .2s; }
+.back-link { position: fixed; z-index: 2; top: 20px; left: 20px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: rgba(255, 255, 255, .82); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-size: var(--fs-s); text-decoration: none; transition: background .2s; }
 .back-link span { transition: transform .2s; }
 .back-link:hover { background: #eeede8; }
 .back-link:hover span { transform: translateX(-3px); }
@@ -19,12 +19,12 @@ figure { margin: 0; }
 .project-image { display: block; width: 100%; height: auto; border-radius: 18px; background: #eee9df; }
 .project-intro { padding: 28px 24px 64px; }
 .project-intro { display: grid; gap: 4px; }
-.project-brand { margin: 0; font-family: var(--font-ui); font-weight: 500; font-size: clamp(18px, 2vw, 26px); letter-spacing: -.035em; line-height: 1.1; }
-.project-intro h1 { margin: 0 0 0 -.045em; font-size: clamp(40px, 9vw, 76px); font-weight: 500; letter-spacing: -.055em; line-height: 1; }
+.project-brand { margin: 0; font-family: var(--font-ui); font-weight: 500; font-size: var(--fs-lead); letter-spacing: -.035em; line-height: 1.1; }
+.project-intro h1 { margin: 0 0 0 -.045em; font-size: var(--fs-h2); font-weight: 500; letter-spacing: -.055em; line-height: 1; }
 .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
-.project-tags li { padding: 5px 11px 4px; border: 1px solid #171717; border-radius: 999px; font-size: 11px; font-weight: 400; letter-spacing: .06em; line-height: 1.2; text-transform: uppercase; }
-.project-tags .project-year { margin-left: auto; padding: 0; border: 0; font-family: var(--font-ui); font-size: 12px; font-weight: 400; letter-spacing: 0; font-variant-numeric: lining-nums; transform: translateY(2.5px); }
-.project-description { margin: 20px 0 0; max-width: 61ch; font-size: var(--type-body); line-height: 1.55; }
+.project-tags li { padding: 5px 11px 4px; border: 1px solid #171717; border-radius: 999px; font-size: var(--fs-xs); font-weight: 400; letter-spacing: .06em; line-height: 1.2; text-transform: uppercase; }
+.project-tags .project-year { margin-left: auto; padding: 0; border: 0; font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 400; letter-spacing: 0; font-variant-numeric: lining-nums; transform: translateY(2.5px); }
+.project-description { margin: 20px 0 0; max-width: 61ch; font-size: var(--fs-m); line-height: 1.55; }
 .project-gallery { display: grid; gap: 20px; }
 /* Vídeo vertical: proporción 9:16. Como mucho el ancho de una imagen,
    y nunca más alto que la pantalla (deja 80px libres) para que siempre se vea entero. */
@@ -33,17 +33,17 @@ figure { margin: 0; }
 /* Post de Instagram incrustado (película): centrado y con el ancho de la columna */
 .project-embed { display: flex; justify-content: center; }
 .project-embed .instagram-media { width: 100% !important; max-width: 100% !important; min-width: 0 !important; margin: 0 !important; border-radius: 18px !important; overflow: hidden; }
-.project-embed blockquote.instagram-media { padding: 24px; background: #eee9df; text-align: center; font-size: 14px; }
+.project-embed blockquote.instagram-media { padding: 24px; background: #eee9df; text-align: center; font-size: var(--fs-s); }
 .image-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
-.project-credit { max-width: 60ch; padding: 0 24px; font-size: 12px; line-height: 1.5; opacity: .6; }
-.project-end { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 60px 24px; font-size: 14px; }
-.site-footer { display: flex; justify-content: center; padding: 56px 24px; background: #91bce0 url('/assets/images/sky.webp') center 65% / cover; color: #173a31; font-size: 13px; }
+.project-credit { max-width: 60ch; padding: 0 24px; font-size: var(--fs-xs); line-height: 1.5; opacity: .6; }
+.project-end { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 60px 24px; font-size: var(--fs-s); }
+.site-footer { display: flex; justify-content: center; padding: 56px 24px; background: #91bce0 url('/assets/images/sky.webp') center 65% / cover; color: #173a31; font-size: var(--fs-s); }
 /* ---------- Carrusel de imágenes (pila) ----------
    La imagen de delante sale hacia un lado y pasa la siguiente. Lo mueve js/project-stack.js */
 .stack { margin: 0; }
 .stack-deck { display: grid; gap: 20px; }
 .stack.is-live { margin-top: 36px; }
-.stack-ui { display: flex; justify-content: center; align-items: center; gap: 18px; margin-top: 18px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.stack-ui { display: flex; justify-content: center; align-items: center; gap: 18px; margin-top: 18px; font-size: var(--fs-s); font-variant-numeric: tabular-nums; }
 .stack-btn { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: #eeede8; color: inherit; font: inherit; font-size: 18px; cursor: pointer; transition: background .2s; }
 .stack-btn:hover { background: #deded6; }
 .stack-btn:focus-visible { outline: 3px solid #175cff; outline-offset: 3px; }
@@ -80,9 +80,9 @@ figure { margin: 0; }
  .back-link { top: 14px; left: 12px; }
  .project-page { width: calc(100% - 24px); margin-top: 72px; }
  .project-intro { padding: 24px 8px 40px; }
- .project-intro h1 { font-size: clamp(32px, 11.5vw, 64px); }
- .project-brand { font-size: 18px; }
- .project-description { font-size: 16px; }
+ .project-intro h1 { font-size: var(--fs-h2); }
+ .project-brand { font-size: var(--fs-m); }
+ .project-description { font-size: var(--fs-m); }
  .project-gallery, .image-pair { gap: 12px; }
  .image-pair { grid-template-columns: 1fr; }
  .project-image { border-radius: 12px; }

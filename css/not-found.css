@@ -10,7 +10,7 @@ html, body { height: 100%; }
 body {
   overflow: hidden;
   color: #fff;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-ui);
   background-color: #3f7fd6;
 }
 
@@ -100,7 +100,7 @@ body {
 
 .message {
   max-width: 40ch;
-  font-size: clamp(16px, 1.6vw, 20px);
+  font-size: var(--fs-lead);
   line-height: 1.4;
   text-shadow: 0 1px 10px rgba(0, 30, 80, 0.3);
 }
@@ -110,7 +110,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 999px;
   color: #fff;
-  font-size: 15px;
+  font-size: var(--fs-s);
   text-decoration: none;
   transition: background 0.2s, color 0.2s;
 }
