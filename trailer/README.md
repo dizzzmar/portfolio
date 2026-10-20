@@ -19,7 +19,8 @@ npm run render    # crea out/dizmar-launch-trailer.mp4
 
 - `src/Trailer.tsx` — el orden y la duración de cada plano (lista `SHOTS`, en fotogramas; 15 fotogramas = 1 pulso).
 - `src/scenes.tsx` — cada escena: textos, imágenes y animación.
-- `src/lib.tsx` — colores, letra y curvas (los de `DESIGN.md`).
+- `src/three-d.tsx` — el tomate 3D (con el anillo MARIO DIZ) y la habitación 3D, con los mismos modelos y luces que la web.
+- `src/lib.tsx` — colores, letras (Helvetica/Arial y Jacquard 24, instalada en local) y curvas (las de `DESIGN.md`).
 - `music/make_music.py` — la música (batería, bajo, acordes, golpes). Si cambias los cortes, mantén los golpes en los mismos pulsos.
 
 Licencia de Remotion: gratis para personas y empresas de hasta 3 empleados; empresas más grandes necesitan licencia.

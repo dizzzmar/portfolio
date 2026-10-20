@@ -14,6 +14,8 @@ export const C = {
 
 // Helvetica Neue en Apple, Arial en el resto (en el render de Linux cae en Liberation Sans, misma métrica que Arial).
 export const FONT = '"Helvetica Neue", Helvetica, Arial, "Liberation Sans", sans-serif';
+// Jacquard 24 (Google Fonts, licencia OFL), instalada en local con @fontsource: solo para el nombre y titulares sueltos.
+export const JACQUARD = '"Jacquard 24", serif';
 export const MONO = '"JetBrains Mono", "Courier New", monospace';
 
 export const asset = (path: string) => staticFile(`assets/${path}`);

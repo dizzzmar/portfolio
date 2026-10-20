@@ -6,7 +6,7 @@ import numpy as np
 SR = 44100
 BPM = 120
 BEAT = 60 / BPM            # 0,5 s = 15 fotogramas a 30 fps
-TOTAL = 25.5               # segundos (el vídeo dura 24,5 s + cola)
+TOTAL = 24.5               # segundos (lo mismo que el vídeo)
 N = int(SR * TOTAL)
 rng = np.random.default_rng(7)
 L = np.zeros(N); R = np.zeros(N)
@@ -96,7 +96,8 @@ place(stab((57, 60, 64, 69), 0.6, 4000), 0.0, 0.6)
 # Riser corto antes de que entre el ritmo
 place(riser(0.95), 0.05, 0.5)
 
-DRUMS_START, BREAK_A, BREAK_B, OUTRO = 2, 20, 22, 42
+DRUMS_START, BREAK_A, BREAK_B, OUTRO = 2, 20, 22, 34
+FINAL = 40  # golpe final: 20 s, cuando el clic del buscador abre la web
 for b in range(DRUMS_START, OUTRO):
     if BREAK_A <= b < BREAK_B:
         continue
@@ -119,14 +120,23 @@ for b in range(DRUMS_START, OUTRO):
 # Parón (10–11 s): riser y golpe en la vuelta
 place(riser(BEAT * 2), BREAK_A * BEAT, 0.7)
 place(impact(1.5), BREAK_B * BEAT, 0.8)
-# Pequeños "blips" de interfaz en la escena del navegador (6,25–7,5 s)
-for i, n in enumerate((81, 84, 88, 86, 84, 88, 93)):
-    place(blip(n), 6.3 + i * BEAT / 4, 0.7, 0.2 * (-1) ** i)
-# Final: silencio un pulso, golpe grande y acorde largo
-place(riser(BEAT * 2), (OUTRO - 2) * BEAT, 0.5)
-place(impact(3.0), (OUTRO + 1) * BEAT, 1.0)
-place(stab((45, 57, 60, 64, 69), 3.0, 1800), (OUTRO + 1) * BEAT, 0.7)
-
+# Lámpara de la habitación encendiéndose (13,5 s): dos chispazos
+place(blip(96, 0.06), 405 / 30, 0.8); place(blip(91, 0.08), 408 / 30, 0.6)
+# Buscador (17–20 s): sin batería, solo charles, tecleo, sugerencias y clic
+for b in range(OUTRO, FINAL):
+    for k in (1, 3):
+        place(hat(), b * BEAT + k * BEAT / 4, 0.4, 0.3 if k == 1 else -0.3)
+for i in range(9):  # "mario diz": una tecla cada 2,6 fotogramas
+    at = (510 + 6 + i * 2.6) / 30
+    place(hat(), at, 0.55, 0.2 * (-1) ** i); place(blip(100 + (i % 3), 0.03), at, 0.7)
+for i, n in enumerate((76, 79, 83)):  # aparecen las sugerencias
+    place(blip(n, 0.15), (542 + i * 2) / 30, 0.6)
+place(blip(88, 0.05), 582 / 30, 1.0); place(blip(76, 0.05), 582 / 30, 1.0)  # clic
+place(riser(BEAT * 4), (FINAL - 4) * BEAT, 0.6)
+# Final: golpe grande y acorde largo con el tomate
+place(impact(3.0), FINAL * BEAT, 1.0)
+place(stab((45, 57, 60, 64, 69), 3.0, 1800), FINAL * BEAT, 0.7)
+place(kick(), FINAL * BEAT, 1.0)
 # ---------- reverb sencilla y mezcla ----------
 def reverb(x):
     out = x.copy()

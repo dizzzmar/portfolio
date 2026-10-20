@@ -2,8 +2,9 @@
 // La estructura imita el ritmo del showreel analizado: revelado de marca → aplicaciones en cortes de un pulso → corte seco.
 import React from 'react';
 import {AbsoluteFill, Easing, OffthreadVideo, interpolate, useCurrentFrame} from 'remotion';
-import {C, MONO, Fill, Grain, Label, Push, RiseLetters, asset, easeOut, hash, ramp, scramble, snap} from './lib';
+import {C, JACQUARD, MONO, Fill, Grain, Push, RiseLetters, asset, easeOut, hash, ramp, scramble, snap} from './lib';
 import ASCII from './tomato-ascii.json';
+import {Room3D, Tomato3D} from './three-d';
 
 // ─────────────────────────────────────────────────────────────
 // 1 · Estallido: un pétalo blanco gira y se clona en 8 (el ❊ de la cartela "Mario Diz"). Fondo rojo marca.
@@ -74,80 +75,6 @@ export const AsciiTomato: React.FC = () => {
 };
 
 // ─────────────────────────────────────────────────────────────
-// 3 · Icono de app: tomate en un cuadrado rojo redondeado que gira en 3D.
-// ─────────────────────────────────────────────────────────────
-export const IconFlip: React.FC = () => {
-  const f = useCurrentFrame();
-  const turn = interpolate(f, [0, 10, 18, 23], [-90, 0, 0, 180], {extrapolateRight: 'clamp', easing: easeOut});
-  const s = interpolate(f, [0, 8], [0.7, 1], {extrapolateRight: 'clamp', easing: Easing.bezier(0.34, 1.6, 0.64, 1)});
-  return (
-    <Fill bg={C.paper}>
-      <div style={{perspective: 1400}}>
-        <div style={{width: 380, height: 380, borderRadius: 96, background: C.red, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `rotateY(${turn}deg) scale(${s})`, boxShadow: '0 30px 60px rgba(0,0,0,0.12)'}}>
-          <img src={asset('images/tomato.webp')} style={{width: 250}} />
-        </div>
-      </div>
-    </Fill>
-  );
-};
-
-// ─────────────────────────────────────────────────────────────
-// 4 · Aplicaciones de la identidad, un corte por pulso (≈ 0,25 s cada una).
-// ─────────────────────────────────────────────────────────────
-export const AppTab: React.FC = () => {
-  const f = useCurrentFrame();
-  const s = interpolate(f, [0, 8], [1.12, 1], {extrapolateRight: 'clamp', easing: easeOut});
-  return (
-    <Fill bg="#dedcd6">
-      <div style={{transform: `scale(${s})`, width: 1500}}>
-        <div style={{display: 'flex', alignItems: 'flex-end', gap: 8, paddingLeft: 40}}>
-          <div style={{background: '#fff', borderRadius: '22px 22px 0 0', padding: '22px 34px', display: 'flex', alignItems: 'center', gap: 20, fontSize: 34, color: C.ink}}>
-            <img src={asset('images/favicon-192.png')} style={{width: 46}} />
-            Mario Diz — Art director
-            <span style={{color: '#999', marginLeft: 30}}>×</span>
-          </div>
-        </div>
-        <div style={{background: '#fff', borderRadius: 22, padding: '26px 36px', fontSize: 36, color: '#777'}}>
-          <span style={{color: C.ink}}>dizmar.xyz</span>
-        </div>
-      </div>
-    </Fill>
-  );
-};
-
-export const AppCartela: React.FC = () => {
-  const f = useCurrentFrame();
-  return (
-    <Fill bg={C.black}>
-      <img src={asset('images/name-cartela.webp')} style={{width: 1500, transform: `scale(${interpolate(f, [0, 8], [0.92, 1], {extrapolateRight: 'clamp', easing: easeOut})})`}} />
-    </Fill>
-  );
-};
-
-export const AppSky: React.FC = () => {
-  const f = useCurrentFrame();
-  return (
-    <Fill bg={C.sky}>
-      <Push src={asset('images/sky.webp')} frame={f} dur={8} from={1.15} />
-      <img src={asset('images/tomato.webp')} style={{position: 'absolute', width: 380, transform: `translateY(${interpolate(f, [0, 8], [40, 0], {extrapolateRight: 'clamp', easing: easeOut})}px)`}} />
-      <Grain opacity={0.12} />
-    </Fill>
-  );
-};
-
-export const AppWordmark: React.FC = () => {
-  const f = useCurrentFrame();
-  return (
-    <Fill bg={C.paper}>
-      <div style={{fontSize: 300, fontWeight: 700, letterSpacing: '-0.06em', color: C.ink, display: 'flex', alignItems: 'baseline'}}>
-        dizmar
-        <span style={{width: 70, height: 70, borderRadius: 99, background: C.red, display: 'inline-block', marginLeft: 12, transform: `scale(${ramp(f, 1, 6, Easing.bezier(0.34, 1.8, 0.64, 1))})`}} />
-      </div>
-    </Fill>
-  );
-};
-
-// ─────────────────────────────────────────────────────────────
 // 5 · "Creative ___": la frase de la portada, con la palabra que se descifra cada medio pulso.
 // ─────────────────────────────────────────────────────────────
 const WORDS = ['Director', 'Coder', 'Maximalist', 'Storyteller', '3D Artist', 'Designer'];
@@ -157,86 +84,17 @@ export const Creative: React.FC = () => {
   const i = Math.min(WORDS.length - 1, Math.floor(f / per));
   const word = scramble(WORDS[i], f, i * per, i === WORDS.length - 1 ? 6 : 3, i);
   return (
-    <Fill bg={C.white}>
-      <div style={{fontSize: 190, fontWeight: 700, letterSpacing: '-0.05em', color: C.ink, lineHeight: 1.05, width: 1500}}>
+    <Fill bg={i % 2 ? C.paper : C.white}>
+      <div style={{fontSize: 210, fontWeight: 700, letterSpacing: '-0.05em', color: C.ink, lineHeight: 1.0, width: 1600}}>
         <RiseLetters text="Creative" frame={f} start={0} stagger={0.6} dur={6} />
-        <div style={{color: C.red}}>{word}</div>
+        <div style={{color: C.red, transform: `rotate(${(hash(i + 3) - 0.5) * 8}deg) scale(${1 + ((f - i * per) < 2 ? 0.08 : 0)})`, transformOrigin: 'left center', fontFamily: i === 2 || i === 5 ? JACQUARD : undefined, fontWeight: i === 2 || i === 5 ? 400 : 700, fontSize: i === 2 || i === 5 ? 250 : undefined}}>{word}</div>
       </div>
     </Fill>
   );
 };
 
 // ─────────────────────────────────────────────────────────────
-// 6 · Carrusel: los tres proyectos como carteles verticales que pasan en fila.
-// ─────────────────────────────────────────────────────────────
-const CARDS = [
-  {src: 'projects/lexus-electrified/poised-1080.webp', title: 'Lexus Electrified', year: '2025', pos: 'center'},
-  {src: 'projects/soap-and-glory-vanilla/sg2-1600.webp', title: 'Soap & Glory', year: '2026', pos: 'center'},
-  {src: 'projects/schweppes/frame-2-1600.webp', title: 'Schweppes', year: '2026', pos: '30% center'},
-];
-export const Carousel: React.FC = () => {
-  const f = useCurrentFrame();
-  const pan = interpolate(f, [0, 37], [380, -120], {easing: Easing.bezier(0.5, 0, 0.2, 1)});
-  const zoomOut = interpolate(f, [24, 37], [1, 0.86], {extrapolateLeft: 'clamp', easing: easeOut});
-  return (
-    <Fill bg={C.black}>
-      <div style={{display: 'flex', gap: 48, transform: `translateX(${pan}px) scale(${zoomOut})`}}>
-        {CARDS.map((c, i) => {
-          const p = ramp(f, i * 4, i * 4 + 12, snap);
-          return (
-            <div key={i} style={{transform: `translateY(${(1 - p) * 700}px)`}}>
-              <div style={{width: 470, height: 760, overflow: 'hidden'}}>
-                <img src={asset(c.src)} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: c.pos}} />
-              </div>
-              <div style={{display: 'flex', justifyContent: 'space-between', marginTop: 20}}>
-                <Label>{c.title}</Label>
-                <Label color="rgba(255,255,255,0.6)">{c.year}</Label>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </Fill>
-  );
-};
-
-// ─────────────────────────────────────────────────────────────
-// 7 · Navegador: se escribe la dirección, carga y aparece la descripción (de gris a negro).
-// ─────────────────────────────────────────────────────────────
-const URL = 'www.dizmar.xyz';
-const LINE = 'Mario Diz — art direction & visual design, Madrid.';
-export const Browser: React.FC = () => {
-  const f = useCurrentFrame();
-  const typed = URL.slice(0, Math.floor(interpolate(f, [0, 14], [0, URL.length], {extrapolateRight: 'clamp'})));
-  const load = ramp(f, 16, 26, Easing.bezier(0.7, 0, 0.3, 1));
-  const caret = Math.floor(f / 4) % 2 === 0 && f < 16;
-  const words = LINE.split(' ');
-  return (
-    <Fill bg={C.white} style={{justifyContent: 'flex-start', alignItems: 'flex-start', padding: '200px 210px'}}>
-      <div style={{position: 'absolute', top: 0, left: 0, height: 8, width: `${load * 100}%`, background: C.red, opacity: f > 30 ? 0 : 1}} />
-      <div style={{display: 'flex', alignItems: 'center', gap: 30}}>
-        <img src={asset('images/favicon-192.png')} style={{width: 74, height: 74, borderRadius: 8}} />
-        <div style={{fontSize: 74, color: f < 16 ? '#9a9a9a' : C.ink, letterSpacing: '-0.02em'}}>
-          {f < 16 ? typed : URL}
-          <span style={{opacity: caret ? 1 : 0, color: C.red}}>|</span>
-        </div>
-      </div>
-      <div style={{marginTop: 110, fontSize: 96, fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 1.08, maxWidth: 1450, color: C.ink}}>
-        {words.map((w, i) => {
-          const p = ramp(f, 18 + i * 1.6, 24 + i * 1.6);
-          return (
-            <span key={i} style={{opacity: 0.12 + p * 0.88, filter: `blur(${(1 - p) * 6}px)`}}>
-              {w}{' '}
-            </span>
-          );
-        })}
-      </div>
-    </Fill>
-  );
-};
-
-// ─────────────────────────────────────────────────────────────
-// 8 · Lexus Electrified: el film, una palabra que se construye sobre el key visual y salida con glitch por franjas.
+// 8 · Lexus Electrified: el film con la palabra gigante en contorno cruzando la pantalla, y salida con glitch por franjas.
 // ─────────────────────────────────────────────────────────────
 export const LexusFilm: React.FC = () => {
   const f = useCurrentFrame();
@@ -245,23 +103,8 @@ export const LexusFilm: React.FC = () => {
       <AbsoluteFill style={{transform: `scale(${interpolate(f, [0, 22], [1.1, 1.02])})`}}>
         <OffthreadVideo src={asset('projects/lexus-electrified/film.mp4')} startFrom={128} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
       </AbsoluteFill>
-      <div style={{position: 'absolute', left: 90, bottom: 80, color: C.white}}>
-        <RiseLetters text="Lexus Electrified" frame={f} start={2} stagger={0.7} dur={8} style={{fontSize: 120, fontWeight: 700, letterSpacing: '-0.04em'}} />
-        <Label style={{opacity: ramp(f, 10, 16), marginTop: 10}}>Audiovisual · Lexus Singapore · 2025</Label>
-      </div>
-    </Fill>
-  );
-};
-
-export const LexusWord: React.FC = () => {
-  const f = useCurrentFrame();
-  const src = f < 15 ? 'projects/lexus-electrified/kv-lake-1600.webp' : 'projects/lexus-electrified/kv-building-1600.webp';
-  return (
-    <Fill bg="#000">
-      <Push src={asset(src)} frame={f % 15} dur={15} from={1.12} />
-      <AbsoluteFill style={{background: 'rgba(0,0,0,0.25)'}} />
-      <div style={{position: 'relative', color: C.white, fontSize: 200, fontWeight: 700, letterSpacing: '-0.05em'}}>
-        {f < 15 ? <RiseLetters text="ELECTRIFIED." frame={f} start={0} stagger={0.8} dur={7} /> : <RiseLetters text="SINGAPORE." frame={f} start={15} stagger={0.8} dur={7} />}
+      <div style={{position: 'absolute', top: 330, whiteSpace: 'nowrap', fontSize: 380, fontWeight: 700, letterSpacing: '-0.06em', color: 'transparent', WebkitTextStroke: '4px #fff', transform: `translateX(${interpolate(f, [0, 35], [700, -1500])}px)`}}>
+        ELECTRIFIED ELECTRIFIED
       </div>
     </Fill>
   );
@@ -307,8 +150,7 @@ export const SoapTitle: React.FC = () => {
           );
         })}
       </div>
-      <Label color={CARAMEL} style={{position: 'absolute', bottom: 120, opacity: ramp(f, 16, 24)}}>Soap & Glory · Key visuals · 2026</Label>
-    </Fill>
+          </Fill>
   );
 };
 
@@ -346,81 +188,24 @@ export const SoapHero: React.FC = () => {
 const GOLD = '#f2c94c';
 export const Schweppes: React.FC = () => {
   const f = useCurrentFrame();
-  const bars = interpolate(f, [0, 10, 50, 60], [540, 138, 138, 540], {extrapolateRight: 'clamp', easing: easeOut});
-  const second = f >= 30;
+  const bars = interpolate(f, [0, 8, 37, 45], [540, 138, 138, 540], {extrapolateRight: 'clamp', easing: easeOut});
+  const second = f >= 22;
   return (
     <Fill bg="#000">
       <AbsoluteFill>
-        <OffthreadVideo src={asset('projects/schweppes/film.mp4')} startFrom={second ? 420 - 30 : 60} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+        <OffthreadVideo src={asset('projects/schweppes/film.mp4')} startFrom={second ? 420 - 22 : 60} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
       </AbsoluteFill>
       <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: bars, background: '#000'}} />
       <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: bars, background: '#000'}} />
-      <div style={{position: 'absolute', left: 90, bottom: 30, display: 'flex', alignItems: 'baseline', gap: 40, opacity: f < 52 ? 1 : 0}}>
+      <div style={{position: 'absolute', left: 90, bottom: 30, display: 'flex', alignItems: 'baseline', gap: 40, opacity: f < 38 ? 1 : 0}}>
         <div style={{fontFamily: MONO, fontSize: 64, fontWeight: 700, color: GOLD, letterSpacing: '0.04em'}}>{scramble('SCHWEPPES', f, 6, 12, 3)}</div>
-        <Label color="rgba(255,255,255,0.7)" style={{opacity: ramp(f, 14, 20)}}>AI film · 2026</Label>
       </div>
     </Fill>
   );
 };
 
 // ─────────────────────────────────────────────────────────────
-// 11 · Mapa de la web: icono que se dibuja, WORK cae letra a letra; luego las secciones unidas por una línea en escalón.
-// ─────────────────────────────────────────────────────────────
-export const NavMap: React.FC = () => {
-  const f = useCurrentFrame();
-  // Parte A (0–20): icono circular que se dibuja + WORK
-  if (f < 20) {
-    const draw = ramp(f, 0, 12);
-    return (
-      <Fill bg={C.white}>
-        <svg width={220} height={220} viewBox="-60 -60 120 120" style={{marginBottom: 40}}>
-          <circle r={50} fill="none" stroke={C.ink} strokeWidth={6} strokeDasharray={314} strokeDashoffset={314 * (1 - draw)} transform="rotate(-90)" />
-          <path d="M-12 12 L14 -14 M-2 -14 L14 -14 L14 2" stroke={C.red} strokeWidth={8} fill="none" strokeLinecap="round" strokeLinejoin="round" style={{opacity: ramp(f, 8, 12)}} />
-        </svg>
-        <RiseLetters text="WORK" frame={f} start={4} stagger={1.5} dur={8} style={{fontSize: 110, fontWeight: 700, letterSpacing: '0.02em', color: C.ink}} />
-      </Fill>
-    );
-  }
-  // Parte B (20–75): secciones unidas por un trazo en escalón que se dibuja; al final, check + NOW LIVE
-  const g = f - 20;
-  const items = [
-    {t: 'WORK', x: 100, y: 540},
-    {t: 'ABOUT', x: 620, y: 400},
-    {t: 'ROOM', x: 1130, y: 660},
-    {t: 'CONTACT', x: 1500, y: 490},
-  ];
-  const path = 'M 20 540 L 80 540 M 350 540 L 470 540 L 470 400 L 600 400 M 920 400 L 1010 400 L 1010 660 L 1110 660 M 1400 660 L 1440 660 L 1440 490 L 1480 490';
-  const draw = ramp(g, 0, 30, Easing.bezier(0.6, 0, 0.3, 1));
-  const shift = interpolate(g, [30, 40], [0, -2000], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.7, 0, 0.2, 1)});
-  const live = ramp(g, 38, 48, Easing.bezier(0.34, 1.5, 0.64, 1));
-  return (
-    <Fill bg={C.white}>
-      <AbsoluteFill style={{transform: `translateX(${shift}px)`}}>
-        <svg width={1920} height={1080} style={{position: 'absolute'}}>
-          <path d={path} stroke={C.ink} strokeWidth={6} fill="none" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - draw} />
-        </svg>
-        {items.map((it, i) => {
-          const p = ramp(g, i * 7, i * 7 + 8, Easing.bezier(0.34, 1.6, 0.64, 1));
-          return (
-            <div key={it.t} style={{position: 'absolute', left: it.x, top: it.y - 50, fontSize: 80, lineHeight: 1, fontWeight: 700, color: C.ink, transform: `translateY(${(1 - p) * 60}px)`, opacity: p}}>
-              {it.t}
-            </div>
-          );
-        })}
-      </AbsoluteFill>
-      <div style={{display: 'flex', alignItems: 'center', gap: 50, transform: `scale(${live})`, opacity: live}}>
-        <svg width={170} height={170} viewBox="-60 -60 120 120">
-          <circle r={52} fill={C.red} />
-          <path d="M-22 2 L-6 18 L24 -14" stroke={C.white} strokeWidth={11} fill="none" strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - ramp(g, 42, 50)} />
-        </svg>
-        <div style={{fontSize: 160, fontWeight: 700, letterSpacing: '-0.04em', color: C.ink}}>Now live</div>
-      </div>
-    </Fill>
-  );
-};
-
-// ─────────────────────────────────────────────────────────────
-// 12 · About: la foto en un marco rojo pequeño hace zoom a pantalla completa y entra la cartela con el nombre.
+// 12 · About: la foto en un marco rojo pequeño hace zoom a pantalla completa y entra el nombre en Jacquard.
 // ─────────────────────────────────────────────────────────────
 export const About: React.FC = () => {
   const f = useCurrentFrame();
@@ -433,86 +218,185 @@ export const About: React.FC = () => {
         <img src={asset('images/mario-956.webp')} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%'}} />
       </div>
       <div style={{position: 'absolute', bottom: 120, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 30}}>
-        <img src={asset('images/name-cartela.webp')} style={{width: 1100, opacity: ramp(f, 24, 28, Easing.linear), transform: `scale(${interpolate(ramp(f, 24, 34), [0, 1], [1.25, 1])})`}} />
-        <Label style={{opacity: ramp(f, 32, 40)}}>Art director & visual designer · Madrid</Label>
+        <div style={{fontFamily: JACQUARD, fontSize: 300, lineHeight: 1, color: C.white, textShadow: '0 6px 40px rgba(0,0,0,0.35)', opacity: ramp(f, 22, 25, Easing.linear), transform: `scale(${interpolate(ramp(f, 22, 32), [0, 1], [1.3, 1])}) rotate(${interpolate(ramp(f, 22, 32), [0, 1], [-6, -2])}deg)`}}>
+          Mario Diz
+        </div>
       </div>
     </Fill>
   );
 };
 
-// ─────────────────────────────────────────────────────────────
-// 13 · Clientes: rejilla de logos que entran uno a uno (como la rejilla de variaciones de letra del original).
-// ─────────────────────────────────────────────────────────────
-const LOGOS = ['ogilvy.svg', 'wpp.svg', 'lexus.svg', 'toyota.svg', 'heineken.svg', 'verizon.svg', 'coca-cola-company.svg', 'nestle.png'];
-export const Clients: React.FC = () => {
-  const f = useCurrentFrame();
-  return (
-    <Fill bg={C.paper}>
-      <Label color="#777" style={{position: 'absolute', top: 120}}>Selected clients</Label>
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 340px)', gridAutoRows: 220, gap: 30, marginTop: 60}}>
-        {LOGOS.map((l, i) => {
-          const p = ramp(f, i * 2, i * 2 + 7, Easing.bezier(0.34, 1.6, 0.64, 1));
-          return (
-            <div key={l} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${p})`, opacity: p}}>
-              <img src={asset(`brands/${l}`)} style={{maxWidth: 240, maxHeight: 110, filter: 'grayscale(1) brightness(0)'}} />
-            </div>
-          );
-        })}
-      </div>
-    </Fill>
-  );
-};
 
 // ─────────────────────────────────────────────────────────────
-// 14 · The room: tres cortes sobre el rojo de About (disco, película, pegatina).
+// 3 · El tomate 3D de la portada con su anillo "MARIO DIZ". Da un acelerón en cada golpe y al final sale volando hacia arriba.
 // ─────────────────────────────────────────────────────────────
-export const Room: React.FC = () => {
+export const TomatoSpin: React.FC = () => {
   const f = useCurrentFrame();
-  const shots = [
-    {src: 'room/vinyl-cover.webp', label: 'Now playing', w: 620},
-    {src: 'room/film-poster.webp', label: 'Last watched', w: 440},
-    {src: 'room/now-playing-sticker.webp', label: 'See the room →', w: 620},
-  ];
-  const i = Math.min(2, Math.floor(f / 15));
-  const lf = f - i * 15;
-  const s = shots[i];
-  return (
-    <Fill bg={C.aboutRed}>
-      <img src={asset(s.src)} style={{width: s.w, transform: `rotate(${interpolate(lf, [0, 15], [-6, 2])}deg) scale(${interpolate(lf, [0, 6], [1.15, 1], {extrapolateRight: 'clamp', easing: easeOut})})`, boxShadow: '0 30px 60px rgba(0,0,0,0.25)'}} />
-      <Label style={{position: 'absolute', bottom: 110}}>{s.label}</Label>
-      <Label style={{position: 'absolute', top: 110}}>The room</Label>
-      <Grain opacity={0.1} />
-    </Fill>
+  // Giro base + medio giro extra muy rápido en cada pulso (15 fotogramas)
+  const beat = Math.floor(f / 15);
+  const inBeat = ramp(f % 15, 0, 7, snap);
+  const spin = f / 90 + (beat + inBeat) * 0.5;
+  const punch = 1 + (1 - ramp(f % 15, 0, 6)) * 0.12;
+  const fly = ramp(f, 46, 60, Easing.in(Easing.cubic));
+  const marquee = (dir: number, top: number) => (
+    <div style={{position: 'absolute', top, whiteSpace: 'nowrap', fontFamily: JACQUARD, fontSize: 260, lineHeight: 1, color: 'rgba(255,255,255,0.16)', transform: `translateX(${dir * (f * 22) - (dir > 0 ? 2400 : 0)}px)`}}>
+      dizmar dizmar dizmar dizmar dizmar dizmar
+    </div>
   );
-};
-
-// ─────────────────────────────────────────────────────────────
-// 15 · Cierre: un círculo se dibuja, se cierra en el tomate con el golpe final y se escribe la dirección.
-// ─────────────────────────────────────────────────────────────
-export const Outro: React.FC = () => {
-  const f = useCurrentFrame();
-  const draw = ramp(f, 0, 14, Easing.bezier(0.6, 0, 0.3, 1));
-  const pop = ramp(f, 15, 24, Easing.bezier(0.34, 1.7, 0.64, 1));
-  const ring = interpolate(f, [13, 17], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const url = 'dizmar.xyz';
-  const typed = url.slice(0, Math.floor(interpolate(f, [30, 46], [0, url.length], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})));
-  const up = ramp(f, 28, 40);
   return (
     <Fill bg={C.red}>
-      <AbsoluteFill style={{background: 'radial-gradient(circle at 50% 45%, rgba(255,255,255,0.18), transparent 60%)'}} />
-      <div style={{position: 'relative', transform: `translateY(${-up * 120}px)`, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-        <svg width={360} height={360} viewBox="-60 -60 120 120" style={{position: 'absolute', opacity: ring}}>
-          <circle r={50} fill="none" stroke={C.white} strokeWidth={5} pathLength={1} strokeDasharray={1} strokeDashoffset={1 - draw} transform="rotate(-90)" />
-        </svg>
-        <img src={asset('images/tomato.webp')} style={{width: 330, transform: `scale(${pop}) rotate(${(1 - pop) * -30}deg)`}} />
-      </div>
-      <div style={{position: 'absolute', top: 690, fontSize: 150, fontWeight: 700, letterSpacing: '-0.05em', color: C.white, height: 170}}>
-        {typed}
-        <span style={{opacity: f > 30 && Math.floor(f / 5) % 2 === 0 ? 1 : 0}}>_</span>
-      </div>
-      <Label style={{position: 'absolute', top: 900, opacity: ramp(f, 50, 60)}}>Mario Diz · Portfolio · Now live</Label>
+      {marquee(1, 60)}
+      {marquee(-1, 760)}
+      <AbsoluteFill style={{transform: `scale(${punch})`}}>
+        <Tomato3D spin={spin} scale={3.4} y={fly * 6} tilt={Math.sin(f / 9) * 0.15} />
+      </AbsoluteFill>
+      <Grain opacity={0.12} />
+    </Fill>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
+// 4 · El cielo de la portada: las nubes se acercan, se desenfocan y se funden en blanco.
+// ─────────────────────────────────────────────────────────────
+export const SkyDive: React.FC = () => {
+  const f = useCurrentFrame();
+  const z = interpolate(f, [0, 30], [1, 3.2], {easing: Easing.in(Easing.quad)});
+  const blur = interpolate(f, [8, 30], [0, 18], {extrapolateLeft: 'clamp'});
+  const white = ramp(f, 20, 30, Easing.linear);
+  return (
+    <Fill bg={C.sky}>
+      <AbsoluteFill style={{transform: `scale(${z})`, filter: `blur(${blur}px)`}}>
+        <img src={asset('images/sky.webp')} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '60% 40%'}} />
+      </AbsoluteFill>
+      <div style={{position: 'absolute', fontFamily: JACQUARD, fontSize: 200, color: C.white, transform: `scale(${1 + f * 0.04})`, opacity: 1 - white}}>dizmar.xyz</div>
+      <AbsoluteFill style={{background: C.white, opacity: white}} />
       <Grain opacity={0.14} />
     </Fill>
   );
 };
 
+// ─────────────────────────────────────────────────────────────
+// 6 · Montón de proyectos: las imágenes caen sobre la mesa una por pulso medio, giradas, con sacudida al aterrizar.
+// ─────────────────────────────────────────────────────────────
+const PILE = [
+  {src: 'projects/lexus-electrified/poised-640.webp', w: 380, h: 675, x: -560, y: 10, r: -8},
+  {src: 'projects/soap-and-glory-vanilla/sg3-800.webp', w: 520, h: 520, x: 40, y: -120, r: 6},
+  {src: 'projects/schweppes/frame-1-800.webp', w: 720, h: 405, x: 420, y: 200, r: -4},
+  {src: 'room/vinyl-cover.webp', w: 380, h: 380, x: -180, y: 250, r: 12},
+  {src: 'projects/lexus-electrified/kv-lake-800.webp', w: 620, h: 438, x: 560, y: -260, r: 9},
+  {src: 'projects/soap-and-glory-vanilla/sg1-800.webp', w: 460, h: 460, x: -60, y: 40, r: -14},
+];
+export const Pile: React.FC = () => {
+  const f = useCurrentFrame();
+  const last = Math.floor(f / 5);
+  const sinceLand = f - last * 5;
+  const shake = sinceLand < 3 ? (hash(last) - 0.5) * 18 : 0;
+  return (
+    <Fill bg={C.black}>
+      <AbsoluteFill style={{transform: `translate(${shake}px, ${-shake * 0.6}px)`, alignItems: 'center', justifyContent: 'center'}}>
+        {PILE.map((c, i) => {
+          const p = ramp(f, i * 5, i * 5 + 5, Easing.bezier(0.2, 0.9, 0.3, 1.15));
+          if (f < i * 5) return null;
+          return (
+            <img key={i} src={asset(c.src)} style={{position: 'absolute', width: c.w, height: c.h, objectFit: 'cover', boxShadow: '0 30px 60px rgba(0,0,0,0.5)', transform: `translate(${c.x}px, ${c.y + (1 - p) * -900}px) rotate(${c.r + (1 - p) * 40}deg) scale(${1 + (1 - p) * 0.4})`}} />
+          );
+        })}
+      </AbsoluteFill>
+    </Fill>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
+// 11 · La habitación 3D: travelling lento, la lámpara-tomate se enciende en el golpe y entran pegatinas.
+// ─────────────────────────────────────────────────────────────
+export const RoomShot: React.FC = () => {
+  const f = useCurrentFrame();
+  const sticker = (src: string, at: number, x: number, y: number, r: number, w: number) => {
+    const p = ramp(f, at, at + 6, Easing.bezier(0.34, 1.6, 0.64, 1));
+    if (f < at) return null;
+    return <img src={asset(src)} style={{position: 'absolute', left: x, top: y, width: w, transform: `rotate(${r}deg) scale(${interpolate(p, [0, 1], [1.6, 1])})`, opacity: Math.min(1, p * 2), boxShadow: '0 20px 40px rgba(0,0,0,0.4)'}} />;
+  };
+  return (
+    <Fill bg="#140d09">
+      <Room3D dur={75} lampAt={15} />
+      <div style={{position: 'absolute', left: 90, top: 70, fontFamily: JACQUARD, fontSize: 170, color: '#ffd9b8', opacity: ramp(f, 15, 18, Easing.linear)}}>the room</div>
+      {sticker('room/now-playing-sticker.webp', 45, 1240, 690, -7, 520)}
+      {sticker('room/film-poster.webp', 55, 120, 520, 6, 300)}
+      <Grain opacity={0.12} />
+    </Fill>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
+// 13 · Buscador: se escribe "mario diz", salen sugerencias, el cursor rojo de la web va a dizmar.xyz y hace clic.
+// Es un buscador genérico (sin marca), sobre el cielo desenfocado.
+// ─────────────────────────────────────────────────────────────
+const QUERY = 'mario diz';
+const SUGGEST = ['dizmar.xyz', 'mario diz portfolio', 'mario diz tomato'];
+export const Search: React.FC = () => {
+  const f = useCurrentFrame();
+  const enter = ramp(f, 0, 8, snap);
+  const typed = QUERY.slice(0, Math.max(0, Math.min(QUERY.length, Math.floor((f - 6) / 2.6))));
+  const drop = ramp(f, 32, 40);
+  // Cursor: entra desde abajo a la derecha y se para sobre la primera sugerencia; crece al pasar por encima (como en la web)
+  const move = ramp(f, 40, 58, Easing.bezier(0.6, 0, 0.2, 1));
+  const cx = interpolate(move, [0, 1], [1700, 640]);
+  const cy = interpolate(move, [0, 1], [1100, 456]);
+  const hover = ramp(f, 56, 62, Easing.bezier(0.34, 1.8, 0.64, 1));
+  const click = f >= 72 ? ramp(f, 72, 76) : 0;
+  const cursorScale = 1 + hover * 1.5 - click * 1.1 + (f >= 76 ? ramp(f, 76, 80) * 1.1 : 0);
+  const zoom = interpolate(f, [78, 90], [1, 6], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.in(Easing.cubic)});
+  return (
+    <Fill bg={C.sky}>
+      <AbsoluteFill style={{filter: 'blur(14px)', transform: 'scale(1.1)'}}>
+        <img src={asset('images/sky.webp')} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+      </AbsoluteFill>
+      <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', transform: `scale(${zoom})`, transformOrigin: '640px 456px'}}>
+        <div style={{width: 1200, transform: `translateY(${(1 - enter) * 300}px) scale(${0.9 + enter * 0.1})`, opacity: enter, marginTop: -60}}>
+          <div style={{background: C.white, borderRadius: drop > 0.01 ? '48px 48px 0 0' : 999, height: 120, display: 'flex', alignItems: 'center', gap: 32, padding: '0 50px', fontSize: 54, color: C.ink, boxShadow: '0 30px 80px rgba(0,0,0,0.18)'}}>
+            <svg width={50} height={50} viewBox="0 0 24 24"><circle cx={10} cy={10} r={7} stroke="#888" strokeWidth={2.4} fill="none" /><path d="M15 15 L21 21" stroke="#888" strokeWidth={2.4} strokeLinecap="round" /></svg>
+            <span>{typed}<span style={{color: C.red, opacity: Math.floor(f / 4) % 2 === 0 && f < 40 ? 1 : 0}}>|</span></span>
+          </div>
+          <div style={{background: C.white, borderRadius: '0 0 48px 48px', overflow: 'hidden', height: drop * 330, boxShadow: '0 30px 80px rgba(0,0,0,0.18)'}}>
+            {SUGGEST.map((t, i) => (
+              <div key={t} style={{height: 104, display: 'flex', alignItems: 'center', gap: 32, padding: '0 50px', fontSize: 46, color: i === 0 ? C.ink : '#666', background: i === 0 && hover > 0.2 ? '#f3f1ec' : 'transparent', borderTop: '1px solid #eee'}}>
+                {i === 0 ? <img src={asset('images/favicon-192.png')} style={{width: 48, height: 48, borderRadius: 8}} /> : <span style={{width: 48, textAlign: 'center', color: '#aaa'}}>↗</span>}
+                <span style={{fontWeight: i === 0 ? 700 : 400}}>{t}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </AbsoluteFill>
+      {/* Cursor rojo de la web: punto de 24 px (aquí escalado a 1080p) */}
+      <div style={{position: 'absolute', left: cx - 22, top: cy - 22, width: 44, height: 44, borderRadius: 99, background: C.red, transform: `scale(${cursorScale})`, opacity: f > 84 ? 0 : 1}} />
+      <AbsoluteFill style={{background: C.white, opacity: ramp(f, 84, 90, Easing.linear)}} />
+    </Fill>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
+// 14 · Final: la portada. Cielo, el tomate 3D girando con su anillo y la dirección. Sin "now live": el buscador ya lo cuenta.
+// ─────────────────────────────────────────────────────────────
+export const Home: React.FC = () => {
+  const f = useCurrentFrame();
+  const flash = 1 - ramp(f, 0, 10, Easing.linear);
+  const pop = ramp(f, 0, 14, Easing.bezier(0.34, 1.5, 0.64, 1));
+  const spin = f / 70 + (1 - ramp(f, 0, 24)) * -1.2;
+  const url = 'dizmar.xyz';
+  const shown = Math.floor(interpolate(f, [20, 40], [0, url.length], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}));
+  return (
+    <Fill bg={C.sky}>
+      <Push src={asset('images/sky.webp')} frame={f} dur={105} from={1.25} to={1.05} pos="60% 40%" />
+      <AbsoluteFill style={{transform: `scale(${0.4 + pop * 0.6})`}}>
+        <Tomato3D spin={spin} scale={3.6} y={0.55} />
+      </AbsoluteFill>
+      <div style={{position: 'absolute', top: 780, display: 'flex', fontSize: 150, fontWeight: 700, letterSpacing: '-0.05em', color: C.white}}>
+        {[...url].map((ch, i) => (
+          <span key={i} style={{display: 'inline-block', transform: `translateY(${i < shown ? 0 : 60}px)`, opacity: i < shown ? 1 : 0}}>{ch}</span>
+        ))}
+      </div>
+      <Grain opacity={0.14} />
+      <AbsoluteFill style={{background: C.white, opacity: flash}} />
+    </Fill>
+  );
+};
