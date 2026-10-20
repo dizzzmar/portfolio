@@ -32,9 +32,10 @@
   {"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://www.dizmar.xyz/#mario", "name": "Mario Diz", "alternateName": "dizmar", "jobTitle": "Art director and visual designer", "url": "https://www.dizmar.xyz/", "image": "https://www.dizmar.xyz/assets/images/og-image.jpg", "address": {"@type": "PostalAddress", "addressLocality": "Madrid", "addressCountry": "ES"}, "knowsAbout": ["Art direction", "Visual design", "Key visuals", "Product imagery", "Audiovisual"]}, {"@type": "WebSite", "@id": "https://www.dizmar.xyz/#website", "name": "dizmar", "alternateName": "Mario Diz portfolio", "url": "https://www.dizmar.xyz/", "author": {"@id": "https://www.dizmar.xyz/#mario"}, "inLanguage": "en"}]}
   </script>
   <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-  <link rel="stylesheet" href="/css/home.css?v=20261020h">
+  <link rel="stylesheet" href="/css/home.css?v=20261020m">
 <link rel="stylesheet" href="/css/footer.css?v=20261020a">
   <link rel="stylesheet" href="/css/typography.css?v=20261019a">
+<link rel="stylesheet" href="/css/transitions.css?v=20261020a">
   <!-- Al pasar el ratón por una card, Chrome prepara la página del proyecto por adelantado:
        se abre al instante y la animación de apertura siempre llega a tiempo -->
   <script type="importmap">
@@ -45,9 +46,11 @@
       }
     }
   </script>
+<script src="/js/transitions.js?v=20261020a"></script>
 </head>
 <body class="intro-lock" data-intro="work"> <!-- El tomate gira en la landing; solo sube al pulsar Work. -->
-  <div class="sky" aria-hidden="true"></div>
+  <div class="sky" aria-hidden="true"><div class="sky-sharp"></div><div class="sky-soft"></div></div>
+  <div class="fade" aria-hidden="true"></div> <!-- el fundido a blanco al llegar a Work (js/home-intro.js) -->
   <div class="grain" aria-hidden="true"></div> <!-- grano encima del cielo (se queda nítido aunque el cielo se emborrone) -->
   <!-- Lienzo del tomate 3D (lo dibuja /js/home-tomato.js) -->
   <canvas id="scene" aria-hidden="true"></canvas>
@@ -148,8 +151,8 @@
 
 
   <!-- Scripts: texto "Creative ___" y vídeos · tomate 3D -->
-  <script src="/js/home-intro.js?v=20261020f" defer></script>
-  <script src="/js/home-work.js?v=20261020b" defer></script>
+  <script src="/js/home-intro.js?v=20261020m" defer></script>
+  <script src="/js/home-work.js?v=20261020m" defer></script>
   <script type="module" src="/js/home-tomato.js?v=20261019e"></script>
 </body>
 </html>

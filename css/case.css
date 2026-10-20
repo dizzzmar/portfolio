@@ -188,6 +188,7 @@ img, video { display: block; }
 /* ---------- Salida: al volver a la lista, la galería se va hacia la derecha, el nombre sube y el resto se apaga (js/case.js) ---------- */
 .is-leaving .p-track { animation: leave-track .3s cubic-bezier(.4, 0, 1, 1) both; }
 .is-leaving .case-head { animation: leave-up .3s cubic-bezier(.4, 0, 1, 1) both; }
-.is-leaving .case-info, .is-leaving .case-embed, .is-leaving .case-credit, .is-leaving @keyframes leave-track { to { transform: translateX(8vw); opacity: 0; } }
+.is-leaving .case-info, .is-leaving .case-embed, .is-leaving .case-credit, .is-leaving .site-foot { animation: leave-fade .25s ease-in both; }
+@keyframes leave-track { to { transform: translateX(8vw); opacity: 0; } }
 @keyframes leave-up { to { transform: translateY(-14px); opacity: 0; } }
 @keyframes leave-fade { to { opacity: 0; } }

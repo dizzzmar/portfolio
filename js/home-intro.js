@@ -195,13 +195,16 @@ function createWordCycler(word, { visible = true } = {}) {
   cycler.watch(word.parentElement, () => started);
 })();
 
-// ---------- Al bajar: el cielo se acerca (las nubes crecen), se funde en blanco y "Creative ___" sube y se difumina ----------
+// ---------- Al bajar: el cielo se acerca (las nubes crecen y se desenfocan), se funde en blanco y "Creative ___" sube ----------
 // Todo sigue el scroll hasta llegar a Work. Al subir, se deshace exactamente al revés.
 (() => {
   const line = document.querySelector('.intro-line');
   if (!line) return;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const work = document.getElementById('work');
+  const sky = document.querySelector('.sky');
+  const skySoft = document.querySelector('.sky-soft');
+  const fadeEl = document.querySelector('.fade');
   const clamp01 = (v) => Math.min(1, Math.max(0, v));
   const smooth = (v) => v * v * (3 - 2 * v);
   let queued = false;
@@ -213,11 +216,12 @@ function createWordCycler(word, { visible = true } = {}) {
     const q = clamp01(y / Math.max(1, work ? work.offsetTop : innerHeight)); // 0 en la portada, 1 al llegar a Work
     const zoom = still ? 0 : smooth(clamp01(q / 0.85));  // el cielo se acerca; las nubes se agrandan y se difuminan
     const fade = smooth(clamp01((q - 0.5) / 0.45));       // al atravesarlas, todo se funde en blanco
-    document.body.style.setProperty('--zoom', zoom.toFixed(3));
-    document.body.style.setProperty('--fade', fade.toFixed(3));
+    // Se escribe directamente en cada elemento (nada de variables CSS en body: se heredan y recalcularían toda la página)
+    sky.style.scale = (1 + zoom * 1.5).toFixed(3);
+    skySoft.style.opacity = zoom.toFixed(3);
+    fadeEl.style.opacity = fade.toFixed(3);
     document.body.classList.toggle('light-on', fade > 0.5); // el menú y los textos pasan a oscuro cuando el fondo ya es claro
-    // El "Creative ___" sube y se difumina según avanza el scroll
-    if (!still) line.style.setProperty('--blur', (q * 10).toFixed(1) + 'px');
+    // El "Creative ___" sube según avanza el scroll
     line.style.translate = still ? '' : `0 ${(-q * 48).toFixed(1)}px`;
     // Al llegar a Work, el "Creative ___" del centro desaparece: la palabra sigue en el título fijo de la izquierda
     const workOn = !!work && work.offsetTop - y < innerHeight * 0.5;

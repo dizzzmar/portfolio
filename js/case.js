@@ -192,7 +192,8 @@
     e.preventDefault();
     // La portada sabe de qué proyecto llegamos (js/home-work.js) para encender su fila al volver
     try { sessionStorage.setItem('dizmar-from', location.pathname); } catch (err) { /* storage blocked */ }
-    if (reduced) { history.back(); return; }
+    // Con View Transitions (css/transitions.css) la vuelta se anima sola: la primera tarjeta se encoge hasta su miniatura. Sin ellas, se despide aquí
+    if (reduced || 'onpageswap' in window) { history.back(); return; }
     // Antes de volver, el proyecto se despide (css/case.css, clase is-leaving) y después se vuelve atrás
     document.body.classList.add('is-leaving');
     setTimeout(() => history.back(), 300);
