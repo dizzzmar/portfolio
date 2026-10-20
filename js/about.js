@@ -17,3 +17,48 @@
   }, { rootMargin: '0px 0px -8% 0px' });
   items.forEach((el) => io.observe(el));
 })();
+
+// FOTO HOLOGRÁFICA · como una carta coleccionable: con ratón, la foto se inclina hacia el cursor, el arcoíris se desplaza
+// y un reflejo de luz lo sigue; al salir vuelve a su sitio. En pantallas táctiles se mueve sola, despacio, mientras se ve.
+// Con "reducir movimiento" no se hace nada (la foto se ve normal). Los estilos están en css/about.css (.holo).
+(() => {
+  const card = document.querySelector('[data-holo]');
+  if (!card || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const inner = card.querySelector('.holo-card');
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  let x = 0.5, y = 0.5, o = 0, tx = 0.5, ty = 0.5, to = 0, raf = 0, visible = false;
+  const paint = (t) => {
+    raf = 0;
+    if (!fine) { // táctil: un vaivén lento, como si la carta se moviera en la mano
+      const s = t / 1000;
+      tx = 0.5 + Math.sin(s * 0.7) * 0.3;
+      ty = 0.5 + Math.sin(s * 0.9 + 1) * 0.25;
+      to = 0.7;
+    }
+    x += (tx - x) * 0.12; y += (ty - y) * 0.12; o += (to - o) * 0.12;
+    inner.style.setProperty('--rx', ((0.5 - y) * 16).toFixed(2) + 'deg');
+    inner.style.setProperty('--ry', ((x - 0.5) * 20).toFixed(2) + 'deg');
+    inner.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+    inner.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+    inner.style.setProperty('--gx', (x * 100).toFixed(1) + '%');
+    inner.style.setProperty('--gy', (y * 100).toFixed(1) + '%');
+    inner.style.setProperty('--o', o.toFixed(3));
+    inner.style.setProperty('--sx', ((0.5 - x) * 20).toFixed(1) + 'px');
+    inner.style.setProperty('--sy', ((0.5 - y) * 16).toFixed(1) + 'px');
+    const moving = Math.abs(tx - x) + Math.abs(ty - y) + Math.abs(to - o) > 0.002;
+    if ((fine && moving) || (!fine && visible)) raf = requestAnimationFrame(paint);
+  };
+  const wake = () => { if (!raf) raf = requestAnimationFrame(paint); };
+  if (fine) {
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      tx = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      ty = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+      to = 1;
+      wake();
+    });
+    card.addEventListener('pointerleave', () => { tx = 0.5; ty = 0.5; to = 0; wake(); });
+  } else {
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(card);
+  }
+})();

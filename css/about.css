@@ -99,8 +99,35 @@ main, .close { padding: 0 var(--margin); }
   grid-area: portrait;
   width: 100%;
   aspect-ratio: 4 / 5;
-  object-fit: cover;
-  object-position: 50% 25%; /* la cara arriba */
+}
+
+/* Foto holográfica, como una carta coleccionable: la carta se inclina en 3D (--rx, --ry), un arcoíris tipo lámina
+   metalizada se desplaza con el ángulo (--mx, --my) y un reflejo de luz sigue al cursor (--gx, --gy). --o es la intensidad.
+   Las variables las mueve js/about.js; sin él (o con "reducir movimiento") la foto se ve normal. */
+.holo { perspective: 900px; }
+.holo-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  box-shadow: var(--sx, 0px) calc(18px + var(--sy, 0px)) 40px -18px rgba(70, 10, 0, .55); /* la sombra se mueve con la inclinación */
+  will-change: transform;
+}
+.holo-card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; } /* la cara arriba */
+.holo-shine, .holo-glare { position: absolute; inset: 0; pointer-events: none; }
+.holo-shine {
+  background: repeating-linear-gradient(115deg, #ff7773 0%, #ffed5f 6%, #a8ff5f 12%, #83fff7 18%, #7894ff 24%, #d875ff 30%, #ff7773 36%);
+  background-size: 400% 400%;
+  background-position: var(--mx, 50%) var(--my, 50%);
+  mix-blend-mode: color-dodge;
+  filter: brightness(.7) contrast(1.4) saturate(1.2);
+  opacity: calc(var(--o, 0) * .38); /* suave: que la cara no cambie demasiado de color */
+}
+.holo-glare {
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, .8) 0%, rgba(255, 255, 255, .2) 25%, transparent 55%);
+  mix-blend-mode: overlay;
+  opacity: var(--o, 0);
 }
 .portrait-placeholder {
   display: flex;
