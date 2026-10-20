@@ -60,8 +60,10 @@
   <div class="case-first">
     <section class="p-gallery" aria-label="Project gallery">
       <div class="p-track" tabindex="0" role="region" aria-label="Project gallery, scroll sideways">
-        <!-- Avance en bucle, sin sonido. FALTA la película completa: cuando esté subida a assets/projects/schweppes/film.mp4 (con su imagen film-poster.webp),
-             añade aquí delante la tarjeta de película y el enlace "Go to film" (ver templates/project-template/index.html, ejemplo A) -->
+        <!-- La película completa, con la barra de reproducción propia (js/case.js). No arranca sola: se pulsa Play (con sonido).
+             Archivo: assets/projects/schweppes/film.mp4 (20 s, 1080p) y su imagen film-poster.webp -->
+        <figure class="p-card" style="--ar: 16 / 9" id="film"><video src="/assets/projects/schweppes/film.mp4" poster="/assets/projects/schweppes/film-poster.webp" width="1920" height="1080" controls data-player playsinline preload="metadata" aria-label="Schweppes — film"></video></figure>
+        <!-- Avance en bucle, sin sonido -->
         <figure class="p-card" style="--ar: 16 / 9"><video src="/assets/projects/schweppes/thumb.mp4" poster="/assets/projects/schweppes/thumb.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Schweppes film preview"></video></figure>
         <figure class="p-card" style="--ar: 16 / 9"><img src="/assets/projects/schweppes/frame-1-800.webp" srcset="/assets/projects/schweppes/frame-1-800.webp 800w, /assets/projects/schweppes/frame-1-1600.webp 1600w" sizes="(max-width: 760px) 90vw, 1000px" width="1600" height="900" alt="Close-up of a leopard paw dressed as a gentleman holding a Schweppes tonic water bottle" loading="lazy" decoding="async"></figure>
         <figure class="p-card" style="--ar: 16 / 9"><img src="/assets/projects/schweppes/frame-2-800.webp" srcset="/assets/projects/schweppes/frame-2-800.webp 800w, /assets/projects/schweppes/frame-2-1600.webp 1600w" sizes="(max-width: 760px) 90vw, 1000px" width="1600" height="900" alt="A leopard in a tweed three-piece suit holding a Schweppes bottle at a black-tie party" loading="lazy" decoding="async"></figure>
@@ -76,6 +78,7 @@
       <div class="case-text">
         <p>A film made 100% with AI, where every frame was finished with professional retouching before being animated. I helped lead the image side: keeping the look consistent from shot to shot, fixing textures that AI tends to get wrong, and polishing each frame by hand. We also integrated the product into the scenes so it looks shot, not pasted in.</p>
       </div>
+      <a class="case-film-link" href="#film" data-go-film>Go to film →</a>
     </section>
   </div>
 </main>
