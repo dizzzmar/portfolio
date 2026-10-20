@@ -4,7 +4,8 @@
   "scripts": {
     "studio": "remotion studio src/index.ts",
     "render": "remotion render src/index.ts Trailer out/dizmar-launch-trailer.mp4 --gl=angle",
-    "music": "python3 music/make_music.py"
+    "music": "python3 music/make_music.py && python3 music/make_music.py 1.1",
+    "render:fast": "remotion render src/index.ts TrailerFast out/dizmar-launch-trailer-fast.mp4 --gl=angle"
   },
   "dependencies": {
     "@fontsource/jacquard-24": "^5.3.0",

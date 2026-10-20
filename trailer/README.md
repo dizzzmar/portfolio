@@ -10,9 +10,10 @@ No forma parte de la web: aquí solo está el código fuente del vídeo.
 ```bash
 cd trailer
 npm install
-npm run music     # crea public/music.wav (música original sintetizada, 120 BPM; necesita python3 + numpy)
+npm run music     # crea public/music.wav y public/music-fast.wav (música original sintetizada, 120 BPM; necesita python3 + numpy)
 npm run studio    # vista previa en el navegador, con línea de tiempo
 npm run render    # crea out/dizmar-launch-trailer.mp4
+npm run render:fast  # versión un 10 % más rápida (≈ 27 s, 33 fps, 132 BPM)
 ```
 
 ## Dónde se cambia cada cosa

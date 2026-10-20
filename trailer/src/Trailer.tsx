@@ -28,7 +28,7 @@ const SHOTS: [number, number, React.FC][] = [
 
 export const TOTAL_FRAMES = 900;
 
-export const Trailer: React.FC = () => {
+export const Trailer: React.FC<{music?: string}> = ({music = 'music.wav'}) => {
   // Espera a que la letra Jacquard esté cargada antes de pintar ningún fotograma.
   const [handle] = useState(() => delayRender('Cargando Jacquard 24'));
   useEffect(() => {
@@ -41,7 +41,7 @@ export const Trailer: React.FC = () => {
           <Scene />
         </Sequence>
       ))}
-      <Audio src={staticFile('music.wav')} />
+      <Audio src={staticFile(music)} />
     </AbsoluteFill>
   );
 };

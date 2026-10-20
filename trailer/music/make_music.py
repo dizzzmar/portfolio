@@ -1,12 +1,15 @@
 # Música original del tráiler, sintetizada desde cero (sin samples): 120 BPM, La menor.
 # Genera public/music.wav. Solo necesita numpy.  Uso: python3 music/make_music.py
-import os, wave
+# Versión rápida: python3 music/make_music.py 1.1  → public/music-fast.wav (todo un 10 % más rápido, 132 BPM)
+import os, sys, wave
 import numpy as np
 
 SR = 44100
-BPM = 120
-BEAT = 60 / BPM            # 0,5 s = 15 fotogramas a 30 fps
-TOTAL = 30.0               # segundos (lo mismo que el vídeo)
+SPEED = float(sys.argv[1]) if len(sys.argv) > 1 else 1.0
+FPS = 30 * SPEED           # el vídeo rápido se renderiza a 33 fps: mismas escenas, 10 % más rápido
+BPM = 120 * SPEED
+BEAT = 60 / BPM            # 1 pulso = 15 fotogramas del vídeo
+TOTAL = 900 / FPS          # segundos (lo mismo que el vídeo)
 N = int(SR * TOTAL)
 rng = np.random.default_rng(7)
 L = np.zeros(N); R = np.zeros(N)
@@ -102,10 +105,10 @@ def pad(notes, sec):
             s += saw(note(n + d), sec)
     env = np.minimum(1, x / 1.2) * np.minimum(1, (sec - x) / 0.3)
     return lowpass(s / (len(notes) * 3) * env, 900) * 0.6
-place(pad((57, 60, 64), 3.0), 0.0, 0.55)
+place(pad((57, 60, 64), 3.0 / SPEED), 0.0, 0.55)
 for i in range(22):
-    place(blip(84 + int(rng.integers(0, 24)), 0.04), 0.1 + i * 0.12 + rng.uniform(0, 0.05), 0.25, rng.uniform(-0.6, 0.6))
-place(riser(1.5), 1.5, 0.6)
+    place(blip(84 + int(rng.integers(0, 24)), 0.04), (0.1 + i * 0.12 + rng.uniform(0, 0.05)) / SPEED, 0.25, rng.uniform(-0.6, 0.6))
+place(riser(1.5 / SPEED), 1.5 / SPEED, 0.6)
 place(impact(1.8), DRUMS_START * BEAT, 0.9)
 place(stab((57, 60, 64, 69), 0.6, 4000), DRUMS_START * BEAT, 0.6)
 
@@ -132,17 +135,17 @@ for b in range(DRUMS_START, OUTRO):
 place(riser(BEAT * 2), BREAK_A * BEAT, 0.7)
 place(impact(1.5), BREAK_B * BEAT, 0.8)
 # Lámpara de la habitación encendiéndose (19 s): dos chispazos
-place(blip(96, 0.06), 570 / 30, 0.8); place(blip(91, 0.08), 573 / 30, 0.6)
+place(blip(96, 0.06), 570 / FPS, 0.8); place(blip(91, 0.08), 573 / FPS, 0.6)
 # Buscador (23,5–26,5 s): sin batería, solo charles, tecleo, sugerencias y clic
 for b in range(OUTRO, FINAL):
     for k in (1, 3):
         place(hat(), b * BEAT + k * BEAT / 4, 0.4, 0.3 if k == 1 else -0.3)
 for i in range(9):  # "mario diz": una tecla cada 2,6 fotogramas
-    at = (705 + 6 + i * 2.6) / 30
+    at = (705 + 6 + i * 2.6) / FPS
     place(hat(), at, 0.55, 0.2 * (-1) ** i); place(blip(100 + (i % 3), 0.03), at, 0.7)
 for i, n in enumerate((76, 79, 83)):  # aparecen las sugerencias
-    place(blip(n, 0.15), (737 + i * 2) / 30, 0.6)
-place(blip(88, 0.05), 777 / 30, 1.0); place(blip(76, 0.05), 777 / 30, 1.0)  # clic
+    place(blip(n, 0.15), (737 + i * 2) / FPS, 0.6)
+place(blip(88, 0.05), 777 / FPS, 1.0); place(blip(76, 0.05), 777 / FPS, 1.0)  # clic
 place(riser(BEAT * 4), (FINAL - 4) * BEAT, 0.6)
 # Final: golpe grande y acorde largo con el tomate
 place(impact(3.0), FINAL * BEAT, 1.0)
@@ -159,7 +162,7 @@ fade = np.ones(N); fl = int(0.6 * SR); fade[-fl:] = np.linspace(1, 0, fl)
 mix = np.stack([L, R], 1) * fade[:, None]
 mix = np.tanh(mix / np.max(np.abs(mix)) * 1.6) * 0.89
 
-out = os.path.join(os.path.dirname(__file__), '..', 'public', 'music.wav')
+out = os.path.join(os.path.dirname(__file__), '..', 'public', 'music.wav' if SPEED == 1 else 'music-fast.wav')
 os.makedirs(os.path.dirname(out), exist_ok=True)
 with wave.open(out, 'wb') as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
