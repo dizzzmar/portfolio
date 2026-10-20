@@ -1,128 +1,124 @@
 <!doctype html>
 <!--
-  ============================================================================
-  PLANTILLA DE PROYECTO  —  duplícame para crear un proyecto nuevo
-  ============================================================================
-
-  CÓMO CREAR UN PROYECTO NUEVO (5 pasos)
-    1. Duplica la carpeta  templates/project-template  y muévela a  project/
-       con el nombre del proyecto en minúsculas y con guiones:
-         project/nombre-del-proyecto/index.html
-       (la URL será  www.dizmar.xyz/project/nombre-del-proyecto/ )
-    2. Crea la carpeta de imágenes  assets/projects/nombre-del-proyecto/
-       y sube ahí tus imágenes (mejor .webp; 1600 px de ancho como máximo).
-    3. En este archivo, busca los textos que empiezan por  EDITA:  y cámbialos.
-       Con Ctrl+F (o Cmd+F) buscando "EDITA" los encuentras todos.
-    4. Añade una card en la home (index.html → "LISTA DE PROYECTOS"); hay un
-       trozo listo para copiar en  templates/project-card.html.
-    5. Cuando esté listo para publicarse, BORRA la línea  <meta name="robots" ...>
-       de aquí abajo (mientras esté, Google no indexa la página).
-
-  El diseño (tipografías, márgenes, colores) está en /css/project.css y es
-  común a todos los proyectos: no hace falta tocarlo.
-  ============================================================================
+  PLANTILLA DE PROYECTO  ·  copia esta carpeta a  project/<nombre-del-proyecto>/  (no es una página de la web).
+  Pasos (README, "Crear un proyecto nuevo"):
+   1. Cambia  nombre-del-proyecto  por el nombre real, sin espacios ni acentos (en minúsculas y con guiones), en TODO este archivo.
+   2. Sube las imágenes y vídeos a  assets/projects/<nombre-del-proyecto>/  (imágenes en .webp, vídeos en .mp4).
+   3. Edita lo marcado con  EDITA:  y borra los ejemplos de galería que no uses.
+   4. Cuando esté listo, borra la línea  <meta name="robots" content="noindex">  y añade la página a sitemap.xml.
+  Estilos comunes: /css/case.css (el mismo diseño que Lexus y Soap & Glory). Comportamiento: /js/case.js.
 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex"> <!-- BORRA esta línea cuando el proyecto esté listo para aparecer en buscadores -->
 
 <!-- EDITA: título de la pestaña del navegador y descripción para buscadores -->
-<title>MARCA — Nombre del proyecto · Mario Diz</title>
-<meta name="description" content="EDITA: una frase corta sobre el proyecto. Selected work by Mario Diz.">
-
-<!-- BORRA esta línea cuando el proyecto esté listo para publicarse -->
-<meta name="robots" content="noindex">
-
+<title>Nombre del proyecto · Mario Diz</title>
+<meta name="description" content="EDITA: una frase sobre el proyecto, p. ej. «Nombre del proyecto, a key visual project (2026) by Mario Diz, art director and visual designer based in Madrid.»">
+<link rel="canonical" href="https://www.dizmar.xyz/project/nombre-del-proyecto/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="dizmar — Mario Diz">
+<meta property="og:title" content="Nombre del proyecto · Mario Diz">
+<meta property="og:description" content="EDITA: la misma frase de arriba">
+<meta property="og:url" content="https://www.dizmar.xyz/project/nombre-del-proyecto/">
+<meta property="og:image" content="https://www.dizmar.xyz/assets/projects/nombre-del-proyecto/imagen-1-800.webp"> <!-- EDITA: la imagen que se ve al compartir el enlace -->
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
-<link rel="stylesheet" href="/css/project.css?v=20261019f">
+<link rel="stylesheet" href="/css/case.css?v=20261020b">
+<link rel="stylesheet" href="/css/nav-logo.css?v=20261020a">
 <link rel="stylesheet" href="/css/typography.css?v=20261019a">
-<!-- Descarga la home por adelantado para que al volver la animación de cierre llegue a tiempo -->
-<script type="speculationrules">{ "prefetch": [{ "urls": ["/"] }] }</script>
+<script>document.documentElement.classList.add('js')</script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
 </head>
-<body>
+<body id="top">
+<!-- Barra: el tomate vuelve a la portada; los enlaces, como en el resto de la web (no hace falta tocar nada) -->
+<a class="case-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" width="44" height="47" alt=""></a>
+<nav class="case-nav" aria-label="Main">
+  <ul>
+    <li><a href="/#work">Work</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/contact">Contact</a></li>
+    <li><a href="/room.html">Room</a></li>
+  </ul>
+</nav>
 
-<!-- Flecha "← Back" de arriba a la izquierda. EDITA: cambia ID-DE-LA-CARD por el id de la card en la home
-     (por ejemplo /#soap-and-glory) para que al cerrar vuelva justo a esa card. -->
-<a class="back-link" href="/#ID-DE-LA-CARD" aria-label="Back to all projects"><span aria-hidden="true">←</span> Back</a>
-
-<main class="project-page" id="top">
-
-<!-- ======================= 1. IMAGEN PRINCIPAL =======================
-     Aquí hay un CARRUSEL en pila: las imágenes se van pasando solas y se pueden arrastrar.
-     - Cada <figure class="stack-card"> es una imagen. Mínimo 3, puedes poner las que quieras.
-     - EDITA en cada una: src (ruta de la imagen), width/height (tamaño real en píxeles)
-       y alt (descripción corta de lo que se ve, para accesibilidad).
-     - EDITA view-transition-name: pon el nombre de la carpeta del proyecto, el mismo que en
-       la card de la home. Así la imagen de la card crece hasta aquí al abrir el proyecto.
-     - ¿Prefieres UNA sola imagen grande? Borra todo el <section class="stack"> y el
-       <script> del final de la página, y usa en su lugar:
-         <figure style="view-transition-name: NOMBRE-DEL-PROYECTO"><img class="project-image" src="/assets/projects/nombre/imagen-1.webp" width="1600" height="1600" alt="Descripción"></figure>
--->
-<section class="stack" id="stack" style="view-transition-name: NOMBRE-DEL-PROYECTO" aria-roledescription="carousel" aria-label="Project images">
-<div class="stack-deck" id="stack-deck">
-<figure class="stack-card"><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción de la imagen 1" decoding="async" draggable="false"></figure>
-<figure class="stack-card"><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción de la imagen 2" loading="lazy" decoding="async" draggable="false"></figure>
-<figure class="stack-card"><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción de la imagen 3" loading="lazy" decoding="async" draggable="false"></figure>
-</div>
-<!-- Botones ← → y contador (los activa el script; no los toques) -->
-<div class="stack-ui" hidden>
-<button type="button" class="stack-btn" data-dir="-1" aria-label="Previous image">←</button>
-<span class="stack-count" aria-live="polite"><b>1</b> / 3</span> <!-- EDITA: el "3" = número total de imágenes -->
-<button type="button" class="stack-btn" data-dir="1" aria-label="Next image">→</button>
-</div>
-</section>
-
-<!-- ======================= 2. CABECERA Y TEXTO ======================= -->
-<header class="project-intro">
-<p class="project-brand">Marca</p>                         <!-- EDITA: la marca / cliente (serif pequeño) -->
-<h1>Nombre del proyecto</h1>                               <!-- EDITA: nombre del proyecto (sans grande) -->
-<ul class="project-tags" aria-label="Project type">
-<li>Tipo de proyecto</li>                                  <!-- EDITA: etiqueta (Audiovisual, Key visuals…). Copia la línea para añadir más -->
-<li class="project-year">2025</li>                         <!-- EDITA: año (o borra esta línea) -->
-</ul>
-<p class="project-description">EDITA: describe el proyecto en dos o tres frases: qué era el encargo, qué hiciste y con quién.</p>
-</header>
-
-<!-- ======================= 3. GALERÍA =======================
-     Imágenes que van debajo del texto, una detrás de otra.
-     Hay dos tipos de bloque; copia y pega los que necesites, en el orden que quieras:
-       A) una imagen a ancho completo:  <figure> … </figure>
-       B) dos imágenes lado a lado:     <div class="image-pair"> <figure>…</figure> <figure>…</figure> </div>
-     Borra este bloque entero si el proyecto no tiene galería.
--->
-<section class="project-gallery" aria-label="Project images">
-
-<!-- A) Imagen a ancho completo -->
-<figure><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción" loading="lazy" decoding="async"></figure>
-
-<!-- B) Dos imágenes lado a lado -->
-<div class="image-pair">
-<figure><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción" loading="lazy" decoding="async"></figure>
-<figure><img class="project-image" src="/assets/images/placeholder.svg" width="1600" height="1600" alt="EDITA: descripción" loading="lazy" decoding="async"></figure>
+<div class="case-head">
+  <!-- EDITA: el nombre del proyecto (dos veces: el texto que se ve y el que leen los lectores de pantalla).
+       Es el botón de volver: al pasar el ratón se mezcla y pasa a "Back to projects" (js/case.js) -->
+  <h1 class="case-name"><a class="case-back" href="/#work"><span class="cb-text" aria-hidden="true">Nombre del proyecto</span><span class="sr-only">Nombre del proyecto — back to projects</span></a></h1>
+  <!-- En pantallas táctiles no hay "pasar por encima": se ve siempre un enlace pequeño (no hace falta tocarlo) -->
+  <a class="case-back case-back-touch" href="/#work">← Back to projects</a>
+  <p class="case-meta date">2026</p>                 <!-- EDITA: año -->
+  <p class="case-meta client">Cliente</p>            <!-- EDITA: cliente o marca -->
 </div>
 
+<main>
+  <!-- 1. Primera pantalla: galería horizontal (esquinas rectas) y, debajo, los datos y la descripción.
+          Las tarjetas se recorren con la rueda, arrastrando o con las flechas. El orden aquí = el orden en la galería.
+          Cada tarjeta fija su forma con  --ar  (ancho / alto): 16 / 9 (horizontal), 1 / 1 (cuadrada), 9 / 16 (vertical)
+          o las medidas reales de la imagen (p. ej. 1600 / 1131). -->
+  <div class="case-first">
+    <section class="p-gallery" aria-label="Project gallery">
+      <div class="p-track" tabindex="0" role="region" aria-label="Project gallery, scroll sideways">
 
-<!-- C) (Opcional) Vídeo vertical 9:16 propio. Quita las marcas de comentario para usarlo.
-     Sube el mp4 y una imagen de portada (.webp) a assets/projects/nombre-del-proyecto/.
-<figure class="project-video">
-<video src="/assets/projects/nombre-del-proyecto/video.mp4" poster="/assets/projects/nombre-del-proyecto/video-poster.webp" width="360" height="640" controls autoplay muted loop playsinline preload="metadata" aria-label="EDITA: título del vídeo"></video>
-</figure>
--->
+        <!-- EJEMPLO A · película completa con la barra de reproducción propia (data-player). No arranca sola: se pulsa Play (con sonido).
+             El  id="film"  hace que funcione el enlace "Go to film" de más abajo. Pon la película SIEMPRE la primera.
+             Archivos: video.mp4 (mejor 1080p, que pese poco) y su imagen de portada video-poster.webp.
+             Si es un vídeo vertical, cambia  --ar  a  9 / 16  y las medidas width/height. -->
+        <figure class="p-card" style="--ar: 16 / 9" id="film"><video src="/assets/projects/nombre-del-proyecto/video.mp4" poster="/assets/projects/nombre-del-proyecto/video-poster.webp" width="1920" height="1080" controls data-player playsinline preload="metadata" aria-label="EDITA: Nombre del proyecto — film"></video></figure>
 
-</section>
+        <!-- EJEMPLO B · clip corto en bucle, sin sonido y que arranca solo (autoplay muted loop) -->
+        <figure class="p-card" style="--ar: 16 / 9"><video src="/assets/projects/nombre-del-proyecto/clip.mp4" poster="/assets/projects/nombre-del-proyecto/clip.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="EDITA: descripción del clip"></video></figure>
 
-<!-- ======================= 4. ENLACES DEL FINAL ======================= -->
-<!-- Aviso de propiedad: va en todos los proyectos. EDITA si el proyecto es de otra empresa -->
-<p class="project-credit">These projects belong to WPP Production / WPP Holding. I'm showing them here to share the part I played in the production and creative team.</p>
-<nav class="project-end" aria-label="Project navigation"><a href="/#work">← All projects</a><a href="#top">Back to top ↑</a></nav>
+        <!-- EJEMPLO C · imagen: sube dos tamaños (800 y 1600 px de ancho) y la web elige la que necesita.
+             "alt" = descripción de la imagen para quien no la ve (obligatorio). loading="lazy" en todas menos la primera visible. -->
+        <figure class="p-card" style="--ar: 1 / 1"><img src="/assets/projects/nombre-del-proyecto/imagen-1-800.webp" srcset="/assets/projects/nombre-del-proyecto/imagen-1-800.webp 800w, /assets/projects/nombre-del-proyecto/imagen-1-1600.webp 1600w" sizes="(max-width: 760px) 52vh, 580px" width="1600" height="1600" alt="EDITA: descripción de la imagen" loading="lazy" decoding="async"></figure>
+
+        <!-- EJEMPLO D · imagen vertical (9 / 16) -->
+        <figure class="p-card" style="--ar: 9 / 16"><img src="/assets/projects/nombre-del-proyecto/imagen-2-640.webp" srcset="/assets/projects/nombre-del-proyecto/imagen-2-640.webp 640w, /assets/projects/nombre-del-proyecto/imagen-2-1080.webp 1080w" sizes="(max-width: 760px) 52vw, 360px" width="1080" height="1920" alt="EDITA: descripción de la imagen" loading="lazy" decoding="async"></figure>
+
+      </div>
+      <div class="p-progress" aria-hidden="true"><i></i></div>
+    </section>
+
+    <!-- 2. Datos y texto del proyecto -->
+    <section class="case-info" aria-label="About the project">
+      <ul class="case-tags"><li>Tipo de proyecto</li><li>Cliente</li><li>2026</li></ul>   <!-- EDITA: etiquetas (copia o borra <li>) -->
+      <div class="case-text">
+        <p>EDITA: el texto del proyecto. Si hay más de un párrafo, copia la línea.</p>
+      </div>
+      <!-- "Go to film": desliza la galería hasta la película (la tarjeta con id="film"). Borra esta línea si no hay película -->
+      <a class="case-film-link" href="#film" data-go-film>Go to film →</a>
+    </section>
+  </div>
+
+  <!-- 3. (Opcional) La película en Instagram. Ojo: el post incrustado hace que el navegador del visitante se conecte a Instagram
+          (le llegan datos del visitante, como su IP). Si lo usas, quita los comentarios de este bloque Y del script de Instagram
+          del final, y revisa la página de privacidad. Si no, déjalo como está.
+  <section class="case-embed" id="instagram" aria-label="Nombre del proyecto on Instagram" data-reveal>
+    <h2>Film on Instagram</h2>
+    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/CODIGO-DEL-POST/" data-instgrm-version="14">
+      <a href="https://www.instagram.com/p/CODIGO-DEL-POST/">Watch Nombre del proyecto on Instagram</a>
+    </blockquote>
+  </section>
+  -->
 </main>
 
-<footer class="site-footer">Mario Diz, Madrid · <a href="/privacy/">Privacy</a></footer>
+<!-- Aviso de propiedad: va en todos los proyectos hechos en WPP (borra o cambia el texto si el proyecto es personal) -->
+<div class="case-credit"><p>These projects belong to WPP Production / WPP Holding. I'm showing them here to share the part I played in the production and creative team.</p></div>
+<footer class="case-foot"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
 
-<!-- Script del carrusel de la imagen principal (bórralo si quitas el carrusel) -->
-<script src="/js/project-stack.js?v=20261017b" defer></script>
-<!-- Si usas el vídeo (bloque C), deja también esta línea -->
-<script src="/js/project-video.js?v=20261017b" defer></script>
+<!-- Script de Instagram (solo si usas el bloque 3): <script async src="https://www.instagram.com/embed.js"></script> -->
+<script src="/js/case.js?v=20261020d" defer></script>
+<script type="module" src="/js/nav-tomato.js?v=20261020b"></script>
 </body>
 </html>

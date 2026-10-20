@@ -1,23 +1,31 @@
 <!--
-  CARD DE PROYECTO PARA LA HOME
-  Copia todo este bloque dentro de <div class="project-grid"> en index.html
-  (sección "LISTA DE PROYECTOS"). El orden en el código = el orden en la página.
+  FILA DE PROYECTO PARA LA LISTA "WORK" DE LA HOME
+  Copia este <li> dentro de <ol class="work-list"> en index.html (sección #work). El orden en el código = el orden en la página.
+  Para un proyecto nuevo, lo normal es SUSTITUIR una de las filas "Project title / Coming soon" (las que llevan class="work-item is-placeholder").
 
-  EDITA: marca, nombre, etiquetas, año, ruta de la imagen, id y enlace.
-  Tamaño recomendado de la imagen de la card: cuadrada o 16:9, 800 px de ancho (.webp).
+  EDITA: año, nombre, etiquetas, enlace y las 8 miniaturas.
+  REGLA: cada fila lleva SIEMPRE 8 miniaturas (class="wi-slot"), sin huecos entre ellas. Si no tienes 8 imágenes distintas, repite
+  una con otro encuadre (style="object-position: 0% 50%", "50% 50%" o "100% 50%") o usa un vídeo corto (ejemplo B).
+  Las miniaturas son verticales (9:16): una imagen horizontal o cuadrada se recorta; object-position elige qué parte se ve.
+  Tamaño recomendado de cada miniatura: 800 px de ancho (.webp), en assets/projects/<nombre-del-proyecto>/.
 -->
-<article class="project" id="nombre-del-proyecto">  <!-- EDITA: id (el mismo que pongas en la flecha "← Back" de la página del proyecto) -->
-  <a class="project-link" href="/project/nombre-del-proyecto/">  <!-- EDITA: ruta de la página del proyecto. Si aún no tiene página, borra este <a> y su </a> -->
-    <header class="project-caption">
-      <p class="project-brand">Marca</p>                         <!-- marca / cliente -->
-      <h2>Nombre del proyecto</h2>                               <!-- nombre del proyecto -->
-      <ul class="project-tags" aria-label="Project type">
-        <li>Tipo de proyecto</li>                                <!-- etiquetas; copia la línea para añadir más -->
-        <li class="project-year">2025</li>                       <!-- año (opcional) -->
-      </ul>
-    </header>
-    <div class="project-media" style="view-transition-name: nombre-del-proyecto">  <!-- EDITA: el mismo nombre que la imagen principal de la página del proyecto (para la animación al abrir/cerrar) -->
-      <img src="/assets/projects/nombre-del-proyecto/imagen-card.webp" width="800" height="800" loading="lazy" decoding="async" alt="EDITA: descripción de la imagen">
+<li class="work-item">
+  <a href="/project/nombre-del-proyecto/">                                                   <!-- EDITA: la página del proyecto -->
+    <span class="wi-date">2026</span>                                                        <!-- EDITA: año -->
+    <h3 class="wi-name"><span>Nombre del proyecto</span></h3>                                <!-- EDITA: nombre -->
+    <ul class="wi-tags"><li>Tipo de proyecto</li><li>Cliente</li></ul>                      <!-- EDITA: etiquetas (copia o borra <li>) -->
+    <div class="wi-strip" aria-hidden="true">
+      <!-- EJEMPLO A · imagen (si la imagen es horizontal, object-position elige la parte que se ve) -->
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-1-800.webp" style="object-position: 50% 50%" width="800" height="800" loading="lazy" alt=""></span>
+      <!-- EJEMPLO B · clip corto en bucle (solo se reproduce mientras se ve) -->
+      <span class="wi-slot"><video src="/assets/projects/nombre-del-proyecto/clip.mp4" poster="/assets/projects/nombre-del-proyecto/clip.webp" width="1280" height="720" muted loop playsinline preload="none" tabindex="-1"></video></span>
+      <!-- Hasta completar 8 miniaturas en total (copia las líneas de arriba y cambia las rutas) -->
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-2-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-3-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-4-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-5-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-6-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-7-800.webp" width="800" height="800" loading="lazy" alt=""></span>
     </div>
   </a>
-</article>
+</li>

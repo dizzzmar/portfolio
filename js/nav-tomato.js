@@ -34,7 +34,9 @@ async function start() {
   pivot.add(spinner);
   scene.add(pivot);
 
-  // Tamaño del tomate = el del logo; el lienzo es el doble, para que quepa al girar
+  // Tamaño del tomate = el del logo; el lienzo es el doble, para que quepa al girar.
+  // Se dibuja con la misma cámara que la portada (la de la pantalla entera, recortada a este cuadrado), así el tomate
+  // sale igual de grande y con la misma perspectiva que cuando se acopla al menú de la portada.
   const fit = () => {
     const size = Math.round(Math.min(logo.offsetWidth, logo.offsetHeight)) || 40;
     const box = size * 2;
@@ -44,7 +46,14 @@ async function start() {
       width: box + 'px', height: box + 'px', transform: 'translate(-50%, -50%)',
       pointerEvents: 'none', opacity: canvas.style.opacity || '0', transition: 'opacity .4s ease',
     });
-    pivot.scale.setScalar((size * VISIBLE) / box);
+    const width = innerWidth, height = innerHeight;
+    const r = canvas.getBoundingClientRect();
+    const upp = VISIBLE / height; // unidades del mundo por píxel
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    camera.setViewOffset(width, height, r.left, r.top, box, box);
+    pivot.scale.setScalar(size * upp);
+    pivot.position.set((r.left + box / 2 - width / 2) * upp, (height / 2 - (r.top + box / 2)) * upp, 0);
   };
 
   if (getComputedStyle(logo).position === 'static') logo.style.position = 'relative';
