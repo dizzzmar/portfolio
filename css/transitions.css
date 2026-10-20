@@ -1,0 +1,42 @@
+/* TRANSICIONES ENTRE PÁGINAS · View Transitions entre documentos (Chrome, Edge y Safari 18.2+; en Firefox la página cambia sin animación).
+   Lo que se busca: que se note de dónde viene cada cosa y adónde va, y nada más.
+   · La página nueva aparece con un fundido corto sobre la que se va (sin que ninguna se vea a medias).
+   · El tomate del menú se queda quieto: tiene el mismo tamaño y sitio en todas las páginas.
+   · De la lista Work a un proyecto, la miniatura de la fila se agranda hasta ser la primera tarjeta de la galería; con Atrás, al revés
+     (js/transitions.js le pone el nombre "work-hero" a esas dos piezas). Es lo único que "vuela".
+   Al llegar con transición, la página no repite sus animaciones de entrada (clase is-vt): sería mover dos veces lo mismo. */
+@view-transition { navigation: auto; }
+
+:root {
+  --vt-ease-out: cubic-bezier(0.23, 1, 0.32, 1);        /* entrar: sale rápido, frena suave */
+  --vt-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);    /* moverse por la pantalla: arranca y frena */
+}
+
+/* La página que se va se queda quieta debajo; la nueva se funde encima (sin "plus-lighter", que deja un hueco a medias) */
+::view-transition-old(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { animation: 280ms var(--vt-ease-out) both vt-in; mix-blend-mode: normal; }
+@keyframes vt-in { from { opacity: 0; } }
+
+/* El tomate del menú no se mueve entre páginas (mismo tamaño y sitio: css/nav-logo.css) */
+.nav-logo, .case-logo { view-transition-name: site-logo; }
+::view-transition-group(site-logo) { animation-duration: 0s; }
+::view-transition-old(site-logo) { display: none; }
+::view-transition-new(site-logo) { animation: none; }
+
+/* La pieza que vuela: la miniatura de la fila <-> la primera tarjeta de la galería. Cambia de forma (vertical <-> horizontal): se recorta, no se deforma */
+::view-transition-group(work-hero) { animation-duration: 420ms; animation-timing-function: var(--vt-ease-in-out); }
+::view-transition-image-pair(work-hero) { overflow: hidden; }
+::view-transition-old(work-hero), ::view-transition-new(work-hero) { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: normal; }
+
+/* Sin animaciones de entrada propias cuando la página llega con transición */
+html.is-vt.js [data-reveal] { opacity: 1; transform: none; transition: none; }
+html.is-vt.js .p-card, html.is-vt.js .p-card img, html.is-vt.js .p-card video,
+html.is-vt.js .case-name, html.is-vt.js .case-meta, html.is-vt.js .case-info { animation: none; }
+html.is-vt .pv-head h1, html.is-vt .pv-updated, html.is-vt .pv-row { animation: none; }
+html.is-vt .album .stamp { animation: none; }
+html.is-vt .work-grid.arriving { animation: none; }
+
+/* "Reducir movimiento": solo el fundido, sin que nada se agrande ni vuele */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-new(root) { animation-duration: 150ms; }
+}

@@ -37,10 +37,12 @@
     try { from = sessionStorage.getItem('dizmar-from'); sessionStorage.removeItem('dizmar-from'); } catch (e) { /* storage blocked */ }
     const row = rows.find((r) => r.querySelector('a')?.getAttribute('href') === from);
     if (!row) return;
+    // Con transición de página (is-vt) la miniatura todavía está llegando a su sitio: la fila se enciende cuando termina
+    const settle = document.documentElement.classList.contains('is-vt') ? 450 : 0;
     work.classList.add('arriving');
-    row.classList.add('is-back');
+    setTimeout(() => row.classList.add('is-back'), settle);
     setTimeout(() => work.classList.remove('arriving'), 600);
-    setTimeout(() => row.classList.remove('is-back'), 1600);
+    setTimeout(() => row.classList.remove('is-back'), settle + 1600);
   };
   addEventListener('pageshow', (e) => { if (e.persisted) arrive(); });
 
@@ -59,7 +61,7 @@
     rows.forEach((row) => io.observe(row));
   }
 
-  // ---- Inercia: la tira de cada fila se desplaza de lado (--dx) algo por detrás del scroll ----
+  // ---- Inercia: la tira de cada fila se desplaza de lado algo por detrás del scroll (se escribe directamente en la tira: una variable CSS se heredaría a todas sus miniaturas) ----
   if (!reduced && matchMedia('(min-width: 761px)').matches) {
     const strips = rows.map((row) => row.querySelector('.wi-strip'));
     const now = rows.map(() => 0);
@@ -77,7 +79,7 @@
         const to = clamp(off * -0.07, -70, 70) * (i % 2 ? -1 : 1); // las filas pares van hacia un lado y las impares hacia el otro
         now[i] += (to - now[i]) * k;
         if (Math.abs(to - now[i]) > 0.05) moving = true;
-        strips[i].style.setProperty('--dx', now[i].toFixed(2) + 'px');
+        strips[i].style.translate = now[i].toFixed(2) + 'px 0';
       });
       if (moving) raf = requestAnimationFrame(frame);
       else last = 0;
