@@ -128,7 +128,6 @@ const destinations = [
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 let meshes = [];
-let hovered = null;
 let down = null;
 const detail = document.getElementById('detail');
 const detailTitle = document.getElementById('detail-title');
@@ -224,7 +223,6 @@ function hideSticker() {
 }
 
 function highlight(selection) {
-  hovered = selection;
   outline.selectedObjects = selection
     ? meshes.filter(mesh => destinationFor(mesh)?.key === selection.item.key)
     : [];
@@ -237,30 +235,13 @@ function highlight(selection) {
   document.documentElement.classList.toggle('dot-hot', !!selection); // el punto rojo (js/cursor.js) crece sobre un objeto
 }
 
-// Hovering an object in the room brings the camera closer, like hovering its name in the list.
-// As the camera moves, a different object can slide under a still cursor, so switching to
-// another object waits a moment, and going back to the overview waits a little longer.
-let switchTimer = null, leaveTimer = null;
-function hoverObject(selection) {
-  highlight(selection);
-  clearTimeout(leaveTimer);
-  if (selection) {
-    if (focused === selection.item) { clearTimeout(switchTimer); return; }
-    clearTimeout(switchTimer);
-    switchTimer = setTimeout(() => focusOn(selection.item), focused ? 160 : 0);
-  } else {
-    clearTimeout(switchTimer);
-    leaveTimer = setTimeout(() => focusOn(null), 380);
-  }
-}
+// The camera only comes closer when hovering a NAME in the list (see the buttons below), never when hovering
+// an object in the 3D room. Over an object the cursor just becomes a hand, and a click opens it.
 canvas.addEventListener('pointermove', event => {
-  if (event.pointerType === 'mouse') hoverObject(pick(event));
-});
-canvas.addEventListener('pointerleave', event => {
   if (event.pointerType !== 'mouse') return;
-  clearTimeout(switchTimer); clearTimeout(leaveTimer);
-  highlight(null); focusOn(null);
+  canvas.style.cursor = pick(event) ? 'pointer' : 'default';
 });
+canvas.addEventListener('pointerleave', () => { canvas.style.cursor = 'default'; });
 canvas.addEventListener('pointerdown', event => { down = [event.clientX, event.clientY]; });
 canvas.addEventListener('pointerup', event => {
   if (!down) return;
@@ -270,6 +251,7 @@ canvas.addEventListener('pointerup', event => {
   const selection = pick(event);
   if (event.pointerType === 'mouse') {
     if (selection) openItem(selection.item);
+    else resetFocus();  // clic fuera de los objetos: vuelve a la vista general
     return;
   }
   // Touch has no hover: the first tap comes closer, a second tap on the same object opens it,
@@ -418,13 +400,13 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
       highlight({ item, object: mesh });
     });
     button.addEventListener('focus', () => focusOn(item));
-    button.addEventListener('blur', () => { highlight(null); focusOn(null); });
+    button.addEventListener('blur', () => resetFocus());
     button.addEventListener('mouseenter', () => {
       const mesh = meshes.find(candidate => destinationFor(candidate) === item);
       highlight({ item, object: mesh });
       focusOn(item);
     });
-    button.addEventListener('mouseleave', () => { highlight(null); focusOn(null); });
+    button.addEventListener('mouseleave', () => resetFocus());
     button.addEventListener('click', () => {
       openItem(item);
     });
@@ -478,6 +460,7 @@ function fitDistance(center, half, share) {
 
 let overview = null;
 let focused = null;
+let returning = false;  // true al alejarse: la vuelta es más rápida que el acercamiento
 const focusViews = new Map();
 function frameRoom() {
   if (!roomFrame) return;
@@ -491,8 +474,16 @@ function frameRoom() {
 
 // A closer look: aim most of the way at the object and come 70% of the way in
 // towards a framing where it fills 60% of the free area. Closer, not a close-up.
+// Back to the overview at once (the camera eases back faster than it comes in)
+function resetFocus() {
+  highlight(null);
+  focusOn(null);
+  if (nav.contains(document.activeElement)) document.activeElement.blur();
+}
+
 function focusOn(item) {
   focused = item;
+  returning = !item;
   if (!overview) return;
   if (!item) { goal.pos.copy(overview.pos); goal.target.copy(overview.target); return; }
   if (!focusViews.has(item)) {
@@ -590,7 +581,7 @@ function frame() {
   grade.uniforms.time.value = reduced ? 0 : (now / 1000) % 100;
   updatePoster(now);
   // Ease the camera towards its goal (overview or a focused object)
-  const ease = reduced ? 1 : 1 - Math.exp(-dt * 4);
+  const ease = reduced ? 1 : 1 - Math.exp(-dt * (returning ? 12 : 4));
   view.pos.lerp(goal.pos, ease);
   view.target.lerp(goal.target, ease);
   camera.position.copy(view.pos);
