@@ -4,7 +4,7 @@
    · El tomate del menú se queda quieto: tiene el mismo tamaño y sitio en todas las páginas.
    · De la lista Work a un proyecto, la miniatura de la fila se agranda hasta ser la primera tarjeta de la galería; con Atrás, al revés
      (js/transitions.js le pone el nombre "work-hero" a esas dos piezas). Es lo único que "vuela".
-   Al llegar con transición, la página no repite sus animaciones de entrada (clase is-vt): sería mover dos veces lo mismo. */
+   Las animaciones de entrada de cada página se mantienen; solo la pieza que vuela no se anima aparte (clase has-hero). */
 @view-transition { navigation: auto; }
 
 :root {
@@ -28,13 +28,10 @@
 ::view-transition-image-pair(work-hero) { overflow: hidden; }
 ::view-transition-old(work-hero), ::view-transition-new(work-hero) { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: normal; }
 
-/* Sin animaciones de entrada propias cuando la página llega con transición */
-html.is-vt.js [data-reveal] { opacity: 1; transform: none; transition: none; }
-html.is-vt.js .p-card, html.is-vt.js .p-card img, html.is-vt.js .p-card video,
-html.is-vt.js .case-name, html.is-vt.js .case-meta, html.is-vt.js .case-info { animation: none; }
-html.is-vt .pv-head h1, html.is-vt .pv-updated, html.is-vt .pv-row { animation: none; }
-html.is-vt .album .stamp { animation: none; }
-html.is-vt .work-grid.arriving { animation: none; }
+/* Las animaciones de entrada de cada página (las tarjetas que se destapan una a una, los textos que suben, los sellos...) se mantienen
+   al llegar con transición. Solo la pieza que vuela (la primera tarjeta de la galería) no se anima aparte: ya llega volando. */
+html.has-hero.js .p-gallery .p-card:first-child, html.has-hero.js .p-gallery .p-card:first-child img, html.has-hero.js .p-gallery .p-card:first-child video { animation: none; }
+html.has-hero .work-grid.arriving { animation: none; } /* la lista no se vuelve a fundir: la miniatura vuelve a su sitio */
 
 /* "Reducir movimiento": solo el fundido, sin que nada se agrande ni vuele */
 @media (prefers-reduced-motion: reduce) {

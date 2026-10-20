@@ -171,6 +171,30 @@ function createWordCycler(word, { visible = true } = {}) {
   addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
   addEventListener('touchmove', (e) => { if (touchY - e.touches[0].clientY > 12) goDown(); }, { passive: true });
 
+  // Pulsar el tomate de la barra lleva a la portada: el tomate vuelve volando al centro (js/home-tomato.js), el texto grande se apaga,
+  // la página sube sola y la portada queda bloqueada otra vez hasta que el visitante vuelva a empezar (Work, rueda o dedo).
+  const goLanding = () => {
+    clearTimeout(dockFallback);
+    document.dispatchEvent(new Event('landing-requested'));
+    line.classList.remove('is-live');
+    document.body.classList.remove('intro-on', 'work-engaged', 'work-entering');
+    cycler.stop();
+    started = false; workRequested = false; workRevealed = false;
+    history.replaceState(null, '', location.pathname + location.search);
+    const relock = () => { document.body.classList.add('intro-lock'); scrollTo({ top: 0, behavior: 'instant' }); };
+    if (scrollY < 2) { relock(); return; }
+    scrollTo({ top: 0, behavior: reduced ? 'instant' : 'smooth' });
+    let done = false;
+    const finish = () => { if (done) return; done = true; removeEventListener('scroll', check); clearTimeout(timer); relock(); };
+    const check = () => { if (scrollY < 2) finish(); };
+    const timer = setTimeout(finish, 1200); // si algo impide llegar arriba, se bloquea igualmente
+    addEventListener('scroll', check, { passive: true });
+  };
+  document.querySelector('.nav-logo')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!document.body.classList.contains('intro-lock')) goLanding(); // si ya está en la portada, no hay nada que hacer
+  });
+
   document.addEventListener('tomato-docked', revealWork);
   // Atrás restaura la posición exacta, incluso si la URL conserva #work.
   // Los enlaces explícitos a Work entran directamente en la lista, sin deslizar la landing.
