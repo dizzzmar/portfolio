@@ -113,6 +113,7 @@ function createWordCycler(word, { visible = true } = {}) {
 
 (() => {
   const word = document.querySelector('.intro-word');
+  const line = document.querySelector('.intro-line');
   const first = document.querySelector('.intro-line > span:first-child');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let started = false;
@@ -124,6 +125,8 @@ function createWordCycler(word, { visible = true } = {}) {
     started = true;
     document.body.classList.add('intro-on');
     cycler.burst();
+    // Cuando termina la entrada del texto, pasa a seguir el scroll sin transición
+    setTimeout(() => line.classList.add('is-live'), reduced ? 0 : 700);
   }
 
   // Work inicia el viaje del tomate, muestra Creative y después entra en la lista.
@@ -140,12 +143,8 @@ function createWordCycler(word, { visible = true } = {}) {
       document.body.classList.remove('work-entering');
     }, reduced ? 0 : 650);
   };
-  document.querySelector('.nav-links a[href="#work"]')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (workRequested || document.body.classList.contains('work-engaged')) {
-      if (!document.body.classList.contains('work-entering')) document.getElementById('work').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
-      return;
-    }
+  // Pulsar Work, o bajar con la rueda o el dedo en la portada, inicia el mismo viaje del tomate
+  const startWork = () => {
     workRequested = true;
     document.body.classList.add('work-engaged', 'work-entering');
     history.replaceState(null, '', '#work');
@@ -153,7 +152,24 @@ function createWordCycler(word, { visible = true } = {}) {
     // También funciona si WebGL o la librería 3D no están disponibles.
     dockFallback = setTimeout(revealWork, 1300);
     if (reduced) revealWork();
+  };
+  document.querySelector('.nav-links a[href="#work"]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (workRequested || document.body.classList.contains('work-engaged')) {
+      if (!document.body.classList.contains('work-entering')) document.getElementById('work').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
+      return;
+    }
+    startWork();
   });
+  // Con la landing bloqueada, bajar la rueda o deslizar el dedo hacia arriba la inicia. Después estos oyentes no hacen nada.
+  let touchY = 0;
+  const goDown = () => {
+    if (workRequested || !document.body.classList.contains('intro-lock')) return;
+    startWork();
+  };
+  addEventListener('wheel', (e) => { if (e.deltaY > 0 && !e.ctrlKey) goDown(); }, { passive: true });
+  addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+  addEventListener('touchmove', (e) => { if (touchY - e.touches[0].clientY > 12) goDown(); }, { passive: true });
 
   document.addEventListener('tomato-docked', revealWork);
   // Atrás restaura la posición exacta, incluso si la URL conserva #work.
@@ -177,30 +193,31 @@ function createWordCycler(word, { visible = true } = {}) {
   cycler.watch(word.parentElement, () => started);
 })();
 
-// ---------- Al bajar, "Creative ___" y el cielo se desenfocan (los proyectos pasan por encima) ----------
+// ---------- Al bajar: el cielo se acerca (las nubes crecen), se funde en negro y "Creative ___" sube y se difumina ----------
+// Todo sigue el scroll hasta llegar a Work. Al subir, se deshace exactamente al revés.
 (() => {
   const line = document.querySelector('.intro-line');
   if (!line) return;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const work = document.getElementById('work');
+  const clamp01 = (v) => Math.min(1, Math.max(0, v));
+  const smooth = (v) => v * v * (3 - 2 * v);
   let queued = false;
   const update = () => {
     queued = false;
-    const p = Math.min(1, Math.max(0, scrollY / innerHeight));
-    const light = Math.min(1, Math.max(0, (p - 0.32) / 0.58));
-    const easedLight = light * light * (3 - 2 * light);
-    document.body.style.setProperty('--light-progress', easedLight.toFixed(3));
-    document.body.classList.toggle('light-on', light > 0.55);
-    // Del cielo al negro: primero se invierten los colores del cielo (en la primera mitad del recorrido) y después se apaga hasta el negro
-    const smooth = (v) => v * v * (3 - 2 * v);
-    document.body.style.setProperty('--invert', smooth(Math.min(1, light * 2)).toFixed(3));
-    document.body.style.setProperty('--dark', smooth(Math.min(1, Math.max(0, (light - 0.4) / 0.6))).toFixed(3));
-    if (!still) line.style.setProperty('--blur', (p * 10).toFixed(1) + 'px');
-    document.body.classList.toggle('sky-soft', scrollY > innerHeight * 0.3);
+    const q = clamp01(scrollY / Math.max(1, work ? work.offsetTop : innerHeight)); // 0 en la portada, 1 al llegar a Work
+    const zoom = still ? 0 : smooth(clamp01(q / 0.85));  // el cielo se acerca; las nubes se agrandan y se difuminan
+    const dark = smooth(clamp01((q - 0.5) / 0.45));       // al atravesarlas, todo se funde en negro
+    document.body.style.setProperty('--zoom', zoom.toFixed(3));
+    document.body.style.setProperty('--dark', dark.toFixed(3));
+    document.body.classList.toggle('light-on', dark > 0.5); // el menú pasa a blanco cuando ya es oscuro
+    // El "Creative ___" sube y se difumina según avanza el scroll
+    if (!still) line.style.setProperty('--blur', (q * 10).toFixed(1) + 'px');
+    line.style.translate = still ? '' : `0 ${(-q * 48).toFixed(1)}px`;
     // Al llegar a Work, el "Creative ___" del centro desaparece: la palabra sigue en el título fijo de la izquierda
-    const work = document.getElementById('work');
     const workOn = !!work && work.getBoundingClientRect().top < innerHeight * 0.5;
     document.body.classList.toggle('work-on', workOn);
-    line.style.opacity = workOn ? '0' : document.body.classList.contains('intro-on') ? String(1 - p * 0.35) : '';
+    line.style.opacity = workOn ? '0' : document.body.classList.contains('intro-on') ? String(1 - smooth(clamp01(q / 0.5))) : '';
   };
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
   addEventListener('resize', update);
