@@ -1,5 +1,5 @@
 // PÁGINAS DE PROYECTO · aparición de los bloques con data-reveal, galería horizontal y reproductor propio.
-// La galería se recorre con la rueda (mientras queda recorrido; al llegar a un extremo vuelve a desplazar la página),
+// La galería se recorre con la rueda (mientras queda recorrido; al llegar a un extremo, tras una pausa, vuelve a desplazar la página; la rueda sobre un vídeo no lo adelanta),
 // arrastrando con el ratón, con el dedo o con las flechas del teclado. Sin script, la tira se desliza de forma nativa.
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -43,10 +43,17 @@
   paint();
 
   // Rueda: la rueda vertical recorre la galería hasta el final; en los extremos deja pasar la página
+  // Al llegar al extremo, la inercia de la rueda que aún llega no pasa a la página: solo se pasa tras una pausa (300 ms)
+  let lastUsed = 0;
   track.addEventListener('wheel', (e) => {
     if (e.defaultPrevented || e.ctrlKey || !e.cancelable || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
     const down = e.deltaY > 0;
-    if ((down && target >= max() - 1) || (!down && target <= 0)) return;
+    const atEnd = (down && target >= max() - 1) || (!down && target <= 0);
+    if (atEnd) {
+      if (performance.now() - lastUsed < 300) e.preventDefault();
+      return;
+    }
+    lastUsed = performance.now();
     e.preventDefault();
     goTo(target + e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1));
   }, { passive: false });
@@ -146,17 +153,6 @@
     video.addEventListener('pointermove', pointer);
     video.addEventListener('pointerleave', () => box.classList.remove('pointer-inside'));
 
-    // La rueda recorre la película; al llegar a los extremos vuelve a desplazar la página.
-    video.addEventListener('wheel', (e) => {
-      if (e.ctrlKey || !e.cancelable || !Number.isFinite(video.duration) || !video.duration || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-      const delta = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? video.clientHeight : 1);
-      const next = Math.max(0, Math.min(video.duration, video.currentTime + delta * 0.01));
-      if (Math.abs(next - video.currentTime) < 0.01) return;
-      e.preventDefault();
-      video.pause();
-      video.currentTime = next;
-      paint();
-    }, { passive: false });
     sound.addEventListener('click', () => { video.muted = !video.muted; if (!video.muted && video.paused) video.play().catch(() => {}); });
     box.querySelector('.player-full').addEventListener('click', () => {
       if (document.fullscreenElement) document.exitFullscreen();
