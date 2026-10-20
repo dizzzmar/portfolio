@@ -19,6 +19,9 @@
   --fs-h2: clamp(40px, 5vw, 76px);        /* títulos grandes */
   --fs-h1: clamp(56px, 9vw, 140px);       /* título de página y nombres de proyecto */
 
+  /* Movimiento: una sola curva de salida para todo (rápida al empezar, frena suave). Duraciones en DESIGN.md */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
   /* Resto de la tipografía */
   --tracking-label: .06em;                /* etiquetas en mayúsculas */
   --lh-tight: 1.05;                       /* titulares */

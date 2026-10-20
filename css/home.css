@@ -34,6 +34,8 @@ body {
   animation: drift 40s ease-in-out infinite alternate;
   will-change: transform, scale;
 }
+/* Con la página ya del todo blanca, el cielo no se ve: se esconde y su movimiento se detiene (no gasta nada mientras se ven los proyectos) */
+.white-on .sky { visibility: hidden; animation-play-state: paused; }
 .sky-sharp, .sky-soft {
   position: absolute;
   inset: 0;
@@ -469,7 +471,7 @@ body {
   text-shadow: 0 2px 30px rgba(0, 20, 40, 0.25);
   opacity: 0;
   transform: translateY(16px);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2, .8, .2, 1);
+  transition: opacity 0.6s ease, transform 0.6s var(--ease-out);
   pointer-events: none;
 }
 /* Tras la entrada, el texto se mueve con el scroll sin transición: así sigue el dedo o la rueda sin retraso */
@@ -581,7 +583,7 @@ body {
   opacity: 0;
   scale: .6;
   translate: -50% -50%; /* el centro del botón está justo en la punta del ratón: es el cursor */
-  transition: opacity .2s ease, scale .3s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: opacity .2s ease, scale .3s var(--ease-out);
 }
 .work-cursor.is-on { opacity: 1; scale: 1; }
 /* Sobre una fila, el cursor del sistema se esconde y "View project" ocupa su sitio (js/home-work.js pone has-pill solo con ratón) */
@@ -593,12 +595,12 @@ body {
 
 /* ---------- Work: movimiento (solo con JavaScript y sin "reducir movimiento") ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .wi-slot img, .wi-slot video { transition: scale 1.1s cubic-bezier(.2, .8, .2, 1); }
-  .wi-slot { transition: translate .7s cubic-bezier(.2, .8, .2, 1) calc(var(--i, 0) * 22ms); }
+  .wi-slot img, .wi-slot video { transition: scale 1.1s var(--ease-out); }
+  .wi-slot { transition: translate .7s var(--ease-out) calc(var(--i, 0) * 22ms); }
   .work-motion .work-item::before { transition: transform .9s cubic-bezier(.77, 0, .18, 1); }
-  .work-motion .wi-name > span { transition: translate 1.1s cubic-bezier(.2, .8, .2, 1) .15s; }
-  .work-motion .wi-date, .work-motion .wi-tags { transition: color .5s ease, opacity .9s ease .45s, translate .9s cubic-bezier(.2, .8, .2, 1) .45s; }
-  .work-motion .wi-slot { transition: clip-path .8s cubic-bezier(.77, 0, .18, 1) calc(.35s + var(--i, 0) * 70ms), translate .7s cubic-bezier(.2, .8, .2, 1) calc(var(--i, 0) * 22ms); }
+  .work-motion .wi-name > span { transition: translate 1.1s var(--ease-out) .15s; }
+  .work-motion .wi-date, .work-motion .wi-tags { transition: color .5s ease, opacity .9s ease .45s, translate .9s var(--ease-out) .45s; }
+  .work-motion .wi-slot { transition: clip-path .8s cubic-bezier(.77, 0, .18, 1) calc(.35s + var(--i, 0) * 70ms), translate .7s var(--ease-out) calc(var(--i, 0) * 22ms); }
   /* Antes de entrar: la línea sin dibujar, el nombre escondido bajo su máscara y las miniaturas tapadas */
   .work-motion .work-item:not(.is-in)::before { transform: scaleX(0); }
   .work-motion .work-item:not(.is-in) .wi-name > span { translate: 0 112%; }
@@ -635,13 +637,16 @@ body {
 /* ---------- Work sobre fondo blanco: los textos siguen blancos mientras el fondo es azul y pasan a oscuro cuando ya es claro
    (clase light-on, que pone js/home-intro.js). ---------- */
 .work-grid, .work-top p > span, .wi-date, .wi-tags { transition: color .4s ease; }
-/* El fondo blanco va dentro de la propia sección (no solo en la capa blanca de la página): así la barra, que está dentro de ella, también lo "ve" al mezclarse con difference */
-.work-grid { transition: color .4s ease, background-color .4s ease; }
-.light-on .work-grid { color: #0c0c0b; background-color: #fff; }
-/* La barra de arriba (textos de Work y menú) se mezcla con "difference": en blanco, se ve negra sobre blanco y blanca sobre un nombre de proyecto o una foto oscuros */
-.light-on .work-top, .light-on .nav { mix-blend-mode: difference; }
+.light-on .work-grid { color: #0c0c0b; }
+.light-on .work-top p > span { color: rgba(12, 12, 11, .55); }
+.light-on .work-top .wt-creative > strong { color: #0c0c0b; }
+/* Cuando la página ya es del todo blanca (clase white-on, que pone js/home-intro.js) la barra de arriba (textos de Work y menú) se mezcla con
+   "difference": negra sobre blanco y blanca sobre un nombre de proyecto o una foto oscuros. El fondo blanco va dentro de la propia sección (la capa
+   blanca de la página queda fuera de ella y la barra no la "ve"); se pone solo ahora, sin transición, porque antes taparía el cielo que aún se funde. */
+.white-on .work-grid { background-color: #fff; }
+.white-on .work-top, .white-on .nav { mix-blend-mode: difference; }
 /* Blanco puro (sin grises): con "difference" cada trozo de una letra sale negro o blanco según lo que tenga justo detrás, aunque sea dentro de una misma palabra */
-.light-on .work-top, .light-on .work-top p > span, .light-on .work-top .wt-creative > strong { color: #fff; }
+.white-on .work-top, .white-on .work-top p > span, .white-on .work-top .wt-creative > strong { color: #fff; }
 .light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
 .light-on .work-item::before { background: rgba(12, 12, 11, .16); }
 .light-on .work-item > a:focus-visible { outline-color: #0c0c0b; }
@@ -652,7 +657,9 @@ body {
 .light-on .work-item.is-hot .wi-date, .light-on .work-item.is-hot .wi-tags,
 .light-on .work-item.is-back .wi-date, .light-on .work-item.is-back .wi-tags { color: rgba(12, 12, 11, .9); }
 /* Al fundirse a blanco, el menú, el "Creative ___" del centro y el pie pasan a oscuro */
-.light-on .nav-links a, .light-on .nav-links a:hover, .light-on .nav-links a[aria-current="true"] { color: #fff; }
+.light-on .nav-links a { color: rgba(12, 12, 11, .55); }
+.light-on .nav-links a:hover, .light-on .nav-links a[aria-current="true"] { color: #0c0c0b; }
+.white-on .nav-links a, .white-on .nav-links a:hover, .white-on .nav-links a[aria-current="true"] { color: #fff; }
 .light-on .intro-line { color: #0c0c0b; }
 .light-on .site-foot { color: rgba(12, 12, 11, .55); }
 .light-on .site-foot a:hover { color: #0c0c0b; }
