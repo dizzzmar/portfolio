@@ -8,6 +8,14 @@
 <link rel="canonical" href="https://www.dizmar.xyz/privacy/">
 <link rel="icon" href="/assets/images/tomato.webp" type="image/webp">
 <link rel="stylesheet" href="/css/privacy.css?v=20261019a">
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
 </head>
 <body>
 
@@ -26,7 +34,7 @@
   <header class="pv-head">
     <h1>Privacy</h1>
     <!-- EDITA la fecha cada vez que cambie el texto -->
-    <p class="pv-updated">Last updated: 19 October 2026</p>
+    <p class="pv-updated">Last updated: 20 October 2026</p>
   </header>
 
   <section class="pv-row" aria-labelledby="short">
@@ -60,7 +68,7 @@
   <section class="pv-row" aria-labelledby="three">
     <h2 id="three">3D library</h2>
     <div>
-      <p>The 3D tomato on the home page and The room use the three.js library, which is loaded from the jsDelivr CDN. When you open those pages, your browser connects to jsDelivr, which may log technical data such as your IP address. See <a href="https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net" rel="noopener">jsDelivr’s privacy policy</a>.</p>
+      <p>The 3D tomato (the logo in the menu bar of every page, and the large one on the home page) and The room use the three.js library, which is loaded from the jsDelivr CDN. When you open any page of this site, your browser may connect to jsDelivr, which may log technical data such as your IP address. See <a href="https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net" rel="noopener">jsDelivr’s privacy policy</a>.</p>
     </div>
   </section>
 
@@ -103,5 +111,6 @@
 </main>
 
 <footer class="pv-foot"><span>Mario Diz, Madrid</span></footer>
+<script type="module" src="/js/nav-tomato.js?v=20261020a"></script>
 </body>
 </html>
