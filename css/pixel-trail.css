@@ -1,13 +1,12 @@
-/* RASTRO DE CELDAS — estilos de js/pixel-trail.js. Celdas cuadradas con esquinas rectas (como el resto de la web): oscuras sobre fondo claro
-   (body[data-trail="light"]) y crema sobre fondo negro (body[data-trail="dark"]). Aparecen de golpe y se desvanecen. */
+/* RASTRO DE CELDAS — estilos de js/pixel-trail.js (solo páginas de proyecto). Celdas cuadradas con esquinas rectas (como el resto de la web),
+   oscuras sobre el fondo blanco. Aparecen de golpe y se desvanecen. */
 .pt-layer { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; --pt-bg: #0b0b0b; --pt-ink: #fff; }
-body[data-trail="dark"] .pt-layer { --pt-bg: #f3f0df; --pt-ink: #0b0b0b; }
 .pt-cell {
   position: absolute;
   display: grid;
   place-items: center;
-  width: var(--pt-cell, 40px);
-  height: var(--pt-cell, 40px);
+  width: var(--pt-cell, 29px);
+  height: var(--pt-cell, 29px);
   background: var(--pt-bg);
   color: var(--pt-ink);
   opacity: 1;

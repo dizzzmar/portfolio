@@ -1,13 +1,9 @@
-/* RASTRO DE CELDAS — al mover el ratón por una zona vacía, aparece una mancha de celdas cuadradas de color (algunas con un símbolo
-   dentro) alrededor del cursor: nace casi como un rombo, se estira siguiendo al ratón con el borde escalonado e irregular, y se
-   deshace desde los bordes hacia el centro. Efecto visto en fiddle.digital, hecho aquí desde cero:
-   los símbolos son formas sencillas dibujadas en este archivo (cruz, aspa, aro, flecha y destello).
+/* RASTRO DE CELDAS — en las páginas de proyecto: al mover el ratón por una zona vacía aparece una mancha de celdas cuadradas oscuras
+   (algunas con un símbolo dentro) alrededor del cursor: nace casi como un rombo, se estira siguiendo al ratón con el borde escalonado
+   e irregular y se deshace desde los bordes hacia el centro; si el ratón se para, se apaga enseguida. Efecto visto en fiddle.digital,
+   hecho aquí desde cero: los símbolos son formas sencillas dibujadas en este archivo (cruz, aspa, aro, flecha y destello).
    Solo con ratón y sin "reducir movimiento". "Zona vacía" = donde no hay texto, enlaces, imágenes ni vídeo (ver AVOID).
-   Configuración en <body>:
-     data-trail="light"   celdas oscuras (fondo claro: cielo, página blanca)   ·   data-trail="dark"  celdas crema (fondo negro)
-     data-trail-box="x,y,w,h"   rectángulo extra que se evita, en fracciones de la ventana (el tomate de la portada, la estantería de la sala)
-     data-trail-only="intro-lock"   solo mientras el <body> tenga esa clase (la portada, antes de bajar a Work)
-     data-trail-life="700"          (opcional) milisegundos que dura la mancha antes de deshacerse
+   Se activa con data-trail en el <body>; opcional data-trail-life="700" (ms que dura la mancha antes de deshacerse).
    Los colores y el tamaño de las celdas están en css/pixel-trail.css. */
 (() => {
   const body = document.body;
@@ -20,7 +16,7 @@
   const LIFE = +body.dataset.trailLife || 700; // ms que dura una celda antes de empezar a desvanecerse (varía un poco de una a otra)
   const FADE = 320;       // ms que tarda en desvanecerse (debe coincidir con css/pixel-trail.css)
   const PAD = 6;          // margen alrededor del contenido donde tampoco aparecen celdas
-  const R = 3;            // radio de la mancha en celdas: forma de rombo (|dx|+|dy| <= R)
+  const R = 4;            // radio de la mancha en celdas: forma de rombo (|dx|+|dy| <= R)
   const SYMBOL_CHANCE = .4;
   const IDLE_WAIT = 120;  // ms sin mover el ratón antes de que la mancha empiece a deshacerse
   const IDLE_FADE = 260;  // la mancha entera se apaga dentro de este plazo (más los FADE de cada celda)
@@ -40,12 +36,12 @@
   layer.setAttribute('aria-hidden', 'true');
   body.appendChild(layer);
 
-  let cell = 40, cols = 0, boxes = [], boxesAt = -1e9;
+  let cell = 29, cols = 0, boxes = [], boxesAt = -1e9;
   const live = new Map(); // "col,row" -> { el, until, gone }
   let ticking = 0;
 
   const measure = () => {
-    cell = Math.round(Math.min(46, Math.max(34, innerWidth * .028)));
+    cell = Math.round(Math.min(32, Math.max(24, innerWidth * .02)));
     cols = Math.ceil(innerWidth / cell);
     layer.style.setProperty('--pt-cell', cell + 'px');
     boxesAt = -1e9;
@@ -66,10 +62,6 @@
       if (r.width < 2 || r.height < 2 || r.bottom < 0 || r.top > innerHeight) return;
       boxes.push([r.left - PAD, r.top - PAD, r.right + PAD, r.bottom + PAD]);
     });
-    const fixed = (body.dataset.trailBox || '').split(',').map(parseFloat);
-    if (fixed.length === 4 && fixed.every((v) => !isNaN(v))) {
-      boxes.push([fixed[0] * innerWidth, fixed[1] * innerHeight, (fixed[0] + fixed[2]) * innerWidth, (fixed[1] + fixed[3]) * innerHeight]);
-    }
     return boxes;
   };
 
@@ -128,7 +120,6 @@
   const frame = () => {
     raf = 0;
     if (!want) return;
-    if (body.dataset.trailOnly && !body.classList.contains(body.dataset.trailOnly)) { want = null; last = null; return; }
     const now = performance.now();
     const col = Math.floor(want.x / cell), row = Math.floor(want.y / cell);
     if (!last || last.col !== col || last.row !== row) {
