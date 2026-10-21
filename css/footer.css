@@ -16,6 +16,9 @@
 }
 .site-foot a { color: inherit; text-underline-offset: 3px; transition: color .2s; }
 .site-foot a:hover { color: #fff; }
+/* Área de toque en móvil: los enlaces del pie miden ~17–20 px de alto. Se amplían con relleno y el mismo margen negativo:
+   el texto y la maquetación no cambian, pero el dedo acierta (mínimo 44 px de alto). Solo pantallas táctiles. */
+@media (pointer: coarse) { .site-foot a { display: inline-block; padding: 12px 6px; margin: -12px -6px; } }
 .site-foot.on-light { color: rgba(0, 0, 0, .55); }
 .site-foot.on-light a:hover { color: #000; }
 .site-foot.on-sky { color: #fff; text-shadow: 0 1px 8px rgba(0, 30, 70, .25); }

@@ -158,10 +158,10 @@ main { padding: 0 var(--margin); }
 /* LinkedIn y correo: una fila bajo las dos primeras columnas; sus enlaces llevan la raya animada de toda la web (css/cursor.css) */
 .contact-row { margin-top: clamp(28px, 5vh, 56px); }
 .contact-row a:hover { opacity: 1; }
-/* Área de toque: los enlaces de contacto y del pie miden ~20 px de alto en móvil. Se amplían con relleno y el mismo margen negativo,
+/* Área de toque: los enlaces de contacto miden ~20 px de alto en móvil. Se amplían con relleno y el mismo margen negativo,
    así el texto y el hueco entre filas no cambian, pero el dedo acierta (mínimo 44 px de alto). Solo en pantallas táctiles. */
 @media (pointer: coarse) {
-  .contact-row a, .site-foot a { display: inline-block; padding: 12px 6px; margin: -12px -6px; }
+  .contact-row a { display: inline-block; padding: 12px 6px; margin: -12px -6px; }
 }
 /* Now playing: el disco y la película de The room, en pequeño */
 .now-playing { text-decoration: none; }
