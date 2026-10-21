@@ -37,8 +37,10 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  touch-action: manipulation;
+  touch-action: none; /* el disco se gira arrastrando, también con el dedo */
+  cursor: grab;
 }
+.wii-player.is-turning, .wii-player.is-turning .wii-choice { cursor: grabbing; }
 
 .wii-disc-number, .wii-disc-title { position: absolute; left: 50%; transform: translateX(-50%); pointer-events: none; }
 .wii-disc-number { top: calc(100% + 32px); font-size: var(--fs-xs); color: rgb(243 240 223 / 60%); }
