@@ -123,6 +123,7 @@ function createWordCycler(word, { visible = true } = {}) {
   function start() {
     if (started) return;
     started = true;
+    line.classList.remove('is-leaving');
     document.body.classList.add('intro-on');
     cycler.burst();
     // Cuando termina la entrada del texto, pasa a seguir el scroll sin transición
@@ -177,6 +178,10 @@ function createWordCycler(word, { visible = true } = {}) {
     clearTimeout(dockFallback);
     document.dispatchEvent(new Event('landing-requested'));
     line.classList.remove('is-live');
+    // El texto se apaga deprisa, antes de que llegue el tomate. Se borra también la opacidad que el scroll le deja escrita:
+    // si ya estás arriba no hay scroll que la recalcule, y "Creative ___" se quedaba a la vista con el tomate encima.
+    line.style.opacity = '';
+    line.classList.add('is-leaving');
     document.body.classList.remove('intro-on', 'work-engaged', 'work-entering');
     cycler.stop();
     started = false; workRequested = false; workRevealed = false;

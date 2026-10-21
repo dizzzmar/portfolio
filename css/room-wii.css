@@ -27,7 +27,6 @@
 }
 
 .wii-heading h2 { font-size: var(--fs-l); font-weight: 400; letter-spacing: -.03em; }
-.wii-heading p { margin-top: 8px; color: rgb(243 240 223 / 60%); font-size: var(--fs-xs); }
 .wii-close { position: absolute; top: 32px; right: 32px; border: 0; padding: 8px 0; background: none; font-size: var(--fs-s); }
 .wii-close:hover, .wii-change:hover { text-decoration: underline; text-underline-offset: 4px; }
 
