@@ -84,6 +84,9 @@ Cada página pública lleva en su `<head>`: `<title>`, `<meta name="description"
 ### Cambiar el correo de «Contact»
 «Contact» del menú es un enlace `mailto:` directo: al pulsarlo se abre el programa de correo del visitante con la dirección y el asunto ya puestos. No hay página intermedia. La dirección está en el menú de todas las páginas (y en la de Privacy y About). Para cambiarla, busca `mailto:hey.mariodiz@gmail.com` y cámbiala en todos los archivos.
 
+### Rastro de celdas al mover el ratón (portada, The room y proyectos)
+Al pasar el ratón por una zona vacía aparecen unas celdas cuadradas que se desvanecen (`js/pixel-trail.js` + `css/pixel-trail.css`). Se activa con `data-trail="light"` (celdas oscuras, fondo claro) o `data-trail="dark"` (celdas crema, fondo negro) en el `<body>`; `data-trail-box` marca una zona que se evita (el tomate, la estantería) y `data-trail-only` lo limita a un estado de la página. No aparece en móvil ni con «reducir movimiento». Para quitarlo de una página, borra esos atributos del `<body>`.
+
 ### Cambiar el texto de la página 404
 `404.html`, el párrafo con clase `message`.
 
