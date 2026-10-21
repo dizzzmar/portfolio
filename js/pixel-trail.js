@@ -22,6 +22,8 @@
   const PAD = 6;          // margen alrededor del contenido donde tampoco aparecen celdas
   const R = 3;            // radio de la mancha en celdas: forma de rombo (|dx|+|dy| <= R)
   const SYMBOL_CHANCE = .4;
+  const IDLE_WAIT = 120;  // ms sin mover el ratón antes de que la mancha empiece a deshacerse
+  const IDLE_FADE = 260;  // la mancha entera se apaga dentro de este plazo (más los FADE de cada celda)
 
   /* Símbolos propios, 24×24. El color lo da la celda (--pt-ink). */
   const S = (inner) => `<svg viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
@@ -141,10 +143,21 @@
     want = null;
   };
 
+  /* Si el ratón se queda quieto (o sale de la página), la mancha se deshace enseguida: a cada celda se le acorta la vida a un
+     momento al azar dentro de los próximos IDLE_FADE ms, así se va apagando a trozos en vez de desaparecer de golpe */
+  let idle = 0;
+  const dissolve = () => {
+    const now = performance.now();
+    live.forEach((c) => { if (!c.gone) c.until = Math.min(c.until, now + Math.random() * IDLE_FADE); });
+    if (live.size && !ticking) ticking = requestAnimationFrame(tick);
+  };
+
   addEventListener('pointermove', (e) => {
     if (e.pointerType !== 'mouse') return;
     want = { x: e.clientX, y: e.clientY };
     if (!raf) raf = requestAnimationFrame(frame);
+    clearTimeout(idle);
+    idle = setTimeout(dissolve, IDLE_WAIT);
   }, { passive: true });
-  document.addEventListener('mouseleave', () => { last = null; want = null; });
+  document.addEventListener('mouseleave', () => { last = null; want = null; clearTimeout(idle); dissolve(); });
 })();
