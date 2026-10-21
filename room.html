@@ -1,9 +1,4 @@
 <!doctype html>
-<!--
-  THE ROOM  ·  www.dizmar.xyz/room.html
-  Página con la habitación 3D. Estilos en /css/room.css, lógica en /js/room.js.
-  Aquí solo está la estructura: barra, lista de objetos (se rellena sola desde el JS), etiquetas y panel de detalle.
--->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -26,24 +21,25 @@
   <link rel="preload" as="image" href="/assets/room/now-playing-sticker.webp">
   <link rel="preload" as="image" href="/assets/room/film-poster.webp">
   <link rel="stylesheet" href="/css/tokens.css?v=20261021g">
-  <link rel="stylesheet" href="/css/room.css?v=20261021u">
+  <link rel="stylesheet" href="/css/room.css?v=20261021wii1">
+  <link rel="stylesheet" href="/css/room-wii.css?v=20261021wii1">
   <link rel="stylesheet" href="/css/nav-logo.css?v=20261021g">
   <link rel="stylesheet" href="/css/nav-links.css?v=20261021g">
-<link rel="stylesheet" href="/css/transitions.css?v=20261021g">
+  <link rel="stylesheet" href="/css/transitions.css?v=20261021g">
   <script type="importmap">
-    {"imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    }}
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
   </script>
-<script src="/js/transitions.js?v=20261020p"></script>
-<link rel="stylesheet" href="/css/cursor.css?v=20261021k">
-<link rel="stylesheet" href="/css/pixel-trail.css?v=20261021b">
+  <script src="/js/transitions.js?v=20261020p"></script>
+  <link rel="stylesheet" href="/css/cursor.css?v=20261021k">
+  <link rel="stylesheet" href="/css/pixel-trail.css?v=20261021b">
 </head>
 <body data-trail="dark" data-trail-box="0.4,0.15,0.38,0.72">
-  <!-- Lienzo 3D de la habitación -->
   <canvas id="room" aria-label="Interactive shelf of personal interests"></canvas>
-  <!-- Barra de navegación (igual que la de la home) -->
   <nav class="nav" aria-label="Main">
     <a class="nav-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" alt=""></a>
     <ul class="nav-links">
@@ -53,22 +49,31 @@
       <li><a href="/room.html" aria-current="page">Room</a></li>
     </ul>
   </nav>
-  <!-- Título y lista de objetos de la izquierda (los botones los crea js/room.js) -->
   <section class="intro" aria-labelledby="room-title">
     <header class="intro-head">
       <h1 id="room-title">The room</h1>
     </header>
     <div class="object-nav" id="object-nav" aria-label="Objects in the room"></div>
   </section>
-  <!-- Etiqueta flotante, pegatina de la canción y panel de detalle (los gestiona js/room.js) -->
   <div class="label" id="label" hidden></div>
   <div class="sticker-slot floating" id="track" hidden aria-hidden="true"></div>
   <p class="status" id="status" role="status">Loading the room…</p>
-  <!-- Pie mínimo (solo el enlace a Privacy): en la esquina inferior izquierda, donde la sala no ocupa; en móvil, encima de la lista -->
   <footer class="room-foot"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span></footer>
-  <script type="module" src="/js/room.js?v=20261021t"></script>
-<script type="module" src="/js/nav-tomato.js?v=20261020b"></script>
-<script src="/js/cursor.js?v=20261021c" defer></script>
-<script src="/js/pixel-trail.js?v=20261021d" defer></script>
+  <dialog class="wii-player" id="wii-player" aria-labelledby="wii-title" aria-describedby="wii-status">
+    <header class="wii-heading">
+      <h2 id="wii-title">Recently played</h2>
+      <p>Three games, on repeat.</p>
+    </header>
+    <button class="wii-close" type="button" data-wii-close autofocus>Back to room ×</button>
+    <div class="wii-choices" role="group" aria-label="Choose a game disc"></div>
+    <footer class="wii-player-foot">
+      <p class="wii-status" id="wii-status" role="status" aria-live="polite"></p>
+      <button class="wii-change" type="button" data-wii-change hidden>Change disc</button>
+    </footer>
+  </dialog>
+  <script type="module" src="/js/room.js?v=20261021wii1"></script>
+  <script type="module" src="/js/nav-tomato.js?v=20261020b"></script>
+  <script src="/js/cursor.js?v=20261021c" defer></script>
+  <script src="/js/pixel-trail.js?v=20261021d" defer></script>
 </body>
 </html>

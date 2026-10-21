@@ -66,6 +66,8 @@ Súbelas a `assets/projects/<proyecto>/` y cambia la ruta (`src`) y la descripci
 ### Cambiar los textos de la habitación o la canción de "Now playing"
 Están en `js/room.js` (objetos `nowPlaying` y `lastWatched`, y lista `destinations`). La imagen de la pegatina es `assets/room/now-playing-sticker.webp`; el póster de la última película vista, que aparece al acercarse al póster de la pared, es `assets/room/film-poster.webp` (vertical, unos 840×1200).
 
+Los tres juegos de Recently played están en `assets/room/discs/games.json`. Las carátulas se suben a esa misma carpeta y se indica su nombre en `artwork`; mientras sea `null`, se ve un disco con una etiqueta provisional. La animación de la Wii está separada en `js/room/wii-player.js`. Más detalles en `assets/room/README.md`.
+
 ### Modo máquina (oculto por ahora)
 `machine/index.html` es una versión en texto de toda la web, ligera para conexiones lentas. Ahora mismo está **oculta**: no hay enlaces a ella, no está en `sitemap.xml` y lleva `noindex`. Para volver a activarla:
 1. Añade antes de `</body>` en cada página (home, proyectos, room, 404 y la plantilla): `<script src="/js/mode-switch.js" defer></script>` (pone la píldora HUMAN | MACHINE y el aviso de conexión lenta).

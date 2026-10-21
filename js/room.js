@@ -1,7 +1,4 @@
-// THE ROOM · la habitación 3D (three.js): carga assets/room/shelf.glb, los objetos seleccionables (array `destinations`),
-// la cámara que se acerca al pasar por la lista de la izquierda o por los objetos, la lámpara que parpadea,
-// la pegatina "Now playing" y el póster que cambia a la última película vista al acercarse.
-// Para cambiar la pegatina edita `nowPlaying`; para el póster, `lastWatched` (imágenes en assets/room/).
+// Interactive shelf: scene, object selection, camera framing and shared effects.
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -12,6 +9,9 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
+import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
+import { createWiiPlayer } from './room/wii-player.js?v=20261021wii1';
 
 const canvas = document.getElementById('room');
 const label = document.getElementById('label');
@@ -98,10 +98,13 @@ const grade = new ShaderPass({
 });
 composer.addPass(grade);
 
-// Only these five things in the room can be selected. Add an href to one when
-// its section exists; until then clicking it only zooms the camera.
-// Matched against object names reduced to lowercase words, because the loader
-// turns "Music / vinyl collection" into "Music__vinyl_collection".
+const horizontalBlur = new ShaderPass(HorizontalBlurShader);
+const verticalBlur = new ShaderPass(VerticalBlurShader);
+horizontalBlur.enabled = verticalBlur.enabled = false;
+composer.addPass(horizontalBlur);
+composer.addPass(verticalBlur);
+
+// Match normalized mesh names and their ancestors to the room's destinations.
 // Stickers that slap on when hovering an object. Swap the image (same 1600×567 size)
 // and the alt text to change them.
 // The last song I played on Spotify.
@@ -124,11 +127,26 @@ const destinations = [
   // The camera frames just the tomato, not the cord that runs down to the floor
   { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, focus: /^lamp (tomato diffuser|green calyx)\b/, href: null },
   { label: 'Plant', key: 'plant', match: /^(plants (eucalyptus|fluted vase)\b|plant1 fbx$)/, href: null },
+  { label: 'Recently played', key: 'wii', match: /^wii\b/, focusMaterial: /Wii (pearl white|silver stand)/i, href: null },
 ];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 let meshes = [];
 let down = null;
+const wiiDestination = destinations.find(item => item.key === 'wii');
+const wiiPlayer = createWiiPlayer({
+  scene, camera, renderer,
+  onOpen() {
+    highlight(null);
+    resize();
+    focusOn(wiiDestination);
+  },
+  onClose() {
+    resize();
+    highlight(null);
+    focusOn(null);
+  },
+});
 
 // The selectable thing a mesh (or any of its parents) belongs to, or null for the rest of the room
 const words = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
@@ -233,9 +251,14 @@ function highlight(selection) {
 // an object in the 3D room. Over an object the cursor just becomes a hand, and a click opens it.
 canvas.addEventListener('pointermove', event => {
   if (event.pointerType !== 'mouse') return;
-  canvas.style.cursor = pick(event) ? 'pointer' : 'default';
+  const selection = pick(event);
+  canvas.style.cursor = selection ? 'pointer' : 'default';
+  document.documentElement.classList.toggle('dot-hot', Boolean(selection));
 });
-canvas.addEventListener('pointerleave', () => { canvas.style.cursor = 'default'; });
+canvas.addEventListener('pointerleave', () => {
+  canvas.style.cursor = 'default';
+  document.documentElement.classList.remove('dot-hot');
+});
 canvas.addEventListener('pointerdown', event => { down = [event.clientX, event.clientY]; });
 canvas.addEventListener('pointerup', event => {
   if (!down) return;
@@ -243,6 +266,10 @@ canvas.addEventListener('pointerup', event => {
   down = null;
   if (moved >= 8) return;
   const selection = pick(event);
+  if (selection?.item.key === 'wii') {
+    wiiPlayer.open(nav.querySelector('[data-object="wii"]'));
+    return;
+  }
   if (event.pointerType === 'mouse') {
     if (selection) openItem(selection.item);
     else resetFocus();  // clic fuera de los objetos: vuelve a la vista general
@@ -258,6 +285,10 @@ canvas.addEventListener('pointercancel', () => { down = null; });
 
 // Clicking an object only keeps the camera zoomed on it. Only items with a page (href) navigate.
 function openItem(item) {
+  if (item.key === 'wii') {
+    wiiPlayer.open(nav.querySelector('[data-object="wii"]'));
+    return;
+  }
   if (item.href) location.href = item.href;
 }
 
@@ -295,6 +326,7 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
     }
     meshes.push(object);
   });
+  wiiPlayer.attach(model.getObjectByName('Wii'));
   // Aim the sunset beam at the wall from the front left, scaled to the model's size
   {
     const box = new THREE.Box3().setFromObject(model);
@@ -373,13 +405,18 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
   const radius = Math.max(size.x, size.y * 1.5, size.z * 2);
   key.target.position.copy(center);
   roomFrame = { size, center };
+  // Static geometry and lights can reuse their shadow maps between frames.
+  renderer.shadowMap.autoUpdate = false;
+  renderer.shadowMap.needsUpdate = true;
   frameRoom();
   status.remove();
   destinations.forEach(item => {
     if (!meshes.some(mesh => destinationFor(mesh) === item)) return;
     const button = document.createElement('button');
     button.type = 'button';
+    button.dataset.object = item.key;
     button.textContent = item.label;
+    if (item.key === 'wii') button.setAttribute('aria-haspopup', 'dialog');
     button.addEventListener('focus', () => {
       const mesh = meshes.find(candidate => destinationFor(candidate) === item);
       highlight({ item, object: mesh });
@@ -412,6 +449,7 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
 let roomFrame = null;
 function freeArea() {
   const width = innerWidth, height = innerHeight;
+  if (wiiPlayer.active) return { left: 24, top: 100, right: 24, bottom: 100 };
   const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 64;
   const panel = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--panel')) || 0;
   if (panel) return { left: panel, top: navH, right: 0, bottom: 24 };
@@ -467,6 +505,7 @@ function resetFocus() {
 }
 
 function focusOn(item) {
+  if (wiiPlayer.active && item !== wiiDestination) return;
   focused = item;
   returning = !item;
   if (!overview) return;
@@ -476,12 +515,14 @@ function focusOn(item) {
     for (const mesh of meshes) {
       if (!mesh.visible || destinationFor(mesh) !== item) continue;
       if (item.focus && !item.focus.test(words(mesh.name))) continue;
+      if (item.focusMaterial && ![].concat(mesh.material).some(material => item.focusMaterial.test(material.name))) continue;
       box.expandByObject(mesh);
     }
     const center = box.getCenter(new THREE.Vector3());
     const half = box.getSize(new THREE.Vector3()).multiplyScalar(0.5);
-    const target = overview.target.clone().lerp(center, 0.8);
-    const dist = THREE.MathUtils.lerp(overview.dist, fitDistance(center, half, 0.6), 0.7);
+    const closeWii = item.key === 'wii' && wiiPlayer.active;
+    const target = closeWii ? center : overview.target.clone().lerp(center, 0.8);
+    const dist = closeWii ? fitDistance(center, half, 0.66) : THREE.MathUtils.lerp(overview.dist, fitDistance(center, half, 0.6), 0.7);
     focusViews.set(item, { target, pos: target.clone().addScaledVector(VIEW_DIR, dist) });
   }
   const v = focusViews.get(item);
@@ -552,6 +593,7 @@ function frame() {
   // Advance at most 50ms per frame, so a slow first frame (shaders, shadows)
   // doesn't skip the flicker: it just plays a little slower.
   const dt = Math.min((now - lastFrame) / 1000, 0.05);
+  const cameraStep = wiiPlayer.active ? Math.min((now - lastFrame) / 1000, 0.25) : dt;
   lastFrame = now;
   if (lampFlicker && !reduced && lampFlicker.start !== false) {
     lampFlicker.t = lampFlicker.start === null ? 0 : lampFlicker.t + dt;
@@ -567,12 +609,18 @@ function frame() {
   updatePoster(now);
   // Ease the camera towards its goal (overview or a focused object)
   // Rate per second of the ease: the camera reaches 90% of the way in ln(10)/rate seconds (acercarse ≈0.3 s, alejarse ≈0.14 s)
-  const ease = reduced ? 1 : 1 - Math.exp(-dt * (returning ? 16 : 8));
+  const ease = reduced ? 1 : 1 - Math.exp(-cameraStep * (returning ? 16 : 8));
   view.pos.lerp(goal.pos, ease);
   view.target.lerp(goal.target, ease);
   camera.position.copy(view.pos);
   camera.lookAt(view.target);
+  camera.updateMatrixWorld();
+  wiiPlayer.update(now);
+  horizontalBlur.enabled = verticalBlur.enabled = wiiPlayer.blur > 0.01;
+  horizontalBlur.uniforms.h.value = wiiPlayer.blur / (innerWidth * 3);
+  verticalBlur.uniforms.v.value = wiiPlayer.blur / (innerHeight * 3);
   composer.render();
+  wiiPlayer.render();
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);

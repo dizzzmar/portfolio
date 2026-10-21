@@ -1,5 +1,5 @@
 /* THE ROOM — estilos de room.html (la habitación 3D).
-   Orden: barra de navegación · lista de objetos · pegatina de la canción · panel de detalle · móvil. */
+   Navegación, lista de objetos y pegatina de la canción. Recently played: room-wii.css. */
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { min-height: 100%; }
@@ -17,7 +17,7 @@ body { background: #140d09; color: #f3f0df; font-family: var(--font-ui); }
 .nav-links a { color: rgba(255, 255, 255, 0.78); font-size: var(--fs-s); text-decoration: none; text-shadow: 0 1px 8px rgba(0, 20, 40, 0.25); transition: color 0.2s, text-shadow 0.2s; }
 .nav-links a:hover, .nav-links a[aria-current="page"] { color: #fff; }
 
-/* ---------- Columna izquierda: título y los cinco objetos; la habitación ocupa el resto ---------- */
+/* ---------- Columna izquierda: título y objetos; la habitación ocupa el resto ---------- */
 .intro { position: fixed; z-index: 2; top: calc(var(--nav-h) + 48px); left: 24px; width: calc(var(--panel) - 48px); pointer-events: none; }
 /* Etiqueta pequeña como el "Selected work" de la home; los objetos usan el estilo
    de los títulos de proyecto: negrita, mayúsculas, apretado */
