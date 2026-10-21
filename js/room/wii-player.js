@@ -19,6 +19,10 @@ const RESET_DELAY = 900;       // ms after letting go before it turns back to fa
 const SPRING = 7;              // stiffness of that return (critically damped: no wobble)
 const IDLE_SPIN = 0.22;        // radians per second the discs turn on their own axis; faster on the one under the pointer
 const HOVER_SPIN = 0.9;
+const DEPTH = 0.95;            // distance from the camera of the middle disc (room metres)
+const DEPTH_STEP = 0.16;       // each disc further along the diagonal sits this much further back
+const GALLERY_TILT_X = -0.52;  // the discs' shared resting angle: about -30° on both axes, as in the reference
+const GALLERY_TILT_Y = -0.52;
 
 export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
   const dialog = document.getElementById('wii-player');
@@ -281,42 +285,50 @@ export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
     return origin.addScaledVector(vector, depth / vector.dot(forward));
   }
 
+  // Diagonal line like a24.raviklaassens.com: the first disc in front and low on the left, the next ones up to the right and
+  // further back, all turned the same way (about 30° on both axes). Further discs look smaller because they are further away.
   function poseChoices(now, dt) {
     const elapsed = now - since;
-    const span = Math.min(innerWidth * 0.27, 360);
-    const centerY = innerHeight * 0.5;
-    const diameter = Math.min(innerWidth * 0.29, innerHeight * 0.37, 360);
+    const narrow = innerWidth <= 700;
+    const diameter = Math.min(innerWidth * (narrow ? 0.46 : 0.26), innerHeight * 0.34, 340);
+    const stepX = Math.min(innerWidth * (narrow ? 0.2 : 0.19), 280);
+    const stepY = Math.min(innerHeight * 0.13, 120);
+    const centerX = innerWidth / 2;
+    const centerY = innerHeight * 0.48;
     const origin = slot.getWorldPosition(new THREE.Vector3());
     camera.getWorldQuaternion(cameraRotation);
+    // World size of a disc, measured on the middle one: the same for all three, so depth does the shrinking
+    const discRadius = screenPosition(centerX, centerY + diameter / 2, DEPTH).distanceTo(screenPosition(centerX, centerY, DEPTH));
     // The pointer tilts all discs a little; eased so it never jumps
     tiltNow.x = damp(tiltNow.x, tilt.x, 5, dt);
     tiltNow.y = damp(tiltNow.y, tilt.y, 5, dt);
     for (const [index, disc] of discs.entries()) {
-      const centered = index === hoverIndex;
+      const step = index - 1;
+      const active = index === hoverIndex;
       const pose = disc.pose;
       const turn = disc.turn;
-      const targetSize = diameter * (centered ? 1 : 0.84);
-      const targetY = centerY + (centered ? -10 : 22);
-      if (!pose.ready) { pose.size = targetSize; pose.y = targetY; pose.ready = true; }
-      // Growing and lifting the disc under the pointer is eased, not instant
-      pose.size = reduced ? targetSize : damp(pose.size, targetSize, 9, dt);
+      const depth = DEPTH + step * DEPTH_STEP;
+      const targetGrow = active ? 1.06 : 1;
+      const targetY = centerY - step * stepY + (active ? -10 : 0);
+      if (!pose.ready) { pose.size = targetGrow; pose.y = targetY; pose.ready = true; }
+      // Growing and lifting the disc under the pointer is eased, not instant (pose.size holds the growth factor)
+      pose.size = reduced ? targetGrow : damp(pose.size, targetGrow, 9, dt);
       pose.y = reduced ? targetY : damp(pose.y, targetY, 9, dt);
-      const x = innerWidth / 2 + (index - 1) * span;
+      const x = centerX + step * stepX;
       const progress = reduced ? 1 : easeOut((elapsed - index * 110) / 1100);
-      const destination = screenPosition(x, pose.y);
+      const destination = screenPosition(x, pose.y, depth);
       disc.group.position.copy(origin).lerp(destination, progress);
-      const worldPerPixel = screenPosition(x, pose.y + pose.size / 2).distanceTo(destination);
-      disc.group.scale.setScalar(THREE.MathUtils.lerp(0.25, worldPerPixel / 0.06, progress));
+      disc.group.scale.setScalar(THREE.MathUtils.lerp(0.25, discRadius / 0.06 * pose.size, progress));
 
       settleTurn(turn, now, dt);
       if (!reduced) {
-        turn.rollSpeed = damp(turn.rollSpeed, centered ? HOVER_SPIN : IDLE_SPIN, 3, dt);
+        turn.rollSpeed = damp(turn.rollSpeed, active ? HOVER_SPIN : IDLE_SPIN, 3, dt);
         turn.roll -= turn.rollSpeed * dt;
       }
       const rest = new THREE.Euler(
-        -0.12 + (reduced ? 0 : Math.sin(now / 1800 + index) * 0.035) + tiltNow.y * 0.1,
-        -0.35 + (index - 1) * -0.2 + tiltNow.x * 0.16 + (1 - progress) * Math.PI * 1.15,
-        -0.12 + (index - 1) * -0.1,
+        GALLERY_TILT_X + (reduced ? 0 : Math.sin(now / 1800 + index) * 0.03) + tiltNow.y * 0.1,
+        GALLERY_TILT_Y + tiltNow.x * 0.16 + (1 - progress) * Math.PI * 1.15,
+        0,
       );
       // Order: camera, then the visitor's turn (in screen space), then the resting angle, then the spin on its own axis
       disc.group.quaternion.copy(cameraRotation)
@@ -324,11 +336,14 @@ export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
         .multiply(new THREE.Quaternion().setFromEuler(rest))
         .multiply(new THREE.Quaternion().setFromAxisAngle(Z_AXIS, turn.roll));
       disc.setOpacity(progress);
+      // The invisible button (and its labels) covers the disc as seen on screen; the front disc wins where they overlap
+      const size = diameter * pose.size * (DEPTH / depth);
       disc.button.style.left = x + 'px';
       disc.button.style.top = pose.y + 'px';
-      disc.button.style.width = pose.size + 'px';
-      disc.button.style.height = pose.size + 'px';
-      disc.button.style.setProperty('--disc-diameter', pose.size + 'px');
+      disc.button.style.width = size + 'px';
+      disc.button.style.height = size + 'px';
+      disc.button.style.zIndex = String(discs.length - index);
+      disc.button.style.setProperty('--disc-diameter', size + 'px');
     }
     // The rim light stays behind the discs whatever the room's framing
     rim.target.position.copy(slot.getWorldPosition(new THREE.Vector3()));

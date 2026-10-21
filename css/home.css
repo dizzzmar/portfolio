@@ -477,6 +477,7 @@ body {
 /* Tras la entrada, el texto se mueve con el scroll sin transición: así sigue el dedo o la rueda sin retraso */
 .intro-line.is-live { transition: color .45s ease, text-shadow .45s ease; }
 .intro-on .intro-line { opacity: 1; transform: none; }
+.intro-line.is-leaving { opacity: 0; transition: opacity .15s ease-out; } /* al pulsar el tomate de la barra: se apaga antes de que el tomate vuelva al centro */
 .light-on .intro-line { color: #fff; text-shadow: none; }
 .intro-word { font-variant-ligatures: none; }
 .intro-line .ch { display: inline-block; }
