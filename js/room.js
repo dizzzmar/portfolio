@@ -11,7 +11,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
-import { createWiiPlayer } from './room/wii-player.js?v=20261021wii3';
+import { createWiiPlayer } from './room/wii-player.js?v=20261021wii5';
 
 const canvas = document.getElementById('room');
 const label = document.getElementById('label');

@@ -396,6 +396,13 @@ export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
   dialog.querySelector('[data-wii-close]').addEventListener('click', close);
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
   dialog.addEventListener('close', close);
+  // Clicking on the empty part of the screen (not on a disc or a button) leaves the close-up, like "Back to room".
+  // A drag that ends off the disc also lands here: it is not a click, so it is ignored once.
+  dialog.addEventListener('click', event => {
+    if (blockClick) { blockClick = false; return; }
+    const onEmpty = event.target === dialog || event.target.classList.contains('wii-choices');
+    if (onEmpty && (phase === 'choosing' || phase === 'playing')) close();
+  });
   dialog.addEventListener('pointermove', event => {
     tilt = reduced ? { x: 0, y: 0 } : { x: event.clientX / innerWidth * 2 - 1, y: event.clientY / innerHeight * 2 - 1 };
     moveDrag(event);
