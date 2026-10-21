@@ -55,9 +55,9 @@
 @media (max-width: 700px) {
   .wii-heading { top: 80px; width: 100%; }
   .wii-close { top: 20px; right: 20px; min-height: 44px; }
-  .wii-disc-title { font-size: var(--fs-xs); max-width: 28vw; }
-  .wii-disc-number { top: calc(100% + 20px); }
-  .wii-disc-title { top: calc(100% + 42px); }
+  /* En diagonal, en el móvil los rótulos caerían sobre el disco de delante: el título ya va impreso en cada disco
+     (y el botón conserva su nombre para lectores de pantalla) */
+  .wii-disc-number, .wii-disc-title { display: none; }
   .wii-player-foot { bottom: max(36px, env(safe-area-inset-bottom)); }
 }
 
