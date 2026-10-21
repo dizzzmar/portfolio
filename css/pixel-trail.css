@@ -6,12 +6,12 @@ body[data-trail="dark"] .pt-layer { --pt-bg: #f3f0df; --pt-ink: #0b0b0b; }
   position: absolute;
   display: grid;
   place-items: center;
-  width: var(--pt-cell, 72px);
-  height: var(--pt-cell, 72px);
+  width: var(--pt-cell, 40px);
+  height: var(--pt-cell, 40px);
   background: var(--pt-bg);
   color: var(--pt-ink);
   opacity: 1;
   transition: opacity .32s linear;
 }
 .pt-cell.is-out { opacity: 0; }
-.pt-cell svg { width: 46%; height: 46%; }
+.pt-cell svg { width: 52%; height: 52%; }
