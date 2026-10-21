@@ -150,7 +150,11 @@ const wiiPlayer = createWiiPlayer({
 
 // The selectable thing a mesh (or any of its parents) belongs to, or null for the rest of the room
 const words = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+// Cables belong to nothing: the lamp's red cord and the Wii's cable neither select nor light up their object
+const isCable = (object) => /\bcord\b/.test(words(object.name)) || [].concat(object.material || []).some((material) => /cable/i.test(material.name));
+
 function destinationFor(object) {
+  if (object.isMesh && isCable(object)) return null;
   for (let current = object; current && current !== scene; current = current.parent) {
     const name = words(current.name);
     const found = destinations.find((item) => item.match.test(name));
