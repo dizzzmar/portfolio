@@ -56,3 +56,9 @@ body { background: #140d09; color: #f3f0df; font-family: var(--font-ui); }
   .nav-links a { font-size: var(--fs-s); }
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+/* Pie mínimo: en escritorio, abajo a la izquierda (la sala queda a la derecha); en móvil, justo encima de la lista de objetos */
+.room-foot { position: fixed; z-index: 2; left: 24px; bottom: 24px; margin: 0; font-family: var(--font-ui); font-size: var(--fs-s); line-height: 1.4; color: rgba(243, 240, 223, .6); }
+.room-foot a { color: inherit; text-underline-offset: 3px; }
+.room-foot a:hover { color: #f3f0df; }
+@media (max-width: 700px) { .room-foot { left: 14px; bottom: 96px; } }
