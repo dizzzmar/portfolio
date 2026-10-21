@@ -55,26 +55,37 @@ function sharedTextures() {
       context.stroke();
     }
   });
-  // Back: concentric data tracks. Thickness bands make the rainbow rings; roughness grooves catch the light.
+  // Back: a real CD throws rainbow fans that turn with the light. The thickness map sweeps round the disc (two fans),
+  // with a faint ripple along the radius; fine concentric grooves in the roughness catch the light.
   const tracks = canvasTexture(1024, (context, size) => {
     const center = size / 2;
-    for (let radius = center; radius > 0; radius -= 1) {
-      const wave = 0.5 + 0.5 * Math.sin(radius * 0.09) * Math.cos(radius * 0.013);
-      const level = Math.round(70 + wave * 150 + (Math.random() - 0.5) * 18);
-      context.fillStyle = `rgb(${level} ${level} ${level})`;
+    const fan = context.createConicGradient(0, center, center);
+    for (let stop = 0; stop <= 8; stop++) {
+      const level = Math.round(110 + 110 * (0.5 + 0.5 * Math.cos(stop / 8 * Math.PI * 4)));
+      fan.addColorStop(stop / 8, `rgb(${level} ${level} ${level})`);
+    }
+    context.fillStyle = fan;
+    context.fillRect(0, 0, size, size);
+    context.globalAlpha = 0.18;
+    for (let radius = center; radius > 0; radius -= 6) {
+      context.strokeStyle = radius % 12 ? '#000' : '#fff';
+      context.lineWidth = 3;
       context.beginPath();
       context.arc(center, center, radius, 0, Math.PI * 2);
-      context.fill();
+      context.stroke();
     }
   });
   const grooves = canvasTexture(1024, (context, size) => {
     const center = size / 2;
-    for (let radius = center; radius > 0; radius -= 1.5) {
-      const level = Math.round(120 + Math.random() * 80);
-      context.fillStyle = `rgb(${level} ${level} ${level})`;
+    context.fillStyle = 'rgb(150 150 150)';
+    context.fillRect(0, 0, size, size);
+    for (let radius = center; radius > 0; radius -= 2) {
+      const level = Math.round(130 + Math.random() * 40);
+      context.strokeStyle = `rgb(${level} ${level} ${level})`;
+      context.lineWidth = 1;
       context.beginPath();
       context.arc(center, center, radius, 0, Math.PI * 2);
-      context.fill();
+      context.stroke();
     }
   });
   shared = { grain, tracks, grooves };
@@ -138,6 +149,64 @@ function labelTexture(game, index) {
   }, THREE.SRGBColorSpace);
 }
 
+// A small photo studio to reflect: dark walls, a long bright softbox overhead, a dimmer one low and warm, and two tall
+// strips at the sides. The discs' gloss picks these up as the clean streaks of a real CD as they turn.
+export function createStudioEnvironment(renderer) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 512;
+  const context = canvas.getContext('2d');
+  const wall = context.createLinearGradient(0, 0, 0, 512);
+  wall.addColorStop(0, '#9a9ca3');
+  wall.addColorStop(0.45, '#5d5f66');
+  wall.addColorStop(1, '#2a2a2e');
+  context.fillStyle = wall;
+  context.fillRect(0, 0, 1024, 512);
+  const softbox = (x, y, width, height, color, blur) => {
+    context.filter = `blur(${blur}px)`;
+    context.fillStyle = color;
+    context.fillRect(x, y, width, height);
+    context.filter = 'none';
+  };
+  // Latitude in the image: the top edge is straight up, the middle the horizon. The discs face the camera,
+  // so what they reflect sits a little above the horizon behind it: that is where the brightest strips go.
+  softbox(0, 168, 1024, 20, '#ffffff', 5);        // long strip ~30° up, all the way round
+  softbox(0, 214, 1024, 12, '#fff4e6', 4);        // a thinner one ~15° up, slightly warm
+  softbox(0, 60, 1024, 40, '#c4c4c4', 14);        // big soft light overhead (not boosted: it lights, it doesn't streak)
+  softbox(0, 318, 1024, 16, '#ffcf9e', 10);       // warm bounce from below
+  softbox(230, 80, 40, 260, '#f4f8ff', 8);        // tall strips at the sides
+  softbox(740, 80, 40, 260, '#dfeaff', 8);
+  // A canvas only holds 0–1, but a real softbox is many times brighter than the walls: that is what makes a streak
+  // show on a glossy print (the varnish only reflects ~4%). So the picture becomes a float image and the lights get a boost.
+  const { data } = context.getImageData(0, 0, 1024, 512);
+  const pixels = new Float32Array(1024 * 512 * 4);
+  for (let y = 0; y < 512; y++) {
+    for (let x = 0; x < 1024; x++) {
+      const from = (y * 1024 + x) * 4;
+      const to = ((511 - y) * 1024 + x) * 4; // float images start at the bottom row
+      let peak = 0;
+      for (let channel = 0; channel < 3; channel++) {
+        const value = Math.pow(data[from + channel] / 255, 2.2);
+        pixels[to + channel] = value;
+        peak = Math.max(peak, value);
+      }
+      const boost = 1 + 9 * THREE.MathUtils.smoothstep(peak, 0.7, 0.95);
+      for (let channel = 0; channel < 3; channel++) pixels[to + channel] *= boost;
+      pixels[to + 3] = 1;
+    }
+  }
+  const texture = new THREE.DataTexture(pixels, 1024, 512, THREE.RGBAFormat, THREE.FloatType);
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  texture.colorSpace = THREE.LinearSRGBColorSpace;
+  texture.magFilter = texture.minFilter = THREE.LinearFilter;
+  texture.needsUpdate = true;
+  const generator = new THREE.PMREMGenerator(renderer);
+  const target = generator.fromEquirectangular(texture);
+  texture.dispose();
+  generator.dispose();
+  return target.texture;
+}
+
 export function createDisc(game, index, environment) {
   const group = new THREE.Group();
   group.name = 'recently-played-' + game.id;
@@ -146,30 +215,30 @@ export function createDisc(game, index, environment) {
 
   // Every material stays transparent from the start, so fading never recompiles a shader
   const label = new THREE.MeshPhysicalMaterial({
-    map: texture, roughness: 0.42, roughnessMap: grain, metalness: 0.18,
-    clearcoat: 0.8, clearcoatRoughness: 0.14, envMapIntensity: 1.1, transparent: true,
+    map: texture, roughness: 0.4, roughnessMap: grain, metalness: 0.08, envMap: environment,
+    clearcoat: 0.85, clearcoatRoughness: 0.05, envMapIntensity: 0.75, transparent: true,
   });
   const back = new THREE.MeshPhysicalMaterial({
-    color: '#1a1e2a', metalness: 1, roughness: 0.23, roughnessMap: grooves, envMap: environment, envMapIntensity: 1.5,
+    color: '#c4c9d1', metalness: 1, roughness: 0.18, roughnessMap: grooves, envMap: environment, envMapIntensity: 1.3,
     clearcoat: 0.34, clearcoatRoughness: 0.06,
     iridescence: 1, iridescenceIOR: 1.86, iridescenceThicknessRange: [140, 900], iridescenceThicknessMap: tracks,
     transparent: true,
   });
   const mirror = new THREE.MeshPhysicalMaterial({
-    color: '#dfe3e8', metalness: 0.85, roughness: 0.26, clearcoat: 0.7, clearcoatRoughness: 0.12,
+    color: '#e6e9ee', metalness: 1, roughness: 0.12, clearcoat: 0.7, clearcoatRoughness: 0.08, envMap: environment,
     envMapIntensity: 1.45, side: THREE.DoubleSide, transparent: true,
   });
   const edge = new THREE.MeshPhysicalMaterial({
-    color: '#ffffff', metalness: 0.55, roughness: 0.06, clearcoat: 0.7, clearcoatRoughness: 0.05,
+    color: '#ffffff', metalness: 0.55, roughness: 0.06, clearcoat: 0.7, clearcoatRoughness: 0.05, envMap: environment,
     envMapIntensity: 1.8, side: THREE.DoubleSide, transparent: true,
   });
   // Clear polycarbonate: see-through, glossy, a touch frosted at the lip of the hole
   const plastic = new THREE.MeshPhysicalMaterial({
-    color: '#eef3f6', metalness: 0, roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.04,
-    envMapIntensity: 1.3, transparent: true, opacity: 0.34, depthWrite: false, side: THREE.DoubleSide,
+    color: '#eef3f6', metalness: 0, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.03, envMap: environment,
+    envMapIntensity: 1.5, transparent: true, opacity: 0.2, depthWrite: false, side: THREE.DoubleSide,
   });
   const frost = new THREE.MeshPhysicalMaterial({
-    color: '#eef0f5', metalness: 0, roughness: 0.6, clearcoat: 0.4, clearcoatRoughness: 0.3,
+    color: '#eef0f5', metalness: 0, roughness: 0.6, clearcoat: 0.4, clearcoatRoughness: 0.3, envMap: environment,
     envMapIntensity: 0.9, transparent: true, opacity: 0.62, depthWrite: false, side: THREE.DoubleSide,
   });
   const materials = [label, back, mirror, edge, plastic, frost];

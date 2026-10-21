@@ -16,6 +16,8 @@ Edit `assets/room/discs/games.json` to change the three titles or their artwork.
 
 The other suggested filenames are `assassins-creed-shadows.webp` and `pokemon-shield.webp`. Keep `artwork: null` until a file is available; the disc then uses its generated label without requesting a missing image. Artwork stays on this site. Change the `?v=` on the games JSON fetch in `wii-player.js` and its module import in `room.js` after replacing artwork or game data.
 
+Each disc is built in layers like a real CD: the printed label (or artwork) on the front, a clear plastic hub around the hole, a thin mirror band, a silver edge and a silver back with rainbow fans. They reflect a small studio painted in code (`createStudioEnvironment` in `disc.js`); its bright strips are what draw the streaks on the gloss. Drag a disc (mouse or finger) to turn it and see the back: it keeps spinning a little when let go and springs back to face you after a moment. A short press still inserts it. The tuning values (drag speed, friction, return spring, idle spin) are named constants at the top of `wii-player.js`.
+
 Mouse and touch can open the Wii directly. Keyboard users can open Recently played from the object list, Tab between the discs, or use Left/Right/Home/End to select a disc before pressing Enter. Escape and Back to room cancel the interaction safely, including during insertion. Reduced-motion mode skips the spinning entrance and shortens insertion.
 
 ## Cómo sustituir el modelo sin romperlo

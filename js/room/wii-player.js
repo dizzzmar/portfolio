@@ -1,6 +1,5 @@
 import * as THREE from 'three';
-import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
-import { createDisc } from './disc.js?v=20261021wii2';
+import { createDisc, createStudioEnvironment } from './disc.js?v=20261021wii2';
 
 const clamp = THREE.MathUtils.clamp;
 const easeOut = value => 1 - Math.pow(1 - clamp(value, 0, 1), 4);
@@ -29,19 +28,18 @@ export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const foreground = new THREE.Scene();
   foreground.environment = scene.environment;
-  foreground.add(new THREE.HemisphereLight(0xffffff, 0x484c61, 2.8));
-  const key = new THREE.DirectionalLight(0xffffff, 3);
+  foreground.add(new THREE.HemisphereLight(0xffffff, 0x484c61, 0.8));
+  const key = new THREE.DirectionalLight(0xffffff, 1.6);
   key.position.set(-2, 3, 5);
   foreground.add(key);
-  const fill = new THREE.DirectionalLight(0x9dd5ff, 2);
+  const fill = new THREE.DirectionalLight(0x9dd5ff, 0.6);
   fill.position.set(3, -1, 3);
   foreground.add(fill);
-  // A long soft light above and a cool rim behind give the discs the bright streaks a real CD catches
-  RectAreaLightUniformsLib.init();
-  const strip = new THREE.RectAreaLight(0xffffff, 1.9, 6, 0.4);
-  foreground.add(strip);
+  // A cool light from behind outlines the silver edge
   const rim = new THREE.DirectionalLight(0x499ff5, 0.75);
   foreground.add(rim, rim.target);
+  // The discs reflect a little photo studio (bright strips), made once on first open
+  let studio = null;
 
   let consoleObject = null;
   let consoleBounds = null;
@@ -122,7 +120,8 @@ export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
   function showChoices() {
     clearDiscs();
     discs = games.map((game, index) => {
-      const disc = createDisc(game, index, scene.environment);
+      studio ||= createStudioEnvironment(renderer);
+      const disc = createDisc(game, index, studio);
       foreground.add(disc.group);
       const button = document.createElement('button');
       button.type = 'button';
@@ -331,10 +330,7 @@ export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
       disc.button.style.height = pose.size + 'px';
       disc.button.style.setProperty('--disc-diameter', pose.size + 'px');
     }
-    // Lights follow the camera so the streaks sit the same way whatever the room's framing
-    const cameraPosition = camera.getWorldPosition(new THREE.Vector3());
-    strip.position.copy(cameraPosition).add(new THREE.Vector3(0, 0.6, 0.2).applyQuaternion(cameraRotation));
-    strip.lookAt(origin.lerp(cameraPosition, 0.8));
+    // The rim light stays behind the discs whatever the room's framing
     rim.target.position.copy(slot.getWorldPosition(new THREE.Vector3()));
     rim.position.copy(rim.target.position).add(new THREE.Vector3(0, 0.5, -1.2).applyQuaternion(cameraRotation));
   }
