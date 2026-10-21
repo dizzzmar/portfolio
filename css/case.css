@@ -164,7 +164,9 @@ img, video { display: block; }
   .case-meta { order: 3; }
   .case-first { padding-top: 0; }
   .case-nav { display: none; } /* en el móvil hay solo la X y el tomate: Work, About, Contact y Room están en la portada */
-  .p-track { --h: min(52vh, 460px); padding-left: var(--edge); }
+  .p-track { --h: min(52vh, 460px); padding-left: var(--edge); align-items: center; }
+  /* Cada tarjeta mide como mucho el 78% del ancho de la pantalla: se ve la foto casi entera y asoma un trozo de la siguiente (--r = ancho / alto) */
+  .p-card { height: auto; width: min(calc(var(--h) * var(--r, 1)), 78vw); }
   .p-progress { margin-left: var(--edge); }
   .case-info, .case-embed, .case-credit { grid-template-columns: 1fr; row-gap: 20px; }
   .case-film-link { grid-column: 1; justify-self: start; }
