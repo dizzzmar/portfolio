@@ -99,7 +99,7 @@ const grade = new ShaderPass({
 composer.addPass(grade);
 
 // Only these five things in the room can be selected. Add an href to one when
-// its section exists; until then it opens its own detail state.
+// its section exists; until then clicking it only zooms the camera.
 // Matched against object names reduced to lowercase words, because the loader
 // turns "Music / vinyl collection" into "Music__vinyl_collection".
 // Stickers that slap on when hovering an object. Swap the image (same 1600×567 size)
@@ -129,12 +129,6 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 let meshes = [];
 let down = null;
-const detail = document.getElementById('detail');
-const detailTitle = document.getElementById('detail-title');
-document.getElementById('detail-close').addEventListener('click', () => {
-  detail.hidden = true;
-  history.replaceState(null, '', location.pathname);
-});
 
 // The selectable thing a mesh (or any of its parents) belongs to, or null for the rest of the room
 const words = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
@@ -262,18 +256,9 @@ canvas.addEventListener('pointerup', event => {
 });
 canvas.addEventListener('pointercancel', () => { down = null; });
 
+// Clicking an object only keeps the camera zoomed on it. Only items with a page (href) navigate.
 function openItem(item) {
-  if (item.track || item.poster) return; // the record and the poster only have their sticker / poster swap: clicking opens nothing more
-  if (item.href) {
-    location.href = item.href;
-    return;
-  }
-  detailTitle.textContent = item.label;
-  const copy = document.getElementById('detail-copy');
-  copy.textContent = 'This part of the room is being prepared.';
-  detail.hidden = false;
-  location.hash = item.key;
-  document.getElementById('detail-close').focus();
+  if (item.href) location.href = item.href;
 }
 
 const sleeves = [];  // materials of the displayed vinyl sleeve, whose glow follows the lamp
