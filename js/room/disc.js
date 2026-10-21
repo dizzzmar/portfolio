@@ -145,7 +145,7 @@ function labelTexture(game, index) {
       if (context.measureText(line).width > 560) lines.push(word);
       else lines[last] = line;
     }
-    lines.forEach((line, lineIndex) => context.fillText(line, center, 700 + lineIndex * 64 - (lines.length - 1) * 32));
+    lines.forEach((line, lineIndex) => context.fillText(line, center, 748 + lineIndex * 64)); // below the clear hub, which ends ~180 px from the centre
   }, THREE.SRGBColorSpace);
 }
 
