@@ -227,7 +227,7 @@ function createWordCycler(word, { visible = true } = {}) {
   const WHEEL_PX = 1600;
   const touchPx = () => Math.max(520, innerHeight * 0.9);
   function drag(dy, perJourney) { // dy > 0 = hacia abajo
-    if (J.simple || !dy) return;
+    if (J.simple || J.hold || !dy) return; // hold: el visitante está girando el sobre escondido (js/home-sachet-egg.js)
     if (dy > 0) { if (J.target < 1 && locked()) scrub(dy / perJourney); }
     else if (J.target > 0 && (locked() || atTop())) scrub(dy / perJourney);
   }
