@@ -7,7 +7,7 @@ Frontal y reverso tienen gráfica propia y materiales PBR de plástico impreso
 con capa brillante y metalicidad mínima. Los pliegues son asimétricos, con
 marcas de presión largas en las esquinas, costuras laterales y sellos finos.
 La etiqueta frontal está generada con IA, con DIZ en arco, tipografía condensada
-e ilustración botánica detallada. Se aplica como textura de color; los reflejos
+e ilustración pequeña del tomate con sus hojas. Se aplica como textura de color; los reflejos
 y pliegues los producen el material y la geometría del modelo.
 
 ## Archivos

@@ -2,13 +2,14 @@
 
 Generada con la herramienta de imágenes de OpenAI a petición del usuario.
 Se utilizó `front.svg`, rasterizado, como guía de composición y se refinó
-la propuesta con una segunda generación para sustituir las letras con remates
-por tipografía negra sin remates, más próxima al sobre de referencia.
+la propuesta para acercarla al sobre de referencia: tipografía negra sin remates,
+texto menos comprimido y un tomate pequeño con tallos y hojas discretos.
 
 Criterios: marca DIZ en arco, escudo blanco con doble borde verde y ribete
-dorado, TOMATO KETCHUP en dos líneas de letras altas y estrechas, tomate rojo
-con hojas y tallos de ilustración botánica, fondo rojo, indicación TEAR HERE
-y lema IT HAS TO BE DIZ. La textura es plana; no incluye pliegues ni reflejos
+dorado fino, TOMATO KETCHUP en dos líneas, tomate rojo pequeño
+con hojas y tallos, fondo rojo, indicación TEAR HERE
+y lema IT HAS TO BE DIZ. Se retiraron las flores, los adornos dorados junto
+a los textos y el grabado exagerado. La textura es plana; no incluye pliegues ni reflejos
 fotográficos que interfieran con el volumen real del modelo.
 
 `front-ai.png` es el resultado final original (887 × 1774 px). El proceso de
