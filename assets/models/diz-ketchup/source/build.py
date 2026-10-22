@@ -7,6 +7,7 @@ Requires Inkscape to rasterise the editable label artwork.
 from pathlib import Path
 import math
 import subprocess
+import shutil
 
 import bpy
 import numpy as np
@@ -18,6 +19,9 @@ bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
 
 for side in ('front', 'back'):
+    if side == 'front' and (SOURCE / 'front-ai.png').exists():
+        shutil.copyfile(SOURCE / 'front-ai.png', ROOT / 'front.png')
+        continue
     subprocess.run(['inkscape', str(SOURCE / f'{side}.svg'),
                     f'--export-filename={ROOT / (side + ".png")}',
                     '--export-width=1024'], check=True)
@@ -49,10 +53,14 @@ normal_image = texture('laminate-normal', normal * .5 + .5)
 materials = []
 for side in ('front', 'back'):
     albedo = bpy.data.images.load(str(ROOT / f'{side}.png'))
-    rgba = np.array(albedo.pixels[:], dtype=np.float32).reshape(2048, 1024, 4)
+    width, height = albedo.size
+    rgba = np.array(albedo.pixels[:], dtype=np.float32).reshape(height, width, 4)
+    material_y, material_x = np.mgrid[0:height, 0:width].astype(np.float32)
+    material_x *= 1024 / width
+    material_y *= 2048 / height
     ink = np.clip((rgba[:, :, 1] - .23) * 2.3, 0, 1)
-    roughness = .30 + .04 * ink + .018 * np.sin(xx * .019 + yy * .027)
-    packed = texture(side + '-orm', np.dstack((np.ones_like(xx), roughness, .025 * np.ones_like(xx))))
+    roughness = .30 + .04 * ink + .018 * np.sin(material_x * .019 + material_y * .027)
+    packed = texture(side + '-orm', np.dstack((np.ones_like(ink), roughness, .025 * np.ones_like(ink))))
     mat = bpy.data.materials.new('DIZ / ' + side + ' printed laminate')
     mat.use_nodes = True
     nodes, links = mat.node_tree.nodes, mat.node_tree.links
