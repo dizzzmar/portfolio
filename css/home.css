@@ -36,10 +36,10 @@ body {
   animation: drift 40s ease-in-out infinite alternate;
   will-change: transform, scale;
 }
-/* Con la página ya del todo blanca, el cielo no se ve: se esconde y su movimiento se detiene (no gasta nada mientras se ven los proyectos) */
 /* Con la página ya blanca, el fondo que asoma al rebotar al final (trackpad, móvil) también es blanco, no el azul del cielo */
 body.white-on { background-color: #fff; }
-.white-on .sky { visibility: hidden; animation-play-state: paused; }
+/* Con la página ya blanca, el cielo y el grano se quitan del todo (display:none): fijos y más grandes que la pantalla (el cielo mide un 116 %), en iPad podían alargar la página y dejar bajar más allá del pie */
+.white-on .sky, .white-on .grain { display: none; }
 .sky-sharp, .sky-soft {
   position: absolute;
   inset: 0;
