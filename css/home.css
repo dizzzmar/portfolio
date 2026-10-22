@@ -37,6 +37,8 @@ body {
   will-change: transform, scale;
 }
 /* Con la página ya del todo blanca, el cielo no se ve: se esconde y su movimiento se detiene (no gasta nada mientras se ven los proyectos) */
+/* Con la página ya blanca, el fondo que asoma al rebotar al final (trackpad, móvil) también es blanco, no el azul del cielo */
+body.white-on { background-color: #fff; }
 .white-on .sky { visibility: hidden; animation-play-state: paused; }
 .sky-sharp, .sky-soft {
   position: absolute;
