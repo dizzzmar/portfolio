@@ -4,6 +4,33 @@
 
 The `destinations` array in `/js/room.js` groups the selectable objects. Names in the object list preview each camera position. The Wii opens Recently played; the other objects retain their existing camera interactions. Keep object names and material names in future exports so selection still targets the right parts.
 
+## Alfombra, carga y linterna
+
+`js/room/rug.js` coloca la gráfica plana del sobre DIZ bajo la estantería. La
+textura local `diz-rug.png` tiene 128 × 256 píxeles y filtro de vecino más
+cercano para conservar el aspecto pixelado. Es un plano que recibe las sombras
+de los objetos, sin cargar el modelo 3D del sobre.
+
+`js/room/loading.js` muestra `room-wireframe.bin` mientras se descarga y prepara
+el GLB completo. Contiene líneas extraídas de la misma habitación, sin texturas;
+aparecen de abajo arriba con un barrido verde. El porcentaje corresponde a los
+bytes descargados cuando el servidor informa del tamaño. Sin ese dato se muestra
+el volumen recibido. La vista previa se libera al terminar y no añade una espera
+obligatoria. Con movimiento reducido las líneas aparecen completas y sin barrido.
+
+Al sustituir `shelf.glb`, regenera la vista previa desde la raíz del repositorio:
+
+```sh
+blender -b --python scripts/build-room-wireframe.py
+```
+
+`js/room/lighting.js` gestiona la linterna. Un clic o toque en Tomato lamp apaga
+las luces, reflejos de entorno y emisiones de la habitación. El cursor o un
+arrastre táctil orienta un foco cálido desde la cámara, con sombras. Otro clic
+sin arrastrar, el botón Turn lights on, Escape o volver a activar el botón de
+la lámpara restauran la iluminación. La lista permite hacerlo también con teclado.
+Este modo conserva el estado de encendido de la Wii.
+
 ## Recently played
 
 The Wii interaction lives in `js/room/wii-player.js`, disc geometry and label textures in `js/room/disc.js`, and its overlay styles in `css/room-wii.css`. The room keeps one renderer: the shelf is blurred before the foreground discs are drawn. During insertion, the selected disc moves into the room scene so the actual console hides it as it enters the slot. The blue slot and green power light turn on after insertion completes.

@@ -21,7 +21,7 @@
   <link rel="preload" as="image" href="/assets/room/now-playing-sticker.webp">
   <link rel="preload" as="image" href="/assets/room/film-poster.webp">
   <link rel="stylesheet" href="/css/tokens.css?v=20261021g">
-  <link rel="stylesheet" href="/css/room.css?v=20261021wii1">
+  <link rel="stylesheet" href="/css/room.css?v=20261022a">
   <link rel="stylesheet" href="/css/room-wii.css?v=20261021wii5">
   <link rel="stylesheet" href="/css/nav-logo.css?v=20261021g">
   <link rel="stylesheet" href="/css/nav-links.css?v=20261021g">
@@ -37,7 +37,7 @@
   <script src="/js/transitions.js?v=20261020p"></script>
   <link rel="stylesheet" href="/css/cursor.css?v=20261021k">
   </head>
-<body>
+<body data-room-loading="true">
   <canvas id="room" aria-label="Interactive shelf of personal interests"></canvas>
   <nav class="nav" aria-label="Main">
     <a class="nav-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" alt=""></a>
@@ -56,7 +56,14 @@
   </section>
   <div class="label" id="label" hidden></div>
   <div class="sticker-slot floating" id="track" hidden aria-hidden="true"></div>
-  <p class="status" id="status" role="status">Entering the room…</p>
+  <div class="status" id="status" role="status">
+    <span data-loading-label>Entering the room…</span>
+    <span class="room-loading-meter" role="progressbar" aria-label="Room download" aria-valuemin="0" aria-valuemax="100"><i></i></span>
+  </div>
+  <div class="room-light-hint" id="room-light-hint" hidden>
+    <span>Move your cursor or drag to explore.</span>
+    <button type="button">Turn lights on</button>
+  </div>
   <footer class="room-foot"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span></footer>
   <dialog class="wii-player" id="wii-player" aria-labelledby="wii-title" aria-describedby="wii-status">
     <header class="wii-heading">
@@ -69,7 +76,7 @@
       <button class="wii-change" type="button" data-wii-change hidden>Change disc</button>
     </footer>
   </dialog>
-  <script type="module" src="/js/room.js?v=20261021wii5"></script>
+  <script type="module" src="/js/room.js?v=20261022a"></script>
   <script type="module" src="/js/nav-tomato.js?v=20261020b"></script>
   <script src="/js/cursor.js?v=20261021c" defer></script>
   </body>

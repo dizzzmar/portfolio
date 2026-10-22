@@ -12,11 +12,15 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
 import { createWiiPlayer } from './room/wii-player.js?v=20261021wii5';
+import { createRoomLoading } from './room/loading.js?v=20261022a';
+import { createRoomLighting } from './room/lighting.js?v=20261022a';
+import { addRoomRug } from './room/rug.js?v=20261022a';
 
 const canvas = document.getElementById('room');
 const label = document.getElementById('label');
 const status = document.getElementById('status');
 const nav = document.getElementById('object-nav');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -147,6 +151,20 @@ const wiiPlayer = createWiiPlayer({
     focusOn(null);
   },
 });
+const lighting = createRoomLighting({
+  scene, camera, renderer, canvas, reduced,
+  hint: document.getElementById('room-light-hint'),
+  onChange(dark) {
+    if (lampFlicker) { lampFlicker.start = false; setLamp(dark ? 0 : 1); }
+    scene.background.set(dark ? '#030201' : '#140d09');
+    grade.uniforms.grain.value = dark ? 0 : .035;
+    outline.enabled = bloom.enabled = !dark;
+    const button = nav.querySelector('[data-object="tomato-lamp"]');
+    button?.setAttribute('aria-pressed', String(!dark));
+    button?.setAttribute('aria-label', `Tomato lamp — turn lights ${dark ? 'on' : 'off'}`);
+    if (dark) { highlight(null); focusOn(null); }
+  },
+});
 
 // The selectable thing a mesh (or any of its parents) belongs to, or null for the rest of the room
 const words = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
@@ -255,6 +273,11 @@ function highlight(selection) {
 // an object in the 3D room. Over an object the cursor just becomes a hand, and a click opens it.
 canvas.addEventListener('pointermove', event => {
   if (event.pointerType !== 'mouse') return;
+  if (lighting.dark) {
+    canvas.style.cursor = 'crosshair';
+    document.documentElement.classList.remove('dot-hot');
+    return;
+  }
   const selection = pick(event);
   canvas.style.cursor = selection ? 'pointer' : 'default';
   document.documentElement.classList.toggle('dot-hot', Boolean(selection));
@@ -269,7 +292,9 @@ canvas.addEventListener('pointerup', event => {
   const moved = Math.hypot(event.clientX - down[0], event.clientY - down[1]);
   down = null;
   if (moved >= 8) return;
+  if (lighting.dark) { lighting.setDark(false); return; }
   const selection = pick(event);
+  if (selection?.item.key === 'tomato-lamp') { openItem(selection.item); return; }
   if (selection?.item.key === 'wii') {
     wiiPlayer.open(nav.querySelector('[data-object="wii"]'));
     return;
@@ -289,6 +314,7 @@ canvas.addEventListener('pointercancel', () => { down = null; });
 
 // Clicking an object only keeps the camera zoomed on it. Only items with a page (href) navigate.
 function openItem(item) {
+  if (item.key === 'tomato-lamp') { lighting.setDark(!lighting.dark); return; }
   if (item.key === 'wii') {
     wiiPlayer.open(nav.querySelector('[data-object="wii"]'));
     return;
@@ -331,6 +357,7 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
     meshes.push(object);
   });
   wiiPlayer.attach(model.getObjectByName('Wii'));
+  addRoomRug(scene, renderer);
   // Aim the sunset beam at the wall from the front left, scaled to the model's size
   {
     const box = new THREE.Box3().setFromObject(model);
@@ -383,6 +410,7 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
       filmPoster.flipY = false; // glTF textures aren't flipped
       filmPoster.anisotropy = renderer.capabilities.getMaxAnisotropy();
       const material = posterMesh.material = posterMesh.material.clone();
+      material.envMapIntensity = ENV_INTENSITY;
       material.onBeforeCompile = (shader) => {
         shader.uniforms.uPoster2 = { value: filmPoster };
         shader.uniforms.uPosterReveal = posterReveal;
@@ -409,11 +437,12 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
   const radius = Math.max(size.x, size.y * 1.5, size.z * 2);
   key.target.position.copy(center);
   roomFrame = { size, center };
+  lighting.attach(model, bounds);
   // Static geometry and lights can reuse their shadow maps between frames.
   renderer.shadowMap.autoUpdate = false;
   renderer.shadowMap.needsUpdate = true;
   frameRoom();
-  status.remove();
+  loading.finish();
   destinations.forEach(item => {
     if (!meshes.some(mesh => destinationFor(mesh) === item)) return;
     const button = document.createElement('button');
@@ -421,6 +450,10 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
     button.dataset.object = item.key;
     button.textContent = item.label;
     if (item.key === 'wii') button.setAttribute('aria-haspopup', 'dialog');
+    if (item.key === 'tomato-lamp') {
+      button.setAttribute('aria-pressed', 'true');
+      button.setAttribute('aria-label', 'Tomato lamp — turn lights off');
+    }
     button.addEventListener('focus', () => {
       const mesh = meshes.find(candidate => destinationFor(candidate) === item);
       highlight({ item, object: mesh });
@@ -439,12 +472,7 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
     nav.append(button);
   });
   resize(); // the list now has its final size, so frame the room around it
-}, undefined, () => {
-  status.replaceChildren('The interactive shelf needs its web export. ', Object.assign(document.createElement('a'), {
-    href: 'https://drive.google.com/file/d/1pM-4ozLStYv0whfZXHpRl56-pnqiBQid/view',
-    textContent: 'View the Blender file in Drive ↗'
-  }));
-});
+}, event => loading.progress(event), () => loading.fail());
 
 // ---------- Framing ----------
 // The free area for the room: right of the left column on desktop; between the
@@ -509,6 +537,7 @@ function resetFocus() {
 }
 
 function focusOn(item) {
+  if (lighting.dark && item && !(item === wiiDestination && wiiPlayer.active)) return;
   if (wiiPlayer.active && item !== wiiDestination) return;
   focused = item;
   returning = !item;
@@ -550,9 +579,15 @@ function resize() {
 }
 addEventListener('resize', resize);
 resize();
+const loading = createRoomLoading({
+  scene, status, reduced,
+  onBounds(box) {
+    roomFrame = { size: box.getSize(new THREE.Vector3()), center: box.getCenter(new THREE.Vector3()) };
+    resize();
+  },
+});
 // ---------- Lamp flicker on load ----------
 // Brightness keyframes [seconds, 0..1]: sputters a few times, then stays on
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const FLICKER = [[0, 0], [0.25, 0], [0.3, 0.9], [0.36, 0.05], [0.5, 0.05], [0.55, 0.6], [0.6, 0.15],
   [0.68, 1], [0.74, 0.3], [0.9, 0.3], [0.95, 0.95], [1.02, 0.55], [1.12, 1], [1.6, 1]];
 let lampFlicker = null;
@@ -599,12 +634,12 @@ function frame() {
   const dt = Math.min((now - lastFrame) / 1000, 0.05);
   const cameraStep = wiiPlayer.active ? Math.min((now - lastFrame) / 1000, 0.25) : dt;
   lastFrame = now;
-  if (lampFlicker && !reduced && lampFlicker.start !== false) {
+  if (lampFlicker && !lighting.dark && !reduced && lampFlicker.start !== false) {
     lampFlicker.t = lampFlicker.start === null ? 0 : lampFlicker.t + dt;
     lampFlicker.start = true;
     setLamp(flickerLevel(lampFlicker.t));
     if (lampFlicker.t > FLICKER[FLICKER.length - 1][0]) { setLamp(1); lampFlicker.start = false; }
-  } else if (lampFlicker && !reduced && lampFlicker.start === false) {
+  } else if (lampFlicker && !lighting.dark && !reduced && lampFlicker.start === false) {
     // Once on, the lamp breathes very slightly, like a warm bulb
     const t = now / 1000;
     setLamp(1 + Math.sin(t * 1.3) * 0.025 + Math.sin(t * 3.7) * 0.012);
@@ -620,6 +655,8 @@ function frame() {
   camera.lookAt(view.target);
   camera.updateMatrixWorld();
   wiiPlayer.update(now);
+  lighting.update(cameraStep);
+  loading.update(now);
   horizontalBlur.enabled = verticalBlur.enabled = wiiPlayer.blur > 0.01;
   horizontalBlur.uniforms.h.value = wiiPlayer.blur / (innerWidth * 3);
   verticalBlur.uniforms.v.value = wiiPlayer.blur / (innerHeight * 3);
