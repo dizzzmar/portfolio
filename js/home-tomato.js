@@ -1,6 +1,7 @@
 // HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con el nombre "MARIO DIZ"
-// Con <body data-intro="work"> se queda girando hasta pulsar Work; entonces viaja al logo
-// y avisa con "tomato-docked" para mostrar Creative antes de entrar en la lista.
+// Con <body data-intro="work"> su posición la manda el viaje de js/home-intro.js (window.homeJourney.j, de 0 a 1), que sigue a la rueda y al dedo:
+//   el tomate sale del centro, rodea el texto "Creative ___", pasa por detrás de él y sube al logo de la barra; al volver, lo hace al revés.
+// Para que pase "por detrás" del texto, el lienzo cambia de capa (debajo del texto mientras lo cruza, encima del resto).
 // En la barra solo gira; para que pese poco, el lienzo se encoge a un recuadro alrededor del tomate
 // y se dibuja a 30 fotogramas por segundo.
 // Para cambiar el texto del anillo busca  fillText('MARIO DIZ' ...
@@ -55,6 +56,14 @@ const ring = new THREE.Group();     // spins
 ringTilt.add(ring);
 pivot.add(ringTilt);
 
+const tintMaterials = []; // los materiales del tomate: se oscurecen un poco al pasar por detrás del texto (da profundidad)
+let tintNow = 1;
+function setTint(v) {
+  if (Math.abs(v - tintNow) < 0.004) return;
+  tintNow = v;
+  for (const m of tintMaterials) m.color.setScalar(v);
+}
+
 const ringTex = nameTexture();
 // Radius 0.6: just outside the tomato, whose body reaches 0.47 from its axis
 const ringGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.15, 128, 1, true);
@@ -79,12 +88,13 @@ new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
   holder.scale.setScalar(1 / Math.max(size.x, size.y, size.z));
   holder.traverse((o) => { o.renderOrder = 1; });
   spinner.add(holder);
+  holder.traverse((o) => { if (o.isMesh) [].concat(o.material).forEach((m) => { if (m && m.color && !tintMaterials.includes(m)) tintMaterials.push(m); }); });
   // Auto intro: the trip to the nav starts a moment after the tomato appears
   if (!CLICK_INTRO) introAt = clock.elapsedTime + (reduced || skipIntro ? 0 : INTRO_DELAY);
   // The 3D tomato is ready: fade it in over the flat placeholder (see .tomato-ready in home.css)
   requestAnimationFrame(() => document.documentElement.classList.add('tomato-ready'));
   // Desde otra página: el tomate ya está en la barra; tras un momento sale volando hacia el centro de la portada
-  if (FLY_FROM_NAV) setTimeout(() => { skipIntro = false; introAt = Infinity; announced = false; document.documentElement.classList.remove('land-fly'); }, 350);
+  if (FLY_FROM_NAV) setTimeout(() => { skipIntro = false; introAt = Infinity; announced = false; document.documentElement.classList.remove('land-fly'); if (CLICK_INTRO) window.homeJourney?.go(0); }, 350);
 });
 
 // ---------- Layout ----------
@@ -106,6 +116,7 @@ function resize() {
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   if (cropped) setCrop(true); else renderer.setSize(width, height, false);
+  measureText();
 }
 addEventListener('resize', resize);
 
@@ -139,6 +150,84 @@ function layout(progress) {
 
   pivot.scale.setScalar(sizePx * upp);
   pivot.position.set((xPx - width / 2) * upp, (height / 2 - yPx) * upp, 0);
+}
+
+// ---------- El viaje: del centro, rodeando el texto "Creative ___", por detrás de él y hasta el logo de la barra ----------
+// j = 0 portada · 1 en la barra. Es una función pura de j (sin estado): la rueda lo mueve hacia delante y hacia atrás y el tomate siempre
+// está donde toca. Tres tramos:
+//   A  sale del centro hacia el punto de abajo de una elipse que rodea el texto (el tomate pasa por delante),
+//   B  la recorre media vuelta: abajo → derecha → arriba. Al pasar por la derecha se mete detrás del texto y se hace más pequeño y oscuro,
+//   C  desde arriba, aún detrás, sigue hacia la izquierda, sale por el lado del texto, vuelve a ponerse delante y sube al logo.
+const lineEl = document.querySelector('.intro-line');
+const lineFirst = lineEl && lineEl.querySelector(':scope > span:first-child');
+let textW = 0, textH = 0; // tamaño estimado del bloque de texto (lo que el tomate debe rodear)
+function measureText() {
+  if (!lineFirst) return;
+  textW = lineFirst.offsetWidth * 1.3; // la palabra de abajo cambia de longitud: se deja holgura
+  textH = lineFirst.offsetHeight * 2;
+}
+document.fonts?.ready.then(measureText);
+const J_STEP = 0.16, J_ORBIT = 0.62; // fin del tramo A y fin del B
+const lerp = THREE.MathUtils.lerp;
+const smooth01 = (v) => { const t = THREE.MathUtils.clamp(v, 0, 1); return t * t * (3 - 2 * t); };
+let behindNow = false;
+function setBehind(on) {
+  if (on === behindNow) return;
+  behindNow = on;
+  canvas.style.zIndex = on ? '0' : ''; // 0: debajo del texto (z-index 1), encima del cielo; vacío: el valor del CSS (encima de todo, también de la barra)
+}
+function journeyLayout(j, J) {
+  const upp = unitsPerPixel();
+  const h = hero.getBoundingClientRect();
+  const cx = width / 2, cy = h.top + h.height / 2;
+  const heroPx = Math.min(width, h.height) * 0.5;
+  const dockPx = width < 700 ? 36 : 44;
+  const margin = width < 700 ? 14 : 24;
+  const r = firstNavLink.getBoundingClientRect();
+  const dockX = margin + dockPx / 2;
+  const dockY = (r.top + r.bottom) / 2 - dockPx * BODY_OFFSET;
+  let x, y, size, tint = 1, behind = false;
+  if (reduced || J.simple) { // sin órbita: vuelo directo del centro a la barra
+    const e = ease(j);
+    x = lerp(cx, dockX, e); y = lerp(cy, dockY, e); size = lerp(heroPx, dockPx, e);
+  } else {
+    if (!textW) measureText();
+    // Tamaño y radios de la órbita: el tomate cabe a los lados del texto y la pasada de atrás cruza su parte de arriba
+    let orbitPx = Math.min(width, h.height) * 0.3;
+    orbitPx = Math.min(orbitPx, Math.max(70, 2 * (width / 2 - textW / 2 - 10)));
+    let rx = textW / 2 + orbitPx * 0.5 + 14;
+    rx = Math.max(Math.min(rx, width / 2 - orbitPx * 0.55 - 4), width * 0.18);
+    const ry = Math.max(textH * 0.3, orbitPx * 0.4); // poco alto: la pasada de atrás cruza por detrás de las letras, no por encima
+    const at = (phi) => ({ x: cx + rx * Math.sin(phi), y: cy + ry * Math.cos(phi), s: orbitPx * (0.84 + 0.22 * Math.cos(phi)) });
+    if (j < J_STEP) {
+      const o = at(0), t = smooth01(j / J_STEP);
+      x = lerp(cx, o.x, t); y = lerp(cy, o.y, t); size = lerp(heroPx, o.s, t);
+    } else if (j < J_ORBIT) {
+      const t = (j - J_STEP) / (J_ORBIT - J_STEP);
+      const phi = Math.PI * (0.65 * t + 0.35 * smooth01(t));
+      const o = at(phi);
+      x = o.x; y = o.y; size = o.s;
+      behind = phi > Math.PI / 2;
+      tint = 0.72 + 0.28 * (Math.cos(phi) + 1) / 2;
+    } else {
+      // Curva desde arriba del texto (yendo hacia la izquierda) hasta el logo
+      const t = (j - J_ORBIT) / (1 - J_ORBIT);
+      const o = at(Math.PI);
+      const u = 1 - Math.pow(1 - t, 2.2);
+      const px = cx - (cx - dockX) * 0.62, py = o.y; // punto de control: sigue hacia la izquierda antes de subir
+      x = (1 - u) * (1 - u) * o.x + 2 * (1 - u) * u * px + u * u * dockX;
+      y = (1 - u) * (1 - u) * o.y + 2 * (1 - u) * u * py + u * u * dockY;
+      size = lerp(o.s, dockPx, smooth01(t));
+      // Detrás mientras se solape con el texto; en cuanto lo deja de cruzar, vuelve a ponerse delante
+      behind = Math.abs(x - cx) < textW / 2 + size / 2 && Math.abs(y - cy) < textH / 2 + size / 2;
+      tint = lerp(0.72, 1, smooth01(t * 1.4));
+    }
+    J.dx = THREE.MathUtils.clamp((x - cx) / Math.max(1, rx), -1, 1); // para el paralaje del texto
+  }
+  setBehind(behind);
+  setTint(tint);
+  pivot.scale.setScalar(size * upp);
+  pivot.position.set((x - width / 2) * upp, (height / 2 - y) * upp, 0);
 }
 
 // ---------- Small canvas while docked ----------
@@ -194,9 +283,6 @@ let introAt = Infinity;   // set when the model has loaded
 // Arriving at /#work or coming back with Atrás from a project: the tomato is already in the nav, no intro
 let skipIntro = AUTO && (location.hash === '#work' || document.body.classList.contains('work-engaged')); // mutable: al volver a la portada, el viaje se ve
 if (skipIntro) introAt = 0;
-document.addEventListener('work-requested', () => { introAt = Math.min(introAt, clock.elapsedTime); });
-// Pulsar el tomate de la barra (js/home-intro.js): vuelve volando al centro de la portada, con el mismo viaje, al revés
-document.addEventListener('landing-requested', () => { introAt = Infinity; announced = false; skipIntro = false; });
 let announced = false;
 if (AUTO) { docked = false; shown = 0; }
 if (FLY_FROM_NAV && AUTO) { skipIntro = true; introAt = 0; shown = 1; announced = true; } // empieza acoplado en la barra
@@ -212,35 +298,42 @@ function frame(now) {
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.elapsedTime;
 
-  // Past the threshold the tomato goes straight to the nav in one move (and back above it).
-  // It never parks halfway.
   const heroH = hero.offsetHeight;
-  if (AUTO) {
-    docked = t >= introAt;
-  } else if (!docked && scrollY > heroH * DOCK_AT) docked = true;
-  else if (docked && scrollY < heroH * UNDOCK_AT) docked = false;
-  const target = docked ? 1 : 0;
-  const step = AUTO ? (reduced || skipIntro ? 1 : dt / AUTO_TIME) : (reduced || !userMoved ? 1 : dt / DOCK_TIME);
-  shown = target > shown ? Math.min(target, shown + step) : Math.max(target, shown - step);
-  layout(ease(shown));
+  const journey = CLICK_INTRO ? window.homeJourney : null;
+  if (CLICK_INTRO) {
+    // El viaje lo manda js/home-intro.js: aquí solo se coloca el tomate donde toca (sin viaje, se queda en el centro de la portada)
+    shown = journey ? journey.j : 0;
+    journeyLayout(shown, journey || { simple: false, dx: 0 });
+  } else {
+    // Past the threshold the tomato goes straight to the nav in one move (and back above it).
+    // It never parks halfway.
+    if (AUTO) {
+      docked = t >= introAt;
+    } else if (!docked && scrollY > heroH * DOCK_AT) docked = true;
+    else if (docked && scrollY < heroH * UNDOCK_AT) docked = false;
+    const target = docked ? 1 : 0;
+    const step = AUTO ? (reduced || skipIntro ? 1 : dt / AUTO_TIME) : (reduced || !userMoved ? 1 : dt / DOCK_TIME);
+    shown = target > shown ? Math.min(target, shown + step) : Math.max(target, shown - step);
+    layout(ease(shown));
+  }
 
   // Docked and settled: draw only the small box around the tomato
-  if ((shown >= 1) !== cropped) setCrop(shown >= 1);
-  if (AUTO && shown >= 1 && !announced) { announced = true; document.dispatchEvent(new Event('tomato-docked')); }
+  if ((shown >= 0.999) !== cropped) setCrop(shown >= 0.999);
+  if (AUTO && !CLICK_INTRO && shown >= 1 && !announced) { announced = true; document.dispatchEvent(new Event('tomato-docked')); }
 
   // Keep spinning, with a gentle flying wobble
   spinner.rotation.y += dt * (reduced ? 0.3 : 0.9);
   ring.rotation.y -= dt * (reduced ? 0.2 : 0.55);
 
   // The ring floats on its own rhythm and fades out as the tomato docks in the nav
-  const ringOpacity = Math.max(0, 1 - ease(shown) * 1.6);
+  const ringOpacity = CLICK_INTRO ? 1 - smooth01(shown / 0.3) : Math.max(0, 1 - ease(shown) * 1.6);
   ringFront.material.opacity = ringOpacity;
   ringBack.material.opacity = ringOpacity * 0.35;
   ringTilt.visible = ringOpacity > 0.01;
   if (!reduced) ringTilt.position.y = Math.sin(t * 1.1 + 1.3) * 0.05;
   if (!reduced) {
     // Wobble while flying; settle down when docked so it stays level with the links
-    const calm = 1 - ease(shown);
+    const calm = CLICK_INTRO ? 1 - smooth01((shown - 0.7) / 0.3) : 1 - ease(shown);
     spinner.rotation.x = Math.sin(t * 0.8) * 0.18 * calm;
     spinner.rotation.z = Math.sin(t * 0.6) * 0.12 * calm;
     spinner.position.y = Math.sin(t * 1.4) * 0.06 * calm;
