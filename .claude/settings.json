@@ -5,9 +5,16 @@
         "source": "github",
         "repo": "anthropics/claude-plugins-official"
       }
+    },
+    "my-skills": {
+      "source": {
+        "source": "github",
+        "repo": "dizzzmar/my-skills"
+      }
     }
   },
   "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": true,
+    "emil-skills@my-skills": true
   }
 }
