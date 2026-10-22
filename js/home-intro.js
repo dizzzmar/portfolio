@@ -1,8 +1,12 @@
-// HOME · texto "Creative ___" del centro de la pantalla.
-// Cuando el tomate termina de subir al menú (aviso "tomato-docked" de js/home-tomato.js) aparece el texto,
-// la segunda palabra va cambiando: cada cambio se descifra rápido y la palabra se queda quieta un instante para poder leerla;
+// HOME · texto "Creative ___" del centro de la pantalla y recorrido del tomate.
+// El viaje (window.homeJourney.j, de 0 a 1) sigue a la rueda y al dedo mientras estás en la portada y se puede frenar, invertir y deshacer:
+//   0 = portada (el tomate gira en el centro, sin texto)
+//   · el tomate sale del centro y rodea el texto "Creative ___", que aparece detrás; pasa por detrás de él (js/home-tomato.js) y sube al logo de la barra
+//   1 = tomate en la barra, texto visible y la página se desbloquea para seguir bajando a Work.
+// Al volver arriba del todo y seguir subiendo, el viaje se deshace al revés: el tomate baja, pasa por detrás del texto y vuelve al centro.
+// Pulsar Work (o las flechas / Espacio) hace el viaje entero; pulsar el tomate de la barra lo deshace.
+// La segunda palabra va cambiando: cada cambio se descifra rápido y la palabra se queda quieta un instante para poder leerla;
 // al final se para en "Designer" y vuelve a empezar.
-// Solo se inicia al pulsar Work; la landing se queda con el tomate girando.
 // Antes de cambiar, la palabra actual se mezcla; después la siguiente se descifra de izquierda a derecha.
 // Código propio, sin librerías.
 // EDITA aquí las palabras (la primera es en la que se para):
@@ -116,109 +120,156 @@ function createWordCycler(word, { visible = true } = {}) {
   const line = document.querySelector('.intro-line');
   const first = document.querySelector('.intro-line > span:first-child');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Llegada desde el tomate de otra página (js/transitions.js pone land-fly): el tomate empieza en la barra y vuela al centro
+  const FLY_FROM_NAV = document.documentElement.classList.contains('land-fly') && !reduced;
+  const clamp01 = (v) => Math.min(1, Math.max(0, v));
+  const smooth = (v) => v * v * (3 - 2 * v);
   let started = false;
   splitLetters(first, first.textContent.trim());
   const cycler = createWordCycler(word);
 
-  function start() {
+  // ---- El viaje ----
+  // j es lo que se ve; target, adonde va. Con la rueda o el dedo (fast) j sigue a target casi pegado; al pulsar Work, una tecla o al soltar
+  // a medias, el viaje se hace solo, con salida suave, velocidad tope y frenada: nunca se queda a medias y se puede invertir en pleno vuelo.
+  const J = window.homeJourney = { j: 0, target: 0, v: 0, fast: false, simple: false, q: 0, workOn: false, dx: 0 };
+  let raf = 0, last = 0;
+  function tick(now) {
+    raf = 0;
+    const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
+    last = now;
+    if (reduced) { J.j = J.target; J.v = 0; } else {
+      const vmax = J.fast ? 5 : 0.58, acc = J.fast ? 40 : 3.4, rate = J.fast ? 12 : 4.2;
+      const want = Math.max(-vmax, Math.min(vmax, (J.target - J.j) * rate));
+      J.v += Math.max(-acc * dt, Math.min(acc * dt, want - J.v));
+      J.j = clamp01(J.j + J.v * dt);
+      if (Math.abs(J.target - J.j) < 0.0006 && Math.abs(J.v) < 0.02) { J.j = J.target; J.v = 0; }
+    }
+    apply();
+    if (J.j !== J.target || J.v) raf = requestAnimationFrame(tick);
+  }
+  const kick = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
+  const go = (t) => { J.fast = false; J.target = clamp01(t); kick(); };
+  J.go = go;
+
+  const revealOf = () => (J.simple ? 0 : reduced ? (J.j > 0.5 ? 1 : 0) : smooth(clamp01((J.j - 0.06) / 0.22)));
+  // El texto: aparece mientras el tomate sale del centro, se deja rodear y se desplaza un poco al revés que él (paralaje); después sigue al scroll
+  J.paintLine = () => {
+    const reveal = revealOf();
+    const scroll = reduced ? 0 : -(J.q || 0) * 48;
+    const rise = reduced ? 0 : (1 - reveal) * 24;
+    const drift = reduced ? 0 : -(J.dx || 0) * 16;
+    const fade = J.workOn ? 0 : reveal * (1 - smooth(clamp01((J.q || 0) / 0.5)));
+    line.style.opacity = fade.toFixed(3);
+    line.style.translate = reduced ? '' : drift.toFixed(1) + 'px ' + (rise + scroll).toFixed(1) + 'px';
+    line.style.scale = reduced ? '' : (0.965 + 0.035 * reveal).toFixed(4);
+  };
+  function startText() {
     if (started) return;
     started = true;
-    line.classList.remove('is-leaving');
     document.body.classList.add('intro-on');
     cycler.burst();
-    // Cuando termina la entrada del texto, pasa a seguir el scroll sin transición
-    setTimeout(() => line.classList.add('is-live'), reduced ? 0 : 700);
+  }
+  function stopText() {
+    if (!started) return;
+    started = false;
+    document.body.classList.remove('intro-on');
+    cycler.stop();
+  }
+  function apply() {
+    const body = document.body;
+    if (J.simple && J.j <= 0.001 && J.target <= 0.001) J.simple = false; // el tomate ya llegó al centro: el próximo viaje es el completo
+    // La página solo baja cuando el viaje está completo; hasta entonces la portada queda quieta
+    body.classList.toggle('intro-lock', !(J.j >= 0.999 && J.target >= 1));
+    body.classList.toggle('work-engaged', J.j > 0.001 || J.target > 0);
+    if (revealOf() > 0.02) startText(); else if (J.j < 0.02) stopText();
+    J.paintLine();
   }
 
-  // Work inicia el viaje del tomate, muestra Creative y después entra en la lista.
-  const unlock = () => document.body.classList.remove('intro-lock');
-  let workRequested = false, workRevealed = false, dockFallback = 0;
-  const revealWork = () => {
-    if (!workRequested || workRevealed) return;
-    workRevealed = true;
-    clearTimeout(dockFallback);
-    start();
-    // La página no baja sola: se desbloquea y el visitante hace scroll hasta los proyectos
-    setTimeout(() => {
-      unlock();
-      document.body.classList.remove('work-entering');
-    }, reduced ? 0 : 650);
+  // ---- Rueda, dedo y teclado ----
+  // Se aplican en la portada (viaje sin terminar) y, ya en Work, solo al subir estando arriba del todo.
+  const dist = () => Math.max(380, innerHeight * 0.62); // píxeles de rueda o dedo para un viaje entero
+  const locked = () => document.body.classList.contains('intro-lock');
+  const atTop = () => scrollY <= 1;
+  let settleTimer = 0;
+  const armSettle = () => {
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(() => { if (J.target > 0 && J.target < 1) go(J.target > 0.4 ? 1 : 0); }, 240);
   };
-  // Pulsar Work, o bajar con la rueda o el dedo en la portada, inicia el mismo viaje del tomate
-  const startWork = () => {
-    workRequested = true;
-    document.body.classList.add('work-engaged', 'work-entering');
-    history.replaceState(null, '', '#work');
-    document.dispatchEvent(new Event('work-requested'));
-    // También funciona si WebGL o la librería 3D no están disponibles.
-    dockFallback = setTimeout(revealWork, 1300);
-    if (reduced) revealWork();
-  };
+  function scrub(dy) {
+    if (J.simple) return;
+    if (!locked() && !(atTop() && dy < 0)) return;
+    J.fast = true;
+    J.target = clamp01(J.target + dy / dist());
+    kick();
+    armSettle();
+  }
+  addEventListener('wheel', (e) => {
+    if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    scrub(e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY);
+  }, { passive: true });
+  let touchY = null;
+  addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+  addEventListener('touchmove', (e) => {
+    if (touchY === null) return;
+    const y = e.touches[0].clientY;
+    scrub(touchY - y);
+    touchY = y;
+  }, { passive: true });
+  addEventListener('touchend', () => { touchY = null; armSettle(); }, { passive: true });
+  addEventListener('keydown', (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey || J.simple) return;
+    const onControl = e.target instanceof Element && e.target.closest('a, button, input, select, textarea');
+    if (['ArrowDown', 'PageDown', 'End', ' '].includes(e.key)) {
+      if (locked() && !(e.key === ' ' && onControl)) { e.preventDefault(); go(1); }
+    } else if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) {
+      if ((locked() || atTop()) && J.target > 0) { e.preventDefault(); go(0); }
+    }
+  });
+
+  // Pulsar Work hace el viaje entero; si ya estás en la lista, baja hasta ella.
   document.querySelector('.nav-links a[href="#work"]')?.addEventListener('click', (e) => {
     e.preventDefault();
-    if (workRequested || document.body.classList.contains('work-engaged')) {
-      if (!document.body.classList.contains('work-entering')) document.getElementById('work').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
-      return;
-    }
-    startWork();
+    history.replaceState(null, '', '#work');
+    if (J.target < 1 || locked()) { go(1); return; }
+    document.getElementById('work').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
   });
-  // Con la landing bloqueada, bajar la rueda o deslizar el dedo hacia arriba la inicia. Después estos oyentes no hacen nada.
-  let touchY = 0;
-  const goDown = () => {
-    if (workRequested || !document.body.classList.contains('intro-lock')) return;
-    startWork();
-  };
-  addEventListener('wheel', (e) => { if (e.deltaY > 0 && !e.ctrlKey) goDown(); }, { passive: true });
-  addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
-  addEventListener('touchmove', (e) => { if (touchY - e.touches[0].clientY > 12) goDown(); }, { passive: true });
 
-  // Pulsar el tomate de la barra lleva a la portada: el tomate vuelve volando al centro (js/home-tomato.js), el texto grande se apaga,
-  // la página sube sola y la portada queda bloqueada otra vez hasta que el visitante vuelva a empezar (Work, rueda o dedo).
+  // Pulsar el tomate de la barra lleva a la portada: la página sube sola y, arriba, el viaje se deshace al revés.
   const goLanding = () => {
-    clearTimeout(dockFallback);
-    document.dispatchEvent(new Event('landing-requested'));
-    line.classList.remove('is-live');
-    // El texto se apaga deprisa, antes de que llegue el tomate. Se borra también la opacidad que el scroll le deja escrita:
-    // si ya estás arriba no hay scroll que la recalcule, y "Creative ___" se quedaba a la vista con el tomate encima.
-    line.style.opacity = '';
-    line.classList.add('is-leaving');
-    document.body.classList.remove('intro-on', 'work-engaged', 'work-entering');
-    cycler.stop();
-    started = false; workRequested = false; workRevealed = false;
+    clearTimeout(settleTimer);
     history.replaceState(null, '', location.pathname + location.search);
-    const relock = () => { document.body.classList.add('intro-lock'); scrollTo({ top: 0, behavior: 'instant' }); };
-    if (scrollY < 2) { relock(); return; }
+    if (scrollY < 2) { go(0); return; }
     scrollTo({ top: 0, behavior: reduced ? 'instant' : 'smooth' });
     let done = false;
-    const finish = () => { if (done) return; done = true; removeEventListener('scroll', check); clearTimeout(timer); relock(); };
+    const finish = () => { if (done) return; done = true; removeEventListener('scroll', check); clearTimeout(timer); go(0); };
     const check = () => { if (scrollY < 2) finish(); };
-    const timer = setTimeout(finish, 1200); // si algo impide llegar arriba, se bloquea igualmente
+    const timer = setTimeout(finish, 1200); // si algo impide llegar arriba, el viaje se deshace igualmente
     addEventListener('scroll', check, { passive: true });
   };
   document.querySelector('.nav-logo')?.addEventListener('click', (e) => {
     e.preventDefault();
-    if (!document.body.classList.contains('intro-lock')) goLanding(); // si ya está en la portada, no hay nada que hacer
+    if (J.j > 0.001 || J.target > 0) goLanding(); // si ya está en la portada, no hay nada que hacer
   });
 
-  document.addEventListener('tomato-docked', revealWork);
   // Atrás restaura la posición exacta, incluso si la URL conserva #work.
-  // Los enlaces explícitos a Work entran directamente en la lista, sin deslizar la landing.
+  // Los enlaces explícitos a Work entran directamente en la lista, sin viaje.
   if (BACK && SAVED_Y > 0) {
-    document.body.classList.add('work-engaged');
-    line.classList.add('is-live'); // sin entrada animada: el texto ya está donde toca (o escondido) desde el primer fotograma
-    start();
-    unlock();
+    J.j = J.target = 1;
     // Se repite al terminar de cargar: hasta entonces la altura de la página aún cambia y el salto se vería
     const restore = () => scrollTo({ top: SAVED_Y, behavior: 'instant' });
+    apply();
     restore();
     addEventListener('load', restore, { once: true });
   } else if (location.hash === '#work') {
-    document.body.classList.add('work-engaged');
-    line.classList.add('is-live');
-    start();
-    unlock();
+    J.j = J.target = 1;
+    apply();
     requestAnimationFrame(() => document.getElementById('work').scrollIntoView({ behavior: 'instant' }));
-  }
+  } else if (FLY_FROM_NAV) {
+    // Desde otra página: el tomate empieza en la barra y vuela al centro cuando el 3D está listo (js/home-tomato.js llama a go(0))
+    J.j = 1; J.target = 0; J.simple = true;
+    apply();
+    setTimeout(() => { if (J.simple && J.j === 1) go(0); }, 2500); // por si el 3D no llega a cargar
+  } else apply();
 
   // La ráfaga solo corre mientras el texto se ve
   cycler.watch(word.parentElement, () => started);
@@ -251,12 +302,13 @@ function createWordCycler(word, { visible = true } = {}) {
     fadeEl.style.opacity = fade.toFixed(3);
     document.body.classList.toggle('light-on', fade > 0.5); // el menú y los textos pasan a oscuro cuando el fondo ya es claro
     document.body.classList.toggle('white-on', fade > 0.999); // la página ya es del todo blanca: ahora sí la barra se mezcla con "difference" (si fuera antes, el blanco de la sección taparía el cielo)
-    // El "Creative ___" sube según avanza el scroll
-    line.style.translate = still ? '' : `0 ${(-q * 48).toFixed(1)}px`;
     // Al llegar a Work, el "Creative ___" del centro desaparece: la palabra sigue en el título fijo de la izquierda
     const workOn = !!work && work.offsetTop - y < innerHeight * 0.5;
     document.body.classList.toggle('work-on', workOn);
-    line.style.opacity = workOn ? '0' : document.body.classList.contains('intro-on') ? String(1 - smooth(clamp01(q / 0.5))) : '';
+    // El texto sube con el scroll y se apaga; lo pinta window.homeJourney (también lo mueven la aparición y el paralaje del viaje)
+    const J = window.homeJourney;
+    J.q = q; J.workOn = workOn;
+    J.paintLine();
   };
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
   addEventListener('resize', update);

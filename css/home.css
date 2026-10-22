@@ -6,6 +6,8 @@
 
 /* Mientras el tomate sube al menú no se puede hacer scroll (js/home-intro.js quita la clase) */
 html:has(body.intro-lock), body.intro-lock { height: 100%; overflow: hidden; overscroll-behavior: none; }
+/* Con la portada desbloqueada, deslizar hacia abajo arriba del todo deshace el viaje del tomate: que el móvil no recargue la página */
+html { overscroll-behavior-y: contain; }
 
 /* El desplazamiento suave lo activa js/home-nav.js después de cargar: así, al volver de un
    proyecto, la home aparece directamente en su card en vez de deslizarse hasta ella. */
@@ -470,14 +472,11 @@ body {
   text-align: center;
   text-shadow: 0 2px 30px rgba(0, 20, 40, 0.25);
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.6s ease, transform 0.6s var(--ease-out);
+  /* Sin transición de opacidad ni de movimiento: el texto lo mueve js/home-intro.js en cada fotograma, siguiendo al recorrido del tomate
+     (aparece, se desplaza al revés que él y sigue al scroll) y la rueda o el dedo lo llevan sin retraso. Solo el color se funde. */
+  transition: color .45s ease, text-shadow .45s ease;
   pointer-events: none;
 }
-/* Tras la entrada, el texto se mueve con el scroll sin transición: así sigue el dedo o la rueda sin retraso */
-.intro-line.is-live { transition: color .45s ease, text-shadow .45s ease; }
-.intro-on .intro-line { opacity: 1; transform: none; }
-.intro-line.is-leaving { opacity: 0; transition: opacity .15s ease-out; } /* al pulsar el tomate de la barra: se apaga antes de que el tomate vuelva al centro */
 .light-on .intro-line { color: #fff; text-shadow: none; }
 .intro-word { font-variant-ligatures: none; }
 .intro-line .ch { display: inline-block; }
@@ -631,7 +630,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro-line { transition: none; transform: none; }
+  .intro-line { transition: none; }
   body::before { transition: none; }
 }
 
