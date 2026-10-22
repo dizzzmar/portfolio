@@ -148,7 +148,11 @@ function createWordCycler(word, { visible = true } = {}) {
     if (J.j !== J.target || J.v) raf = requestAnimationFrame(tick);
   }
   const kick = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
-  const go = (t) => { J.fast = false; J.target = clamp01(t); kick(); };
+  const go = (t) => {
+    J.fast = false; J.target = clamp01(t);
+    J.v = Math.max(-0.78, Math.min(0.78, J.v)); // al pasar de seguir la rueda a terminar solo, no se arrastra la velocidad de antes: no se pasa de largo
+    kick();
+  };
   J.go = go;
 
   const revealOf = () => (J.simple ? 0 : reduced ? (J.j > 0.5 ? 1 : 0) : smooth(clamp01((J.j - 0.06) / 0.22)));
