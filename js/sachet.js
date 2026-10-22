@@ -1,5 +1,5 @@
 // El sobre de ketchup DIZ (assets/models/diz-ketchup): versión ligera para la web (malla comprimida con meshopt y texturas webp, ~0,55 MB).
-// Lo usan la ventana de contacto (js/contact-sachet.js) y la habitación (js/room.js). Se descarga una sola vez y cada uno recibe su copia.
+// Lo usa la ventana de contacto (js/contact-sachet.js) y cualquier otra pieza que lo necesite: se descarga una sola vez y cada uno recibe su copia.
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 

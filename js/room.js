@@ -12,7 +12,6 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
 import { createWiiPlayer } from './room/wii-player.js?v=20261021wii5';
-import { loadSachet } from '/js/sachet.js?v=20261022a';
 
 const canvas = document.getElementById('room');
 const label = document.getElementById('label');
@@ -129,8 +128,6 @@ const destinations = [
   { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, focus: /^lamp (tomato diffuser|green calyx)\b/, href: null },
   { label: 'Plant', key: 'plant', match: /^(plants (eucalyptus|fluted vase)\b|plant1 fbx$)/, href: null },
   { label: 'Recently played', key: 'wii', match: /^wii\b/, focusMaterial: /Wii (pearl white|silver stand)/i, href: null },
-  // The DIZ ketchup sachet on the worktop: clicking it opens the contact window, where it is torn open (js/contact-sachet.js)
-  { label: 'Contact', key: 'ketchup', match: /\bketchup sachet\b/, href: null },
 ];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
@@ -296,36 +293,14 @@ function openItem(item) {
     wiiPlayer.open(nav.querySelector('[data-object="wii"]'));
     return;
   }
-  if (item.key === 'ketchup') { window.dizContact?.open(); return; }
   if (item.href) location.href = item.href;
-}
-
-// The sachet stands on the worktop leaning against the wall, between the record player and the tomato lamp, turned a little
-// towards the camera. It is bigger than a real one (×2) so it reads at the room's scale.
-const sachetReady = loadSachet().catch(() => null);
-function placeSachet(sachet) {
-  sachet.scale.setScalar(2);
-  sachet.rotation.set(-0.16, -0.3, 0.04, 'YXZ');
-  sachet.position.set(0.075, 0, -0.235);
-  sachet.updateMatrixWorld(true);
-  sachet.position.y = 1.213 - new THREE.Box3().setFromObject(sachet).min.y; // resting on the worktop
-  scene.add(sachet);
-  sachet.traverse((object) => {
-    if (!object.isMesh) return;
-    object.castShadow = true;
-    object.receiveShadow = true;
-    for (const material of [].concat(object.material)) material.envMapIntensity = 0.15; // glossy enough to read as plastic in the dim room
-    meshes.push(object);
-  });
 }
 
 const sleeves = [];  // materials of the displayed vinyl sleeve, whose glow follows the lamp
 let lampLevel = 1;   // 0 = lamp off, 1 = fully lit
-new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', async gltf => {
+new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
   const model = gltf.scene;
   scene.add(model);
-  const sachet = await sachetReady;
-  if (sachet) placeSachet(sachet);
   model.updateMatrixWorld(true); // world positions are needed below to place the lamp light
   let tomato = null;
   model.traverse(object => {

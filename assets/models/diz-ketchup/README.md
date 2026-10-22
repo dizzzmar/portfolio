@@ -32,7 +32,7 @@ y pliegues los producen el material y la geometría del modelo.
 
 La web usa `diz-ketchup-web.glb` (~0,55 MB): la misma pieza con la malla simplificada y comprimida (meshopt)
 y las texturas en WebP, hecha con `gltf-transform`. Se carga con `js/sachet.js` (que configura el `MeshoptDecoder`)
-en la ventana de contacto (`js/contact-sachet.js`) y en la habitación (`js/room.js`). El `diz-ketchup.glb` original queda como fuente.
+en la ventana de contacto (`js/contact-sachet.js`). El `diz-ketchup.glb` original queda como fuente.
 
 ```js
 const { scene: sachet } = await loader.loadAsync(

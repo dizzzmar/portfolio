@@ -176,6 +176,26 @@ function setBehind(on) {
   canvas.style.zIndex = on ? '0' : ''; // 0: debajo del texto (z-index 1), encima del cielo; vacío: el valor del CSS (encima de todo, también de la barra)
 }
 
+// ---------- Sorpresa: tres clics seguidos al tomate grande de la portada y cae un sobre de ketchup (js/home-sachet-egg.js) ----------
+const tomatoOnScreen = { x: 0, y: 0, r: 0, cx: 0, cy: 0, heroPx: 0 };
+let egg = null, eggLoading = false, pokes = [], poke = 0;
+addEventListener('pointerup', (e) => {
+  const J = window.homeJourney;
+  if (!CLICK_INTRO || !J || J.j > 0.001 || J.target > 0) return; // solo con el tomate grande en el centro
+  if (Math.hypot(e.clientX - tomatoOnScreen.x, e.clientY - tomatoOnScreen.y) > tomatoOnScreen.r) return;
+  poke = 1; // cada clic, el tomate da un botecito
+  const now = performance.now();
+  pokes = pokes.filter((t) => now - t < 1200).concat(now);
+  if (pokes.length < 3 || eggLoading) return;
+  pokes = [];
+  if (egg) { egg.drop(); return; }
+  eggLoading = true;
+  import('/js/home-sachet-egg.js?v=20261022a').then(({ createEgg }) => {
+    egg = createEgg({ THREE, scene, renderer, reduced, view: () => ({ width, height, upp: unitsPerPixel(), ...tomatoOnScreen }) });
+    egg.drop();
+  }).catch((err) => console.warn('Sachet surprise unavailable', err)).finally(() => { eggLoading = false; });
+});
+
 // Recorrido del viaje: puntos de paso y curva suave por ellos (se rehace solo si cambia la pantalla)
 let pathCache = null;
 const clamp01 = (v) => THREE.MathUtils.clamp(v, 0, 1);
@@ -246,6 +266,7 @@ function journeyLayout(j, J) {
   }
   setBehind(behind);
   setTint(tint);
+  tomatoOnScreen.x = x; tomatoOnScreen.y = y; tomatoOnScreen.r = size * 0.45; tomatoOnScreen.cx = cx; tomatoOnScreen.cy = cy; tomatoOnScreen.heroPx = heroPx;
   pivot.scale.setScalar(size * upp);
   pivot.position.set((x - width / 2) * upp, (height / 2 - y) * upp, 0);
 }
@@ -330,6 +351,8 @@ function frame(now) {
     lastPx = px;
     leanNow += (THREE.MathUtils.clamp(-vx / 2400, -0.3, 0.3) * (reduced ? 0 : 1) - leanNow) * Math.min(1, dt * 9);
     pivot.rotation.z = leanNow;
+    if (poke > 0) { poke = Math.max(0, poke - dt * 4); if (!reduced) pivot.scale.multiplyScalar(1 + 0.09 * Math.sin(poke * Math.PI)); }
+    egg?.update(dt, journey);
     spinBoost = reduced || !journey ? 0 : Math.min(3.4, Math.abs(journey.v) * 5.5);
   } else {
     // Past the threshold the tomato goes straight to the nav in one move (and back above it).

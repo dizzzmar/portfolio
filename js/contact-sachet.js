@@ -70,7 +70,7 @@ if (link) {
     e.preventDefault();
     open();
   });
-  window.dizContact = { open }; // la habitación lo abre al pulsar el sobre de la estantería
+  window.dizContact = { open }; // para abrirla desde otras piezas de la web
 }
 
 // ---------- El sobre en 3D ----------
