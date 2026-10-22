@@ -138,11 +138,11 @@ function createWordCycler(word, { visible = true } = {}) {
     const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
     last = now;
     if (reduced) { J.j = J.target; J.v = 0; } else {
-      const vmax = J.fast ? 5 : 0.58, acc = J.fast ? 40 : 3.4, rate = J.fast ? 12 : 4.2;
+      const vmax = J.fast ? 5 : 0.78, acc = J.fast ? 40 : 3.6, rate = J.fast ? 12 : 6;
       const want = Math.max(-vmax, Math.min(vmax, (J.target - J.j) * rate));
       J.v += Math.max(-acc * dt, Math.min(acc * dt, want - J.v));
       J.j = clamp01(J.j + J.v * dt);
-      if (Math.abs(J.target - J.j) < 0.0006 && Math.abs(J.v) < 0.02) { J.j = J.target; J.v = 0; }
+      if (Math.abs(J.target - J.j) < 0.004 && Math.abs(J.v) < 0.05) { J.j = J.target; J.v = 0; } // la cola final es imperceptible: se remata
     }
     apply();
     if (J.j !== J.target || J.v) raf = requestAnimationFrame(tick);

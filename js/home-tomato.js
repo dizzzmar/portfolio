@@ -197,7 +197,7 @@ function journeyLayout(j, J) {
     orbitPx = Math.min(orbitPx, Math.max(70, 2 * (width / 2 - textW / 2 - 10)));
     let rx = textW / 2 + orbitPx * 0.5 + 14;
     rx = Math.max(Math.min(rx, width / 2 - orbitPx * 0.55 - 4), width * 0.18);
-    const ry = Math.max(textH * 0.5, orbitPx * 0.55);
+    const ry = Math.max(textH * 0.3, orbitPx * 0.4); // poco alto: la pasada de atrás cruza por detrás de las letras, no por encima
     const at = (phi) => ({ x: cx + rx * Math.sin(phi), y: cy + ry * Math.cos(phi), s: orbitPx * (0.84 + 0.22 * Math.cos(phi)) });
     if (j < J_STEP) {
       const o = at(0), t = smooth01(j / J_STEP);
