@@ -1,28 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="2048" viewBox="0 0 1024 2048">
-  <rect width="1024" height="2048" fill="#c91c29"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="2048" viewBox="0 0 1024 2048">
+  <defs>
+    <path id="brand-arc" d="M270 763 Q512 592 754 763"/>
+    <radialGradient id="tomato" cx=".32" cy=".25" r=".8">
+      <stop stop-color="#ee6553"/><stop offset=".48" stop-color="#d83232"/><stop offset="1" stop-color="#a31e2b"/>
+    </radialGradient>
+    <path id="leaf" d="M0 0Q-31-25-26-57L-10-49-9-72 9-59 20-71 25-44 43-43Q35-13 0 0Z"/>
+  </defs>
+  <rect width="1024" height="2048" fill="#c51c28"/>
   <g fill="#fff8e7" font-family="DejaVu Sans, sans-serif" font-weight="bold" text-anchor="middle">
     <text x="788" y="233" font-size="43">TEAR</text><text x="788" y="281" font-size="43">HERE</text>
     <path d="M690 181v68m-13-22 13 25 13-25" fill="none" stroke="#fff8e7" stroke-width="8"/>
     <path d="M690 270q20 85 165 73" fill="none" stroke="#fff8e7" stroke-width="7" stroke-dasharray="18 18"/>
   </g>
   <path d="M161 546 Q512 366 863 546 L825 667 L900 667 L789 1455 Q512 1495 235 1455 L124 667 L199 667Z" fill="#ddc28c"/>
-  <path d="M183 555 Q512 395 841 555 L800 690 L874 690 L768 1434 Q512 1470 256 1434 L150 690 L224 690Z" fill="#fff9ea"/>
+  <path d="M183 555 Q512 395 841 555 L800 690 L874 690 L768 1434 Q512 1470 256 1434 L150 690 L224 690Z" fill="#f6f4e7"/>
   <path d="M220 571 Q512 432 804 571 L764 726 L831 726 L733 1395 Q512 1423 291 1395 L193 726 L260 726Z" fill="none" stroke="#127c56" stroke-width="19"/>
   <path d="M239 584 Q512 456 785 584 L746 742 L811 742 L716 1375 Q512 1398 308 1375 L213 742 L278 742Z" fill="none" stroke="#76ab86" stroke-width="4"/>
-  <g text-anchor="middle" fill="#172b25" font-family="DejaVu Sans, sans-serif" font-weight="bold">
-    <text x="512" y="700" font-size="171" letter-spacing="-9">DIZ</text>
-    <text x="512" y="764" font-size="24" letter-spacing="7" fill="#c91c29">ORIGINAL RECIPE</text>
-    <text x="512" y="901" font-size="87" textLength="526" lengthAdjust="spacingAndGlyphs">TOMATO</text>
-    <text x="512" y="999" font-size="87" textLength="526" lengthAdjust="spacingAndGlyphs">KETCHUP</text>
-    <text x="512" y="1050" font-size="21" letter-spacing="5">A LITTLE EXTRA TASTE</text>
+  <g text-anchor="middle" fill="#232323" font-family="DejaVu Sans, sans-serif" font-weight="bold">
+    <text font-size="177" letter-spacing="-6"><textPath xlink:href="#brand-arc" startOffset="50%">DIZ</textPath></text>
+    <text x="512" y="777" font-size="24" letter-spacing="5" fill="#c51c28">ORIGINAL RECIPE</text>
+    <g transform="translate(512 0) scale(.98 1)" font-family="DejaVu Sans Condensed, sans-serif" font-size="121" letter-spacing="-5">
+      <text x="0" y="921">TOMATO</text>
+      <text x="0" y="1034">KETCHUP</text>
+    </g>
+    <text x="512" y="1082" font-size="20" letter-spacing="4">A LITTLE EXTRA TASTE</text>
   </g>
-  <g stroke="#207f4a" stroke-width="7" fill="none">
-    <path d="M510 1177q-15-90 96-100m-93 55q-79-64-135-23"/>
+  <g transform="translate(102 300) scale(.8)">
+  <g stroke="#388c59" stroke-width="5" fill="none">
+    <path d="M510 1177q-15-90 96-100m-93 55q-79-64-135-23M408 1106q-91 48-75 153m272-182q45-24 54-55"/>
+    <path d="m337 1215 31-19m-30-30-31-18m36-12 24-10m257-60 31 13" stroke-width="3"/>
   </g>
-  <g fill="#27884e"><path d="M588 1090q5-54 75-37-12 43-75 37Z"/><path d="M435 1114q-54-60-90-8 39 28 90 8Z"/></g>
-  <path d="M511 1161c-106-55-132 39-105 91 38 70 146 70 182 0 30-61-4-135-77-91Z" fill="#d52431"/>
-  <path d="M514 1172q-65-51-89 9" fill="none" stroke="#ed5351" stroke-width="12" stroke-linecap="round"/>
-  <path d="m515 1168-48-26 28 0-9-30 29 20 22-25-5 36 34 4Z" fill="#267748"/>
+  <g fill="#459866" stroke="#f0f0dc" stroke-width="1.5">
+    <use xlink:href="#leaf" transform="translate(607 1078) rotate(45) scale(.85)"/>
+    <use xlink:href="#leaf" transform="translate(388 1110) rotate(-55) scale(.72)"/>
+    <use xlink:href="#leaf" transform="translate(337 1169) rotate(-65) scale(.66)"/>
+    <use xlink:href="#leaf" transform="translate(343 1207) rotate(65) scale(.62)"/>
+    <use xlink:href="#leaf" transform="translate(335 1255) rotate(-60) scale(.65)"/>
+  </g>
+  <path d="M511 1161c-39-18-78-5-88 18-34 25-18 87 12 109 40 36 110 25 139-7 35-36 27-84 2-105-16-23-39-28-65-15Z" fill="url(#tomato)"/>
+  <g fill="none" stroke-linecap="round">
+    <path d="M501 1179q-58 1-58 54" stroke="#f08b68" stroke-width="5"/>
+    <path d="M522 1186q17 52-1 103m29-108q42 36 8 85m-82-82q-32 52-1 97" stroke="#ad2630" stroke-width="2" opacity=".6"/>
+  </g>
+  <path d="m515 1176-48-26 28 0-9-30 29 20 22-25-5 36 34 4-31 10 11 16Z" fill="#267748"/>
+  </g>
   <g fill="#fff8e7" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-weight="bold">
     <text x="512" y="1654" font-size="58" textLength="727" lengthAdjust="spacingAndGlyphs">IT HAS TO BE DIZ.</text>
     <text x="512" y="1787" font-size="38">NET WT 9g</text>

@@ -3,7 +3,10 @@
 Modelo 3D de un sobre de ketchup rojo con marca DIZ. Los pliegues, el volumen
 del relleno, los dientes del borde y las líneas del termosellado están modelados
 en la geometría. El mapa de normales añade únicamente el detalle fino del laminado.
-Frontal y reverso tienen gráfica propia y materiales PBR con capa de barniz.
+Frontal y reverso tienen gráfica propia y materiales PBR de plástico impreso
+con capa brillante y metalicidad mínima. Los pliegues son asimétricos, con
+marcas de presión largas en las esquinas, costuras laterales y sellos finos.
+La etiqueta frontal lleva DIZ en arco y tipografía condensada.
 
 ## Archivos
 

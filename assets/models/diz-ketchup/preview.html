@@ -28,7 +28,7 @@
   <nav aria-label="Vistas del modelo">
     <button id="front" type="button">Frontal</button>
     <button id="back" type="button">Reverso</button>
-    <a href="diz-ketchup.glb" download>Descargar GLB</a>
+    <a href="diz-ketchup.glb?v=20261022b" download>Descargar GLB</a>
   </nav>
   <script type="module">
     import * as THREE from 'three';
@@ -66,7 +66,7 @@
     document.querySelector('#back').onclick = () => { camera.position.set(0, 0, -.30); controls.update(); };
     controls.update();
     resize();
-    new GLTFLoader().load('./diz-ketchup.glb', ({ scene: model }) => {
+    new GLTFLoader().load('./diz-ketchup.glb?v=20261022b', ({ scene: model }) => {
       scene.add(model);
       document.querySelector('#status').textContent = '';
       document.body.dataset.loaded = 'true';

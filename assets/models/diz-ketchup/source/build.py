@@ -6,7 +6,6 @@ Requires Inkscape to rasterise the editable label artwork.
 """
 from pathlib import Path
 import math
-import random
 import subprocess
 
 import bpy
@@ -15,7 +14,6 @@ from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'source'
-random.seed(41)
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
 
@@ -40,9 +38,9 @@ def texture(name, array, colorspace='Non-Color'):
 rng = np.random.default_rng(41)
 yy, xx = np.mgrid[0:2048, 0:1024].astype(np.float32)
 height = np.zeros_like(xx)
-for frequency, amplitude in [(0.11, 0.65), (0.29, 0.27), (0.71, 0.12)]:
-    height += amplitude * np.sin(xx * frequency + 1.8 * np.sin(yy * .023)) * np.sin(yy * frequency * .61)
-height += rng.normal(0, .055, height.shape)
+height += rng.normal(0, .08, height.shape)
+for shift in (1, 2, 3):
+    height = (height + np.roll(height, shift, axis=0) + np.roll(height, shift, axis=1)) / 3
 dy, dx = np.gradient(height)
 normal = np.dstack((-dx * .45, -dy * .45, np.ones_like(xx)))
 normal /= np.linalg.norm(normal, axis=2, keepdims=True)
@@ -53,14 +51,14 @@ for side in ('front', 'back'):
     albedo = bpy.data.images.load(str(ROOT / f'{side}.png'))
     rgba = np.array(albedo.pixels[:], dtype=np.float32).reshape(2048, 1024, 4)
     ink = np.clip((rgba[:, :, 1] - .23) * 2.3, 0, 1)
-    roughness = .26 + .1 * ink + .025 * np.sin(xx * .019 + yy * .027)
-    packed = texture(side + '-orm', np.dstack((np.ones_like(xx), roughness, .26 * (1 - ink) + .03)))
+    roughness = .30 + .04 * ink + .018 * np.sin(xx * .019 + yy * .027)
+    packed = texture(side + '-orm', np.dstack((np.ones_like(xx), roughness, .025 * np.ones_like(xx))))
     mat = bpy.data.materials.new('DIZ / ' + side + ' printed laminate')
     mat.use_nodes = True
     nodes, links = mat.node_tree.nodes, mat.node_tree.links
     shader = nodes.get('Principled BSDF')
-    shader.inputs['Coat Weight'].default_value = .32
-    shader.inputs['Coat Roughness'].default_value = .23
+    shader.inputs['Coat Weight'].default_value = .55
+    shader.inputs['Coat Roughness'].default_value = .17
     color = nodes.new('ShaderNodeTexImage'); color.image = albedo
     links.new(color.outputs['Color'], shader.inputs['Base Color'])
     orm = nodes.new('ShaderNodeTexImage'); orm.image = packed
@@ -74,54 +72,88 @@ for side in ('front', 'back'):
     links.new(norm.outputs['Normal'], shader.inputs['Normal'])
     materials.append(mat)
 
-# Each crease grows in from a side seam, bending and tapering into the filled body.
-creases = []
-for side in (-1, 1):
-    for k in range(12):
-        creases.append((side, .11 + k * .07 + random.uniform(-.033, .033),
-                        random.uniform(-.6, .6), random.uniform(.18, .61),
-                        random.uniform(.0007, .0024), random.uniform(.007, .027)))
+# Sparse pressure folds: irregular lengths and directions, with long corner
+# creases and a few smaller dents. Coordinates describe the flat foil pattern.
+creases = [
+    (.07, .91, .22, .76, .019, -.0014),
+    (.15, .94, .30, .88, .023, .0010),
+    (.31, .94, .36, .82, .015, -.0007),
+    (.82, .93, .74, .81, .018, -.0010),
+    (.95, .86, .81, .70, .020, .0013),
+    (.06, .76, .17, .53, .018, -.0012),
+    (.08, .60, .23, .47, .024, .0008),
+    (.04, .44, .16, .39, .016, -.0007),
+    (.06, .34, .20, .19, .023, -.0013),
+    (.17, .27, .12, .08, .019, .0014),
+    (.33, .06, .39, .19, .017, -.0010),
+    (.77, .06, .69, .21, .025, -.0016),
+    (.93, .07, .83, .29, .018, .0017),
+    (.96, .35, .84, .42, .022, -.0010),
+    (.92, .47, .78, .57, .017, .0008),
+    (.96, .66, .84, .59, .018, -.0013),
+    (.43, .77, .59, .71, .035, -.00035),
+    (.49, .32, .61, .25, .032, .0004),
+    (.08, .91, .16, .87, .012, .00065),
+    (.09, .83, .13, .71, .010, .00050),
+    (.08, .56, .15, .60, .012, -.00055),
+    (.10, .41, .14, .36, .010, .00060),
+    (.09, .16, .21, .11, .015, -.00085),
+    (.16, .07, .22, .12, .013, .00065),
+    (.72, .09, .88, .14, .015, .00080),
+    (.87, .18, .94, .24, .011, -.00060),
+    (.91, .53, .86, .62, .012, .00050),
+    (.89, .79, .95, .83, .012, -.00050),
+]
 
 NX, NZ = 120, 192
 vertices, faces, face_materials, uvs = [], [], [], []
 for back in (False, True):
     for j in range(NZ + 1):
         v = j / NZ
-        t = min(1, max(0, (v - .085) / .83))
+        t = min(1, max(0, (v - .055) / .89))
         for i in range(NX + 1):
             u = i / NX
             sx = 2 * u - 1
             filled = math.sin(math.pi * t)
-            width = .033 * (1 - .028 * math.sin(v * math.pi) ** 2)
-            edge_flutter = (.00035 * math.sin(v * 49) + .00020 * math.sin(v * 117)) * math.sin(v * math.pi)
+            width = .033 * (1 - .017 * math.sin(v * math.pi) ** 2)
+            edge_flutter = (.00013 * math.sin(v * 49) + .00008 * math.sin(v * 117)) * math.sin(v * math.pi)
             x = sx * (width + edge_flutter * abs(sx) ** 7)
             # 30 shallow teeth on both cut edges; continuous closed silhouette.
             tooth = 1 - abs((u * 30 % 1) * 2 - 1)
             z = (v - .5) * .13 + .0007 * tooth * (v ** 35 - (1 - v) ** 35)
-            bulge = .0056 * math.sin(math.pi * u) ** .63 * filled ** .51
-            bulge *= 1 + .12 * math.sin(u * 8 + v * 11 + (2 if back else 0))
+            body_u = min(1, max(0, (u - .045) / .91))
+            across = math.sin(math.pi * body_u)
+            bulge = .0048 * across ** .40 * filled ** .42
+            bulge *= 1 + .075 * math.sin(u * 8 + v * 11 + (2 if back else 0))
             crease = 0
-            for edge, start, slope, length, strength, spread in creases:
-                distance = (1 - sx * edge) / 2
-                line = start + slope * distance + .06 * math.sin(distance * 9 + start * 17) * distance
-                cross = (v - line) / spread
-                profile = math.exp(-cross * cross) - .36 * math.exp(-cross * cross / 5)
-                crease += strength * profile * math.exp(-(distance / length) ** 2) * math.sin(math.pi * min(1, distance / .07))
-            crease *= filled ** .45
-            # Crumpled broad foil plus a softer wrinkle over the printed panel.
-            ripple = .00043 * math.sin(v * 66 + u * 23) * math.sin(u * 27 - v * 17)
-            ripple += .00021 * math.sin(v * 139 + 4 * math.sin(u * 15))
-            ripple *= filled * (.2 + .8 * abs(sx) ** 2)
-            seal = .00012
-            if v < .085 or v > .915:
-                seal += .00014 * (.5 + .5 * math.cos(v * math.pi * 110))
-                seal += .00002 * math.sin(u * 102) ** 6
+            for ax, ay, bx, by, spread, strength in creases:
+                # Work in aspect-correct coordinates so folds are equally sharp
+                # whether they run vertically or diagonally.
+                du, dv = bx - ax, 2 * (by - ay)
+                pu, pv = u - ax, 2 * (v - ay + (.013 if back else 0))
+                length2 = du * du + dv * dv
+                along = (pu * du + pv * dv) / length2
+                if 0 < along < 1:
+                    cross = (pu * dv - pv * du) / math.sqrt(length2)
+                    cross += .008 * math.sin(along * math.pi * 1.7)
+                    q = cross / spread
+                    profile = math.exp(-q * q) - .38 * math.exp(-q * q / 4)
+                    crease += strength * profile * math.sin(math.pi * along) ** .55
+            crease *= filled ** .25 * across ** .25
+            # Subtle uneven tension, without a repeating wave/crosshatch pattern.
+            ripple = .00016 * math.sin(v * 21 + u * 11) * math.sin(u * 19 - v * 7)
+            ripple *= filled * across
+            seal = .00010
+            if v < .055 or v > .945:
+                seal += .00008 * (.5 + .5 * math.cos(v * math.pi * 130))
+            # Continuous bonded side seam and a small adjacent compression ridge.
+            seal += .00015 * math.exp(-((abs(sx) - .91) / .025) ** 2)
             depth = max(.00013, seal + bulge + crease + ripple)
             if back:
                 depth *= .86
             y = depth if back else -depth
             # The sealed perimeter twists slightly rather than sitting in a plane.
-            y += .00060 * math.sin(u * 8 + v * 13) * (abs(sx) ** 5 + abs(v * 2 - 1) ** 14)
+            y += .00032 * math.sin(u * 8 + v * 13) * (abs(sx) ** 5 + abs(v * 2 - 1) ** 14)
             vertices.append((x, y, z))
             uvs.append((1 - u if back else u, v))
 
@@ -156,7 +188,7 @@ for polygon, material in zip(mesh.polygons, face_materials):
     polygon.use_smooth = True
     for loop in polygon.loop_indices:
         uv_layer.data[loop].uv = uvs[mesh.loops[loop].vertex_index]
-model['dimensions_mm'] = '66 × 130 × 14 (approx.)'
+model['dimensions_mm'] = '66 × 131 × 10 (approx.)'
 model['brand'] = 'DIZ'
 model['description'] = 'Closed, filled sachet; sculpted foil folds and crimped serrated seals.'
 bpy.context.view_layer.objects.active = model
