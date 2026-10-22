@@ -18,6 +18,7 @@ export function createRoomLighting({ scene, camera, renderer, canvas, hint, redu
   const lights = new Map();
   let objects = [];
   let dark = false;
+  let darkened = false; // the lights and materials of the room have been collected (see update)
   let inside = false;
   let pointerDirty = true;
   let power = 100;
@@ -47,6 +48,7 @@ export function createRoomLighting({ scene, camera, renderer, canvas, hint, redu
       }
       lights.clear();
       materials.clear();
+      darkened = false;
       beam.visible = false;
     }
     renderer.shadowMap.needsUpdate = true;
@@ -70,30 +72,32 @@ export function createRoomLighting({ scene, camera, renderer, canvas, hint, redu
     },
     update(dt) {
       if (!dark) return;
-      // Preserve visibility/intensity independently: the Wii can keep its own
+      // The lights and materials to switch off are collected once when the room goes dark (walking the whole scene every
+      // frame was costly); each frame only keeps them off. Visibility and intensity are kept apart so the Wii can keep its own
       // power state without leaving a light on in the dark room.
-      scene.traverse(object => {
-        if (object.isLight && object !== beam) {
-          if (!lights.has(object)) lights.set(object, object.visible);
-          object.visible = false;
-        }
-        if (!object.isMesh) return;
-        for (const material of [].concat(object.material)) {
-          if (!materials.has(material)) {
+      if (!darkened) {
+        darkened = true;
+        scene.traverse(object => {
+          if (object.isLight && object !== beam && !lights.has(object)) lights.set(object, object.visible);
+          if (!object.isMesh) return;
+          for (const material of [].concat(object.material)) {
+            if (materials.has(material)) continue;
             materials.set(material, {
               environment: material.envMapIntensity,
               emission: material.emissiveIntensity,
               color: material.isMeshBasicMaterial ? material.color.clone() : null,
             });
-          } else if (material.emissiveIntensity > 0) {
-            // A game may power the console on while its background is dark.
-            materials.get(material).emission = material.emissiveIntensity;
           }
-          if (material.envMapIntensity !== undefined) material.envMapIntensity = 0;
-          if (material.emissiveIntensity !== undefined) material.emissiveIntensity = 0;
-          if (material.isMeshBasicMaterial) material.color.setScalar(0);
-        }
-      });
+        });
+      }
+      for (const light of lights.keys()) light.visible = false;
+      for (const [material, state] of materials) {
+        // A game may power the console on while its background is dark.
+        if (material.emissiveIntensity > 0) state.emission = material.emissiveIntensity;
+        if (material.envMapIntensity !== undefined) material.envMapIntensity = 0;
+        if (material.emissiveIntensity !== undefined) material.emissiveIntensity = 0;
+        if (material.isMeshBasicMaterial) material.color.setScalar(0);
+      }
       beam.visible = inside;
       if (!inside) return;
       if (pointerDirty || oldCamera.distanceToSquared(camera.position) > .000001) {
