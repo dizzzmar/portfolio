@@ -479,7 +479,14 @@ body {
 }
 .light-on .intro-line { color: #fff; text-shadow: none; }
 .intro-word { font-variant-ligatures: none; }
-.intro-line .ch { display: inline-block; }
+/* Cada letra aparece subiendo, una tras otra: js/home-intro.js recorre --r (0 a 1) y cada letra lleva su --i. La segunda palabra empieza un poco después. */
+.intro-line .ch {
+  display: inline-block;
+  --k: clamp(0, calc(var(--r, 0) * 3 - var(--i, 0) * 0.11), 1);
+  opacity: var(--k);
+  translate: 0 calc((1 - var(--k)) * 0.5em);
+}
+.intro-word .ch { --k: clamp(0, calc(var(--r, 0) * 3 - (var(--i, 0) + 3) * 0.11), 1); }
 
 /* ---------- Work: lista de proyectos ----------
    Referencia: 13322566869.com/works, con el estilo de esta web (tinta oscura, Helvetica apretada, esquinas rectas).
