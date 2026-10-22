@@ -1,5 +1,7 @@
 # Interactive shelf
 
+The web loads `shelf-web.glb`: the same file made light with `gltf-transform` (geometry compressed with meshopt, textures as WebP of at most 1024 px; 4.4 MB instead of 23 MB). After replacing `shelf.glb`, regenerate it with `gltf-transform resize shelf.glb a.glb --width 1024 --height 1024 && gltf-transform webp a.glb b.glb --quality 88 && gltf-transform meshopt b.glb shelf-web.glb`.
+
 `shelf.glb` is the Blender export of `Personal_Interests_Shelf.blend` from the portfolio's Drive room folder. It includes embedded image textures and preserves the named mesh groups used for the blue hover outline in `/js/room.js`.
 
 The `destinations` array in `/js/room.js` groups the selectable objects. Names in the object list preview each camera position. The Wii opens Recently played; the other objects retain their existing camera interactions. Keep object names and material names in future exports so selection still targets the right parts.
@@ -13,10 +15,13 @@ de los objetos, sin cargar el modelo 3D del sobre.
 
 `js/room/loading.js` muestra `room-wireframe.bin` mientras se descarga y prepara
 el GLB completo. Contiene líneas extraídas de la misma habitación, sin texturas;
-aparecen de abajo arriba con un barrido verde. El porcentaje corresponde a los
-bytes descargados cuando el servidor informa del tamaño. Sin ese dato se muestra
-el volumen recibido. La vista previa se libera al terminar y no añade una espera
-obligatoria. Con movimiento reducido las líneas aparecen completas y sin barrido.
+aparecen de abajo arriba con un barrido verde. La animación se hace siempre, también
+si la habitación ya está en la caché: mientras se descarga, las líneas van apareciendo
+poco a poco (al ritmo de la descarga); cuando ya está lista, terminan deprisa y una línea
+verde sube «montando» la habitación de verdad, que aparece por debajo de ella mientras
+las líneas de encima desaparecen. El porcentaje corresponde a los bytes descargados cuando
+el servidor informa del tamaño. Sin ese dato se muestra el volumen recibido. Con movimiento
+reducido no hay animación: la habitación aparece directamente.
 
 Al sustituir `shelf.glb`, regenera la vista previa desde la raíz del repositorio:
 

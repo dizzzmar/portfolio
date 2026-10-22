@@ -2,6 +2,8 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
@@ -12,8 +14,8 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
 import { createWiiPlayer } from './room/wii-player.js?v=20261021wii5';
-import { createRoomLoading } from './room/loading.js?v=20261022a';
-import { createRoomLighting } from './room/lighting.js?v=20261022a';
+import { createRoomLoading } from './room/loading.js?v=20261022p';
+import { createRoomLighting } from './room/lighting.js?v=20261022p';
 import { addRoomRug } from './room/rug.js?v=20261022a';
 
 const canvas = document.getElementById('room');
@@ -22,7 +24,11 @@ const status = document.getElementById('status');
 const nav = document.getElementById('object-nav');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+// Resolution: at most 1.5 pixels per CSS pixel (the room is soft, grainy and blurred in places, so 2× only costs: on an iPad
+// it is almost twice the pixels for every effect). If the frames still come late, it steps down on its own (see adaptQuality).
+let pixelRatio = Math.min(devicePixelRatio, 1.5);
+renderer.setPixelRatio(pixelRatio);
+renderer.localClippingEnabled = true; // the room is set from the bottom up while it loads (js/room/loading.js)
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 // AgX is Blender's default view transform, so colours roll off like the Blender render
 renderer.toneMapping = THREE.AgXToneMapping;
@@ -107,6 +113,15 @@ const verticalBlur = new ShaderPass(VerticalBlurShader);
 horizontalBlur.enabled = verticalBlur.enabled = false;
 composer.addPass(horizontalBlur);
 composer.addPass(verticalBlur);
+// The effects render into a texture, which is then copied to the screen. While the Wii's discs are being chosen, the blurred
+// room behind them doesn't change: then only the copy runs and the room isn't drawn again (bloom, outline, blur…) every frame.
+composer.renderToScreen = false;
+const present = new FullScreenQuad(new THREE.ShaderMaterial({
+  uniforms: { tDiffuse: { value: null } },
+  vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+  fragmentShader: 'uniform sampler2D tDiffuse; varying vec2 vUv; void main() { gl_FragColor = texture2D(tDiffuse, vUv); }',
+  depthTest: false, depthWrite: false,
+}));
 
 // Match normalized mesh names and their ancestors to the room's destinations.
 // Stickers that slap on when hovering an object. Swap the image (same 1600×567 size)
@@ -271,8 +286,16 @@ function highlight(selection) {
 
 // The camera only comes closer when hovering a NAME in the list (see the buttons below), never when hovering
 // an object in the 3D room. Over an object the cursor just becomes a hand, and a click opens it.
+// The hover test (a ray against the whole room) runs at most once per frame, not on every mouse event
+let hoverEvent = null;
 canvas.addEventListener('pointermove', event => {
   if (event.pointerType !== 'mouse') return;
+  hoverEvent = event;
+});
+function updateHover() {
+  if (!hoverEvent) return;
+  const event = hoverEvent;
+  hoverEvent = null;
   if (lighting.dark) {
     canvas.style.cursor = 'crosshair';
     document.documentElement.classList.remove('dot-hot');
@@ -281,8 +304,9 @@ canvas.addEventListener('pointermove', event => {
   const selection = pick(event);
   canvas.style.cursor = selection ? 'pointer' : 'default';
   document.documentElement.classList.toggle('dot-hot', Boolean(selection));
-});
+}
 canvas.addEventListener('pointerleave', () => {
+  hoverEvent = null;
   canvas.style.cursor = 'default';
   document.documentElement.classList.remove('dot-hot');
 });
@@ -324,7 +348,11 @@ function openItem(item) {
 
 const sleeves = [];  // materials of the displayed vinyl sleeve, whose glow follows the lamp
 let lampLevel = 1;   // 0 = lamp off, 1 = fully lit
-new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
+// shelf-web.glb is shelf.glb made light for the web (geometry compressed with meshopt, textures as WebP of at most 1024 px):
+// 4.4 MB instead of 23 MB, and about 67 MB of graphics memory instead of 150. shelf.glb stays as the source.
+const roomLoader = new GLTFLoader();
+roomLoader.setMeshoptDecoder(MeshoptDecoder);
+roomLoader.load('/assets/room/shelf-web.glb?v=20261022a', gltf => {
   const model = gltf.scene;
   scene.add(model);
   model.updateMatrixWorld(true); // world positions are needed below to place the lamp light
@@ -411,6 +439,7 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
       filmPoster.anisotropy = renderer.capabilities.getMaxAnisotropy();
       const material = posterMesh.material = posterMesh.material.clone();
       material.envMapIntensity = ENV_INTENSITY;
+      material.clippingPlanes = [loading.clip]; // clone() copies the plane; it must share the live one
       material.onBeforeCompile = (shader) => {
         shader.uniforms.uPoster2 = { value: filmPoster };
         shader.uniforms.uPosterReveal = posterReveal;
@@ -438,11 +467,17 @@ new GLTFLoader().load('/assets/room/shelf.glb?v=20261019b', gltf => {
   key.target.position.copy(center);
   roomFrame = { size, center };
   lighting.attach(model, bounds);
+  // While it is being set, the room is cut by the loading sweep (the rug too)
+  for (const root of [model, scene.getObjectByName('DIZ low-resolution rug')]) {
+    root?.traverse(object => {
+      if (object.isMesh) for (const material of [].concat(object.material)) material.clippingPlanes = [loading.clip];
+    });
+  }
   // Static geometry and lights can reuse their shadow maps between frames.
   renderer.shadowMap.autoUpdate = false;
   renderer.shadowMap.needsUpdate = true;
   frameRoom();
-  loading.finish();
+  loading.finish(bounds);
   destinations.forEach(item => {
     if (!meshes.some(mesh => destinationFor(mesh) === item)) return;
     const button = document.createElement('button');
@@ -581,6 +616,7 @@ addEventListener('resize', resize);
 resize();
 const loading = createRoomLoading({
   scene, status, reduced,
+  onShown() {},
   onBounds(box) {
     roomFrame = { size: box.getSize(new THREE.Vector3()), center: box.getCenter(new THREE.Vector3()) };
     resize();
@@ -634,7 +670,7 @@ function frame() {
   const dt = Math.min((now - lastFrame) / 1000, 0.05);
   const cameraStep = wiiPlayer.active ? Math.min((now - lastFrame) / 1000, 0.25) : dt;
   lastFrame = now;
-  if (lampFlicker && !lighting.dark && !reduced && lampFlicker.start !== false) {
+  if (lampFlicker && !lighting.dark && !reduced && lampFlicker.start !== false && !loading.busy) {
     lampFlicker.t = lampFlicker.start === null ? 0 : lampFlicker.t + dt;
     lampFlicker.start = true;
     setLamp(flickerLevel(lampFlicker.t));
@@ -657,11 +693,41 @@ function frame() {
   wiiPlayer.update(now);
   lighting.update(cameraStep);
   loading.update(now);
+  updateHover();
   horizontalBlur.enabled = verticalBlur.enabled = wiiPlayer.blur > 0.01;
   horizontalBlur.uniforms.h.value = wiiPlayer.blur / (innerWidth * 3);
   verticalBlur.uniforms.v.value = wiiPlayer.blur / (innerHeight * 3);
-  composer.render();
+  // Behind the discs, once the blur and the camera have settled, the last picture of the room is reused
+  const settled = view.pos.distanceToSquared(goal.pos) < 1e-8 && view.target.distanceToSquared(goal.target) < 1e-8;
+  const still = wiiPlayer.active && wiiPlayer.blur >= 8.99 && settled && !lighting.dark;
+  frozenFrames = still ? frozenFrames + 1 : 0;
+  if (frozenFrames < 3) composer.render(); // a couple of frames more, so the last one is complete
+  present.material.uniforms.tDiffuse.value = composer.readBuffer.texture;
+  renderer.setRenderTarget(null);
+  present.render(renderer);
   wiiPlayer.render();
+  adaptQuality(now);
   requestAnimationFrame(frame);
+}
+
+// ---------- Adaptive resolution ----------
+// If the frames keep coming late (on average slower than ~40 fps for a second), the resolution steps down a notch, down to 1×.
+// It never steps back up during the visit, so it doesn't swing back and forth.
+let frozenFrames = 0;
+let slowSince = null, sample = [];
+function adaptQuality(now) {
+  if (document.hidden || loading.busy || pixelRatio <= 1) return;
+  sample.push(now);
+  if (sample.length < 30) return;
+  const average = (sample[sample.length - 1] - sample[0]) / (sample.length - 1);
+  sample = [];
+  if (average < 25) { slowSince = null; return; }
+  if (slowSince === null) { slowSince = now; return; }
+  if (now - slowSince < 1000) return;
+  slowSince = null;
+  pixelRatio = Math.max(1, pixelRatio - 0.25);
+  renderer.setPixelRatio(pixelRatio);
+  composer.setPixelRatio(pixelRatio);
+  resize();
 }
 requestAnimationFrame(frame);
