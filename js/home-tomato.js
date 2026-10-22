@@ -178,10 +178,42 @@ function setBehind(on) {
 
 // ---------- Sorpresa: tres clics seguidos al tomate grande de la portada y cae un sobre de ketchup (js/home-sachet-egg.js) ----------
 const tomatoOnScreen = { x: 0, y: 0, r: 0, cx: 0, cy: 0, heroPx: 0 };
+// El sobre sustituye al tomate: este sale volando hacia arriba (out) y, cuando el sobre se quita, vuelve cayendo desde arriba y rebota en su sitio (fall)
+const tomatoFx = { mode: null, t: 0, off: 0, vy: 0, squash: 0 };
+const tomatoControl = {
+  swapOut() { tomatoFx.mode = 'out'; tomatoFx.t = reduced ? 1 : 0; },
+  fallBack() {
+    pivot.visible = true;
+    tomatoFx.mode = 'fall';
+    tomatoFx.off = reduced ? 0 : -(tomatoOnScreen.cy + tomatoOnScreen.heroPx);
+    tomatoFx.vy = 0;
+  },
+  restore() { tomatoFx.mode = null; tomatoFx.squash = 0; pivot.visible = true; if (window.homeJourney) window.homeJourney.hold = false; },
+};
+function applyTomatoFx(dt) {
+  if (!tomatoFx.mode) return;
+  const fall = tomatoOnScreen.cy + tomatoOnScreen.heroPx;
+  if (tomatoFx.mode === 'out') {
+    tomatoFx.t = Math.min(1, tomatoFx.t + dt / 0.38);
+    tomatoFx.off = -tomatoFx.t * tomatoFx.t * fall * 1.15; // se va acelerando hacia arriba
+    if (tomatoFx.t >= 1) { tomatoFx.mode = 'hidden'; pivot.visible = false; }
+  } else if (tomatoFx.mode === 'fall') {
+    tomatoFx.vy += 2800 * dt;
+    tomatoFx.off += tomatoFx.vy * dt;
+    if (tomatoFx.off >= 0) {
+      tomatoFx.off = 0;
+      if (tomatoFx.vy > 380 && !reduced) { tomatoFx.vy = -tomatoFx.vy * 0.34; tomatoFx.squash = 1; } // rebota
+      else tomatoControl.restore(); // ya está en su sitio: el viaje vuelve a funcionar
+    }
+  }
+  tomatoFx.squash = Math.max(0, tomatoFx.squash - dt * 4);
+  if (tomatoFx.mode === 'out' || tomatoFx.mode === 'fall') pivot.position.y -= tomatoFx.off * unitsPerPixel();
+  if (tomatoFx.squash > 0) pivot.scale.set(pivot.scale.x * (1 + 0.09 * tomatoFx.squash), pivot.scale.y * (1 - 0.14 * tomatoFx.squash), pivot.scale.z);
+}
 let egg = null, eggLoading = false, pokes = [], poke = 0;
 addEventListener('pointerup', (e) => {
   const J = window.homeJourney;
-  if (!CLICK_INTRO || !J || J.j > 0.001 || J.target > 0) return; // solo con el tomate grande en el centro
+  if (!CLICK_INTRO || !J || J.j > 0.001 || J.target > 0 || egg?.active() || tomatoFx.mode) return; // solo con el tomate grande en el centro
   if (Math.hypot(e.clientX - tomatoOnScreen.x, e.clientY - tomatoOnScreen.y) > tomatoOnScreen.r) return;
   poke = 1; // cada clic, el tomate da un botecito
   const now = performance.now();
@@ -190,8 +222,8 @@ addEventListener('pointerup', (e) => {
   pokes = [];
   if (egg) { egg.drop(); return; }
   eggLoading = true;
-  import('/js/home-sachet-egg.js?v=20261022a').then(({ createEgg }) => {
-    egg = createEgg({ THREE, scene, renderer, reduced, view: () => ({ width, height, upp: unitsPerPixel(), ...tomatoOnScreen }) });
+  import('/js/home-sachet-egg.js?v=20261022b').then(({ createEgg }) => {
+    egg = createEgg({ THREE, scene, renderer, reduced, tomato: tomatoControl, view: () => ({ width, height, upp: unitsPerPixel(), ...tomatoOnScreen }) });
     egg.drop();
   }).catch((err) => console.warn('Sachet surprise unavailable', err)).finally(() => { eggLoading = false; });
 });
@@ -351,6 +383,7 @@ function frame(now) {
     lastPx = px;
     leanNow += (THREE.MathUtils.clamp(-vx / 2400, -0.3, 0.3) * (reduced ? 0 : 1) - leanNow) * Math.min(1, dt * 9);
     pivot.rotation.z = leanNow;
+    applyTomatoFx(dt);
     if (poke > 0) { poke = Math.max(0, poke - dt * 4); if (!reduced) pivot.scale.multiplyScalar(1 + 0.09 * Math.sin(poke * Math.PI)); }
     egg?.update(dt, journey);
     spinBoost = reduced || !journey ? 0 : Math.min(3.4, Math.abs(journey.v) * 5.5);

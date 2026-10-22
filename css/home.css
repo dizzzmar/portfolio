@@ -674,6 +674,7 @@ body.white-on { background-color: #fff; }
 .light-on .site-foot { color: rgba(12, 12, 11, .55); }
 .light-on .site-foot a:hover { color: #0c0c0b; }
 
-/* Sorpresa del sobre de ketchup (js/home-sachet-egg.js): mano al pasar por encima y al girarlo */
+/* Sorpresa del sobre de ketchup (js/home-sachet-egg.js): mano al pasar por encima y al girarlo; con el sobre puesto, el dedo no desplaza la página */
+html.egg-on, html.egg-on body { touch-action: none; }
 html.egg-hover, html.egg-hover body { cursor: grab; }
 html.egg-grab, html.egg-grab body { cursor: grabbing; user-select: none; }

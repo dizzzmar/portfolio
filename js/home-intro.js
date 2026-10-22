@@ -245,7 +245,7 @@ function createWordCycler(word, { visible = true } = {}) {
   }, { passive: true });
   addEventListener('touchend', () => { touchY = null; }, { passive: true });
   addEventListener('keydown', (e) => {
-    if (e.altKey || e.ctrlKey || e.metaKey || J.simple) return;
+    if (e.altKey || e.ctrlKey || e.metaKey || J.simple || J.hold) return;
     const onControl = e.target instanceof Element && e.target.closest('a, button, input, select, textarea');
     const down = { ArrowDown: 0.1, PageDown: 0.3, ' ': 0.3, End: 1 }[e.key];
     const up = { ArrowUp: 0.1, PageUp: 0.3, Home: 1 }[e.key];
