@@ -170,7 +170,7 @@ document.fonts?.ready.then(measureText);
 const J_STEP = 0.16, J_ORBIT = 0.62; // fin del tramo A y fin del B
 const lerp = THREE.MathUtils.lerp;
 const smooth01 = (v) => { const t = THREE.MathUtils.clamp(v, 0, 1); return t * t * (3 - 2 * t); };
-let behindNow = false;
+let behindNow = false, lastPx = 0, leanNow = 0, spinBoost = 0;
 function setBehind(on) {
   if (on === behindNow) return;
   behindNow = on;
@@ -198,7 +198,12 @@ function journeyLayout(j, J) {
     let rx = textW / 2 + orbitPx * 0.5 + 14;
     rx = Math.max(Math.min(rx, width / 2 - orbitPx * 0.55 - 4), width * 0.18);
     const ry = Math.max(textH * 0.3, orbitPx * 0.4); // poco alto: la pasada de atrás cruza por detrás de las letras, no por encima
-    const at = (phi) => ({ x: cx + rx * Math.sin(phi), y: cy + ry * Math.cos(phi), s: orbitPx * (0.84 + 0.22 * Math.cos(phi)) });
+    // La elipse va ligeramente inclinada (como una órbita vista en perspectiva): por la derecha sube y por la izquierda baja
+    const tilt = -0.2, ct = Math.cos(tilt), st = Math.sin(tilt);
+    const at = (phi) => {
+      const ox = rx * Math.sin(phi), oy = ry * Math.cos(phi);
+      return { x: cx + ox * ct - oy * st, y: cy + ox * st + oy * ct, s: orbitPx * (0.84 + 0.22 * Math.cos(phi)) };
+    };
     if (j < J_STEP) {
       const o = at(0), t = smooth01(j / J_STEP);
       x = lerp(cx, o.x, t); y = lerp(cy, o.y, t); size = lerp(heroPx, o.s, t);
@@ -304,6 +309,13 @@ function frame(now) {
     // El viaje lo manda js/home-intro.js: aquí solo se coloca el tomate donde toca (sin viaje, se queda en el centro de la portada)
     shown = journey ? journey.j : 0;
     journeyLayout(shown, journey || { simple: false, dx: 0 });
+    // Se inclina hacia donde va (según la velocidad horizontal en pantalla) y gira más deprisa mientras vuela
+    const px = pivot.position.x / unitsPerPixel();
+    const vx = dt > 0 ? (px - lastPx) / dt : 0;
+    lastPx = px;
+    leanNow += (THREE.MathUtils.clamp(-vx / 2400, -0.3, 0.3) * (reduced ? 0 : 1) - leanNow) * Math.min(1, dt * 9);
+    pivot.rotation.z = leanNow;
+    spinBoost = reduced || !journey ? 0 : Math.min(3.4, Math.abs(journey.v) * 5.5);
   } else {
     // Past the threshold the tomato goes straight to the nav in one move (and back above it).
     // It never parks halfway.
@@ -322,8 +334,8 @@ function frame(now) {
   if (AUTO && !CLICK_INTRO && shown >= 1 && !announced) { announced = true; document.dispatchEvent(new Event('tomato-docked')); }
 
   // Keep spinning, with a gentle flying wobble
-  spinner.rotation.y += dt * (reduced ? 0.3 : 0.9);
-  ring.rotation.y -= dt * (reduced ? 0.2 : 0.55);
+  spinner.rotation.y += dt * (reduced ? 0.3 : 0.9 + spinBoost);
+  ring.rotation.y -= dt * (reduced ? 0.2 : 0.55 + spinBoost * 0.6);
 
   // The ring floats on its own rhythm and fades out as the tomato docks in the nav
   const ringOpacity = CLICK_INTRO ? 1 - smooth01(shown / 0.3) : Math.max(0, 1 - ease(shown) * 1.6);
