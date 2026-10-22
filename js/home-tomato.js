@@ -167,7 +167,6 @@ function measureText() {
   textH = lineFirst.offsetHeight * 2;
 }
 document.fonts?.ready.then(measureText);
-const J_STEP = 0.16, J_ORBIT = 0.62; // fin del tramo A y fin del B
 const lerp = THREE.MathUtils.lerp;
 const smooth01 = (v) => { const t = THREE.MathUtils.clamp(v, 0, 1); return t * t * (3 - 2 * t); };
 let behindNow = false, lastPx = 0, leanNow = 0, spinBoost = 0;
@@ -175,6 +174,30 @@ function setBehind(on) {
   if (on === behindNow) return;
   behindNow = on;
   canvas.style.zIndex = on ? '0' : ''; // 0: debajo del texto (z-index 1), encima del cielo; vacío: el valor del CSS (encima de todo, también de la barra)
+}
+
+// Recorrido del viaje: puntos de paso y curva suave por ellos (se rehace solo si cambia la pantalla)
+let pathCache = null;
+const clamp01 = (v) => THREE.MathUtils.clamp(v, 0, 1);
+function buildPath(key, at, cx, cy, heroPx, dockX, dockY, dockPx) {
+  const phis = [0, Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 4, Math.PI];
+  const pts = [{ x: cx, y: cy, s: heroPx, tint: 1 }];
+  phis.forEach((phi) => { const o = at(phi); pts.push({ x: o.x, y: o.y, s: o.s, tint: 0.72 + 0.28 * (Math.cos(phi) + 1) / 2 }); });
+  const top = at(Math.PI), qx = cx - (cx - dockX) * 0.62, qy = top.y;
+  [0.34, 0.68, 1].forEach((t) => { // salida: Bézier desde arriba del texto, hacia la izquierda y sube al logo
+    const u = 1 - Math.pow(1 - t, 2.2);
+    pts.push({
+      x: (1 - u) * (1 - u) * top.x + 2 * (1 - u) * u * qx + u * u * dockX,
+      y: (1 - u) * (1 - u) * top.y + 2 * (1 - u) * u * qy + u * u * dockY,
+      s: lerp(top.s, dockPx, smooth01(t)), tint: lerp(0.72, 1, smooth01(t * 1.4)),
+    });
+  });
+  const DIV = 40, n = pts.length;
+  const curve = new THREE.CatmullRomCurve3(pts.map((p) => new THREE.Vector3(p.x, p.y, 0)), false, 'centripetal');
+  curve.arcLengthDivisions = DIV * (n - 1);
+  const L = curve.getLengths(), total = L[L.length - 1];
+  const f = pts.map((_, i) => L[i * DIV] / total); // dónde cae cada punto de paso en j
+  return { key, curve, f, size: pts.map((p) => p.s), tint: pts.map((p) => p.tint), swap: f[3], top: f[5] };
 }
 function journeyLayout(j, J) {
   const upp = unitsPerPixel();
@@ -204,29 +227,21 @@ function journeyLayout(j, J) {
       const ox = rx * Math.sin(phi), oy = ry * Math.cos(phi);
       return { x: cx + ox * ct - oy * st, y: cy + ox * st + oy * ct, s: orbitPx * (0.84 + 0.22 * Math.cos(phi)) };
     };
-    if (j < J_STEP) {
-      const o = at(0), t = smooth01(j / J_STEP);
-      x = lerp(cx, o.x, t); y = lerp(cy, o.y, t); size = lerp(heroPx, o.s, t);
-    } else if (j < J_ORBIT) {
-      const t = (j - J_STEP) / (J_ORBIT - J_STEP);
-      const phi = Math.PI * (0.65 * t + 0.35 * smooth01(t));
-      const o = at(phi);
-      x = o.x; y = o.y; size = o.s;
-      behind = phi > Math.PI / 2;
-      tint = 0.72 + 0.28 * (Math.cos(phi) + 1) / 2;
-    } else {
-      // Curva desde arriba del texto (yendo hacia la izquierda) hasta el logo
-      const t = (j - J_ORBIT) / (1 - J_ORBIT);
-      const o = at(Math.PI);
-      const u = 1 - Math.pow(1 - t, 2.2);
-      const px = cx - (cx - dockX) * 0.62, py = o.y; // punto de control: sigue hacia la izquierda antes de subir
-      x = (1 - u) * (1 - u) * o.x + 2 * (1 - u) * u * px + u * u * dockX;
-      y = (1 - u) * (1 - u) * o.y + 2 * (1 - u) * u * py + u * u * dockY;
-      size = lerp(o.s, dockPx, smooth01(t));
-      // Detrás mientras se solape con el texto; en cuanto lo deja de cruzar, vuelve a ponerse delante
-      behind = Math.abs(x - cx) < textW / 2 + size / 2 && Math.abs(y - cy) < textH / 2 + size / 2;
-      tint = lerp(0.72, 1, smooth01(t * 1.4));
-    }
+    // Todo el recorrido es una sola curva suave (spline) que pasa por unos puntos: centro → delante abajo → órbita por la derecha → arriba por detrás
+    // → hacia la izquierda y arriba hasta el logo. Se recorre a velocidad constante (j = fracción de la longitud), así no hay cambios bruscos de ritmo.
+    const key = [width, h.top, h.height, textW, textH, dockX, dockY, rx, ry, orbitPx].map((v) => Math.round(v)).join();
+    if (!pathCache || pathCache.key !== key) pathCache = buildPath(key, at, cx, cy, heroPx, dockX, dockY, dockPx);
+    const P = pathCache;
+    const pt = P.curve.getPointAt(clamp01(j));
+    x = pt.x; y = pt.y;
+    // Tamaño y tono: se interpolan suavemente entre los puntos de paso (sin saltos)
+    const k = P.f; let seg = 0;
+    while (seg < k.length - 2 && j > k[seg + 1]) seg++;
+    const e = smooth01((j - k[seg]) / Math.max(1e-6, k[seg + 1] - k[seg]));
+    size = lerp(P.size[seg], P.size[seg + 1], e);
+    tint = lerp(P.tint[seg], P.tint[seg + 1], e);
+    // Delante hasta pasar el lado derecho de la órbita; desde ahí detrás, y en cuanto deja de cruzar el texto, delante otra vez
+    if (j >= P.swap) behind = j < P.top ? true : Math.abs(x - cx) < textW / 2 + size / 2 && Math.abs(y - cy) < textH / 2 + size / 2;
     J.dx = THREE.MathUtils.clamp((x - cx) / Math.max(1, rx), -1, 1); // para el paralaje del texto
   }
   setBehind(behind);

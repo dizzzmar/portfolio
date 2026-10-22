@@ -133,12 +133,20 @@ function createWordCycler(word, { visible = true } = {}) {
   const cycler = createWordCycler(word);
 
   // ---- El viaje ----
-  // j es lo que se ve (de 0 a 1) y target adonde va. Un gesto lo lanza y lo hace entero, con salida y llegada suaves (curva de Hermite):
-  // si se interrumpe (gesto contrario en pleno vuelo), el nuevo tramo arranca con la velocidad que llevaba, así no hay tirones.
-  // Va por tiempo real, no por fotogramas: en un móvil lento dura lo mismo, solo se ve con menos pasos.
+  // j es lo que se ve (de 0 a 1) y target adonde tiene que llegar. Al deslizar (rueda, dedo, flechas) el target avanza lo que avanzas tú, y j lo sigue
+  // con un amortiguador crítico: sin tirones, sin rebotes, y si te paras el tomate se queda donde esté (no vuelve ni sigue solo).
+  // Los botones (Work, el tomate de la barra, Inicio/Fin) lanzan el viaje entero con una curva de Hermite que empieza con la velocidad que llevaba.
+  // Todo va por tiempo real, no por fotogramas: en un móvil lento dura lo mismo, solo se ve con menos pasos.
   const J = window.homeJourney = { j: 0, target: 0, v: 0, simple: false, q: 0, zoom: 0, workOn: false, dx: 0 };
   const FULL = 2.5, FULL_SIMPLE = 1.2; // segundos del viaje completo (el simple es el vuelo directo de otra página)
-  let raf = 0, anim = null;
+  const SMOOTH = 0.32; // segundos que tarda j en alcanzar al target al deslizar (más = más suave y lento)
+  let raf = 0, anim = null, last = 0;
+  function scrub(d) { // d = fracción del viaje que se avanza (negativa = hacia atrás)
+    anim = null;
+    J.target = clamp01(J.target + d);
+    if (reduced) { J.j = J.target; J.v = 0; apply(); return; }
+    kick();
+  }
   function go(t) {
     t = clamp01(t);
     J.target = t;
@@ -158,10 +166,19 @@ function createWordCycler(word, { visible = true } = {}) {
       J.v = ((6 * u2 - 6 * u) * anim.p0 + (3 * u2 - 4 * u + 1) * anim.m0 + (-6 * u2 + 6 * u) * anim.p1) / anim.dur;
       if (u >= 1) { J.j = anim.p1; J.v = 0; anim = null; }
     }
+    else if (Math.abs(J.j - J.target) > 0.0002 || Math.abs(J.v) > 0.002) {
+      // Amortiguador crítico (SmoothDamp): se acerca al target sin pasarse y frenando solo
+      const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
+      const om = 2 / SMOOTH, x = om * dt, ex = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
+      const ch = J.j - J.target, tmp = (J.v + om * ch) * dt;
+      J.v = (J.v - om * tmp) * ex;
+      J.j = clamp01(J.target + (ch + tmp) * ex);
+    } else { J.j = J.target; J.v = 0; }
+    last = now;
     apply();
-    if (anim) raf = requestAnimationFrame(tick);
+    if (anim || Math.abs(J.j - J.target) > 0.0002 || Math.abs(J.v) > 0.002) raf = requestAnimationFrame(tick);
   }
-  const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
+  const kick = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
   J.go = go;
 
   const revealOf = () => (J.simple ? 0 : reduced ? (J.j > 0.5 ? 1 : 0) : smooth(clamp01((J.j - 0.06) / 0.4)));
@@ -202,40 +219,40 @@ function createWordCycler(word, { visible = true } = {}) {
   }
 
   // ---- Rueda, dedo y teclado ----
-  // Un gesto lanza el viaje (abajo: hacia Work · arriba: de vuelta a la portada) y se hace entero aunque dejes de mover. En la portada vale cualquier
-  // gesto; ya en Work, solo subir estando arriba del todo. El gesto contrario en pleno vuelo lo invierte.
+  // Cada paso que deslizas avanza el viaje un poco (abajo: hacia Work · arriba: de vuelta a la portada) y si te paras, se queda donde esté.
+  // En la portada vale cualquier gesto; ya en Work, solo subir estando arriba del todo.
   const locked = () => document.body.classList.contains('intro-lock');
   const atTop = () => scrollY <= 1;
-  let sum = 0, sumTimer = 0;
-  function gesture(dy, threshold) { // dy > 0 = hacia abajo
-    if (J.simple) return;
-    clearTimeout(sumTimer);
-    sumTimer = setTimeout(() => { sum = 0; }, 200);
-    if (sum !== 0 && (sum > 0) !== (dy > 0)) sum = 0; // cambió de sentido: se empieza a contar de nuevo
-    sum += dy;
-    if (sum > threshold) { if (J.target < 1 && locked()) go(1); }
-    else if (sum < -threshold) { if (J.target > 0 && (locked() || atTop())) go(0); }
+  // Cuánto hay que deslizar para el viaje entero: rueda ≈ 1.600 px (unas 16 muescas), dedo ≈ lo que mide la pantalla
+  const WHEEL_PX = 1600;
+  const touchPx = () => Math.max(520, innerHeight * 0.9);
+  function drag(dy, perJourney) { // dy > 0 = hacia abajo
+    if (J.simple || !dy) return;
+    if (dy > 0) { if (J.target < 1 && locked()) scrub(dy / perJourney); }
+    else if (J.target > 0 && (locked() || atTop())) scrub(dy / perJourney);
   }
   addEventListener('wheel', (e) => {
     if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-    gesture(e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY, 36);
+    drag(e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY, WHEEL_PX);
   }, { passive: true });
   let touchY = null;
-  addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; sum = 0; }, { passive: true });
+  addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
   addEventListener('touchmove', (e) => {
     if (touchY === null) return;
     const y = e.touches[0].clientY;
-    gesture(touchY - y, 28);
+    drag(touchY - y, touchPx()); // el dedo arrastra el viaje: el tomate sigue al dedo
     touchY = y;
   }, { passive: true });
-  addEventListener('touchend', () => { touchY = null; sum = 0; }, { passive: true });
+  addEventListener('touchend', () => { touchY = null; }, { passive: true });
   addEventListener('keydown', (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey || J.simple) return;
     const onControl = e.target instanceof Element && e.target.closest('a, button, input, select, textarea');
-    if (['ArrowDown', 'PageDown', 'End', ' '].includes(e.key)) {
-      if (locked() && !(e.key === ' ' && onControl)) { e.preventDefault(); go(1); }
-    } else if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) {
-      if ((locked() || atTop()) && J.target > 0) { e.preventDefault(); go(0); }
+    const down = { ArrowDown: 0.1, PageDown: 0.3, ' ': 0.3, End: 1 }[e.key];
+    const up = { ArrowUp: 0.1, PageUp: 0.3, Home: 1 }[e.key];
+    if (down) {
+      if (locked() && !(e.key === ' ' && onControl)) { e.preventDefault(); if (down >= 1) go(1); else scrub(down); }
+    } else if (up) {
+      if ((locked() || atTop()) && J.target > 0) { e.preventDefault(); if (up >= 1) go(0); else scrub(-up); }
     }
   });
 
