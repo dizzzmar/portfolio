@@ -129,6 +129,7 @@ function createWordCycler(word, { visible = true } = {}) {
   const smooth = (v) => v * v * (3 - 2 * v);
   let started = false;
   splitLetters(first, first.textContent.trim());
+  splitLetters(word, word.textContent.trim()); // las dos palabras ya en letras sueltas: el CSS las oculta y las muestra una a una
   const cycler = createWordCycler(word);
 
   // ---- El viaje ----
