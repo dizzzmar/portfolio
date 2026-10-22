@@ -35,7 +35,7 @@ js/                        Comportamiento (animaciones, tomate 3D, carrusel…)
 
 assets/                    Imágenes, vídeos y modelos 3D
   images/                  cielo, grano, tomate, imagen de relleno
-  models/                  tomate 3D
+  models/                  tomate 3D y sobre DIZ (diz-ketchup/)
   room/                    modelo de la habitación, pegatina "Now playing"…
   projects/<nombre>/       las imágenes y vídeos de cada proyecto
 ```

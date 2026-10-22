@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="2048" viewBox="0 0 1024 2048">
+  <rect width="1024" height="2048" fill="#c51c28"/>
+  <g fill="#fff8e7" font-family="DejaVu Sans, sans-serif" text-anchor="middle">
+    <text x="512" y="460" font-weight="bold" font-size="180" letter-spacing="-9">DIZ</text>
+    <text x="512" y="535" font-size="28" letter-spacing="8">TOMATO KETCHUP</text>
+    <path d="M203 622h618" stroke="#fff8e7" stroke-width="3"/>
+    <text x="512" y="733" font-size="43" font-weight="bold">GOOD TASTE.</text>
+    <text x="512" y="794" font-size="43" font-weight="bold">GREAT IDEAS.</text>
+    <text x="512" y="931" font-size="27">A small packet of creativity.</text>
+    <text x="512" y="977" font-size="27">Made for the DIZ universe.</text>
+    <text x="512" y="1201" font-size="25" letter-spacing="4">DESIGN / PLAY / REPEAT</text>
+    <path d="M203 1287h618" stroke="#fff8e7" stroke-width="3"/>
+    <text x="512" y="1410" font-size="32">www.dizmar.xyz</text>
+    <text x="512" y="1660" font-size="30" font-weight="bold">NET WT 9g</text>
+    <text x="512" y="1800" font-size="22" letter-spacing="5">DIZ — ORIGINAL EDITION</text>
+  </g>
+</svg>

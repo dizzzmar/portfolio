@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>DIZ — modelo 3D</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f1ec; color: #b71d29; font-family: Arial, sans-serif; }
+    canvas { display: block; width: 100%; height: 100svh; touch-action: none; }
+    header { position: absolute; top: 24px; left: 24px; pointer-events: none; }
+    h1 { margin: 0; font-size: 32px; letter-spacing: -2px; }
+    p { font-size: 13px; letter-spacing: .03em; }
+    nav { position: absolute; bottom: 24px; left: 24px; right: 24px; display: flex; flex-wrap: wrap; gap: 8px; }
+    button, a { border: 1px solid currentColor; border-radius: 24px; background: #f3f1ec; color: inherit; padding: 12px 18px; font: inherit; font-size: 13px; text-decoration: none; cursor: pointer; }
+    :focus-visible { outline: 3px solid #b71d29; outline-offset: 4px; }
+    #status { position: absolute; top: 100px; left: 24px; }
+  </style>
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+  </script>
+</head>
+<body>
+  <header><h1>DIZ</h1><p>Arrastra para girar · pellizca para acercar</p></header>
+  <p id="status" role="status">Cargando el modelo…</p>
+  <canvas aria-label="Sobre rojo DIZ en tres dimensiones"></canvas>
+  <nav aria-label="Vistas del modelo">
+    <button id="front" type="button">Frontal</button>
+    <button id="back" type="button">Reverso</button>
+    <a href="diz-ketchup.glb?v=20261022c" download>Descargar GLB</a>
+  </nav>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+    const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('canvas'), antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#f3f1ec');
+    const generator = new THREE.PMREMGenerator(renderer);
+    const studio = new RoomEnvironment();
+    scene.environment = generator.fromScene(studio, .04).texture;
+    studio.dispose();
+    generator.dispose();
+    const camera = new THREE.PerspectiveCamera(32, 1, .001, 10);
+    camera.position.set(.09, .035, .30);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.minDistance = .12;
+    controls.maxDistance = .6;
+    controls.enablePan = false;
+    const render = () => renderer.render(scene, camera);
+    controls.addEventListener('change', render);
+    function resize() {
+      renderer.setSize(innerWidth, innerHeight);
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      render();
+    }
+    window.addEventListener('resize', resize);
+    document.querySelector('#front').onclick = () => { camera.position.set(0, 0, .30); controls.update(); };
+    document.querySelector('#back').onclick = () => { camera.position.set(0, 0, -.30); controls.update(); };
+    controls.update();
+    resize();
+    new GLTFLoader().load('./diz-ketchup.glb?v=20261022c', ({ scene: model }) => {
+      scene.add(model);
+      document.querySelector('#status').textContent = '';
+      document.body.dataset.loaded = 'true';
+      render();
+    }, undefined, () => {
+      document.querySelector('#status').textContent = 'No se pudo cargar el modelo. Recarga la página para volver a intentarlo.';
+    });
+  </script>
+</body>
+</html>
