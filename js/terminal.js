@@ -441,7 +441,9 @@
     if (look.invert) parts.push('invert(1) hue-rotate(180deg)');
     if (look.gray) parts.push('grayscale(1)');
     if (look.sepia) parts.push('sepia(1)');
-    document.documentElement.style.filter = parts.join(' ');
+    const root = document.documentElement;
+    if (!reduced) root.style.transition = 'filter .7s ease'; // los cambios de color de la web se funden en vez de saltar
+    root.style.filter = parts.join(' ');
   };
   const stopRainbow = () => { if (rainbow) { rainbow.cancel(); rainbow = null; } };
   const artMove = (fn) => {
