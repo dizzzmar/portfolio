@@ -38,20 +38,17 @@ body { background: #140d09; color: #f3f0df; font-family: var(--font-ui); }
 /* La esquina que se dobla al despegar la pegatina: el dorso del papel, con sombra en el pliegue */
 .sticker-flap { position: absolute; right: 0; bottom: 0; width: 0; height: 0; background: linear-gradient(to bottom right, #fffaf0 0%, #ece3cc 38%, #c4b99f 49.5%, transparent 50%); pointer-events: none; }
 .status { position: fixed; z-index: 2; bottom: 72px; left: calc(50% + var(--panel) / 2); width: min(280px, calc(100vw - 40px)); transform: translateX(-50%); text-align: center; font-size: var(--fs-s); line-height: 1.4; transition: opacity .3s; }
-.status[hidden], .room-light-hint[hidden] { display: none; }
+.status[hidden] { display: none; }
 .status.is-ready { opacity: 0; }
 .room-loading-meter { display: block; width: min(240px, 60vw); height: 1px; margin: 14px auto 0; background: #92b88933; overflow: hidden; }
 .room-loading-meter i { display: block; height: 100%; background: #a9c99d; transform-origin: left; animation: room-loading 1.8s ease-in-out infinite; }
 .has-progress .room-loading-meter i { animation: none; transform: scaleX(var(--room-progress, 0)); transition: transform .15s; }
-.status button, .room-light-hint button { font: inherit; color: inherit; background: transparent; border: 0; border-bottom: 1px solid currentColor; cursor: pointer; }
-.room-light-hint { position: fixed; z-index: 3; left: calc(50% + var(--panel) / 2); bottom: 28px; transform: translateX(-50%); display: flex; gap: 8px 18px; justify-content: center; flex-wrap: wrap; width: max-content; max-width: calc(100vw - 28px); font-size: var(--fs-s); color: #e8c8a6; }
-.room-light-hint button:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+.status button { font: inherit; color: inherit; background: transparent; border: 0; border-bottom: 1px solid currentColor; cursor: pointer; }
 .room-dark .label, .room-dark .sticker-slot { display: none; }
 @keyframes room-loading { 0%, 100% { transform: translateX(-70%) scaleX(.3); } 50% { transform: translateX(70%) scaleX(.6); } }
 @media (max-width: 900px) {
   .status { bottom: 150px; }
-  .room-light-hint { bottom: 126px; width: calc(100vw - 28px); }
-}
+  }
 @media (prefers-reduced-motion: reduce) { .room-loading-meter i { animation: none; transform: scaleX(.3); } }
 /* Móviles y ventanas estrechas: la habitación ocupa la pantalla y la lista va abajo */
 @media (max-width: 900px) {

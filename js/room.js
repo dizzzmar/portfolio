@@ -15,7 +15,7 @@ import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
 import { createWiiPlayer } from './room/wii-player.js?v=20261021wii5';
 import { createRoomLoading } from './room/loading.js?v=20261022p';
-import { createRoomLighting } from './room/lighting.js?v=20261022p';
+import { createRoomLighting } from './room/lighting.js?v=20261023a';
 import { addRoomRug } from './room/rug.js?v=20261022a';
 
 const canvas = document.getElementById('room');
@@ -168,7 +168,6 @@ const wiiPlayer = createWiiPlayer({
 });
 const lighting = createRoomLighting({
   scene, camera, renderer, canvas, reduced,
-  hint: document.getElementById('room-light-hint'),
   onChange(dark) {
     if (lampFlicker) { lampFlicker.start = false; setLamp(dark ? 0 : 1); }
     scene.background.set(dark ? '#030201' : '#140d09');
