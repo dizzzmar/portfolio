@@ -219,6 +219,52 @@
       if (window.dizContact) { setTimeout(() => window.dizContact.open(), reduced ? 0 : 200); return ['opening the sachet … (tear along the top)']; }
       return ['out of ketchup. try the contact link.'];
     },
+    // --- trucos con el tomate y con los colores de la web (escondidos: no salen en help ni en las sugerencias) ---
+    spin: (args) => {
+      const a = (args[0] || '').toLowerCase();
+      if (a === 'reverse' || a === 'back' || a === 'backwards') return COMMANDS.reverse();
+      if (a === 'stop' || a === 'off') return COMMANDS.stop();
+      return COMMANDS.go();
+    },
+    reverse: () => artMove(() => { artDir = -artDir; return artDir < 0 ? 'the tomato spins the other way.' : 'the tomato spins the right way again.'; }),
+    stop: () => artMove(() => { artPaused = true; stopArt(); return 'the tomato holds still.'; }),
+    freeze: () => COMMANDS.stop(),
+    go: () => artMove(() => { artPaused = false; startArt(); return 'the tomato spins.'; }),
+    faster: () => artMove(() => { artSpeed = Math.min(8, artSpeed * 1.8); artPaused = false; startArt(); return 'faster … (x' + artSpeed.toFixed(1) + ')'; }),
+    slower: () => artMove(() => { artSpeed = Math.max(0.15, artSpeed / 1.8); artPaused = false; startArt(); return 'slower … (x' + artSpeed.toFixed(1) + ')'; }),
+    paint: (args) => {
+      const name = (args[0] || '').toLowerCase();
+      if (!name) return ['usage: paint <color>   (' + Object.keys(PAINTS).join(', ') + ')'];
+      const set = PAINTS[name === 'tomato' ? 'red' : name];
+      if (!set) return ['paint: no such color: ' + name + '  (' + Object.keys(PAINTS).join(', ') + ')'];
+      set.forEach((c, i) => panel.style.setProperty('--art-' + i, c));
+      return ['the tomato is ' + name + ' now.' + (name === 'blue' ? ' (a blue tomato. bold.)' : '')];
+    },
+    hue: (args) => {
+      const n = args[0] === undefined ? Math.floor(Math.random() * 360) : parseInt(args[0], 10);
+      if (Number.isNaN(n)) return ['usage: hue <0-360>   (no number: a random one)'];
+      stopRainbow();
+      look.hue = ((n % 360) + 360) % 360;
+      applyLook();
+      return ['the whole site, turned ' + look.hue + '°. type `reset` to undo.'];
+    },
+    rainbow: () => {
+      if (reduced) return ['your system asks for less motion, so no rainbow. try `hue 120`.'];
+      if (rainbow) return ['already a rainbow. `reset` to stop.'];
+      rainbow = document.documentElement.animate(
+        [{ filter: 'hue-rotate(0deg)' }, { filter: 'hue-rotate(360deg)' }],
+        { duration: 9000, iterations: Infinity, easing: 'linear' });
+      return ['the site is a rainbow. `reset` to stop.'];
+    },
+    invert: () => { look.invert = !look.invert; applyLook(); return [look.invert ? 'colors inverted.' : 'colors back.']; },
+    gray: () => { look.gray = !look.gray; applyLook(); return [look.gray ? 'a black and white site, like a proof sheet.' : 'color is back.']; },
+    sepia: () => { look.sepia = !look.sepia; applyLook(); return [look.sepia ? 'old photograph mode.' : 'sepia off.']; },
+    reset: () => {
+      stopRainbow(); look.hue = 0; look.invert = look.gray = look.sepia = false; applyLook();
+      artDir = 1; artSpeed = 1; artPaused = false; startArt();
+      [0, 1, 2].forEach((i) => panel.style.removeProperty('--art-' + i));
+      return ['everything back to normal.'];
+    },
     heinz: () => ['we do not speak that name. it has to be Diz.'],
     fortune: () => [FORTUNES[Math.floor(Math.random() * FORTUNES.length)]],
     hello: () => ['hello, visitor.'],
@@ -335,19 +381,41 @@
     ['         \\  \\|/  /         ', '         `-.\\|/.-\'         '],
   ];
   const arts = new Set();
+  // Estado de los trucos: sentido, velocidad y pausa del tomate; y el «filtro» de color de toda la web (se aplica al <html>)
+  let artDir = 1, artSpeed = 1, artPaused = false, rainbow = null;
+  const look = { hue: 0, invert: false, gray: false, sepia: false };
+  const PAINTS = {
+    red: ['#8f2a20', '#ff4434', '#ffb4a6'], green: ['#2f6b3a', '#5fbf6a', '#d2f5c8'], blue: ['#25407a', '#4f86ff', '#c8dcff'],
+    gold: ['#8a6414', '#f0b429', '#fff0c0'], pink: ['#8a3a66', '#ff6fb5', '#ffd0ea'], purple: ['#4a2d86', '#9b6dff', '#e0d0ff'],
+    white: ['#6f6a66', '#d8d2cc', '#ffffff'],
+  };
+  const applyLook = () => {
+    const parts = [];
+    if (look.hue) parts.push('hue-rotate(' + look.hue + 'deg)');
+    if (look.invert) parts.push('invert(1) hue-rotate(180deg)');
+    if (look.gray) parts.push('grayscale(1)');
+    if (look.sepia) parts.push('sepia(1)');
+    document.documentElement.style.filter = parts.join(' ');
+  };
+  const stopRainbow = () => { if (rainbow) { rainbow.cancel(); rainbow = null; } };
+  const artMove = (fn) => {
+    if (!arts.size) return ['there is no tomato on screen. type `neofetch`.'];
+    if (reduced) return ['your system asks for less motion, so the tomato stays still.'];
+    return [fn()];
+  };
   let artTimer = 0, artT = 0.6;
   const paintArt = (art) => {
     const frame = tomatoFrame(artT);
     art.layers.forEach((pre, i) => { pre.textContent = frame[i]; });
-    const leaf = LEAF[reduced ? 0 : Math.floor(artT * 1.5) % 2];
+    const leaf = LEAF[reduced ? 0 : Math.abs(Math.floor(artT * 1.5)) % 2];
     art.leaf.textContent = leaf.join('\n');
   };
   const artTick = () => {
-    artT += 0.11;
+    artT += 0.11 * artDir * artSpeed;
     arts.forEach((art) => { if (!art.root.isConnected) arts.delete(art); else paintArt(art); });
     if (!arts.size) stopArt();
   };
-  function startArt() { if (!reduced && !artTimer && arts.size) artTimer = setInterval(artTick, 90); }
+  function startArt() { if (!reduced && !artPaused && !artTimer && arts.size) artTimer = setInterval(artTick, 90); }
   function stopArt() { clearInterval(artTimer); artTimer = 0; }
 
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
