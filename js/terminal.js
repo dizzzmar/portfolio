@@ -300,8 +300,21 @@
   const past = [];
   let histIndex = 0;
   let welcomed = false;
+  // En el móvil el teclado tapa la parte de abajo de la pantalla, pero no cambia el tamaño de la página: se mide cuánto tapa (visualViewport)
+  // y la ventana se sube sobre él, con una altura que quepa en lo que queda a la vista. Así la línea donde escribes nunca queda detrás del teclado.
+  const vv = window.visualViewport;
+  const fit = () => {
+    if (!vv || panel.hidden) return;
+    const covered = Math.max(0, Math.round(innerHeight - vv.height - vv.offsetTop));
+    panel.style.setProperty('--kb', covered + 'px');
+    panel.style.setProperty('--vvh', Math.round(vv.height) + 'px');
+    out.scrollTop = out.scrollHeight;
+  };
+  if (vv) { vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit); }
+  input.addEventListener('focus', () => { fit(); setTimeout(fit, 250); }); // el teclado tarda un momento en abrirse
   function openTerm() {
     panel.hidden = false;
+    fit();
     triggers.forEach((t) => t.setAttribute('aria-expanded', 'true'));
     if (!welcomed) {
       welcomed = true;
