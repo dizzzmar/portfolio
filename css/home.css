@@ -565,7 +565,7 @@ body.white-on { background-color: #fff; }
   letter-spacing: -.055em;
   line-height: .95;
   text-align: center;
-  transition: opacity .5s ease;
+  transition: opacity .5s ease, color .35s var(--ease-out);
 }
 .wi-name > span { display: block; }
 
@@ -670,9 +670,15 @@ body.white-on { background-color: #fff; }
 .white-on .work-top p > span { color: rgba(255, 255, 255, .55); } /* la hora y "Selected work": en gris, como antes (el gris se ve igual de legible sobre blanco y sobre negro) */
 .light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
 .light-on .work-item::before { background: rgba(12, 12, 11, .16); }
-.light-on .work-item > a:focus-visible { outline-color: #0c0c0b; }
 .light-on .wi-date, .light-on .wi-tags { color: rgba(12, 12, 11, .4); }
-.light-on .wi-slot { background: rgba(12, 12, 11, .06); }
+/* El rojo de la marca en Work: el nombre de la fila encendida (ratón encima, foco de teclado o la del centro en el móvil) pasa del negro al rojo tomate,
+   el mismo del punto del cursor y del botón «View project», así los tres se leen como una sola cosa. El rojo sobre blanco da 3,6:1: vale porque el nombre es enorme (≥3:1) */
+.light-on .work-item.is-hot .wi-name, .light-on .work-item.is-back .wi-name, .light-on .work-item > a:focus-visible .wi-name { color: #f83d0c; }
+@media (hover: hover) and (pointer: fine) { .light-on .work-item > a:hover .wi-name { color: #f83d0c; } }
+.light-on .work-item > a:focus-visible { outline-color: #f83d0c; }
+.light-on ::selection { background: #f83d0c; color: #fff; }
+.light-on .work-cursor { box-shadow: 0 0 0 3px #fff; } /* un aro blanco: cuando el botón pasa sobre las letras rojas del nombre no se funde con ellas */
+.light-on .wi-slot { background: rgba(248, 61, 12, .08); } /* el hueco de la miniatura, mientras carga, ya es rojizo */
 .light-on .work-item > a:hover .wi-date, .light-on .work-item > a:hover .wi-tags,
 .light-on .work-item > a:focus-visible .wi-date, .light-on .work-item > a:focus-visible .wi-tags,
 .light-on .work-item.is-hot .wi-date, .light-on .work-item.is-hot .wi-tags,
