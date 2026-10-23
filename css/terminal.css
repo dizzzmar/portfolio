@@ -84,13 +84,15 @@
     top: auto;
     right: 8px;
     left: 8px;
-    bottom: 8px;
+    bottom: calc(8px + var(--kb, 0px)); /* sobre el teclado (js/terminal.js mide cuánto tapa) */
     width: auto;
-    height: min(62vh, 480px);
+    height: min(62vh, 480px, calc(var(--vvh, 100vh) - 76px)); /* nunca más alto que lo que queda a la vista con el teclado abierto */
     border-radius: 14px;
   }
   .term-bar { border-radius: 14px 14px 0 0; }
   .term-out { font-size: 13px; }
+  /* 16 px: con menos, Safari del iPhone hace zoom al pulsar el campo y la ventana se sale de la pantalla */
+  .term-input { font-size: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) { .term { animation: none; } }
