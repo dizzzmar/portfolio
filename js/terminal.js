@@ -133,6 +133,7 @@
       '  whoami                  who is behind this',
       '  date                    today’s date',
       '  echo <text>             print text',
+      '  neofetch                the welcome screen again',
       '  clear                   clear this window',
       '  exit                    close the terminal (also Esc)',
       ...(window.dizRoom ? [
@@ -156,6 +157,7 @@
     about: () => SECTIONS.about,
     work: () => SECTIONS.work,
     contact: () => SECTIONS.contact,
+    neofetch: () => { showSplash(); return []; },
     clear: () => { out.replaceChildren(); return []; },
     exit: () => { closeTerm(); return []; },
     sudo: () => ['permission denied: nice try.'],
@@ -216,6 +218,52 @@
     ketchup: () => {
       if (window.dizContact) { setTimeout(() => window.dizContact.open(), reduced ? 0 : 200); return ['opening the sachet … (tear along the top)']; }
       return ['out of ketchup. try the contact link.'];
+    },
+    // --- trucos con el tomate y con los colores de la web (escondidos: no salen en help ni en las sugerencias) ---
+    spin: (args) => {
+      const a = (args[0] || '').toLowerCase();
+      if (a === 'reverse' || a === 'back' || a === 'backwards') return COMMANDS.reverse();
+      if (a === 'stop' || a === 'off') return COMMANDS.stop();
+      return COMMANDS.go();
+    },
+    reverse: () => artMove(() => { artDir = -artDir; return artDir < 0 ? 'the tomato spins the other way.' : 'the tomato spins the right way again.'; }),
+    stop: () => artMove(() => { artPaused = true; stopArt(); return 'the tomato holds still.'; }),
+    freeze: () => COMMANDS.stop(),
+    go: () => artMove(() => { artPaused = false; startArt(); return 'the tomato spins.'; }),
+    faster: () => artMove(() => { artSpeed = Math.min(8, artSpeed * 1.8); artPaused = false; startArt(); return 'faster … (x' + artSpeed.toFixed(1) + ')'; }),
+    slower: () => artMove(() => { artSpeed = Math.max(0.15, artSpeed / 1.8); artPaused = false; startArt(); return 'slower … (x' + artSpeed.toFixed(1) + ')'; }),
+    paint: (args) => {
+      const name = (args[0] || '').toLowerCase();
+      if (!name) return ['usage: paint <color>   (' + Object.keys(PAINTS).join(', ') + ')'];
+      const set = PAINTS[name === 'tomato' ? 'red' : name];
+      if (!set) return ['paint: no such color: ' + name + '  (' + Object.keys(PAINTS).join(', ') + ')'];
+      set.forEach((c, i) => panel.style.setProperty('--art-' + i, c));
+      return ['the tomato is ' + name + ' now.' + (name === 'blue' ? ' (a blue tomato. bold.)' : '')];
+    },
+    hue: (args) => {
+      const n = args[0] === undefined ? Math.floor(Math.random() * 360) : parseInt(args[0], 10);
+      if (Number.isNaN(n)) return ['usage: hue <0-360>   (no number: a random one)'];
+      stopRainbow();
+      look.hue = ((n % 360) + 360) % 360;
+      applyLook();
+      return ['the whole site, turned ' + look.hue + '°. type `reset` to undo.'];
+    },
+    rainbow: () => {
+      if (reduced) return ['your system asks for less motion, so no rainbow. try `hue 120`.'];
+      if (rainbow) return ['already a rainbow. `reset` to stop.'];
+      rainbow = document.documentElement.animate(
+        [{ filter: 'hue-rotate(0deg)' }, { filter: 'hue-rotate(360deg)' }],
+        { duration: 9000, iterations: Infinity, easing: 'linear' });
+      return ['the site is a rainbow. `reset` to stop.'];
+    },
+    invert: () => { look.invert = !look.invert; applyLook(); return [look.invert ? 'colors inverted.' : 'colors back.']; },
+    gray: () => { look.gray = !look.gray; applyLook(); return [look.gray ? 'a black and white site, like a proof sheet.' : 'color is back.']; },
+    sepia: () => { look.sepia = !look.sepia; applyLook(); return [look.sepia ? 'old photograph mode.' : 'sepia off.']; },
+    reset: () => {
+      stopRainbow(); look.hue = 0; look.invert = look.gray = look.sepia = false; applyLook();
+      artDir = 1; artSpeed = 1; artPaused = false; startArt();
+      [0, 1, 2].forEach((i) => panel.style.removeProperty('--art-' + i));
+      return ['everything back to normal.'];
     },
     heinz: () => ['we do not speak that name. it has to be Diz.'],
     fortune: () => [FORTUNES[Math.floor(Math.random() * FORTUNES.length)]],
@@ -287,6 +335,7 @@
   const run = (raw) => {
     const text = raw.trim();
     if (!text) return;
+    atWelcome = false;
     echoCommand(text);
     past.push(text);
     histIndex = past.length;
@@ -296,10 +345,148 @@
     if (result && result.length) write(result);
   };
 
+  // ---------- Pantalla de bienvenida: tomate en ASCII + panel de datos (tipo «neofetch») ----------
+  // El tomate se calcula con código: una esfera con una luz que da vueltas a su alrededor. Tres capas del mismo tamaño (sombra, tono medio, brillo)
+  // le dan color sin usar una caja por letra. Si la persona prefiere menos movimiento, se queda un solo fotograma.
+  const ART_W = 30, ART_H = 13, RX = 14.5, RY = 6.2;
+  const BANDS = [' .:', '-=+*', '#%@'];
+  const tomatoFrame = (t) => {
+    const layers = [[], [], []];
+    const lx = Math.cos(t) * 0.8, ly = -0.45, lz = 0.55 + 0.25 * Math.sin(t);
+    const ll = Math.hypot(lx, ly, lz);
+    for (let r = 0; r < ART_H; r++) {
+      const rows = ['', '', ''];
+      for (let c = 0; c < ART_W; c++) {
+        const x = (c - (ART_W - 1) / 2) / RX, y = (r - (ART_H - 1) / 2) / RY;
+        const d = x * x + y * y;
+        let band = -1, ch = ' ';
+        if (d <= 1) {
+          const z = Math.sqrt(1 - d);
+          let i = Math.pow(Math.max(0, (x * lx + y * ly + z * lz) / ll), 1.6) * 0.95 + 0.06;
+          i = Math.min(0.999, Math.max(0, i));
+          band = i < 0.34 ? 0 : i < 0.7 ? 1 : 2;
+          const set = BANDS[band];
+          const lo = [0, 0.34, 0.7][band], hi = [0.34, 0.7, 1][band];
+          ch = set[Math.min(set.length - 1, Math.floor((i - lo) / (hi - lo) * set.length))];
+          if (ch === ' ') ch = '.';
+        }
+        for (let b = 0; b < 3; b++) rows[b] += b === band ? ch : ' ';
+      }
+      for (let b = 0; b < 3; b++) layers[b].push(rows[b]);
+    }
+    return layers.map((l) => l.join('\n'));
+  };
+  const LEAF = [
+    ['        \\  \\ | /  /        ', '         `-.\\|/.-\'         '],
+    ['         \\  \\|/  /         ', '         `-.\\|/.-\'         '],
+  ];
+  const arts = new Set();
+  // Estado de los trucos: sentido, velocidad y pausa del tomate; y el «filtro» de color de toda la web (se aplica al <html>)
+  let artDir = 1, artSpeed = 1, artPaused = false, rainbow = null;
+  const look = { hue: 0, invert: false, gray: false, sepia: false };
+  const PAINTS = {
+    red: ['#8f2a20', '#ff4434', '#ffb4a6'], green: ['#2f6b3a', '#5fbf6a', '#d2f5c8'], blue: ['#25407a', '#4f86ff', '#c8dcff'],
+    gold: ['#8a6414', '#f0b429', '#fff0c0'], pink: ['#8a3a66', '#ff6fb5', '#ffd0ea'], purple: ['#4a2d86', '#9b6dff', '#e0d0ff'],
+    white: ['#6f6a66', '#d8d2cc', '#ffffff'],
+  };
+  const applyLook = () => {
+    const parts = [];
+    if (look.hue) parts.push('hue-rotate(' + look.hue + 'deg)');
+    if (look.invert) parts.push('invert(1) hue-rotate(180deg)');
+    if (look.gray) parts.push('grayscale(1)');
+    if (look.sepia) parts.push('sepia(1)');
+    document.documentElement.style.filter = parts.join(' ');
+  };
+  const stopRainbow = () => { if (rainbow) { rainbow.cancel(); rainbow = null; } };
+  const artMove = (fn) => {
+    if (!arts.size) return ['there is no tomato on screen. type `neofetch`.'];
+    if (reduced) return ['your system asks for less motion, so the tomato stays still.'];
+    return [fn()];
+  };
+  let artTimer = 0, artT = 0.6;
+  const paintArt = (art) => {
+    const frame = tomatoFrame(artT);
+    art.layers.forEach((pre, i) => { pre.textContent = frame[i]; });
+    const leaf = LEAF[reduced ? 0 : Math.abs(Math.floor(artT * 1.5)) % 2];
+    art.leaf.textContent = leaf.join('\n');
+  };
+  const artTick = () => {
+    artT += 0.11 * artDir * artSpeed;
+    arts.forEach((art) => { if (!art.root.isConnected) arts.delete(art); else paintArt(art); });
+    if (!arts.size) stopArt();
+  };
+  function startArt() { if (!reduced && !artPaused && !artTimer && arts.size) artTimer = setInterval(artTick, 90); }
+  function stopArt() { clearInterval(artTimer); artTimer = 0; }
+
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const infoBox = (name, rows) => {
+    const box = el('div', 'term-box term-box-' + name.toLowerCase());
+    box.append(el('span', 'term-box-name', name));
+    for (const [k, v] of rows) {
+      const line = el('div', 'term-kv');
+      line.append(el('span', 'term-k', k), el('span', 'term-v', v));
+      box.append(line);
+    }
+    return box;
+  };
+  const pad2 = (n) => String(n).padStart(2, '0');
+  function showSplash() {
+    const root = el('div', 'term-splash');
+    root.setAttribute('aria-live', 'off');
+    const artBox = el('div', 'term-art');
+    artBox.setAttribute('aria-hidden', 'true');
+    const leaf = el('pre', 'term-leaf');
+    const stack = el('div', 'term-sphere');
+    const layers = [0, 1, 2].map((i) => el('pre', 'term-layer term-layer-' + i));
+    stack.append(...layers);
+    artBox.append(leaf, stack);
+    const art = { root, leaf, layers };
+    const startedAt = Date.now();
+    const uptime = el('span', 'term-v', '00:00');
+    const info = el('div', 'term-info');
+    const who = el('div', 'term-who-line');
+    who.append(el('span', 'term-who', 'visitor'), '@', el('span', 'term-who', 'dizmar.xyz'));
+    const up = el('div', 'term-kv');
+    up.append(el('span', 'term-k', 'Open for'), uptime);
+    const session = infoBox('Session', [
+      ['Mode', machine ? 'machine (plain text)' : 'human (visual)'],
+      ['Page', location.pathname === '/' ? 'home' : location.pathname.replace(/^\/|\/$/g, '')],
+      ['Date', new Date().toDateString()],
+    ]);
+    session.append(up);
+    const swatch = el('div', 'term-swatch');
+    swatch.setAttribute('aria-hidden', 'true');
+    ['#ff4434', '#e8604f', '#c0392b', '#8f2a20', '#f4e8df', '#bfae9f', '#7d6f64', '#3a2a24'].forEach((c) => {
+      const dot = el('i'); dot.style.background = c; swatch.append(dot);
+    });
+    info.append(
+      who, el('div', 'term-rule'),
+      infoBox('Profile', [['Name', 'Mario Diz'], ['Role', 'Art director · visual designer'], ['Based', 'Madrid, Spain'], ['Focus', 'Key visuals · AI · 3D · film']]),
+      infoBox('Work', [['2025', 'Lexus Electrified'], ['2026', 'Schweppes'], ['2026', 'Soap & Glory']]),
+      session, swatch,
+    );
+    root.append(artBox, info);
+    out.append(root);
+    arts.add(art);
+    paintArt(art);
+    if (!reduced) {
+      const tick = () => {
+        if (!root.isConnected) return;
+        const s = Math.floor((Date.now() - startedAt) / 1000);
+        uptime.textContent = pad2(Math.floor(s / 60)) + ':' + pad2(s % 60);
+        setTimeout(tick, 1000);
+      };
+      tick();
+    }
+    startArt();
+    out.scrollTop = out.scrollHeight;
+  }
+
   // ---------- Abrir y cerrar ----------
   const past = [];
   let histIndex = 0;
   let welcomed = false;
+  let atWelcome = false; // hasta el primer comando, la ventana se queda arriba para ver el tomate (también con el teclado abierto)
   // En el móvil el teclado tapa la parte de abajo de la pantalla, pero no cambia el tamaño de la página: se mide cuánto tapa (visualViewport)
   // y la ventana se sube sobre él, con una altura que quepa en lo que queda a la vista. Así la línea donde escribes nunca queda detrás del teclado.
   const vv = window.visualViewport;
@@ -308,7 +495,7 @@
     const covered = Math.max(0, Math.round(innerHeight - vv.height - vv.offsetTop));
     panel.style.setProperty('--kb', covered + 'px');
     panel.style.setProperty('--vvh', Math.round(vv.height) + 'px');
-    out.scrollTop = out.scrollHeight;
+    if (!atWelcome) out.scrollTop = out.scrollHeight;
   };
   if (vv) { vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit); }
   input.addEventListener('focus', () => { fit(); setTimeout(fit, 250); }); // el teclado tarda un momento en abrirse
@@ -316,15 +503,20 @@
     panel.hidden = false;
     fit();
     triggers.forEach((t) => t.setAttribute('aria-expanded', 'true'));
+    startArt();
     if (!welcomed) {
       welcomed = true;
-      write(['dizmar.xyz terminal · type `help` to start.']);
+      showSplash();
+      write(['Type `help` to see the commands.']);
       out.append(hint.cloneNode(true));
+      atWelcome = true;
+      out.scrollTop = 0; // la bienvenida se lee desde arriba
     }
     input.focus({ preventScroll: true });
   }
   function closeTerm() {
     panel.hidden = true;
+    stopArt();
     triggers.forEach((t) => t.setAttribute('aria-expanded', 'false'));
     if (lastTrigger) lastTrigger.focus({ preventScroll: true });
   }
@@ -335,7 +527,7 @@
   // Los comandos escondidos (tomato, ketchup…) nunca se sugieren.
   const NEEDS_ARG = new Set(['cd', 'view', 'inspect', 'lights', 'sunset', 'zoom', 'echo']);
   const roomOn = () => !!window.dizRoom;
-  const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'clear', 'exit',
+  const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'neofetch', 'clear', 'exit',
     ...(roomOn() ? ['look', 'inspect', 'lights', 'play', 'flicker', 'sunset', 'zoom'] : [])];
   const ARGS = () => ({
     cd: ['home', 'work', 'about', 'room', 'machine', 'lexus', 'schweppes', 'soap', 'contact'],
