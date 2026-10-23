@@ -133,6 +133,7 @@
       '  whoami                  who is behind this',
       '  date                    today’s date',
       '  echo <text>             print text',
+      '  guide                   every command on one screen',
       '  neofetch                the welcome screen again',
       '  clear                   clear this window',
       '  exit                    close the terminal (also Esc)',
@@ -157,6 +158,16 @@
     about: () => SECTIONS.about,
     work: () => SECTIONS.work,
     contact: () => SECTIONS.contact,
+    guide: () => { write([
+      'GUIDE',
+      'go       ls · cd <page> · view human|machine · exit',
+      'read     about · work · contact · whoami · date',
+      'screen   neofetch · clear · echo <text>',
+      'tomato   spin · stop · go · reverse · faster · slower · paint <color>',
+      'colors   hue <0-360> · rainbow · invert · gray · sepia · reset',
+      ...(window.dizRoom ? ['room     look · inspect <thing> · lights on|off · play · flicker · sunset · zoom out'] : []),
+      'keys     Tab completes · ↑ ↓ history · ` opens · Esc closes',
+    ], 'term-guide'); return []; },
     neofetch: () => { showSplash(); return []; },
     clear: () => { out.replaceChildren(); return []; },
     exit: () => { closeTerm(); return []; },
@@ -343,6 +354,7 @@
     const fn = COMMANDS[name.toLowerCase()];
     const result = fn ? fn(args) : ['command not found: ' + name + '  (type help)'];
     if (result && result.length) write(result);
+    requestAnimationFrame(() => { if (!atWelcome) out.scrollTop = out.scrollHeight; }); // las sugerencias cambian la altura: vuelve al final
   };
 
   // ---------- Pantalla de bienvenida: tomate en ASCII + panel de datos (tipo «neofetch») ----------
@@ -507,7 +519,7 @@
     if (!welcomed) {
       welcomed = true;
       showSplash();
-      write(['Type `help` to see the commands.']);
+      write(['Type `guide` to see every command.']);
       out.append(hint.cloneNode(true));
       atWelcome = true;
       out.scrollTop = 0; // la bienvenida se lee desde arriba
@@ -527,7 +539,7 @@
   // Los comandos escondidos (tomato, ketchup…) nunca se sugieren.
   const NEEDS_ARG = new Set(['cd', 'view', 'inspect', 'lights', 'sunset', 'zoom', 'echo']);
   const roomOn = () => !!window.dizRoom;
-  const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'neofetch', 'clear', 'exit',
+  const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'guide', 'neofetch', 'clear', 'exit',
     ...(roomOn() ? ['look', 'inspect', 'lights', 'play', 'flicker', 'sunset', 'zoom'] : [])];
   const ARGS = () => ({
     cd: ['home', 'work', 'about', 'room', 'machine', 'lexus', 'schweppes', 'soap', 'contact'],
