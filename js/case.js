@@ -40,8 +40,28 @@
   };
   // Si algo más mueve la tira (el dedo, el teclado), el destino se sincroniza
   track.addEventListener('scroll', () => { if (!raf && !dragging) target = track.scrollLeft; paint(); }, { passive: true });
-  addEventListener('resize', paint);
+  // En móvil las tarjetas se alinean arriba y la tira mide lo que mide la que más se ve: si no, junto a una foto vertical un vídeo apaisado
+  // deja unos 300 px en blanco. Se mide al parar el dedo, no en cada fotograma, y con «reducir movimiento» el cambio es instantáneo.
+  const narrow = matchMedia('(max-width: 760px)');
+  const cards = [...track.querySelectorAll('.p-card')];
+  let fitTimer = 0;
+  const fit = () => {
+    if (!narrow.matches) { track.style.height = ''; return; }
+    const left = track.scrollLeft, right = left + track.clientWidth;
+    let best = cards[0], seen = -1;
+    for (const card of cards) {
+      const visible = Math.min(right, card.offsetLeft + card.offsetWidth) - Math.max(left, card.offsetLeft);
+      if (visible > seen) { seen = visible; best = card; }
+    }
+    const h = best.offsetHeight;
+    if (h && track.style.height !== h + 'px') track.style.height = h + 'px';
+  };
+  track.addEventListener('scroll', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fit, 90); }, { passive: true });
+  narrow.addEventListener('change', fit);
+  addEventListener('load', fit);
+  addEventListener('resize', () => { fit(); paint(); });
   paint();
+  fit();
 
   // Rueda (ratón y trackpad): mientras la galería está entera en pantalla, la rueda la recorre esté el cursor donde esté.
   // Al llegar a un extremo, la página vuelve a desplazarse; la inercia del trackpad que aún llega no la mueve de golpe (pausa de 300 ms).
