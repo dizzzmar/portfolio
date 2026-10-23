@@ -40,6 +40,22 @@
   li.append(open);
   nav.append(li);
 
+  // Segunda entrada: un enlace «Terminal» en el pie de página (también en móvil y en las páginas sin barra visible)
+  const triggers = [open];
+  let lastTrigger = open;
+  const foot = document.querySelector('.site-foot, .room-foot, .wrap > footer');
+  if (foot) {
+    const footLink = document.createElement('a');
+    footLink.href = '#terminal';
+    footLink.className = 'term-open term-foot';
+    footLink.setAttribute('aria-haspopup', 'dialog');
+    footLink.setAttribute('aria-controls', 'term');
+    footLink.textContent = 'Terminal';
+    if (foot.classList.contains('site-foot') || foot.children.length === 2) foot.insertBefore(footLink, foot.lastElementChild);
+    else (foot.querySelector('span') || foot).append(' · ', footLink);
+    triggers.push(footLink);
+  }
+
   const panel = document.createElement('section');
   panel.id = 'term';
   panel.className = 'term';
@@ -181,7 +197,7 @@
   let welcomed = false;
   function openTerm() {
     panel.hidden = false;
-    open.setAttribute('aria-expanded', 'true');
+    triggers.forEach((t) => t.setAttribute('aria-expanded', 'true'));
     if (!welcomed) {
       welcomed = true;
       write(['dizmar.xyz terminal · type `help` to start.']);
@@ -191,11 +207,11 @@
   }
   function closeTerm() {
     panel.hidden = true;
-    open.setAttribute('aria-expanded', 'false');
-    open.focus({ preventScroll: true });
+    triggers.forEach((t) => t.setAttribute('aria-expanded', 'false'));
+    lastTrigger.focus({ preventScroll: true });
   }
 
-  open.addEventListener('click', (e) => { e.preventDefault(); panel.hidden ? openTerm() : closeTerm(); });
+  triggers.forEach((t) => t.addEventListener('click', (e) => { e.preventDefault(); lastTrigger = t; panel.hidden ? openTerm() : closeTerm(); }));
   close.addEventListener('click', closeTerm);
   row.addEventListener('submit', (e) => { e.preventDefault(); run(input.value); input.value = ''; });
   input.addEventListener('keydown', (e) => {
