@@ -1,0 +1,96 @@
+/* TERMINAL · la ventana de texto de js/terminal.js. Oscura, como una terminal de verdad: fondo casi negro, texto crema y el rojo
+   del tomate en el «$», el cursor y el punto de la ventana. Monoespaciada del sistema (ui-monospace), sin descargar nada. */
+
+.term-open { cursor: pointer; }
+.term-open[aria-expanded="true"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+
+.term {
+  position: fixed;
+  z-index: 40;
+  top: calc(var(--nav-h, 64px) + 10px);
+  right: 24px;
+  width: min(640px, calc(100vw - 48px));
+  height: min(460px, calc(100vh - var(--nav-h, 64px) - 40px));
+  display: flex;
+  flex-direction: column;
+  background: #0b0807;
+  color: #f4e8df;
+  border: 1px solid rgba(255, 68, 52, .32);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 68, 52, .08);
+  font: 14px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
+  letter-spacing: 0;
+  text-transform: none;
+  text-shadow: none;
+  font-weight: 400;
+  animation: term-in .22s cubic-bezier(.23, 1, .32, 1) both;
+}
+.term[hidden] { display: none; }
+@keyframes term-in { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 68, 52, .22);
+  background: #17100d;
+  border-radius: 12px 12px 0 0;
+  font-size: 12px;
+  color: rgba(244, 232, 223, .7);
+}
+.term-dots { display: inline-flex; gap: 6px; }
+.term-dots i { width: 10px; height: 10px; border-radius: 50%; background: rgba(244, 232, 223, .2); }
+.term-dots i:first-child { background: #ff4434; } /* el rojo del tomate: la única pieza de color de la ventana */
+.term-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.term-close {
+  min-height: 32px;
+  padding: 4px 8px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.term-close:hover { color: #ff4434; text-decoration: underline; text-underline-offset: 4px; }
+
+.term-out { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 18px 6px; overscroll-behavior: contain; }
+.term-line { white-space: pre-wrap; overflow-wrap: anywhere; min-height: 1.5em; }
+.term-echo { margin-top: 6px; }
+.term-who { color: #ff4434; }
+.term-hint { margin-top: 12px; color: rgba(244, 232, 223, .62); font-size: 13px; }
+
+.term-row { display: flex; align-items: center; gap: 8px; padding: 10px 18px 14px; border-top: 1px solid rgba(255, 255, 255, .08); }
+.term-prompt { flex: none; color: #ff4434; white-space: pre; }
+.term-input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #f4e8df;
+  font: inherit;
+  caret-color: #ff4434;
+}
+.term-input:focus { outline: none; }
+.term:focus-within .term-row { border-top-color: rgba(255, 68, 52, .4); }
+
+/* Foco visible en la ventana y en sus botones (el campo de texto marca su propio foco con el cursor) */
+.term-close:focus-visible, .term-open:focus-visible { outline: 2px solid #ff4434; outline-offset: 3px; }
+
+/* Móvil: la ventana ocupa la parte de abajo de la pantalla, sin tapar la barra de arriba */
+@media (max-width: 700px) {
+  .term {
+    top: auto;
+    right: 8px;
+    left: 8px;
+    bottom: 8px;
+    width: auto;
+    height: min(62vh, 480px);
+    border-radius: 14px;
+  }
+  .term-bar { border-radius: 14px 14px 0 0; }
+  .term-out { font-size: 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) { .term { animation: none; } }

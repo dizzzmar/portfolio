@@ -246,6 +246,7 @@ function createWordCycler(word, { visible = true } = {}) {
   }
   addEventListener('wheel', (e) => {
     if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    if (e.target instanceof Element && e.target.closest('.term')) return; // la terminal se desplaza sola, no mueve la portada
     drag(e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY, WHEEL_PX);
   }, { passive: true });
   let touchY = null;
@@ -259,6 +260,7 @@ function createWordCycler(word, { visible = true } = {}) {
   addEventListener('touchend', () => { touchY = null; }, { passive: true });
   addEventListener('keydown', (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey || J.simple || J.hold) return;
+    if (e.target instanceof Element && e.target.closest('.term')) return; // escribir en la terminal no mueve la portada
     const onControl = e.target instanceof Element && e.target.closest('a, button, input, select, textarea');
     const down = { ArrowDown: 0.1, PageDown: 0.3, ' ': 0.3, End: 1 }[e.key];
     const up = { ArrowUp: 0.1, PageUp: 0.3, Home: 1 }[e.key];
