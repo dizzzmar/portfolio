@@ -113,6 +113,7 @@
 .term-leaf { color: #8fbf6a; min-height: 2.16em; }
 .term-sphere { display: grid; }
 .term-layer { grid-area: 1 / 1; }
+.term-layer { transition: color .6s ease; }
 .term-layer-0 { color: var(--art-0, #8f2a20); }
 .term-layer-1 { color: var(--art-1, #ff4434); }
 .term-layer-2 { color: var(--art-2, #ffb4a6); }
@@ -151,4 +152,4 @@
   .term-input { font-size: 16px; }
 }
 
-@media (prefers-reduced-motion: reduce) { .term { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .term { animation: none; } .term-layer { transition: none; } }
