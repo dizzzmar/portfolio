@@ -1,9 +1,6 @@
-// TERMINAL · una ventana de texto que se abre desde «Terminal» en la barra de arriba (todas las páginas). Escribe `help`.
+// TERMINAL · una ventana de texto que se abre desde el enlace «Terminal» del pie de página (todas las páginas) o con la tecla `. Escribe `help`.
 // Todo va en el propio script: sin red, sin cookies, sin datos de visitantes. Los textos se escriben con textContent, nunca como HTML.
 (() => {
-  const nav = document.querySelector('.nav-links, .case-nav ul, nav[aria-label="Sections"] ul');
-  if (!nav) return;
-
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const machine = location.pathname.startsWith('/machine');
   const PAGES = {
@@ -30,19 +27,9 @@
   };
 
   // ---------- Construcción (una vez) ----------
-  const li = document.createElement('li');
-  const open = document.createElement('a');
-  open.href = '#terminal';
-  open.className = 'term-open';
-  open.setAttribute('aria-haspopup', 'dialog');
-  open.setAttribute('aria-controls', 'term');
-  open.textContent = 'Terminal';
-  li.append(open);
-  nav.append(li);
-
-  // Segunda entrada: un enlace «Terminal» en el pie de página (también en móvil y en las páginas sin barra visible)
-  const triggers = [open];
-  let lastTrigger = open;
+  // Entrada: un enlace «Terminal» en el pie de página (también en móvil y en las páginas de proyecto). La tecla ` la abre desde cualquier sitio.
+  const triggers = [];
+  let lastTrigger = null;
   const foot = document.querySelector('.site-foot, .room-foot, .wrap > footer');
   if (foot) {
     const footLink = document.createElement('a');
@@ -54,6 +41,7 @@
     if (foot.classList.contains('site-foot') || foot.children.length === 2) foot.insertBefore(footLink, foot.lastElementChild);
     else (foot.querySelector('span') || foot).append(' · ', footLink);
     triggers.push(footLink);
+    lastTrigger = footLink;
   }
 
   const panel = document.createElement('section');
@@ -133,6 +121,7 @@
     write(['opening ' + page + ' …']);
     setTimeout(() => { location.href = page; }, reduced ? 0 : 240);
   };
+  const LS = () => ['home/  about/  room.html  machine/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/'];
   const COMMANDS = {
     help: () => [
       'Commands:',
@@ -146,10 +135,21 @@
       '  echo <text>             print text',
       '  clear                   clear this window',
       '  exit                    close the terminal (also Esc)',
+      ...(window.dizRoom ? [
+        '',
+        'In the room:',
+        '  look                    what is on the shelf',
+        '  inspect <thing>         zoom to it: vinyl, poster, mimikyu, lamp, plant, wii',
+        '  lights on | off         the tomato lamp (off: a flashlight follows your cursor)',
+        '  play                    open the Wii and choose a disc',
+        '  flicker | sunset        two little light tricks',
+        '  zoom out                back to the whole room',
+      ] : []),
       '',
       'Machine mode is the plain-text version of the site: for people who prefer text, crawlers and AI agents.',
+      'There are a few hidden commands, too.',
     ],
-    ls: () => ['home/  about/  room.html  machine/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/'],
+    ls: () => LS(),
     whoami: () => ['visitor — a person, a crawler or an agent. Mario Diz is the one who made this.'],
     date: () => [new Date().toDateString()],
     echo: (args) => [args.join(' ')],
@@ -176,6 +176,111 @@
       return ['usage: view human | view machine'];
     },
   };
+  // ---------- Escondidos ----------
+  const TOMATO = [
+    '      \\|/',
+    '    .-"""-.',
+    '   /  ___  \\',
+    '  |  (o o)  |',
+    '   \\  \\_/  /',
+    "    '-...-'",
+  ];
+  const FORTUNES = [
+    'A good art director knows when to stop prompting.',
+    'The first frame is never the last frame.',
+    'Retouch it by hand. They will notice.',
+    'Maximalism is a love language.',
+    'Kerning is a form of kindness.',
+    'Every default is a decision nobody made.',
+  ];
+  const noRoom = () => ['that one only works inside the room. try: cd room'];
+  const ROOM_THINGS = {
+    vinyl: 'vinyls', record: 'vinyls', music: 'vinyls', speaker: 'vinyls',
+    poster: 'volver-poster', film: 'volver-poster', movie: 'volver-poster',
+    mimikyu: 'mimikyu', pokemon: 'mimikyu', plush: 'mimikyu',
+    lamp: 'tomato-lamp', tomato: 'tomato-lamp',
+    plant: 'plant', eucalyptus: 'plant',
+    wii: 'wii', console: 'wii', discs: 'wii',
+  };
+  const ROOM_TEXT = {
+    vinyls: 'Now playing: Bug — Fontaines D.C. (Romance). The sleeve glows with the lamp.',
+    'volver-poster': 'Last watched: La Bola Negra. Come close and the new poster unrolls over the old one.',
+    mimikyu: 'A Mimikyu plush. It stares back. It is fine. Everything is fine.',
+    'tomato-lamp': 'The tomato lamp. Click it (or type lights off) and the room goes dark; a flashlight follows your cursor.',
+    plant: 'Eucalyptus in a fluted vase. It has never been watered by a terminal.',
+    wii: 'The Wii, in pearl white. Three discs: Assassin’s Creed Shadows, Pokémon Shield, Hades II. Type play.',
+  };
+  Object.assign(COMMANDS, {
+    // --- en cualquier página ---
+    tomato: () => [...TOMATO, '', 'it has to be Diz.'],
+    ketchup: () => {
+      if (window.dizContact) { setTimeout(() => window.dizContact.open(), reduced ? 0 : 200); return ['opening the sachet … (tear along the top)']; }
+      return ['out of ketchup. try the contact link.'];
+    },
+    heinz: () => ['we do not speak that name. it has to be Diz.'],
+    fortune: () => [FORTUNES[Math.floor(Math.random() * FORTUNES.length)]],
+    hello: () => ['hello, visitor.'],
+    hi: () => ['hello, visitor.'],
+    pwd: () => [location.pathname || '/'],
+    uptime: () => ['up since the first pixel. no crashes, only retouching.'],
+    coffee: () => ['brewing …  done. (it is a terminal; you still have to drink it yourself.)'],
+    man: () => ['no manual entry. try: help'],
+    matrix: () => ['wake up, visitor …', 'the tomato has you.'],
+    ls: (args) => {
+      if (args.some((a) => /^-.*a/.test(a))) return ['.  ..  .tomato  .ketchup  .secrets  about/  room.html  machine/  project/', '(try: cat .tomato)'];
+      return LS();
+    },
+    cat: (args) => {
+      const f = (args[0] || '').toLowerCase();
+      if (f === '.tomato') return TOMATO;
+      if (f === '.ketchup') return ['it has to be Diz.'];
+      if (f === '.secrets') return ['permission denied.'];
+      return [f ? 'cat: ' + f + ': no such file' : 'usage: cat <file>'];
+    },
+    rm: (args) => (args.some((a) => a.includes('/') || a.includes('f')) ? ['rm: refusing to delete the tomato.'] : ['rm: nothing to remove here.']),
+    // --- dentro de la sala (solo si la página de la sala ha puesto window.dizRoom) ---
+    look: () => (window.dizRoom ? [
+      'A narrow shelf in a dark, warm room. A turntable on top, next to the tomato lamp; speakers either side of a glowing sleeve.',
+      'Below: records, books, a Mimikyu plush and a Wii. On the floor, a rug with a very familiar sachet.',
+      'try: inspect lamp   inspect wii   lights off',
+    ] : noRoom()),
+    inspect: (args) => {
+      if (!window.dizRoom) return noRoom();
+      const key = ROOM_THINGS[(args[0] || '').toLowerCase()];
+      if (!key) return ['inspect what? vinyl, poster, mimikyu, lamp, plant or wii.'];
+      window.dizRoom.focus(key);
+      return [ROOM_TEXT[key]];
+    },
+    lights: (args) => {
+      if (!window.dizRoom) return noRoom();
+      const mode = (args[0] || '').toLowerCase();
+      if (mode !== 'on' && mode !== 'off') return ['usage: lights on | lights off'];
+      window.dizRoom.lights(mode === 'on');
+      return [mode === 'off' ? 'lights off. move your cursor: you have a flashlight.' : 'lights on.'];
+    },
+    lamp: (args) => COMMANDS.lights(args.length ? args : ['off']),
+    play: () => {
+      if (!window.dizRoom) return noRoom();
+      window.dizRoom.wii();
+      return ['loading the Wii … pick a disc.'];
+    },
+    flicker: () => {
+      if (!window.dizRoom) return noRoom();
+      window.dizRoom.flicker();
+      return ['the lamp remembers how it came on.'];
+    },
+    sunset: (args) => {
+      if (!window.dizRoom) return noRoom();
+      const mode = (args[0] || 'toggle').toLowerCase();
+      window.dizRoom.sunset(mode === 'toggle' ? undefined : mode !== 'off');
+      return ['the golden beam from the left: ' + (mode === 'off' ? 'off.' : mode === 'on' ? 'on.' : 'toggled.')];
+    },
+    zoom: () => {
+      if (!window.dizRoom) return noRoom();
+      window.dizRoom.reset();
+      return ['back to the whole room.'];
+    },
+  });
   COMMANDS.machine = () => COMMANDS.view(['machine']);
   COMMANDS.human = () => COMMANDS.view(['human']);
 
@@ -208,7 +313,7 @@
   function closeTerm() {
     panel.hidden = true;
     triggers.forEach((t) => t.setAttribute('aria-expanded', 'false'));
-    lastTrigger.focus({ preventScroll: true });
+    if (lastTrigger) lastTrigger.focus({ preventScroll: true });
   }
 
   triggers.forEach((t) => t.addEventListener('click', (e) => { e.preventDefault(); lastTrigger = t; panel.hidden ? openTerm() : closeTerm(); }));
