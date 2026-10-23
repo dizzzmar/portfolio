@@ -658,7 +658,7 @@ body.white-on { background-color: #fff; }
    (clase light-on, que pone js/home-intro.js). ---------- */
 .work-grid, .work-top p > span, .wi-date, .wi-tags { transition: color .4s ease; }
 .light-on .work-grid { color: #0c0c0b; }
-.light-on .work-top p > span { color: rgba(12, 12, 11, .55); }
+.light-on .work-top p > span { color: rgba(12, 12, 11, .62); }
 .light-on .work-top .wt-creative > strong { color: #0c0c0b; }
 /* Cuando la página ya es del todo blanca (clase white-on, que pone js/home-intro.js) la barra de arriba (textos de Work y menú) se mezcla con
    "difference": negra sobre blanco y blanca sobre un nombre de proyecto o una foto oscuros. El fondo blanco va dentro de la propia sección (la capa
@@ -670,7 +670,7 @@ body.white-on { background-color: #fff; }
 .white-on .work-top p > span { color: rgba(255, 255, 255, .55); } /* la hora y "Selected work": en gris, como antes (el gris se ve igual de legible sobre blanco y sobre negro) */
 .light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
 .light-on .work-item::before { background: rgba(12, 12, 11, .16); }
-.light-on .wi-date, .light-on .wi-tags { color: rgba(12, 12, 11, .4); }
+.light-on .wi-date, .light-on .wi-tags { color: rgba(12, 12, 11, .62); } /* 5,7:1 sobre blanco (con .4 eran 2,8:1) */
 /* El rojo de la marca en Work: el nombre de la fila encendida (ratón encima, foco de teclado o la del centro en el móvil) pasa del negro al rojo tomate,
    el mismo del punto del cursor y del botón «View project», así los tres se leen como una sola cosa. El rojo sobre blanco da 3,6:1: vale porque el nombre es enorme (≥3:1) */
 .light-on .work-item.is-hot .wi-name, .light-on .work-item.is-back .wi-name, .light-on .work-item > a:focus-visible .wi-name { color: #f83d0c; }
@@ -684,11 +684,11 @@ body.white-on { background-color: #fff; }
 .light-on .work-item.is-hot .wi-date, .light-on .work-item.is-hot .wi-tags,
 .light-on .work-item.is-back .wi-date, .light-on .work-item.is-back .wi-tags { color: rgba(12, 12, 11, .9); }
 /* Al fundirse a blanco, el menú, el "Creative ___" del centro y el pie pasan a oscuro */
-.light-on .nav-links a { color: rgba(12, 12, 11, .55); }
+.light-on .nav-links a { color: rgba(12, 12, 11, .62); }
 .light-on .nav-links a:hover, .light-on .nav-links a[aria-current="true"] { color: #0c0c0b; }
 .white-on .nav-links a, .white-on .nav-links a:hover, .white-on .nav-links a[aria-current="true"] { color: #fff; }
 .light-on .intro-line { color: #0c0c0b; }
-.light-on .site-foot { color: rgba(12, 12, 11, .55); }
+.light-on .site-foot { color: rgba(12, 12, 11, .62); }
 .light-on .site-foot a:hover { color: #0c0c0b; }
 
 /* Sorpresa del sobre de ketchup (js/home-sachet-egg.js): mano al pasar por encima y al girarlo; con el sobre puesto, el dedo no desplaza la página */

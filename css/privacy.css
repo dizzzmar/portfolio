@@ -5,7 +5,7 @@
 :root {
   --bg: #0c0c0b;
   --dim: rgba(255, 255, 255, .6);
-  --faint: rgba(255, 255, 255, .32);
+  --faint: rgba(255, 255, 255, .52); /* 5:1 sobre el negro de la página (con .32 eran 2,8:1) */
   --nav-h: 64px;
   --gutter: clamp(16px, 1.2vw, 24px);
 }

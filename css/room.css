@@ -59,6 +59,8 @@ body { background: #140d09; color: #f3f0df; font-family: var(--font-ui); }
   .intro { top: calc(var(--nav-h) + 16px); left: 14px; right: 14px; width: auto; }
   .object-nav { position: fixed; left: 14px; right: 14px; bottom: 52px; margin: 0; flex-direction: row; flex-wrap: wrap; gap: 4px 16px; }
   .object-nav button { font-size: var(--fs-l); }
+  .object-nav { gap: 0 16px; }
+  .object-nav button { display: inline-flex; align-items: center; min-height: 44px; } /* zona táctil de 44 px */
   .label, .sticker-slot.floating { bottom: 112px; }
   .sticker-slot.floating { font-size: var(--fs-xs); }
 }
@@ -74,5 +76,6 @@ body { background: #140d09; color: #f3f0df; font-family: var(--font-ui); }
 /* Pie mínimo: en escritorio, abajo a la izquierda (la sala queda a la derecha); en móvil, justo encima de la lista de objetos */
 .room-foot { position: fixed; z-index: 2; left: 24px; bottom: 24px; margin: 0; font-family: var(--font-ui); font-size: var(--fs-s); line-height: 1.4; color: rgba(243, 240, 223, .6); }
 .room-foot a { color: inherit; text-underline-offset: 3px; }
+@media (pointer: coarse) { .room-foot a { display: inline-block; padding-block: 14px; margin-block: -14px; } }
 .room-foot a:hover { color: #f3f0df; }
 @media (max-width: 900px) { .room-foot { left: 14px; bottom: 16px; } } /* el pie va debajo de la lista de objetos; va después del pie base para ganarle */
