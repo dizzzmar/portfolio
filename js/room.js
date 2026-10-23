@@ -662,6 +662,24 @@ function updatePoster(now) {
   posterReveal.value = target > posterReveal.value ? Math.min(1, posterReveal.value + step) : Math.max(0, posterReveal.value - step);
 }
 
+// ---------- Terminal (js/terminal.js) ----------
+// La terminal de la web (enlace «Terminal» del pie, o la tecla `) puede mover la sala: encender y apagar la luz, acercar la cámara a un objeto, abrir la Wii…
+// Solo se expone esto, nada más; terminal.js lo usa con `look`, `inspect`, `lights`, `play`, `flicker`, `sunset` y `zoom out`.
+window.dizRoom = {
+  lights(on) { if (lighting.dark === on) lighting.setDark(!on); },
+  focus(key) {
+    const item = destinations.find((d) => d.key === key);
+    if (!item || lighting.dark || wiiPlayer.active) return false;
+    highlight({ item, object: meshes.find((m) => destinationFor(m) === item) });
+    focusOn(item);
+    return true;
+  },
+  reset() { if (!wiiPlayer.active) resetFocus(); },
+  wii() { if (!lighting.dark) wiiPlayer.open(nav.querySelector('[data-object="wii"]')); },
+  flicker() { if (lampFlicker && !lighting.dark && !reduced) lampFlicker.start = null; },
+  sunset(on) { sunset.visible = on === undefined ? !sunset.visible : on; renderer.shadowMap.needsUpdate = true; },
+};
+
 let lastFrame = performance.now();
 function frame() {
   const now = performance.now();
