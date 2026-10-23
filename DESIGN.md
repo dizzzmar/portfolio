@@ -29,7 +29,7 @@ Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, pr
 
 | Uso | Valor |
 | --- | --- |
-| Rojo marca (tomate, cursor, fondo de About) | `#f83d0c` (cursor) · `#f04a30` (fondo About) |
+| Rojo marca (tomate, cursor, fondo de About) | `#f83d0c` (cursor, nombre de proyecto encendido en Work) · `#d03a22` (fondo de About: más profundo para que el texto crema llegue a 4,5:1; con `#f04a30` eran 3,4:1) |
 | Negro de página (Work, Privacy, proyectos en oscuro) | `#0c0c0b` |
 | Blanco | `#fff` |
 | Tinta sobre claro | `#111` / `#141414` |
