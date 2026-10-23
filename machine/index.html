@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mario Diz (dizmar) — machine mode, plain-text index</title>
 <meta name="description" content="Machine mode: the plain-text index of dizmar.xyz, the portfolio of Mario Diz, art director and visual designer based in Madrid.">
-<link rel="stylesheet" href="/css/terminal.css?v=20261023t">
+<link rel="stylesheet" href="/css/terminal.css?v=20261023u">
 <meta name="robots" content="noindex"> <!-- Oculto por ahora: borra esta línea al volver a activar el modo máquina -->
 <link rel="canonical" href="https://www.dizmar.xyz/machine/">
 <meta property="og:title" content="Mario Diz (dizmar) — machine-readable index">
@@ -22,104 +22,74 @@
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/assets/images/favicon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<script>
-  // Recuerda si el visitante eligió el fondo negro (antes de pintar, para que no parpadee)
-  try { if (localStorage.getItem('dizmar-machine-bg') === 'black') document.documentElement.classList.add('black'); } catch (e) {}
-</script>
 <style>
-  /* Todo el estilo va aquí mismo para no hacer más peticiones.
-     Todo en un rojo tomate sólido sobre el cielo; el nombre y los títulos, bordados en punto de cruz (SVG).
-     Con el botón de arriba se cambia a fondo negro. */
-  :root {
-    /* Un solo rojo sólido para todo: texto, líneas y puntadas */
-    --red: #e3241a; --dim: var(--red); --line: var(--red);
-    --thread: var(--red); --thread-dark: var(--red); --thread-light: var(--red);
-    --halo: none;
-  }
+  /* Modo máquina: texto plano sobre negro, al estilo de los índices de texto. El único elemento bordado es el logo (punto de cruz). */
+  :root { --ink: #ff4434; --dim: #e8604f; --rule: rgba(255, 68, 52, .45); --bg: #0b0807; --thread: var(--ink); --thread-dark: var(--ink); --thread-light: var(--ink); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { background: #6fa7e6 linear-gradient(to bottom, #4f8fd8, #8cc0ef 55%, #d8ecfb); min-height: 100%; }
-  /* El cielo (la misma foto que la home), fijo detrás de todo */
-  body::before { content: ""; position: fixed; inset: 0; z-index: -1; background: url("/assets/images/sky.webp") center / cover; }
-  body { color: var(--red); font: 13px/1.6 ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", "Courier New", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: .02em; text-shadow: var(--halo); -webkit-font-smoothing: antialiased; }
-  a { color: var(--red); text-underline-offset: 3px; }
-  a:hover { background: var(--red); color: #fff; text-decoration: none; text-shadow: none; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
-  .wrap { width: min(720px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 120px; }
+  html, body { background: var(--bg); }
+  body { color: var(--ink); font: 14px/1.6 ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", "Courier New", monospace; font-weight: 400; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  a { color: var(--ink); text-underline-offset: 3px; }
+  a:hover { background: var(--ink); color: var(--bg); text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .wrap { width: min(760px, calc(100% - 32px)); margin: 0 auto; padding: 22px 0 110px; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+  .svg-defs { position: absolute; width: 0; height: 0; }
 
-  /* Botón de arriba: cielo / fondo negro */
-  .bg-toggle { display: flex; justify-content: flex-end; margin-bottom: 28px; }
-  .bg-toggle button { appearance: none; border: 1px solid var(--red); border-radius: 999px; padding: 6px 12px 5px; background: transparent; color: var(--red); font: inherit; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; text-shadow: none; }
-  .bg-toggle button:hover { background: var(--red); color: #fff; }
+  /* Fila de arriba: nombre del modo y el interruptor HUMAN | MACHINE */
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .switch { display: inline-flex; border: 1px solid var(--ink); border-radius: 999px; padding: 2px; }
+  .switch a, .switch span { padding: 4px 12px 3px; border-radius: 999px; text-decoration: none; }
+  .switch span { background: var(--ink); color: var(--bg); }
+  .switch a:hover { background: rgba(255, 68, 52, .18); color: var(--ink); }
 
-  /* Punto de cruz: cada píxel de las letras es una cruz de dos puntadas */
-  .stitch { display: block; height: 40px; width: auto; max-width: 100%; overflow: visible; }
-  .stitch-title { height: clamp(58px, 14vw, 104px); }
+  /* El logo: punto de cruz (cada píxel es una cruz) */
+  .stitch { display: block; width: auto; max-width: 100%; overflow: visible; }
+  .stitch-title { height: clamp(58px, 14vw, 100px); margin: 34px 0 18px; }
 
-  nav ul { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 28px 0 32px; list-style: none; }
-  nav a[aria-current] { background: var(--red); color: #fff; text-decoration: none; padding: 0 4px; text-shadow: none; }
+  .intro { margin: 0 0 30px; }
+  .intro strong { font-weight: 700; }
+  .intro p { margin: 0 0 8px; max-width: 66ch; }
   .dim { color: var(--dim); }
-  p { margin: 0 0 14px; max-width: 64ch; }
-  h2 { display: flex; align-items: flex-end; gap: 14px; margin: 52px 0 20px; }
-  h2::after { content: ""; flex: 1; margin-bottom: 4px; border-top: 2px dashed var(--line); } /* una línea de hilvanado */
-  dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 0; margin-bottom: 18px; }
-  dt { color: var(--dim); white-space: pre; overflow: hidden; width: 15ch; }
-  dt::after { content: " ............"; }
+
+  nav ul { display: flex; flex-wrap: wrap; gap: 4px 16px; list-style: none; margin: 0 0 8px; }
+  nav a[aria-current] { background: var(--ink); color: var(--bg); text-decoration: none; padding: 0 4px; }
+  .term-open { color: var(--ink); }
+
+  /* Secciones: texto plano con regla, como una lista de archivos */
+  section { margin-top: 44px; }
+  h2 { font-size: 14px; font-weight: 700; letter-spacing: .08em; display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  h2::before { content: "──"; color: var(--rule); }
+  h2::after { content: ""; flex: 1; border-top: 1px solid var(--rule); }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 0; margin-bottom: 14px; }
+  dt { color: var(--dim); white-space: pre; overflow: hidden; width: 14ch; }
+  dt::after { content: " ........"; }
   dd { padding-left: 1ch; }
-  .project { margin: 0 0 30px; }
-  .project h3 { font-size: inherit; font-weight: 700; margin-bottom: 4px; }
-  .project h3::before { content: "✕ "; }
-  .tags { color: var(--dim); margin-bottom: 8px; }
-  .links { list-style: none; margin-top: 6px; }
-  .links li::before { content: "→ "; color: var(--dim); }
-  .images { display: flex; flex-wrap: wrap; gap: 0 10px; list-style: none; }
-  footer { margin-top: 56px; padding-top: 14px; border-top: 2px dashed var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: var(--dim); }
-
-  /* Aviso de modo: clarísimo, arriba del todo */
-  .mode-banner { display: grid; gap: 8px; margin: 4px 0 26px; padding: 14px 16px 15px; border: 2px solid var(--red); border-radius: 10px; background: #fbf6ec; color: #1d1915; font-weight: 400; text-transform: none; letter-spacing: 0; text-shadow: none; box-shadow: 0 10px 30px rgba(20, 10, 0, .18); }
-  .mode-banner strong { display: inline-block; justify-self: start; padding: 3px 9px 2px; background: var(--red); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .1em; }
-  .mode-banner p { margin: 0; max-width: none; font-size: 14px; line-height: 1.5; }
-  .mode-banner code { font: inherit; background: #f1eadb; color: #1d1915; padding: 1px 6px; border-radius: 4px; }
-  .proj { margin: 0 0 26px; padding-left: 2ch; text-indent: -2ch; }
+  p { margin: 0 0 12px; max-width: 66ch; }
+  .proj { margin: 0 0 22px; }
   .proj b { font-weight: 700; }
-  .room-list { list-style: none; margin: 0 0 18px; }
-  .room-list li::before { content: "· "; }
-  /* La barra de arriba (incluido «Terminal») en el mismo estilo de texto que el resto de la página */
-  nav ul li { display: flex; }
-  .term-open { color: var(--red); }
+  .room-list { list-style: none; margin: 0 0 14px; }
+  .room-list li::before { content: "- "; color: var(--dim); }
+  .links { list-style: none; }
+  .links li::before { content: "→ "; color: var(--dim); }
 
-  /* Píldora para volver al modo humano */
-  .mode { position: fixed; right: 16px; bottom: 16px; display: flex; padding: 3px; border-radius: 999px; background: #fff; font-size: 11px; box-shadow: 0 6px 20px rgba(0, 30, 80, .25); text-shadow: none; }
-  .mode a, .mode span { padding: 5px 11px 4px; border-radius: 999px; text-decoration: none; color: var(--red); }
-  .mode span { background: var(--red); color: #fff; }
-  .mode a:hover { background: rgba(227, 36, 26, .12); color: var(--red); }
+  footer { margin-top: 56px; padding-top: 12px; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: var(--dim); font-size: 12px; }
 
-  /* ---------- Fondo negro: rojo tomate sobre negro, sin la foto del cielo ---------- */
-  html.black { background: #0b0807; }
-  html.black body { font-weight: 400; }
-  html.black body::before { content: none; }
-  html.black { --red: #ff4434; }
-  html.black .bg-toggle button { background: transparent; }
-  html.black .bg-toggle button:hover { background: var(--red); color: #0b0807; }
-  html.black a:hover, html.black nav a[aria-current] { color: #0b0807; }
-  html.black .mode { background: #0b0807; box-shadow: none; border: 1px solid var(--red); }
-  html.black .mode span { color: #0b0807; }
-
-  @media (max-width: 520px) { body { font-size: 12px; } dt { width: 12ch; } .stitch:not(.stitch-title) { height: 30px; } }
+  @media (max-width: 520px) { body { font-size: 13px; } dt { width: 12ch; } }
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="x" overflow="visible"><path d="M1.8 8.2 8.2 1.8" style="stroke:var(--thread-dark)" stroke-width="2.9" stroke-linecap="round"/><path d="M1.8 1.8 8.2 8.2" style="stroke:var(--thread)" stroke-width="2.9" stroke-linecap="round"/><path d="M2.9 2.6 7.4 7.1" style="stroke:var(--thread-light)" stroke-width=".8" stroke-linecap="round" opacity=".8"/></symbol></defs></svg>
+<svg class="svg-defs" aria-hidden="true" focusable="false"><defs><symbol id="x" overflow="visible"><path d="M1.8 8.2 8.2 1.8" style="stroke:var(--thread-dark)" stroke-width="2.9" stroke-linecap="round"/><path d="M1.8 1.8 8.2 8.2" style="stroke:var(--thread)" stroke-width="2.9" stroke-linecap="round"/><path d="M2.9 2.6 7.4 7.1" style="stroke:var(--thread-light)" stroke-width=".8" stroke-linecap="round" opacity=".8"/></symbol></defs></svg>
 <div class="wrap">
-<header>
-<div class="bg-toggle"><button type="button" id="bg-toggle" aria-pressed="false">Black background</button></div>
-<div class="mode-banner" role="note">
-<strong>MACHINE MODE</strong>
-<p>You are reading the plain-text index of dizmar.xyz: the same content as the visual site, without 3D or images. Made for people who prefer text, for crawlers and for AI agents.</p>
-<p>To switch: press <code>HUMAN</code> at the bottom right, or type <code>view human</code> in the Terminal (top bar).</p>
+<div class="top">
+<span>dizmar.xyz · machine mode</span>
+<nav class="switch" aria-label="View mode"><a href="/">Human</a><span aria-current="page">Machine</span></nav>
 </div>
+<svg class="stitch stitch-title" role="img" aria-label="DIZMAR" viewBox="-2 -2 334 74" aria-hidden="true" focusable="false"><use href="#x" x="0" y="0"/><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="0" y="10"/><use href="#x" x="40" y="10"/><use href="#x" x="0" y="20"/><use href="#x" x="40" y="20"/><use href="#x" x="0" y="30"/><use href="#x" x="40" y="30"/><use href="#x" x="0" y="40"/><use href="#x" x="40" y="40"/><use href="#x" x="0" y="50"/><use href="#x" x="40" y="50"/><use href="#x" x="0" y="60"/><use href="#x" x="10" y="60"/><use href="#x" x="20" y="60"/><use href="#x" x="30" y="60"/><use href="#x" x="60" y="0"/><use href="#x" x="70" y="0"/><use href="#x" x="80" y="0"/><use href="#x" x="70" y="10"/><use href="#x" x="70" y="20"/><use href="#x" x="70" y="30"/><use href="#x" x="70" y="40"/><use href="#x" x="70" y="50"/><use href="#x" x="60" y="60"/><use href="#x" x="70" y="60"/><use href="#x" x="80" y="60"/><use href="#x" x="100" y="0"/><use href="#x" x="110" y="0"/><use href="#x" x="120" y="0"/><use href="#x" x="130" y="0"/><use href="#x" x="140" y="0"/><use href="#x" x="140" y="10"/><use href="#x" x="130" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="110" y="40"/><use href="#x" x="100" y="50"/><use href="#x" x="100" y="60"/><use href="#x" x="110" y="60"/><use href="#x" x="120" y="60"/><use href="#x" x="130" y="60"/><use href="#x" x="140" y="60"/><use href="#x" x="160" y="0"/><use href="#x" x="200" y="0"/><use href="#x" x="160" y="10"/><use href="#x" x="170" y="10"/><use href="#x" x="190" y="10"/><use href="#x" x="200" y="10"/><use href="#x" x="160" y="20"/><use href="#x" x="180" y="20"/><use href="#x" x="200" y="20"/><use href="#x" x="160" y="30"/><use href="#x" x="180" y="30"/><use href="#x" x="200" y="30"/><use href="#x" x="160" y="40"/><use href="#x" x="200" y="40"/><use href="#x" x="160" y="50"/><use href="#x" x="200" y="50"/><use href="#x" x="160" y="60"/><use href="#x" x="200" y="60"/><use href="#x" x="230" y="0"/><use href="#x" x="240" y="0"/><use href="#x" x="250" y="0"/><use href="#x" x="220" y="10"/><use href="#x" x="260" y="10"/><use href="#x" x="220" y="20"/><use href="#x" x="260" y="20"/><use href="#x" x="220" y="30"/><use href="#x" x="230" y="30"/><use href="#x" x="240" y="30"/><use href="#x" x="250" y="30"/><use href="#x" x="260" y="30"/><use href="#x" x="220" y="40"/><use href="#x" x="260" y="40"/><use href="#x" x="220" y="50"/><use href="#x" x="260" y="50"/><use href="#x" x="220" y="60"/><use href="#x" x="260" y="60"/><use href="#x" x="280" y="0"/><use href="#x" x="290" y="0"/><use href="#x" x="300" y="0"/><use href="#x" x="310" y="0"/><use href="#x" x="280" y="10"/><use href="#x" x="320" y="10"/><use href="#x" x="280" y="20"/><use href="#x" x="320" y="20"/><use href="#x" x="280" y="30"/><use href="#x" x="290" y="30"/><use href="#x" x="300" y="30"/><use href="#x" x="310" y="30"/><use href="#x" x="280" y="40"/><use href="#x" x="300" y="40"/><use href="#x" x="280" y="50"/><use href="#x" x="310" y="50"/><use href="#x" x="280" y="60"/><use href="#x" x="320" y="60"/></svg>
 <h1 class="sr-only">dizmar — Mario Diz, machine mode: plain-text index</h1>
-<svg class="stitch stitch-title" viewBox="-2 -2 334 74" aria-hidden="true" focusable="false"><use href="#x" x="0" y="0"/><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="0" y="10"/><use href="#x" x="40" y="10"/><use href="#x" x="0" y="20"/><use href="#x" x="40" y="20"/><use href="#x" x="0" y="30"/><use href="#x" x="40" y="30"/><use href="#x" x="0" y="40"/><use href="#x" x="40" y="40"/><use href="#x" x="0" y="50"/><use href="#x" x="40" y="50"/><use href="#x" x="0" y="60"/><use href="#x" x="10" y="60"/><use href="#x" x="20" y="60"/><use href="#x" x="30" y="60"/><use href="#x" x="60" y="0"/><use href="#x" x="70" y="0"/><use href="#x" x="80" y="0"/><use href="#x" x="70" y="10"/><use href="#x" x="70" y="20"/><use href="#x" x="70" y="30"/><use href="#x" x="70" y="40"/><use href="#x" x="70" y="50"/><use href="#x" x="60" y="60"/><use href="#x" x="70" y="60"/><use href="#x" x="80" y="60"/><use href="#x" x="100" y="0"/><use href="#x" x="110" y="0"/><use href="#x" x="120" y="0"/><use href="#x" x="130" y="0"/><use href="#x" x="140" y="0"/><use href="#x" x="140" y="10"/><use href="#x" x="130" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="110" y="40"/><use href="#x" x="100" y="50"/><use href="#x" x="100" y="60"/><use href="#x" x="110" y="60"/><use href="#x" x="120" y="60"/><use href="#x" x="130" y="60"/><use href="#x" x="140" y="60"/><use href="#x" x="160" y="0"/><use href="#x" x="200" y="0"/><use href="#x" x="160" y="10"/><use href="#x" x="170" y="10"/><use href="#x" x="190" y="10"/><use href="#x" x="200" y="10"/><use href="#x" x="160" y="20"/><use href="#x" x="180" y="20"/><use href="#x" x="200" y="20"/><use href="#x" x="160" y="30"/><use href="#x" x="180" y="30"/><use href="#x" x="200" y="30"/><use href="#x" x="160" y="40"/><use href="#x" x="200" y="40"/><use href="#x" x="160" y="50"/><use href="#x" x="200" y="50"/><use href="#x" x="160" y="60"/><use href="#x" x="200" y="60"/><use href="#x" x="230" y="0"/><use href="#x" x="240" y="0"/><use href="#x" x="250" y="0"/><use href="#x" x="220" y="10"/><use href="#x" x="260" y="10"/><use href="#x" x="220" y="20"/><use href="#x" x="260" y="20"/><use href="#x" x="220" y="30"/><use href="#x" x="230" y="30"/><use href="#x" x="240" y="30"/><use href="#x" x="250" y="30"/><use href="#x" x="260" y="30"/><use href="#x" x="220" y="40"/><use href="#x" x="260" y="40"/><use href="#x" x="220" y="50"/><use href="#x" x="260" y="50"/><use href="#x" x="220" y="60"/><use href="#x" x="260" y="60"/><use href="#x" x="280" y="0"/><use href="#x" x="290" y="0"/><use href="#x" x="300" y="0"/><use href="#x" x="310" y="0"/><use href="#x" x="280" y="10"/><use href="#x" x="320" y="10"/><use href="#x" x="280" y="20"/><use href="#x" x="320" y="20"/><use href="#x" x="280" y="30"/><use href="#x" x="290" y="30"/><use href="#x" x="300" y="30"/><use href="#x" x="310" y="30"/><use href="#x" x="280" y="40"/><use href="#x" x="300" y="40"/><use href="#x" x="280" y="50"/><use href="#x" x="310" y="50"/><use href="#x" x="280" y="60"/><use href="#x" x="320" y="60"/></svg>
+<div class="intro">
+<p><strong>MACHINE MODE.</strong> Plain-text index of dizmar.xyz: the same content as the visual site, without 3D or images. Made for people who prefer text, for crawlers and for AI agents.</p>
+<p class="dim">To go back, press Human, or type <span>view human</span> in the Terminal (top bar).</p>
+</div>
 <nav aria-label="Sections">
 <ul>
 <li><a href="#about" aria-current="true">/about</a></li>
@@ -127,15 +97,12 @@
 <li><a href="#room">/room</a></li>
 <li><a href="#contact">/contact</a></li>
 <li><a href="#sitemap">/sitemap</a></li>
-<li><a href="/">human ↗</a></li>
 </ul>
 </nav>
-<p class="dim"># dizmar.xyz :: plain-text index. Sections below: about, work, room, contact, sitemap.</p>
-</header>
 
 <main>
 <section id="about" aria-labelledby="h-about">
-<h2 id="h-about"><span class="sr-only">About</span><svg class="stitch" viewBox="-2 -2 294 74" aria-hidden="true" focusable="false"><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="0" y="10"/><use href="#x" x="40" y="10"/><use href="#x" x="0" y="20"/><use href="#x" x="40" y="20"/><use href="#x" x="0" y="30"/><use href="#x" x="10" y="30"/><use href="#x" x="20" y="30"/><use href="#x" x="30" y="30"/><use href="#x" x="40" y="30"/><use href="#x" x="0" y="40"/><use href="#x" x="40" y="40"/><use href="#x" x="0" y="50"/><use href="#x" x="40" y="50"/><use href="#x" x="0" y="60"/><use href="#x" x="40" y="60"/><use href="#x" x="60" y="0"/><use href="#x" x="70" y="0"/><use href="#x" x="80" y="0"/><use href="#x" x="90" y="0"/><use href="#x" x="60" y="10"/><use href="#x" x="100" y="10"/><use href="#x" x="60" y="20"/><use href="#x" x="100" y="20"/><use href="#x" x="60" y="30"/><use href="#x" x="70" y="30"/><use href="#x" x="80" y="30"/><use href="#x" x="90" y="30"/><use href="#x" x="60" y="40"/><use href="#x" x="100" y="40"/><use href="#x" x="60" y="50"/><use href="#x" x="100" y="50"/><use href="#x" x="60" y="60"/><use href="#x" x="70" y="60"/><use href="#x" x="80" y="60"/><use href="#x" x="90" y="60"/><use href="#x" x="130" y="0"/><use href="#x" x="140" y="0"/><use href="#x" x="150" y="0"/><use href="#x" x="120" y="10"/><use href="#x" x="160" y="10"/><use href="#x" x="120" y="20"/><use href="#x" x="160" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="160" y="30"/><use href="#x" x="120" y="40"/><use href="#x" x="160" y="40"/><use href="#x" x="120" y="50"/><use href="#x" x="160" y="50"/><use href="#x" x="130" y="60"/><use href="#x" x="140" y="60"/><use href="#x" x="150" y="60"/><use href="#x" x="180" y="0"/><use href="#x" x="220" y="0"/><use href="#x" x="180" y="10"/><use href="#x" x="220" y="10"/><use href="#x" x="180" y="20"/><use href="#x" x="220" y="20"/><use href="#x" x="180" y="30"/><use href="#x" x="220" y="30"/><use href="#x" x="180" y="40"/><use href="#x" x="220" y="40"/><use href="#x" x="180" y="50"/><use href="#x" x="220" y="50"/><use href="#x" x="190" y="60"/><use href="#x" x="200" y="60"/><use href="#x" x="210" y="60"/><use href="#x" x="240" y="0"/><use href="#x" x="250" y="0"/><use href="#x" x="260" y="0"/><use href="#x" x="270" y="0"/><use href="#x" x="280" y="0"/><use href="#x" x="260" y="10"/><use href="#x" x="260" y="20"/><use href="#x" x="260" y="30"/><use href="#x" x="260" y="40"/><use href="#x" x="260" y="50"/><use href="#x" x="260" y="60"/></svg></h2>
+<h2 id="h-about">ABOUT</h2>
 <dl>
 <dt>Name</dt><dd>Mario Diz</dd>
 <dt>Aka</dt><dd>dizmar</dd>
@@ -144,37 +111,34 @@
 <dt>Skills</dt><dd>Key visuals, AI creative, 3D and product imagery, audiovisual</dd>
 <dt>Site</dt><dd><a href="https://www.dizmar.xyz/">dizmar.xyz</a></dd>
 </dl>
-<p>Mario Diz is an art director and visual designer based in Madrid. Leads key visuals, product imagery and films for brands, and integrates AI into the art direction process: as a tool for production and as part of the creative judgement.</p>
+<p>Art director and visual designer based in Madrid. Leads key visuals, product imagery and films for brands, and integrates AI into the art direction process: as a tool for production and as part of the creative judgement.</p>
 </section>
 
 <section id="work" aria-labelledby="h-work">
-<h2 id="h-work"><span class="sr-only">Selected work</span><svg class="stitch" viewBox="-2 -2 744 74" aria-hidden="true" focusable="false"><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="40" y="0"/><use href="#x" x="0" y="10"/><use href="#x" x="0" y="20"/><use href="#x" x="10" y="30"/><use href="#x" x="20" y="30"/><use href="#x" x="30" y="30"/><use href="#x" x="40" y="40"/><use href="#x" x="40" y="50"/><use href="#x" x="0" y="60"/><use href="#x" x="10" y="60"/><use href="#x" x="20" y="60"/><use href="#x" x="30" y="60"/><use href="#x" x="60" y="0"/><use href="#x" x="70" y="0"/><use href="#x" x="80" y="0"/><use href="#x" x="90" y="0"/><use href="#x" x="100" y="0"/><use href="#x" x="60" y="10"/><use href="#x" x="60" y="20"/><use href="#x" x="60" y="30"/><use href="#x" x="70" y="30"/><use href="#x" x="80" y="30"/><use href="#x" x="90" y="30"/><use href="#x" x="60" y="40"/><use href="#x" x="60" y="50"/><use href="#x" x="60" y="60"/><use href="#x" x="70" y="60"/><use href="#x" x="80" y="60"/><use href="#x" x="90" y="60"/><use href="#x" x="100" y="60"/><use href="#x" x="120" y="0"/><use href="#x" x="120" y="10"/><use href="#x" x="120" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="120" y="40"/><use href="#x" x="120" y="50"/><use href="#x" x="120" y="60"/><use href="#x" x="130" y="60"/><use href="#x" x="140" y="60"/><use href="#x" x="150" y="60"/><use href="#x" x="160" y="60"/><use href="#x" x="180" y="0"/><use href="#x" x="190" y="0"/><use href="#x" x="200" y="0"/><use href="#x" x="210" y="0"/><use href="#x" x="220" y="0"/><use href="#x" x="180" y="10"/><use href="#x" x="180" y="20"/><use href="#x" x="180" y="30"/><use href="#x" x="190" y="30"/><use href="#x" x="200" y="30"/><use href="#x" x="210" y="30"/><use href="#x" x="180" y="40"/><use href="#x" x="180" y="50"/><use href="#x" x="180" y="60"/><use href="#x" x="190" y="60"/><use href="#x" x="200" y="60"/><use href="#x" x="210" y="60"/><use href="#x" x="220" y="60"/><use href="#x" x="250" y="0"/><use href="#x" x="260" y="0"/><use href="#x" x="270" y="0"/><use href="#x" x="240" y="10"/><use href="#x" x="280" y="10"/><use href="#x" x="240" y="20"/><use href="#x" x="240" y="30"/><use href="#x" x="240" y="40"/><use href="#x" x="240" y="50"/><use href="#x" x="280" y="50"/><use href="#x" x="250" y="60"/><use href="#x" x="260" y="60"/><use href="#x" x="270" y="60"/><use href="#x" x="300" y="0"/><use href="#x" x="310" y="0"/><use href="#x" x="320" y="0"/><use href="#x" x="330" y="0"/><use href="#x" x="340" y="0"/><use href="#x" x="320" y="10"/><use href="#x" x="320" y="20"/><use href="#x" x="320" y="30"/><use href="#x" x="320" y="40"/><use href="#x" x="320" y="50"/><use href="#x" x="320" y="60"/><use href="#x" x="360" y="0"/><use href="#x" x="370" y="0"/><use href="#x" x="380" y="0"/><use href="#x" x="390" y="0"/><use href="#x" x="400" y="0"/><use href="#x" x="360" y="10"/><use href="#x" x="360" y="20"/><use href="#x" x="360" y="30"/><use href="#x" x="370" y="30"/><use href="#x" x="380" y="30"/><use href="#x" x="390" y="30"/><use href="#x" x="360" y="40"/><use href="#x" x="360" y="50"/><use href="#x" x="360" y="60"/><use href="#x" x="370" y="60"/><use href="#x" x="380" y="60"/><use href="#x" x="390" y="60"/><use href="#x" x="400" y="60"/><use href="#x" x="420" y="0"/><use href="#x" x="430" y="0"/><use href="#x" x="440" y="0"/><use href="#x" x="450" y="0"/><use href="#x" x="420" y="10"/><use href="#x" x="460" y="10"/><use href="#x" x="420" y="20"/><use href="#x" x="460" y="20"/><use href="#x" x="420" y="30"/><use href="#x" x="460" y="30"/><use href="#x" x="420" y="40"/><use href="#x" x="460" y="40"/><use href="#x" x="420" y="50"/><use href="#x" x="460" y="50"/><use href="#x" x="420" y="60"/><use href="#x" x="430" y="60"/><use href="#x" x="440" y="60"/><use href="#x" x="450" y="60"/><use href="#x" x="510" y="0"/><use href="#x" x="550" y="0"/><use href="#x" x="510" y="10"/><use href="#x" x="550" y="10"/><use href="#x" x="510" y="20"/><use href="#x" x="550" y="20"/><use href="#x" x="510" y="30"/><use href="#x" x="530" y="30"/><use href="#x" x="550" y="30"/><use href="#x" x="510" y="40"/><use href="#x" x="530" y="40"/><use href="#x" x="550" y="40"/><use href="#x" x="510" y="50"/><use href="#x" x="520" y="50"/><use href="#x" x="540" y="50"/><use href="#x" x="550" y="50"/><use href="#x" x="510" y="60"/><use href="#x" x="550" y="60"/><use href="#x" x="580" y="0"/><use href="#x" x="590" y="0"/><use href="#x" x="600" y="0"/><use href="#x" x="570" y="10"/><use href="#x" x="610" y="10"/><use href="#x" x="570" y="20"/><use href="#x" x="610" y="20"/><use href="#x" x="570" y="30"/><use href="#x" x="610" y="30"/><use href="#x" x="570" y="40"/><use href="#x" x="610" y="40"/><use href="#x" x="570" y="50"/><use href="#x" x="610" y="50"/><use href="#x" x="580" y="60"/><use href="#x" x="590" y="60"/><use href="#x" x="600" y="60"/><use href="#x" x="630" y="0"/><use href="#x" x="640" y="0"/><use href="#x" x="650" y="0"/><use href="#x" x="660" y="0"/><use href="#x" x="630" y="10"/><use href="#x" x="670" y="10"/><use href="#x" x="630" y="20"/><use href="#x" x="670" y="20"/><use href="#x" x="630" y="30"/><use href="#x" x="640" y="30"/><use href="#x" x="650" y="30"/><use href="#x" x="660" y="30"/><use href="#x" x="630" y="40"/><use href="#x" x="650" y="40"/><use href="#x" x="630" y="50"/><use href="#x" x="660" y="50"/><use href="#x" x="630" y="60"/><use href="#x" x="670" y="60"/><use href="#x" x="690" y="0"/><use href="#x" x="730" y="0"/><use href="#x" x="690" y="10"/><use href="#x" x="720" y="10"/><use href="#x" x="690" y="20"/><use href="#x" x="710" y="20"/><use href="#x" x="690" y="30"/><use href="#x" x="700" y="30"/><use href="#x" x="690" y="40"/><use href="#x" x="710" y="40"/><use href="#x" x="690" y="50"/><use href="#x" x="720" y="50"/><use href="#x" x="690" y="60"/><use href="#x" x="730" y="60"/></svg></h2>
+<h2 id="h-work">WORK</h2>
 <div class="proj">
-<b>✕ Lexus Electrified</b><br>
+<b>Lexus Electrified</b><br>
 2025 · Audiovisual · Lexus Singapore<br>
-We integrated car renders into an AI-generated environment. Together with my team, Mario helped lead the image generation and retouching, then animated the frames with AI video generation.<br>
-→ <a href="/project/lexus-electrified/">Project page (human mode)</a><br>
-→ <a href="https://www.instagram.com/p/DUk54nFkTu_/" rel="noopener">Watch the film on Instagram ↗</a>
+We integrated car renders into an AI-generated environment. Together with my team, I helped lead the image generation and retouching, then animated the frames with AI video generation.<br>
+<ul class="links"><li><a href="/project/lexus-electrified/">Project page (human mode)</a></li><li><a href="https://www.instagram.com/p/DUk54nFkTu_/" rel="noopener">Watch the film on Instagram ↗</a></li></ul>
 </div>
 <div class="proj">
-<b>✕ Schweppes</b><br>
+<b>Schweppes</b><br>
 2026 · Audiovisual · AI film<br>
-A film made 100% with AI, with every frame finished by hand with professional retouching before being animated. Mario led the image side: consistent look from shot to shot, fixing the textures AI gets wrong, and integrating the product into the scenes.<br>
-→ <a href="/project/schweppes/">Project page (human mode)</a><br>
-→ <a href="/assets/projects/schweppes/film.mp4">Watch the film (mp4)</a>
+A film made 100% with AI, with every frame finished by hand with professional retouching before being animated. I helped lead the image side: consistent look from shot to shot, fixing the textures AI gets wrong, and integrating the product into the scenes.<br>
+<ul class="links"><li><a href="/project/schweppes/">Project page (human mode)</a></li><li><a href="/assets/projects/schweppes/film.mp4">Watch the film (mp4)</a></li></ul>
 </div>
 <div class="proj">
-<b>✕ Soap &amp; Glory — Vanillalicious</b><br>
+<b>Soap &amp; Glory — Vanillalicious</b><br>
 2026 · Key visuals · Vanillalicious<br>
 Key visuals and product shots that place real products in a fantasy, food-inspired world, combining product photography with AI-generated environments.<br>
-→ <a href="/project/soap-and-glory-vanilla/">Project page (human mode)</a><br>
-→ <a href="/assets/projects/soap-and-glory-vanilla/video.mp4">Watch the video (mp4)</a>
+<ul class="links"><li><a href="/project/soap-and-glory-vanilla/">Project page (human mode)</a></li><li><a href="/assets/projects/soap-and-glory-vanilla/video.mp4">Watch the video (mp4)</a></li></ul>
 </div>
 </section>
 
 <section id="room" aria-labelledby="h-room">
-<h2 id="h-room"><span class="sr-only">The room</span><svg class="stitch" viewBox="-2 -2 444 74" aria-hidden="true" focusable="false"><use href="#x" x="0" y="0"/><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="40" y="0"/><use href="#x" x="20" y="10"/><use href="#x" x="20" y="20"/><use href="#x" x="20" y="30"/><use href="#x" x="20" y="40"/><use href="#x" x="20" y="50"/><use href="#x" x="20" y="60"/><use href="#x" x="60" y="0"/><use href="#x" x="100" y="0"/><use href="#x" x="60" y="10"/><use href="#x" x="100" y="10"/><use href="#x" x="60" y="20"/><use href="#x" x="100" y="20"/><use href="#x" x="60" y="30"/><use href="#x" x="70" y="30"/><use href="#x" x="80" y="30"/><use href="#x" x="90" y="30"/><use href="#x" x="100" y="30"/><use href="#x" x="60" y="40"/><use href="#x" x="100" y="40"/><use href="#x" x="60" y="50"/><use href="#x" x="100" y="50"/><use href="#x" x="60" y="60"/><use href="#x" x="100" y="60"/><use href="#x" x="120" y="0"/><use href="#x" x="130" y="0"/><use href="#x" x="140" y="0"/><use href="#x" x="150" y="0"/><use href="#x" x="160" y="0"/><use href="#x" x="120" y="10"/><use href="#x" x="120" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="130" y="30"/><use href="#x" x="140" y="30"/><use href="#x" x="150" y="30"/><use href="#x" x="120" y="40"/><use href="#x" x="120" y="50"/><use href="#x" x="120" y="60"/><use href="#x" x="130" y="60"/><use href="#x" x="140" y="60"/><use href="#x" x="150" y="60"/><use href="#x" x="160" y="60"/><use href="#x" x="210" y="0"/><use href="#x" x="220" y="0"/><use href="#x" x="230" y="0"/><use href="#x" x="240" y="0"/><use href="#x" x="210" y="10"/><use href="#x" x="250" y="10"/><use href="#x" x="210" y="20"/><use href="#x" x="250" y="20"/><use href="#x" x="210" y="30"/><use href="#x" x="220" y="30"/><use href="#x" x="230" y="30"/><use href="#x" x="240" y="30"/><use href="#x" x="210" y="40"/><use href="#x" x="230" y="40"/><use href="#x" x="210" y="50"/><use href="#x" x="240" y="50"/><use href="#x" x="210" y="60"/><use href="#x" x="250" y="60"/><use href="#x" x="280" y="0"/><use href="#x" x="290" y="0"/><use href="#x" x="300" y="0"/><use href="#x" x="270" y="10"/><use href="#x" x="310" y="10"/><use href="#x" x="270" y="20"/><use href="#x" x="310" y="20"/><use href="#x" x="270" y="30"/><use href="#x" x="310" y="30"/><use href="#x" x="270" y="40"/><use href="#x" x="310" y="40"/><use href="#x" x="270" y="50"/><use href="#x" x="310" y="50"/><use href="#x" x="280" y="60"/><use href="#x" x="290" y="60"/><use href="#x" x="300" y="60"/><use href="#x" x="340" y="0"/><use href="#x" x="350" y="0"/><use href="#x" x="360" y="0"/><use href="#x" x="330" y="10"/><use href="#x" x="370" y="10"/><use href="#x" x="330" y="20"/><use href="#x" x="370" y="20"/><use href="#x" x="330" y="30"/><use href="#x" x="370" y="30"/><use href="#x" x="330" y="40"/><use href="#x" x="370" y="40"/><use href="#x" x="330" y="50"/><use href="#x" x="370" y="50"/><use href="#x" x="340" y="60"/><use href="#x" x="350" y="60"/><use href="#x" x="360" y="60"/><use href="#x" x="390" y="0"/><use href="#x" x="430" y="0"/><use href="#x" x="390" y="10"/><use href="#x" x="400" y="10"/><use href="#x" x="420" y="10"/><use href="#x" x="430" y="10"/><use href="#x" x="390" y="20"/><use href="#x" x="410" y="20"/><use href="#x" x="430" y="20"/><use href="#x" x="390" y="30"/><use href="#x" x="410" y="30"/><use href="#x" x="430" y="30"/><use href="#x" x="390" y="40"/><use href="#x" x="430" y="40"/><use href="#x" x="390" y="50"/><use href="#x" x="430" y="50"/><use href="#x" x="390" y="60"/><use href="#x" x="430" y="60"/></svg></h2>
-<p class="dim"># A 3D shelf of personal interests. Here, the short version.</p>
+<h2 id="h-room">ROOM</h2>
+<p class="dim"># A 3D shelf of personal interests. The short version:</p>
 <ul class="room-list">
 <li>Now playing: Bug — Fontaines D.C. (Romance)</li>
 <li>Last watched: La Bola Negra</li>
@@ -182,14 +146,11 @@ Key visuals and product shots that place real products in a fantasy, food-inspir
 <li>Lamp: a tomato lamp (turns the room’s lights off when clicked)</li>
 <li>Plant: eucalyptus in a fluted vase</li>
 </ul>
-<ul class="links">
-<li><a href="/room.html">Enter the 3D room (heavy, human mode)</a></li>
-</ul>
+<ul class="links"><li><a href="/room.html">Enter the 3D room (heavy, human mode)</a></li></ul>
 </section>
 
 <section id="contact" aria-labelledby="h-contact">
-<h2 id="h-contact"><span class="sr-only">Contact</span><svg class="stitch" viewBox="-2 -2 414 74" aria-hidden="true" focusable="false"><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="0" y="10"/><use href="#x" x="40" y="10"/><use href="#x" x="0" y="20"/><use href="#x" x="0" y="30"/><use href="#x" x="0" y="40"/><use href="#x" x="0" y="50"/><use href="#x" x="40" y="50"/><use href="#x" x="10" y="60"/><use href="#x" x="20" y="60"/><use href="#x" x="30" y="60"/><use href="#x" x="70" y="0"/><use href="#x" x="80" y="0"/><use href="#x" x="90" y="0"/><use href="#x" x="60" y="10"/><use href="#x" x="100" y="10"/><use href="#x" x="60" y="20"/><use href="#x" x="100" y="20"/><use href="#x" x="60" y="30"/><use href="#x" x="100" y="30"/><use href="#x" x="60" y="40"/><use href="#x" x="100" y="40"/><use href="#x" x="60" y="50"/><use href="#x" x="100" y="50"/><use href="#x" x="70" y="60"/><use href="#x" x="80" y="60"/><use href="#x" x="90" y="60"/><use href="#x" x="120" y="0"/><use href="#x" x="160" y="0"/><use href="#x" x="120" y="10"/><use href="#x" x="130" y="10"/><use href="#x" x="160" y="10"/><use href="#x" x="120" y="20"/><use href="#x" x="140" y="20"/><use href="#x" x="160" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="150" y="30"/><use href="#x" x="160" y="30"/><use href="#x" x="120" y="40"/><use href="#x" x="160" y="40"/><use href="#x" x="120" y="50"/><use href="#x" x="160" y="50"/><use href="#x" x="120" y="60"/><use href="#x" x="160" y="60"/><use href="#x" x="180" y="0"/><use href="#x" x="190" y="0"/><use href="#x" x="200" y="0"/><use href="#x" x="210" y="0"/><use href="#x" x="220" y="0"/><use href="#x" x="200" y="10"/><use href="#x" x="200" y="20"/><use href="#x" x="200" y="30"/><use href="#x" x="200" y="40"/><use href="#x" x="200" y="50"/><use href="#x" x="200" y="60"/><use href="#x" x="250" y="0"/><use href="#x" x="260" y="0"/><use href="#x" x="270" y="0"/><use href="#x" x="240" y="10"/><use href="#x" x="280" y="10"/><use href="#x" x="240" y="20"/><use href="#x" x="280" y="20"/><use href="#x" x="240" y="30"/><use href="#x" x="250" y="30"/><use href="#x" x="260" y="30"/><use href="#x" x="270" y="30"/><use href="#x" x="280" y="30"/><use href="#x" x="240" y="40"/><use href="#x" x="280" y="40"/><use href="#x" x="240" y="50"/><use href="#x" x="280" y="50"/><use href="#x" x="240" y="60"/><use href="#x" x="280" y="60"/><use href="#x" x="310" y="0"/><use href="#x" x="320" y="0"/><use href="#x" x="330" y="0"/><use href="#x" x="300" y="10"/><use href="#x" x="340" y="10"/><use href="#x" x="300" y="20"/><use href="#x" x="300" y="30"/><use href="#x" x="300" y="40"/><use href="#x" x="300" y="50"/><use href="#x" x="340" y="50"/><use href="#x" x="310" y="60"/><use href="#x" x="320" y="60"/><use href="#x" x="330" y="60"/><use href="#x" x="360" y="0"/><use href="#x" x="370" y="0"/><use href="#x" x="380" y="0"/><use href="#x" x="390" y="0"/><use href="#x" x="400" y="0"/><use href="#x" x="380" y="10"/><use href="#x" x="380" y="20"/><use href="#x" x="380" y="30"/><use href="#x" x="380" y="40"/><use href="#x" x="380" y="50"/><use href="#x" x="380" y="60"/></svg></h2>
-<!-- EDITA: tu email y tus redes -->
+<h2 id="h-contact">CONTACT</h2>
 <dl>
 <dt>Email</dt><dd><a href="mailto:hey.mariodiz@gmail.com">hey.mariodiz@gmail.com</a></dd>
 <dt>LinkedIn</dt><dd><a href="https://es.linkedin.com/in/mario-diaz-aguado" rel="noopener">es.linkedin.com/in/mario-diaz-aguado</a></dd>
@@ -198,7 +159,7 @@ Key visuals and product shots that place real products in a fantasy, food-inspir
 </section>
 
 <section id="sitemap" aria-labelledby="h-sitemap">
-<h2 id="h-sitemap"><span class="sr-only">Sitemap</span><svg class="stitch" viewBox="-2 -2 394 74" aria-hidden="true" focusable="false"><use href="#x" x="10" y="0"/><use href="#x" x="20" y="0"/><use href="#x" x="30" y="0"/><use href="#x" x="40" y="0"/><use href="#x" x="0" y="10"/><use href="#x" x="0" y="20"/><use href="#x" x="10" y="30"/><use href="#x" x="20" y="30"/><use href="#x" x="30" y="30"/><use href="#x" x="40" y="40"/><use href="#x" x="40" y="50"/><use href="#x" x="0" y="60"/><use href="#x" x="10" y="60"/><use href="#x" x="20" y="60"/><use href="#x" x="30" y="60"/><use href="#x" x="60" y="0"/><use href="#x" x="70" y="0"/><use href="#x" x="80" y="0"/><use href="#x" x="70" y="10"/><use href="#x" x="70" y="20"/><use href="#x" x="70" y="30"/><use href="#x" x="70" y="40"/><use href="#x" x="70" y="50"/><use href="#x" x="60" y="60"/><use href="#x" x="70" y="60"/><use href="#x" x="80" y="60"/><use href="#x" x="100" y="0"/><use href="#x" x="110" y="0"/><use href="#x" x="120" y="0"/><use href="#x" x="130" y="0"/><use href="#x" x="140" y="0"/><use href="#x" x="120" y="10"/><use href="#x" x="120" y="20"/><use href="#x" x="120" y="30"/><use href="#x" x="120" y="40"/><use href="#x" x="120" y="50"/><use href="#x" x="120" y="60"/><use href="#x" x="160" y="0"/><use href="#x" x="170" y="0"/><use href="#x" x="180" y="0"/><use href="#x" x="190" y="0"/><use href="#x" x="200" y="0"/><use href="#x" x="160" y="10"/><use href="#x" x="160" y="20"/><use href="#x" x="160" y="30"/><use href="#x" x="170" y="30"/><use href="#x" x="180" y="30"/><use href="#x" x="190" y="30"/><use href="#x" x="160" y="40"/><use href="#x" x="160" y="50"/><use href="#x" x="160" y="60"/><use href="#x" x="170" y="60"/><use href="#x" x="180" y="60"/><use href="#x" x="190" y="60"/><use href="#x" x="200" y="60"/><use href="#x" x="220" y="0"/><use href="#x" x="260" y="0"/><use href="#x" x="220" y="10"/><use href="#x" x="230" y="10"/><use href="#x" x="250" y="10"/><use href="#x" x="260" y="10"/><use href="#x" x="220" y="20"/><use href="#x" x="240" y="20"/><use href="#x" x="260" y="20"/><use href="#x" x="220" y="30"/><use href="#x" x="240" y="30"/><use href="#x" x="260" y="30"/><use href="#x" x="220" y="40"/><use href="#x" x="260" y="40"/><use href="#x" x="220" y="50"/><use href="#x" x="260" y="50"/><use href="#x" x="220" y="60"/><use href="#x" x="260" y="60"/><use href="#x" x="290" y="0"/><use href="#x" x="300" y="0"/><use href="#x" x="310" y="0"/><use href="#x" x="280" y="10"/><use href="#x" x="320" y="10"/><use href="#x" x="280" y="20"/><use href="#x" x="320" y="20"/><use href="#x" x="280" y="30"/><use href="#x" x="290" y="30"/><use href="#x" x="300" y="30"/><use href="#x" x="310" y="30"/><use href="#x" x="320" y="30"/><use href="#x" x="280" y="40"/><use href="#x" x="320" y="40"/><use href="#x" x="280" y="50"/><use href="#x" x="320" y="50"/><use href="#x" x="280" y="60"/><use href="#x" x="320" y="60"/><use href="#x" x="340" y="0"/><use href="#x" x="350" y="0"/><use href="#x" x="360" y="0"/><use href="#x" x="370" y="0"/><use href="#x" x="340" y="10"/><use href="#x" x="380" y="10"/><use href="#x" x="340" y="20"/><use href="#x" x="380" y="20"/><use href="#x" x="340" y="30"/><use href="#x" x="350" y="30"/><use href="#x" x="360" y="30"/><use href="#x" x="370" y="30"/><use href="#x" x="340" y="40"/><use href="#x" x="340" y="50"/><use href="#x" x="340" y="60"/></svg></h2>
+<h2 id="h-sitemap">SITEMAP</h2>
 <ul class="links">
 <li><a href="/">/ — home (3D tomato, selected work)</a></li>
 <li><a href="/about/">/about/</a></li>
@@ -217,26 +178,6 @@ Key visuals and product shots that place real products in a fantasy, food-inspir
 <span>Last updated 2026-10-23</span>
 </footer>
 </div>
-
-<!-- Píldora HUMAN | MACHINE -->
-<nav class="mode" aria-label="View mode"><a href="/">Human</a><span aria-current="page">Machine</span></nav>
-<script src="/js/terminal.js?v=20261023t" defer></script>
-<script>
-  // Cambia entre el cielo y el fondo negro, y lo recuerda para la próxima visita
-  (function () {
-    var root = document.documentElement, button = document.getElementById('bg-toggle');
-    function sync() {
-      var black = root.classList.contains('black');
-      button.setAttribute('aria-pressed', black);
-      button.textContent = black ? 'Sky background' : 'Black background';
-    }
-    button.addEventListener('click', function () {
-      root.classList.toggle('black');
-      try { localStorage.setItem('dizmar-machine-bg', root.classList.contains('black') ? 'black' : 'sky'); } catch (e) {}
-      sync();
-    });
-    sync();
-  })();
-</script>
+<script src="/js/terminal.js?v=20261023u" defer></script>
 </body>
 </html>
