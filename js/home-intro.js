@@ -236,9 +236,11 @@ function createWordCycler(word, { visible = true } = {}) {
   // En la portada vale cualquier gesto; ya en Work, solo subir estando arriba del todo.
   const locked = () => document.body.classList.contains('intro-lock');
   const atTop = () => scrollY <= 1;
-  // Cuánto hay que deslizar para el viaje entero: rueda ≈ 1.600 px (unas 16 muescas), dedo ≈ lo que mide la pantalla
+  // Cuánto hay que deslizar para el viaje entero: rueda ≈ 1.600 px (unas 16 muescas), dedo ≈ 40 % de la pantalla (un deslizamiento normal).
+  // Además, un golpe rápido de dedo (flick) lo completa del todo, como la inercia de un scroll normal.
   const WHEEL_PX = 1600;
-  const touchPx = () => Math.max(520, innerHeight * 0.9);
+  const touchPx = () => Math.max(300, innerHeight * 0.4);
+  const FLICK = 0.6; // px por milisegundo
   function drag(dy, perJourney) { // dy > 0 = hacia abajo
     if (J.simple || J.hold || !dy) return; // hold: el visitante está girando el sobre escondido (js/home-sachet-egg.js)
     if (dy > 0) { if (J.target < 1 && locked()) scrub(dy / perJourney); }
@@ -249,15 +251,28 @@ function createWordCycler(word, { visible = true } = {}) {
     if (e.target instanceof Element && e.target.closest('.term')) return; // la terminal se desplaza sola, no mueve la portada
     drag(e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY, WHEEL_PX);
   }, { passive: true });
-  let touchY = null;
-  addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+  let touchY = null, samples = [];
+  addEventListener('touchstart', (e) => {
+    touchY = e.target instanceof Element && e.target.closest('.term') ? null : e.touches[0].clientY;
+    samples = [];
+  }, { passive: true });
   addEventListener('touchmove', (e) => {
     if (touchY === null) return;
     const y = e.touches[0].clientY;
+    samples.push({ t: performance.now(), y });
+    if (samples.length > 6) samples.shift();
     drag(touchY - y, touchPx()); // el dedo arrastra el viaje: el tomate sigue al dedo
     touchY = y;
   }, { passive: true });
-  addEventListener('touchend', () => { touchY = null; }, { passive: true });
+  addEventListener('touchend', () => {
+    const a = samples[0], b = samples[samples.length - 1];
+    touchY = null;
+    samples = [];
+    if (!a || !b || b.t - a.t < 16 || J.simple || J.hold || reduced) return;
+    const v = (a.y - b.y) / (b.t - a.t); // > 0: el dedo sube (hacia Work)
+    if (v > FLICK && J.target < 1 && locked()) go(1);
+    else if (v < -FLICK && J.target > 0 && (locked() || atTop())) go(0);
+  }, { passive: true });
   addEventListener('keydown', (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey || J.simple || J.hold) return;
     if (e.target instanceof Element && e.target.closest('.term')) return; // escribir en la terminal no mueve la portada
