@@ -4,7 +4,7 @@
    Orden: colores y base · barra de navegación · primera pantalla · clientes · pie · móvil · movimiento. */
 
 :root {
-  --bg: #f04a30;          /* el rojo de la web (también el de la selección de texto) */
+  --bg: #d03a22;          /* el rojo de About: un tomate algo más profundo que el del cursor, para que el texto crema llegue a 4,5:1 (con #f04a30 eran 3,4:1) */
   --bg-deep: rgba(120, 20, 8, .28); /* el recuadro de la foto */
   --ink: #fff6ea;         /* el texto (y los logos): crema casi blanco */
   --nav-h: 64px;
@@ -50,13 +50,15 @@ ul { list-style: none; }
   height: 100%;
   padding: 0 16px;
   color: var(--ink);
-  opacity: .75;
+  opacity: 1; /* con menos opacidad el crema sobre este rojo baja de 4,5:1; la página actual se marca con el subrayado */
   font-size: var(--fs-s);
   font-weight: 400;
   text-decoration: none;
   transition: opacity .2s;
 }
-.nav-links a:hover, .nav-links a[aria-current="page"] { opacity: 1; }
+/* nav-links.css y footer.css se cargan después y ponen su blanco al 70 % / 90 %: con «body» delante, aquí gana el crema pleno (sobre este rojo, 4,5:1) */
+body .nav-links a, body .site-foot.on-red, body .site-foot.on-red a { color: var(--ink); }
+.nav-links a:hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 .nav-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 
 main { padding: 0 var(--margin); }
