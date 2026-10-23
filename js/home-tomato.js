@@ -10,7 +10,6 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const canvas = document.getElementById('scene');
-const hint = document.getElementById('hint');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Llegada desde el tomate de otra página (js/transitions.js pone land-fly): empieza en la barra y vuela al centro
 const FLY_FROM_NAV = document.documentElement.classList.contains('land-fly') && !reduced;
@@ -422,8 +421,6 @@ function frame(now) {
     spinner.position.y = Math.sin(t * 1.4) * 0.06 * calm;
   }
 
-  const hintOpacity = shown > 0.05 ? '0' : '0.85';
-  if (hint.style.opacity !== hintOpacity) hint.style.opacity = hintOpacity;
   renderer.render(scene, camera);
 }
 requestAnimationFrame(frame);

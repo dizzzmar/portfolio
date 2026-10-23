@@ -215,7 +215,20 @@ function createWordCycler(word, { visible = true } = {}) {
     body.classList.toggle('intro-lock', !(J.j >= 0.999 && J.target >= 1));
     body.classList.toggle('work-engaged', J.j > 0.001 || J.target > 0);
     if (revealOf() > 0.02) startText(); else if (J.j < 0.02) stopText();
+    if (J.j > 0.02 || J.target > 0) hintDone = true; // quien ya ha empezado el viaje no necesita la pista
+    hint?.classList.toggle('is-on', hintReady && !hintDone && !J.hold);
     J.paintLine();
+  }
+
+  // ---- La pista de la portada ----
+  // Sin ella, quien llega no sabe que hay que deslizar. Aparece si pasan unos segundos sin que nadie haya movido nada, y desaparece en cuanto empieza el
+  // viaje. También es un botón: pulsarla (o con teclado) hace el viaje entero, que es el camino visible para quien no usa rueda ni dedo.
+  const hint = document.getElementById('hint');
+  let hintReady = false, hintDone = false;
+  if (hint) {
+    if (matchMedia('(pointer: coarse)').matches) hint.firstChild.textContent = 'Swipe up';
+    hint.addEventListener('click', () => { if (!J.simple) go(1); });
+    addEventListener('load', () => setTimeout(() => { hintReady = true; apply(); }, 3500), { once: true });
   }
 
   // ---- Rueda, dedo y teclado ----
