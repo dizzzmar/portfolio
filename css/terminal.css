@@ -9,8 +9,8 @@
   z-index: 40;
   top: calc(var(--nav-h, 64px) + 10px);
   right: 24px;
-  width: min(640px, calc(100vw - 48px));
-  height: min(460px, calc(100vh - var(--nav-h, 64px) - 40px));
+  width: min(780px, calc(100vw - 48px));
+  height: min(600px, calc(100vh - var(--nav-h, 64px) - 40px));
   display: flex;
   flex-direction: column;
   background: #0b0807;
@@ -73,7 +73,57 @@
   caret-color: #ff4434;
 }
 .term-input:focus { outline: none; }
+
+/* Campo con texto fantasma: el fantasma va detrás del campo, con la misma letra y el mismo relleno, y solo se ve lo que falta por escribir */
+.term-field { position: relative; flex: 1; min-width: 0; }
+.term-field .term-input { position: relative; width: 100%; }
+.term-ghost { position: absolute; inset: 0; padding: 4px 0; white-space: pre; overflow: hidden; pointer-events: none; color: transparent; font: inherit; }
+.term-ghost b { font-weight: 400; color: rgba(244, 232, 223, .38); }
+.term-options { color: rgba(244, 232, 223, .7); }
+
+/* Sugerencias: botones que se tocan (en el móvil no hay Tab) */
+.term-chips { display: flex; gap: 6px; padding: 6px 18px 0; overflow-x: auto; scrollbar-width: none; }
+.term-chips::-webkit-scrollbar { display: none; }
+.term-chips:empty { display: none; }
+.term-chip {
+  flex: none;
+  min-height: 30px;
+  padding: 3px 12px;
+  border: 1px solid rgba(255, 68, 52, .4);
+  border-radius: 999px;
+  background: transparent;
+  color: #f4e8df;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.term-chip:hover { background: rgba(255, 68, 52, .16); border-color: #ff4434; }
+.term-chip:focus-visible { outline: 2px solid #ff4434; outline-offset: 2px; }
+@media (pointer: coarse) { .term-chip { min-height: 40px; padding: 6px 14px; font-size: 13px; } }
 .term:focus-within .term-row { border-top-color: rgba(255, 68, 52, .4); }
+
+
+/* Bienvenida: tomate en ASCII a la izquierda, datos en cajas a la derecha */
+.term-splash { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 28px; align-items: center; padding: 4px 0 12px; }
+.term-art { display: flex; flex-direction: column; align-items: center; user-select: none; }
+.term-art pre { margin: 0; font: 12px/1.08 ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; white-space: pre; }
+.term-leaf { color: #8fbf6a; min-height: 2.16em; }
+.term-sphere { display: grid; }
+.term-layer { grid-area: 1 / 1; }
+.term-layer-0 { color: var(--art-0, #8f2a20); }
+.term-layer-1 { color: var(--art-1, #ff4434); }
+.term-layer-2 { color: var(--art-2, #ffb4a6); }
+.term-info { display: flex; flex-direction: column; gap: 10px; min-width: 0; font-size: 13px; }
+.term-who-line { color: #f4e8df; }
+.term-rule { height: 1px; background: rgba(255, 68, 52, .32); margin-top: -4px; }
+.term-box { position: relative; padding: 12px 12px 8px; border: 1px solid rgba(255, 68, 52, .32); border-radius: 6px; }
+.term-box-name { position: absolute; top: -9px; left: 10px; padding: 0 6px; background: #0b0807; color: #ff4434; font-size: 12px; }
+.term-kv { display: flex; gap: 12px; min-width: 0; }
+.term-k { flex: none; width: 5.5em; color: rgba(244, 232, 223, .62); }
+.term-v { min-width: 0; overflow-wrap: anywhere; }
+.term-swatch { display: flex; gap: 8px; }
+.term-swatch i { width: 12px; height: 12px; border-radius: 50%; }
 
 /* Foco visible en la ventana y en sus botones (el campo de texto marca su propio foco con el cursor) */
 .term-close:focus-visible, .term-open:focus-visible { outline: 2px solid #ff4434; outline-offset: 3px; }
@@ -91,6 +141,10 @@
   }
   .term-bar { border-radius: 14px 14px 0 0; }
   .term-out { font-size: 13px; }
+  .term-splash { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 14px; }
+  .term-info { width: 100%; }
+  .term-art pre { font-size: 11px; }
+  .term-box-work { display: none; } /* en el móvil el tomate y el perfil caben a la vista; el trabajo está en `work` */
   /* 16 px: con menos, Safari del iPhone hace zoom al pulsar el campo y la ventana se sale de la pantalla */
   .term-input { font-size: 16px; }
 }
