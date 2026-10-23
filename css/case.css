@@ -165,7 +165,17 @@ img, video { display: block; }
   .case-first { padding-top: 0; grid-template-rows: auto auto; align-content: start; } /* la galería sube bajo el título; el texto va justo debajo */
   .p-gallery { align-self: start; padding: 4vh 0 0; }
   .case-nav { display: none; } /* en el móvil hay solo la X y el tomate: Work, About, Contact y Room están en la portada */
-  .p-track { --h: min(52vh, 460px); padding-left: var(--edge); align-items: center; }
+  /* Alineadas arriba; la altura de la tira la fija js/case.js según la tarjeta que se ve (con una transición corta, salvo con «reducir movimiento»).
+     overflow-y: clip recorta lo que sobra de la tarjeta vecina que asoma, sin crear un scroll vertical dentro de la tira */
+  .p-track { --h: min(52vh, 460px); padding-left: var(--edge); align-items: flex-start; overflow-y: clip; transition: height .3s var(--ease-out); }
+  /* El reproductor: la barra y el estado van debajo del vídeo, no encima (en un vídeo de 190 px de alto tapaban media imagen) */
+  .p-card.player { aspect-ratio: auto; overflow: visible; background: none; }
+  .p-card.player video { height: auto; aspect-ratio: var(--ar); background: #000; }
+  .player .player-toggle, .player-bar { position: static; mix-blend-mode: normal; color: var(--ink); opacity: 1; }
+  .player .player-toggle { display: flex; align-items: center; gap: 14px; padding: 6px 0 0; }
+  .player-bar { padding: 0 0 8px; gap: 16px; }
+  .player-track::before { background: var(--ink); opacity: .25; } /* ya no va sobre el vídeo con «difference»: la línea es tinta sobre el blanco de la página */
+  .player-track i { background: var(--ink); }
   /* Cada tarjeta mide como mucho el 88% del ancho de la pantalla: se ve la foto casi entera y asoma un trozo de la siguiente (--r = ancho / alto) */
   .p-card { height: auto; width: min(calc(var(--h) * var(--r, 1)), 88vw); }
   .p-progress { margin-left: var(--edge); }
@@ -185,7 +195,7 @@ img, video { display: block; }
 @keyframes card-in { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
 @keyframes card-zoom { from { scale: 1.3; } to { scale: 1; } }
 @keyframes fade-up { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0; } }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .p-track { transition: none; } }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------- Salida: al volver a la lista, la galería se va hacia la derecha, el nombre sube y el resto se apaga (js/case.js) ---------- */
@@ -200,6 +210,7 @@ img, video { display: block; }
 @media (pointer: coarse) {
   .case-back-touch, .case-film-link { padding-block: 14px; margin-block: -14px; }
   .case-film-link { display: inline-block; }
-  .player-bar button { padding-block: 15px; margin-block: -9px; }
-  .player .player-toggle { padding-block: 8px; }
+  .player-bar button { padding-block: 15px; }
+  .player .player-toggle { min-height: 44px; }
+  .player-track { height: 32px; }
 }
