@@ -35,7 +35,7 @@
   <link rel="icon" href="/assets/images/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="stylesheet" href="/css/tokens.css?v=20261021g">
-  <link rel="stylesheet" href="/css/home.css?v=20261022h">
+  <link rel="stylesheet" href="/css/home.css?v=20261023a">
 <link rel="stylesheet" href="/css/footer.css?v=20261021r">
   <link rel="stylesheet" href="/css/typography.css?v=20261021g">
 <link rel="stylesheet" href="/css/transitions.css?v=20261021g">
@@ -78,7 +78,8 @@
       <h1 class="sr-only" id="site-title">Mario Diz — art direction &amp; visual design, Madrid</h1>
       <!-- Tomate plano que se ve al instante mientras carga el 3D (luego se funde con él) -->
       <img class="tomato-placeholder" src="/assets/images/tomato.webp" width="595" height="640" alt="" aria-hidden="true" fetchpriority="high">
-      <div class="scroll-hint" id="hint" hidden>Scroll</div> <!-- oculto: el tomate sube solo -->
+      <!-- La pista aparece si nadie mueve nada en unos segundos (js/home-intro.js); pulsarla hace el viaje entero -->
+      <button class="scroll-hint" id="hint" type="button">Scroll</button>
       <!-- Cuando el tomate llega al menú aparece "Creative ___" y la segunda palabra cambia muy rápido.
            EDITA la lista de palabras en js/home-intro.js -->
       <p class="intro-line" aria-hidden="true"><span>Creative</span> <span class="intro-word">Designer</span></p>
@@ -156,9 +157,9 @@
 
 
   <!-- Scripts: texto "Creative ___" y vídeos · tomate 3D -->
-  <script src="/js/home-intro.js?v=20261022h" defer></script>
+  <script src="/js/home-intro.js?v=20261023a" defer></script>
   <script src="/js/home-work.js?v=20261020s" defer></script>
-  <script type="module" src="/js/home-tomato.js?v=20261022h"></script>
+  <script type="module" src="/js/home-tomato.js?v=20261023a"></script>
 <script src="/js/cursor.js?v=20261021c" defer></script>
   <script type="module" src="/js/contact-sachet.js?v=20261022a"></script>
 </body>
