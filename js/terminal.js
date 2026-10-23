@@ -89,8 +89,8 @@
   const hint = document.createElement('p');
   hint.className = 'term-hint';
   hint.textContent = machine
-    ? 'Machine mode: the plain-text index. `view human` opens the visual site.'
-    : 'Tip: `view machine` opens the plain-text version of this site.';
+    ? 'Machine mode: the plain-text index. `view human` opens the visual site. Tab completes; tap a suggestion.'
+    : 'Tip: `view machine` opens the plain-text version of this site. Tab completes; tap a suggestion.';
 
   // ---------- Salida ----------
   const write = (lines, cls = '') => {
@@ -329,6 +329,113 @@
     if (lastTrigger) lastTrigger.focus({ preventScroll: true });
   }
 
+  // ---------- Autocompletar y sugerencias ----------
+  // · Texto fantasma tras lo que escribes (Tab o → para aceptarlo; Tab con varias opciones las lista).
+  // · Botones de sugerencia sobre el campo: sirven en el móvil, donde no hay Tab. Tocar uno lo ejecuta, o lo escribe si necesita un argumento.
+  // Los comandos escondidos (tomato, ketchup…) nunca se sugieren.
+  const NEEDS_ARG = new Set(['cd', 'view', 'inspect', 'lights', 'sunset', 'zoom', 'echo']);
+  const roomOn = () => !!window.dizRoom;
+  const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'clear', 'exit',
+    ...(roomOn() ? ['look', 'inspect', 'lights', 'play', 'flicker', 'sunset', 'zoom'] : [])];
+  const ARGS = () => ({
+    cd: ['home', 'work', 'about', 'room', 'machine', 'lexus', 'schweppes', 'soap', 'contact'],
+    view: ['human', 'machine'],
+    inspect: ['vinyl', 'poster', 'mimikyu', 'lamp', 'plant', 'wii'],
+    lights: ['on', 'off'],
+    sunset: ['on', 'off'],
+    zoom: ['out'],
+  });
+  const commonPrefix = (list) => list.reduce((a, b) => { let i = 0; while (i < a.length && a[i] === b[i]) i++; return a.slice(0, i); });
+  // Qué se puede completar con lo que hay escrito: { candidates: [texto completo de la última palabra], head: lo anterior, word: lo escrito }
+  function completions(value) {
+    const text = value.replace(/^\s+/, '');
+    const space = text.search(/\s/);
+    if (space === -1) {
+      const word = text.toLowerCase();
+      return { head: '', word, candidates: baseCommands().filter((c) => c.startsWith(word) && c !== word) };
+    }
+    const cmd = text.slice(0, space).toLowerCase();
+    const rest = text.slice(space).replace(/^\s+/, '');
+    const word = rest.toLowerCase();
+    const list = ARGS()[cmd] || [];
+    return { head: text.slice(0, space) + ' ', word, candidates: list.filter((c) => c.startsWith(word) && c !== word) };
+  }
+  // Sugerencias para los botones: comandos completos (o la palabra que falta si hay que escribir un argumento)
+  function chipsFor(value) {
+    const text = value.replace(/^\s+/, '');
+    if (!text) return roomOn() ? ['look', 'lights off', 'inspect lamp', 'play', 'help'] : ['help', 'ls', 'view machine', 'about', 'work'];
+    const { head, candidates, word } = completions(value);
+    if (head) return candidates.slice(0, 6).map((c) => head + c);
+    const out = candidates.slice(0, 6);
+    return word && !out.length ? [] : out;
+  }
+
+  // Campo con texto fantasma y botones
+  const field = document.createElement('div');
+  field.className = 'term-field';
+  const ghost = document.createElement('div');
+  ghost.className = 'term-ghost';
+  ghost.setAttribute('aria-hidden', 'true');
+  const ghostTyped = document.createElement('span');
+  const ghostRest = document.createElement('b');
+  ghost.append(ghostTyped, ghostRest);
+  input.after(field);
+  field.append(ghost, input);
+  const chips = document.createElement('div');
+  chips.className = 'term-chips';
+  chips.setAttribute('role', 'group');
+  chips.setAttribute('aria-label', 'Suggested commands');
+  panel.insertBefore(chips, row);
+
+  const refreshSuggestions = () => {
+    const { candidates, word } = completions(input.value);
+    ghostTyped.textContent = input.value;
+    ghostRest.textContent = input.value && candidates.length && word ? candidates[0].slice(word.length) : '';
+    chips.replaceChildren();
+    for (const text of chipsFor(input.value)) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'term-chip';
+      b.textContent = text;
+      const needs = NEEDS_ARG.has(text.split(' ')[0]) && !text.includes(' ');
+      b.setAttribute('aria-label', (needs ? 'Write command: ' : 'Run command: ') + text);
+      b.addEventListener('pointerdown', (e) => e.preventDefault()); // el campo no pierde el foco (y el teclado del móvil sigue abierto)
+      b.addEventListener('click', () => {
+        if (needs) { input.value = text + ' '; input.focus({ preventScroll: true }); refreshSuggestions(); return; }
+        run(text);
+        input.value = '';
+        input.focus({ preventScroll: true });
+        refreshSuggestions();
+      });
+      chips.append(b);
+    }
+  };
+  const acceptGhost = () => {
+    const { candidates, word, head } = completions(input.value);
+    if (!candidates.length || !word) return false;
+    const done = candidates.length === 1 ? candidates[0] : commonPrefix(candidates);
+    const full = head + done;
+    if (full.length <= input.value.replace(/^\s+/, '').length) {
+      // Nada más que completar sin ambigüedad: se muestran las opciones, como en una terminal de verdad
+      write([candidates.join('   ')], 'term-options');
+      return true;
+    }
+    input.value = full + (candidates.length === 1 && !head && NEEDS_ARG.has(done) ? ' ' : '');
+    return true;
+  };
+  input.addEventListener('input', refreshSuggestions);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab' && !e.shiftKey && input.value.trim()) {
+      if (acceptGhost()) { e.preventDefault(); refreshSuggestions(); }
+    } else if (e.key === 'ArrowRight' && input.selectionStart === input.value.length && ghostRest.textContent) {
+      e.preventDefault();
+      acceptGhost();
+      refreshSuggestions();
+    }
+  });
+  row.addEventListener('submit', () => setTimeout(refreshSuggestions, 0));
+  refreshSuggestions();
+
   triggers.forEach((t) => t.addEventListener('click', (e) => { e.preventDefault(); lastTrigger = t; panel.hidden ? openTerm() : closeTerm(); }));
   close.addEventListener('click', closeTerm);
   row.addEventListener('submit', (e) => { e.preventDefault(); run(input.value); input.value = ''; });
@@ -337,10 +444,12 @@
       e.preventDefault();
       histIndex = Math.max(0, histIndex - 1);
       input.value = past[histIndex] || '';
+      refreshSuggestions();
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
       histIndex = Math.min(past.length, histIndex + 1);
       input.value = past[histIndex] || '';
+      refreshSuggestions();
     } else if (e.key === 'Escape') {
       e.preventDefault();
       closeTerm();

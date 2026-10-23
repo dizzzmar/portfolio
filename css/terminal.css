@@ -73,6 +73,34 @@
   caret-color: #ff4434;
 }
 .term-input:focus { outline: none; }
+
+/* Campo con texto fantasma: el fantasma va detrás del campo, con la misma letra y el mismo relleno, y solo se ve lo que falta por escribir */
+.term-field { position: relative; flex: 1; min-width: 0; }
+.term-field .term-input { position: relative; width: 100%; }
+.term-ghost { position: absolute; inset: 0; padding: 4px 0; white-space: pre; overflow: hidden; pointer-events: none; color: transparent; font: inherit; }
+.term-ghost b { font-weight: 400; color: rgba(244, 232, 223, .38); }
+.term-options { color: rgba(244, 232, 223, .7); }
+
+/* Sugerencias: botones que se tocan (en el móvil no hay Tab) */
+.term-chips { display: flex; gap: 6px; padding: 6px 18px 0; overflow-x: auto; scrollbar-width: none; }
+.term-chips::-webkit-scrollbar { display: none; }
+.term-chips:empty { display: none; }
+.term-chip {
+  flex: none;
+  min-height: 30px;
+  padding: 3px 12px;
+  border: 1px solid rgba(255, 68, 52, .4);
+  border-radius: 999px;
+  background: transparent;
+  color: #f4e8df;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.term-chip:hover { background: rgba(255, 68, 52, .16); border-color: #ff4434; }
+.term-chip:focus-visible { outline: 2px solid #ff4434; outline-offset: 2px; }
+@media (pointer: coarse) { .term-chip { min-height: 40px; padding: 6px 14px; font-size: 13px; } }
 .term:focus-within .term-row { border-top-color: rgba(255, 68, 52, .4); }
 
 /* Foco visible en la ventana y en sus botones (el campo de texto marca su propio foco con el cursor) */
