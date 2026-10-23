@@ -58,7 +58,8 @@
   dots.append(document.createElement('i'), document.createElement('i'), document.createElement('i'));
   const title = document.createElement('span');
   title.className = 'term-title';
-  title.textContent = machine ? 'dizmar — machine mode' : 'dizmar — terminal';
+  const titleText = machine ? 'dizmar — machine mode' : 'dizmar — terminal';
+  title.textContent = titleText;
   const close = document.createElement('button');
   close.type = 'button';
   close.className = 'term-close';
@@ -92,14 +93,47 @@
     ? 'Machine mode: the plain-text index. `view human` opens the visual site. Tab completes; tap a suggestion.'
     : 'Tip: `view machine` opens the plain-text version of this site. Tab completes; tap a suggestion.';
 
+  // ---------- Texto que se descifra (como la palabra «Creative ___» de la portada) ----------
+  // Las letras sueltas se mezclan y se van fijando de izquierda a derecha. Con «movimiento reducido» el texto aparece tal cual.
+  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
+  const scramble = (node, text, ms = 420, delay = 0, done = null) => {
+    if (reduced || !text) { node.textContent = text; if (done) done(); return; }
+    node.textContent = '';
+    const chars = [...text];
+    const start = performance.now() + delay;
+    let last = -Infinity;
+    const step = (now) => {
+      if (!node.isConnected && now > start + 200) return;
+      const p = (now - start) / ms;
+      if (p >= 1) { node.textContent = text; if (done) done(); return; }
+      if (p >= 0 && now - last >= 40) {
+        last = now;
+        const done = Math.floor(p * chars.length);
+        node.textContent = chars.map((c, i) => (i < done || /\s/.test(c) ? c : GLYPHS[(Math.random() * GLYPHS.length) | 0])).join('');
+      }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
   // ---------- Salida ----------
   const write = (lines, cls = '') => {
-    for (const text of lines) {
+    lines.forEach((text, i) => {
       const p = document.createElement('div');
       p.className = 'term-line ' + cls;
-      p.textContent = text;
+      if (reduced || !text.trim() || lines.length > 40) p.textContent = text;
+      else {
+        // El lector de pantalla recibe el texto final de una vez; el que se descifra queda oculto para él
+        const real = document.createElement('span');
+        real.className = 'term-sr';
+        real.textContent = text;
+        const fx = document.createElement('span');
+        fx.setAttribute('aria-hidden', 'true');
+        p.append(real, fx);
+        scramble(fx, text, 260 + Math.min(text.length * 5, 260), Math.min(i * 35, 350), () => { if (p.isConnected) p.textContent = text; }); // al acabar queda solo el texto, para poder copiarlo
+      }
       out.append(p);
-    }
+    });
     out.scrollTop = out.scrollHeight;
   };
   const echoCommand = (text) => {
@@ -133,6 +167,7 @@
       '  whoami                  who is behind this',
       '  date                    today’s date',
       '  echo <text>             print text',
+      '  guide                   every command on one screen',
       '  neofetch                the welcome screen again',
       '  clear                   clear this window',
       '  exit                    close the terminal (also Esc)',
@@ -157,6 +192,16 @@
     about: () => SECTIONS.about,
     work: () => SECTIONS.work,
     contact: () => SECTIONS.contact,
+    guide: () => { write([
+      'GUIDE',
+      'go       ls · cd <page> · view human|machine · exit',
+      'read     about · work · contact · whoami · date',
+      'screen   neofetch · clear · echo <text>',
+      'tomato   spin · stop · go · reverse · faster · slower · paint <color>',
+      'colors   hue <0-360> · rainbow · invert · gray · sepia · reset',
+      ...(window.dizRoom ? ['room     look · inspect <thing> · lights on|off · play · flicker · sunset · zoom out'] : []),
+      'keys     Tab completes · ↑ ↓ history · ` opens · Esc closes',
+    ], 'term-guide'); return []; },
     neofetch: () => { showSplash(); return []; },
     clear: () => { out.replaceChildren(); return []; },
     exit: () => { closeTerm(); return []; },
@@ -343,6 +388,7 @@
     const fn = COMMANDS[name.toLowerCase()];
     const result = fn ? fn(args) : ['command not found: ' + name + '  (type help)'];
     if (result && result.length) write(result);
+    requestAnimationFrame(() => { if (!atWelcome) out.scrollTop = out.scrollHeight; }); // las sugerencias cambian la altura: vuelve al final
   };
 
   // ---------- Pantalla de bienvenida: tomate en ASCII + panel de datos (tipo «neofetch») ----------
@@ -405,7 +451,14 @@
   };
   let artTimer = 0, artT = 0.6;
   const paintArt = (art) => {
-    const frame = tomatoFrame(artT);
+    let frame = tomatoFrame(artT);
+    if (art.born != null && !reduced) {
+      const k = Math.min(1, (performance.now() - art.born) / 800);
+      if (k < 1) {
+        let n = 0;
+        frame = frame.map((layer) => [...layer].map((ch) => (ch === ' ' || ch === '\n' ? ch : art.th[n++ % art.th.length] > k ? '.:-=+*#%@'[(Math.random() * 9) | 0] : ch)).join(''));
+      } else art.born = null;
+    }
     art.layers.forEach((pre, i) => { pre.textContent = frame[i]; });
     const leaf = LEAF[reduced ? 0 : Math.abs(Math.floor(artT * 1.5)) % 2];
     art.leaf.textContent = leaf.join('\n');
@@ -440,7 +493,7 @@
     const layers = [0, 1, 2].map((i) => el('pre', 'term-layer term-layer-' + i));
     stack.append(...layers);
     artBox.append(leaf, stack);
-    const art = { root, leaf, layers };
+    const art = { root, leaf, layers, born: performance.now(), th: Array.from({ length: ART_W * ART_H }, Math.random) };
     const startedAt = Date.now();
     const uptime = el('span', 'term-v', '00:00');
     const info = el('div', 'term-info');
@@ -467,6 +520,7 @@
     );
     root.append(artBox, info);
     out.append(root);
+    if (!reduced) info.querySelectorAll('.term-v').forEach((v, i) => { if (v !== uptime) scramble(v, v.textContent, 380, 150 + i * 50); });
     arts.add(art);
     paintArt(art);
     if (!reduced) {
@@ -501,13 +555,14 @@
   input.addEventListener('focus', () => { fit(); setTimeout(fit, 250); }); // el teclado tarda un momento en abrirse
   function openTerm() {
     panel.hidden = false;
+    scramble(title, titleText, 420);
     fit();
     triggers.forEach((t) => t.setAttribute('aria-expanded', 'true'));
     startArt();
     if (!welcomed) {
       welcomed = true;
       showSplash();
-      write(['Type `help` to see the commands.']);
+      write(['Type `guide` to see every command.']);
       out.append(hint.cloneNode(true));
       atWelcome = true;
       out.scrollTop = 0; // la bienvenida se lee desde arriba
@@ -527,7 +582,7 @@
   // Los comandos escondidos (tomato, ketchup…) nunca se sugieren.
   const NEEDS_ARG = new Set(['cd', 'view', 'inspect', 'lights', 'sunset', 'zoom', 'echo']);
   const roomOn = () => !!window.dizRoom;
-  const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'neofetch', 'clear', 'exit',
+  const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'guide', 'neofetch', 'clear', 'exit',
     ...(roomOn() ? ['look', 'inspect', 'lights', 'play', 'flicker', 'sunset', 'zoom'] : [])];
   const ARGS = () => ({
     cd: ['home', 'work', 'about', 'room', 'machine', 'lexus', 'schweppes', 'soap', 'contact'],
