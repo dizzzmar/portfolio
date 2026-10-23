@@ -77,7 +77,7 @@ Los tres juegos de Recently played están en `assets/room/discs/games.json`. Las
 ### Buscadores (Google): qué tiene que llevar cada página
 Cada página pública lleva en su `<head>`: `<title>`, `<meta name="description">`, `<link rel="canonical">` (con la dirección completa y la barra final, por ejemplo `https://www.dizmar.xyz/about/`), las etiquetas `og:` y `twitter:card` (lo que se ve al compartir el enlace) y, en las páginas de proyecto, los datos estructurados (`application/ld+json`). Además:
 - Toda página nueva se añade a `sitemap.xml` (y se resume en `llms.txt`).
-- Una página en borrador lleva `<meta name="robots" content="noindex">` y NO está en el sitemap (hoy: Stamps y `machine/`; las plantillas están además bloqueadas en `robots.txt`). Al publicarla, se borra esa línea y se añade al sitemap.
+- Una página en borrador lleva `<meta name="robots" content="noindex">` y NO está en el sitemap (hoy: Stamps y `machine/`; las plantillas están además bloqueadas en `robots.txt`). **Stamps está en pausa:** su página lleva una redirección a la portada (`meta refresh` + `location.replace` en su `<head>`) hasta que haya formulario y sellos reales; para reactivarla, borra esas dos líneas junto con el `noindex`. Al publicarla, se borra esa línea y se añade al sitemap.
 - Los enlaces del menú llevan la barra final (`/about/`) para no pasar por una redirección.
 - Google no se entera solo: hay que dar de alta la web en Google Search Console y enviar `https://www.dizmar.xyz/sitemap.xml` (con tu cuenta de Google, en search.google.com/search-console).
 
