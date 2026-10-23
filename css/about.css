@@ -180,6 +180,7 @@ main { padding: 0 var(--margin); }
 .client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 44px; max-width: 1100px; }
 .client-list a { display: block; transition: opacity .2s; }
 .client-list a:hover { opacity: .7; }
+@media (pointer: coarse) { .client-list { row-gap: 28px; } .client-list a { padding-block: 12px; margin-block: -12px; } } /* zona táctil de 44 px sin mover los logos */
 /* Cada logo se pinta del color del texto usando su silueta: así todos quedan en el mismo rojo */
 .client-logo {
   display: block;

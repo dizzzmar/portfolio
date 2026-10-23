@@ -16,4 +16,6 @@
 @media (max-width: 700px) {
   :root { --nav-h: 56px; }
   .nav-logo, .case-logo { left: 14px; top: calc((var(--nav-h) - 39px) / 2); width: 36px; height: 39px; }
+  /* La zona que responde al dedo llega a 48 × 47 px (el tomate sigue midiendo 36 × 39) */
+  .nav-logo::after, .case-logo::after { content: ""; position: absolute; inset: -4px -6px; }
 }

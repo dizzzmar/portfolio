@@ -195,3 +195,11 @@ img, video { display: block; }
 @keyframes leave-track { to { transform: translateX(8vw); opacity: 0; } }
 @keyframes leave-up { to { transform: translateY(-14px); opacity: 0; } }
 @keyframes leave-fade { to { opacity: 0; } }
+
+/* Con dedo: los controles sueltos miden al menos 44 px de alto (sin mover nada de sitio: el padding se compensa con margen negativo) */
+@media (pointer: coarse) {
+  .case-back-touch, .case-film-link { padding-block: 14px; margin-block: -14px; }
+  .case-film-link { display: inline-block; }
+  .player-bar button { padding-block: 15px; margin-block: -9px; }
+  .player .player-toggle { padding-block: 8px; }
+}

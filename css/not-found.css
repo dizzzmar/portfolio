@@ -20,6 +20,7 @@ body {
   inset: -8%;
   z-index: -1;
   background:
+    linear-gradient(rgba(0, 35, 95, .32), rgba(0, 35, 95, .32)), /* un velo azul: el texto blanco del centro más de 4,5:1 en casi todo el texto (medido con la foto debajo) */
     url("/assets/images/sky.webp") center / cover,
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
   animation: drift 40s ease-in-out infinite alternate;
@@ -106,7 +107,7 @@ body {
 }
 
 .home {
-  padding: 12px 22px;
+  padding: 13px 22px; /* 44 px de alto con dedo */
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 999px;
   color: #fff;
