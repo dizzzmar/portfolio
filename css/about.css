@@ -40,6 +40,7 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   padding: 0 var(--margin); /* el tomate y el menú alineados con el texto */
+  background: var(--bg); /* el contenido pasa por debajo al hacer scroll sin pisar el menú */
 }
 .nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s var(--ease-out); }
 .nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
@@ -83,13 +84,13 @@ main { padding: 0 var(--margin); }
   margin-left: -.04em; /* alinea la tinta de la M con el margen */
   font-size: var(--fs-h1);
   font-weight: var(--fw-bold);
-  letter-spacing: -.06em;
+  letter-spacing: -.055em;
   line-height: .9;
 }
 
 .statement {
   grid-area: statement;
-  max-width: 33em; /* líneas más cortas, más fáciles de leer */
+  max-width: var(--measure); /* líneas más cortas, más fáciles de leer */
   margin-top: clamp(20px, 4vh, 48px);
   font-size: var(--fs-read);
   font-weight: var(--fw-bold);
@@ -156,7 +157,7 @@ main { padding: 0 var(--margin); }
 .fact-values { grid-column: 2 / 4; }
 .now-playing { grid-column: 4; }
 .fact h2 { margin-bottom: .5em; font-size: inherit; font-weight: var(--fw-bold); }
-.fact p, .fact li { max-width: 28em; font-weight: var(--fw-regular); letter-spacing: -.01em; } /* todas las columnas con el mismo estilo de texto */
+.fact p, .fact li { max-width: var(--measure); font-weight: var(--fw-regular); letter-spacing: -.01em; } /* todas las columnas con el mismo estilo de texto */
 .fact a { text-underline-offset: 3px; transition: opacity .2s; }
 .fact a:hover { opacity: .7; }
 /* LinkedIn y correo: una fila bajo las dos primeras columnas; sus enlaces llevan la raya animada de toda la web (css/cursor.css) */
@@ -174,7 +175,7 @@ main { padding: 0 var(--margin); }
 .np-row img { width: 84px; height: 84px; object-fit: cover; }
 .np-row .np-film { height: 120px; }
 .np-row p { font-size: var(--fs-s); line-height: 1.35; }
-.np-row strong { display: inline-block; margin: 2px 0; font-family: var(--font-ui); font-weight: 400; font-size: var(--fs-xl); line-height: 1.05; text-transform: uppercase; letter-spacing: -.02em; }
+.np-row strong { display: inline-block; margin: 2px 0; font-family: var(--font-ui); font-weight: var(--fw-bold); font-size: var(--fs-read); line-height: 1.15; letter-spacing: -.01em; }
 .np-more { text-decoration: underline; text-underline-offset: 3px; }
 .now-playing:hover .np-more { opacity: .7; }
 

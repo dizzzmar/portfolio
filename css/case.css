@@ -23,20 +23,22 @@ img, video { display: block; }
 ::selection { background: var(--ink); color: #fff; }
 
 /* ---------- Cabecera ---------- */
+/* Franja del color de la página bajo el tomate y el menú: al hacer scroll el texto pasa por debajo sin pisarlos (en móvil se solapaba) */
+body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height: var(--nav-h); background: var(--bg); pointer-events: none; }
 /* El tomate vuelve a la portada; el nombre, la fecha y el cliente van en columnas y se quedan en la primera pantalla */
 .case-logo { position: fixed; z-index: 21; top: calc((var(--nav-h) - 43px) / 2); left: var(--edge); width: 40px; height: 43px; transition: transform .3s var(--ease-out); }
 .case-logo:hover { transform: rotate(-8deg) scale(1.06); }
 .case-logo img { width: 100%; height: 100%; object-fit: contain; }
 .case-head { position: absolute; z-index: 5; inset: 0 0 auto; height: var(--nav-h); }
 .case-head > * { position: absolute; top: 50%; transform: translateY(-50%); }
-.case-name { left: calc(var(--edge) + 56px); font-size: var(--fs-h3); font-weight: 700; letter-spacing: -.045em; line-height: 1; white-space: nowrap; }
-.case-meta { font-size: var(--fs-s); font-weight: 500; line-height: 1.25; }
+.case-name { left: calc(var(--edge) + 56px); font-size: var(--fs-h3); font-weight: var(--fw-bold); letter-spacing: var(--tracking-display); line-height: 1; white-space: nowrap; }
+.case-meta { font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.25; }
 .case-meta.date { left: 41%; }
 .case-meta.client { left: 58%; }
 /* Enlaces: fijos arriba a la derecha; en blanco con "difference" se ven oscuros sobre blanco y claros sobre una foto */
 .case-nav { position: fixed; inset: 0 0 auto; z-index: 20; height: var(--nav-h); display: flex; align-items: center; justify-content: flex-end; padding: 0 var(--edge); color: #fff; mix-blend-mode: difference; pointer-events: none; }
 .case-nav ul { display: flex; gap: clamp(16px, 2.2vw, 32px); list-style: none; pointer-events: auto; }
-.case-nav a { font-size: var(--fs-s); font-weight: 500; text-decoration: none; }
+.case-nav a { font-size: var(--fs-s); font-weight: var(--fw-regular); text-decoration: none; }
 .case-nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
 /* El nombre del proyecto es el botón de volver: al pasar el ratón se mezcla y pasa a "Back to projects" (js/case.js) */
 .case-back { color: inherit; text-decoration: none; cursor: pointer; }
@@ -44,7 +46,7 @@ img, video { display: block; }
 .case-name .case-back:focus-visible { outline-offset: 6px; }
 .cb-text { display: inline-block; font-variant-ligatures: none; }
 /* En pantallas táctiles no hay "pasar por encima": se ve siempre un enlace pequeño bajo el nombre */
-.case-back-touch { display: none; font-size: var(--fs-s); font-weight: 500; }
+.case-back-touch { display: none; font-size: var(--fs-s); font-weight: var(--fw-regular); }
 @media (hover: none) { .case-back-touch { display: inline-block; position: absolute; left: calc(var(--edge) + 56px); top: calc(100% + 2px); transform: none; } }
 
 /* ---------- Primera pantalla: cabecera, galería horizontal y datos ---------- */
@@ -73,17 +75,19 @@ img, video { display: block; }
 .p-progress i { position: absolute; inset: -.5px auto -.5px 0; width: 100%; background: var(--ink); transform-origin: left; transform: scaleX(0); }
 
 /* Datos (izquierda) y descripción (derecha), abajo, como en la referencia */
-.case-info { display: grid; grid-template-columns: 41% minmax(0, 1fr) auto; padding: clamp(20px, 3vh, 36px) var(--edge) clamp(24px, 4vh, 40px); font-size: var(--fs-s); font-weight: 500; line-height: 1.3; }
+.case-info { display: grid; grid-template-columns: 41% minmax(0, 1fr) auto; padding: clamp(20px, 3vh, 36px) var(--edge) clamp(24px, 4vh, 40px); font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.3; }
 .case-tags { list-style: none; }
-.case-text { max-width: 52ch; }
+/* La descripción: el mismo tamaño y los mismos pesos que About y Privacy (primer párrafo en negrita, el resto normal) */
+.case-text { max-width: var(--measure); font-size: var(--fs-read); line-height: 1.3; letter-spacing: -.01em; }
+.case-text p:first-child { font-weight: var(--fw-bold); }
 .case-text p + p { margin-top: .9em; }
 .case-film-link { grid-column: 3; justify-self: end; align-self: start; white-space: nowrap; text-underline-offset: 3px; transition: opacity .2s; } /* "Go to film": lleva la galería hasta la película (js/case.js) */
 .case-film-link:hover { opacity: .6; }
 .case-lead { font-size: var(--fs-lead); letter-spacing: -.02em; line-height: 1.25; }
 
 /* ---------- Instagram (Lexus) ---------- */
-.case-embed { display: grid; grid-template-columns: 41% minmax(0, 1fr); padding: clamp(60px, 9vw, 120px) var(--edge) 0; border-top: 1px solid var(--line); margin-top: 2vh; }
-.case-embed h2 { font-size: var(--fs-s); font-weight: 500; }
+.case-embed { display: grid; grid-template-columns: 41% minmax(0, 1fr); padding: clamp(60px, 9vw, 120px) var(--edge) 0; margin-top: 2vh; }
+.case-embed h2 { font-size: var(--fs-read); font-weight: var(--fw-bold); line-height: 1.3; letter-spacing: -.01em; }
 .case-embed .instagram-media { width: min(540px, 100%) !important; min-width: 0 !important; margin: 0 !important; }
 .case-embed blockquote.instagram-media { padding: 24px; background: var(--panel); font-size: var(--fs-s); }
 
@@ -103,15 +107,15 @@ img, video { display: block; }
   color: #fff;
   font-family: var(--font-ui);
   font-size: var(--fs-s);
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0;
+  text-transform: none;
   mix-blend-mode: difference;
   text-shadow: none;
   opacity: 0;
   transition: opacity .25s;
 }
-.player-time { font-family: var(--font-ui); font-size: var(--fs-s); font-weight: 700; letter-spacing: .06em; }
+.player-time { font-family: var(--font-ui); font-size: var(--fs-s); font-weight: var(--fw-bold); letter-spacing: 0; }
 .player-bar {
   position: absolute;
   inset: auto 0 0;
@@ -120,14 +124,14 @@ img, video { display: block; }
   gap: 18px;
   padding: 0 14px 12px;
   color: #fff;
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  font-size: var(--fs-s);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0;
+  text-transform: none;
   mix-blend-mode: difference;
   text-shadow: none;
 }
-.player-bar button { padding: 6px 0; font-size: var(--fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.player-bar button { padding: 6px 0; font-size: var(--fs-s); font-weight: var(--fw-bold); letter-spacing: 0; text-transform: none; }
 .player-bar button:hover { text-decoration: underline; text-underline-offset: 4px; }
 /* La línea: blanca (negra sobre vídeo claro, por el "difference"), más gruesa; lo ya visto, más marcado */
 .player-track { position: relative; flex: 1; height: 16px; cursor: pointer; }
@@ -150,7 +154,7 @@ img, video { display: block; }
 
 /* ---------- Aviso de propiedad (en todos los proyectos): en la columna de la descripción ---------- */
 .case-credit { display: grid; grid-template-columns: 41% minmax(0, 1fr); padding: clamp(40px, 5vw, 72px) var(--edge) 0; }
-.case-credit p { grid-column: 2; max-width: 56ch; color: var(--soft); font-size: var(--fs-xs); line-height: 1.5; }
+.case-credit p { grid-column: 2; max-width: var(--measure); color: rgba(20, 20, 20, .72); font-size: var(--fs-s); line-height: 1.4; } /* 14 px y al 72 %: 6:1 sobre blanco (antes 11 px y 3,5:1) */
 
 /* ---------- Pie ---------- */
 

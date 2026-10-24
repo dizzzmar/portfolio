@@ -60,7 +60,6 @@
 .term-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .term-echo { margin-top: 6px; }
 .term-who { color: #ff4434; }
-.term-hint { margin-top: 12px; color: rgba(244, 232, 223, .62); font-size: 13px; }
 
 .term-row { display: flex; align-items: center; gap: 8px; padding: 10px 18px 14px; border-top: 1px solid rgba(255, 255, 255, .08); }
 .term-prompt { flex: none; color: #ff4434; white-space: pre; }

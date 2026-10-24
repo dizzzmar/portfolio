@@ -52,7 +52,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 main { width: var(--w); margin: 0 auto; }
 .st-head { padding: calc(var(--nav-h) + clamp(32px, 7vh, 96px)) 0 clamp(28px, 5vh, 56px); max-width: 40em; }
 .st-head h1 { font-size: var(--fs-h1); font-weight: 700; letter-spacing: -.06em; line-height: .9; margin-left: -.04em; }
-.st-head p { margin-top: 20px; font-size: var(--fs-lead); font-weight: 500; line-height: 1.35; letter-spacing: -.01em; text-shadow: 0 1px 12px rgba(0, 30, 70, .25); }
+.st-head p { margin-top: 20px; font-size: var(--fs-lead); font-weight: var(--fw-bold); line-height: 1.35; letter-spacing: -.01em; text-shadow: 0 1px 12px rgba(0, 30, 70, .25); }
 .st-send {
   margin-top: 24px;
   padding: 12px 20px;
@@ -60,7 +60,7 @@ main { width: var(--w); margin: 0 auto; }
   background: #fff;
   color: var(--ink);
   font-size: var(--fs-s);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   transition: transform .25s var(--ease-out), box-shadow .25s;
 }
 .st-send:hover { transform: translateY(-2px); box-shadow: 0 8px 24px -10px rgba(0, 30, 70, .5); }
@@ -106,7 +106,7 @@ main { width: var(--w); margin: 0 auto; }
 .stamp-face > span:not(.stamp-art) { position: absolute; z-index: 1; font-weight: 700; line-height: .9; letter-spacing: -.04em; }
 .stamp-name { font-size: 16cqmin; }
 .stamp-no { font-size: 6.5cqmin; letter-spacing: -.01em !important; }
-.stamp-date, .stamp-site { font-size: 4.6cqmin; font-weight: 600 !important; letter-spacing: 0 !important; }
+.stamp-date, .stamp-site { font-size: 4.6cqmin; font-weight: var(--fw-bold) !important; letter-spacing: 0 !important; }
 
 /* lay-a · nombre arriba a la izquierda; número abajo a la derecha */
 .lay-a .stamp-name { top: 6cqmin; left: 6cqmin; right: 6cqmin; }
@@ -138,7 +138,7 @@ main { width: var(--w); margin: 0 auto; }
 /* ---------- Ventanas: un sello en grande y el formulario ---------- */
 .st-dialog { margin: auto; border: 0; background: none; color: #fff; overflow: visible; }
 .st-dialog::backdrop { background: rgba(12, 12, 11, .55); backdrop-filter: blur(6px); }
-.st-close { display: block; margin: 16px auto 0; padding: 8px 16px; border-radius: 999px; background: #fff; color: var(--ink); font-size: var(--fs-s); font-weight: 600; }
+.st-close { display: block; margin: 16px auto 0; padding: 8px 16px; border-radius: 999px; background: #fff; color: var(--ink); font-size: var(--fs-s); font-weight: var(--fw-bold); }
 /* El sello en grande mantiene la forma que tiene en el álbum */
 .st-viewer .stamp { --r: 8px; width: min(86vw, 70vh); height: auto; cursor: default; }
 .st-viewer .stamp:hover { transform: none; }
@@ -149,7 +149,7 @@ main { width: var(--w); margin: 0 auto; }
 .st-form-slot { width: min(92vw, 560px); height: min(80vh, 680px); border-radius: 16px; background: #fff; color: var(--ink); overflow: hidden; }
 .st-form-slot iframe { display: block; width: 100%; height: 100%; border: 0; }
 .st-form-slot:has(.st-soon) { height: auto; } /* sin formulario todavía: solo el aviso */
-.st-soon { padding: 32px; font-size: var(--fs-m); font-weight: 600; }
+.st-soon { padding: 32px; font-size: var(--fs-m); font-weight: var(--fw-bold); }
 
 /* ---------- Pie ---------- */
 

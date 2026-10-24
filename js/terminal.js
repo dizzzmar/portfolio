@@ -87,12 +87,6 @@
   panel.append(bar, out, row);
   document.body.append(panel);
 
-  const hint = document.createElement('p');
-  hint.className = 'term-hint';
-  hint.textContent = machine
-    ? 'Machine mode: the plain-text index. `view human` opens the visual site. Tab completes; tap a suggestion.'
-    : 'Tip: `view machine` opens the plain-text version of this site. Tab completes; tap a suggestion.';
-
   // ---------- Texto que se descifra (como la palabra «Creative ___» de la portada) ----------
   // Las letras sueltas se mezclan y se van fijando de izquierda a derecha. Con «movimiento reducido» el texto aparece tal cual.
   const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
@@ -564,8 +558,6 @@
     if (!welcomed) {
       welcomed = true;
       showSplash();
-      write(['Type `guide` to see every command.']);
-      out.append(hint.cloneNode(true));
       atWelcome = true;
       out.scrollTop = 0; // la bienvenida se lee desde arriba
     }
