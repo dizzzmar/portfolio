@@ -26,6 +26,7 @@
 .sachet.is-turning .sachet-canvas { cursor: grabbing; }
 
 .sachet-title {
+  z-index: 2; /* el lienzo 3D cubre toda la ventana y, sin esto, tapaba «Close ×» y no se podía pulsar */
   position: absolute;
   top: max(24px, env(safe-area-inset-top));
   left: 24px;
@@ -33,7 +34,7 @@
   font-weight: 400;
   line-height: 44px; /* a la altura del texto de Close */
 }
-.sachet .sachet-close { position: absolute; top: 24px; right: 24px; min-height: 44px; padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); }
+.sachet .sachet-close { z-index: 2; position: absolute; top: 24px; right: 24px; min-height: 44px; padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); }
 .sachet-close:hover, .sachet-tear:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* Pista y botón (también para teclado y lectores de pantalla): abajo, se van al rasgar */
@@ -72,6 +73,16 @@
 .sachet-mail { color: inherit; text-decoration: none; overflow-wrap: anywhere; }
 .sachet-mail:hover { text-decoration: underline; text-underline-offset: 4px; }
 .sachet .sachet-copy { padding: 6px 0; border: 0; background: none; font-size: var(--fs-s); font-weight: var(--fw-regular); text-decoration: underline; text-underline-offset: 4px; }
+
+/* Entrada: la ventana aparece (0,3 s) y el sobre sube 20 px mientras se asienta (0,6 s). Salida: un fundido corto (0,18 s, js/contact-sachet.js la lanza antes de cerrar) */
+@media (prefers-reduced-motion: no-preference) {
+  .sachet[open] { animation: sachet-in .3s var(--ease-out) both; }
+  .sachet[open] .sachet-canvas { animation: sachet-rise .6s var(--ease-out) both; }
+  .sachet.is-closing { animation: sachet-out .18s ease-in both; }
+}
+@keyframes sachet-in { from { opacity: 0; } }
+@keyframes sachet-rise { from { translate: 0 20px; } }
+@keyframes sachet-out { to { opacity: 0; } }
 
 /* Mientras está abierta, la página de debajo no se desplaza */
 html.sachet-open { overflow: hidden; }
