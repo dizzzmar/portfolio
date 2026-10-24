@@ -5,7 +5,7 @@ Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, pr
 
 ## 1. Tipografía
 
-**Una sola letra:** Schibsted Grotesk (variable, pesos 400–800, licencia OFL), alojada en `assets/fonts/` y declarada en `css/tokens.css`: no se pide nada a terceros. Mientras carga se ve Helvetica Neue o Arial. **No hay serif.** Las únicas excepciones son `machine/` (monoespaciada, otro modo a propósito) y el texto de las miniaturas de los sellos, que se escala con el propio sello.
+**Una sola letra:** Schibsted Grotesk (variable, pesos 400–800, licencia OFL), alojada en `assets/fonts/` y declarada en `css/tokens.css`: no se pide nada a terceros. Mientras carga se ve Helvetica Neue o Arial. **No hay serif.** Las únicas excepciones son `machine/` (monoespaciada, otro modo a propósito).
 
 | Variable | Tamaño | Para qué |
 | --- | --- | --- |
@@ -18,7 +18,7 @@ Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, pr
 | `--fs-lead` | 18 → 24 px (según pantalla) | Párrafos de entrada y frases destacadas |
 | `--fs-h3` | 24 → 44 px | Títulos de sección y nombre del proyecto en su barra |
 | `--fs-h2` | 40 → 76 px | Títulos grandes |
-| `--fs-h1` | 56 → 140 px | Título de página (About, Privacy, Stamps) y nombres de proyecto en Work |
+| `--fs-h1` | 56 → 140 px | Título de página (About, Privacy, FAQs) y nombres de proyecto en Work |
 
 - **Pesos: solo dos.** 700 para lo que orienta (título de página, primer párrafo de cada página y títulos de bloque) y 400 para lo que se lee. Nada de 300 ni 600. (About, Privacy y Machine ya siguen esta regla; Work, Room y los proyectos todavía usan algún 500 y se irán igualando.) El tamaño de lectura es uno solo, `--fs-read` (18 → 22 px), para la entrada, los títulos de bloque y el texto; lo que los distingue es el peso. Lo secundario va a 14 px (`--fs-s`).
 - **Interlineado:** titulares `--lh-tight` (1.05), menús y textos cortos `--lh-ui` (1.3), texto corrido `--lh-body` (1.45).
@@ -34,7 +34,6 @@ Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, pr
 | Negro de página (Work, proyectos en oscuro) | `#0c0c0b` |
 | Blanco | `#fff` |
 | Tinta sobre claro | `#111` / `#141414` |
-| Papel (sellos) | `#fbfaf6` |
 | Cielo | la foto `assets/images/sky.webp` (azul `#4f8fd8` de reserva) |
 
 Texto sobre oscuro: blanco, o blanco al 70 % para lo secundario y al 60 % para lo más tenue. No añadir colores nuevos sin decidirlo aquí.
@@ -51,7 +50,6 @@ Texto sobre oscuro: blanco, o blanco al 70 % para lo secundario y al 60 % para l
 - **Enlace de texto** (menú, pie, privacidad, volver, «Go to film»…): sin subrayado fijo. Al pasar el ratón se dibuja una raya de 1 px que entra por el lado por el que llega el ratón y sale por el lado por el que se va (0,4 s). En un párrafo lleva además una raya tenue fija. La página actual en el menú lleva la raya completa. En táctil: subrayado normal.
 - **Botón:** píldora, texto `--fs-s`, blanco con texto oscuro (o contorno blanco sobre el cielo).
 - **Cursor (solo con ratón):** punto rojo de 24 px. Sobre botones, tarjetas y objetos crece ×2,5 con un pequeño rebote; sobre enlaces de texto, sobre «View project» y sobre vídeos se oculta (la raya, la etiqueta o PLAY/PAUSE hacen de indicador); sobre fondo rojo se encoge, pasa a blanco y vuelve a crecer; al desplazar se estira como una gota.
-- **Sellos (Stamps):** papel troquelado con el texto escalado al tamaño del sello (`cqmin`); es la única parte con tamaños propios.
 
 ## 5. Movimiento
 

@@ -23,7 +23,7 @@ templates/                 Plantillas para copiar (no son páginas de la web)
   project-card.html             La fila de la lista Work de la home para un proyecto nuevo (8 miniaturas)
 
 css/                       Diseño (colores, tipografías, tamaños)
-  home.css · room.css · not-found.css · stamps.css
+  home.css · room.css · not-found.css
   footer.css               El pie de página, igual en todas las páginas (ver la clase del color en cada <footer>)
   nav-logo.css · nav-links.css   El tomate y los enlaces de la barra, iguales en todas las páginas
   case.css                 Común a TODAS las páginas de proyecto
@@ -77,7 +77,7 @@ Los tres juegos de Recently played están en `assets/room/discs/games.json`. Las
 ### Buscadores (Google): qué tiene que llevar cada página
 Cada página pública lleva en su `<head>`: `<title>`, `<meta name="description">`, `<link rel="canonical">` (con la dirección completa y la barra final, por ejemplo `https://www.dizmar.xyz/about/`), las etiquetas `og:` y `twitter:card` (lo que se ve al compartir el enlace) y, en las páginas de proyecto, los datos estructurados (`application/ld+json`). Además:
 - Toda página nueva se añade a `sitemap.xml` (y se resume en `llms.txt`).
-- Una página en borrador lleva `<meta name="robots" content="noindex">` y NO está en el sitemap (hoy: Stamps y `machine/`; las plantillas están además bloqueadas en `robots.txt`). **Stamps está en pausa:** su página lleva una redirección a la portada (`meta refresh` + `location.replace` en su `<head>`) hasta que haya formulario y sellos reales; para reactivarla, borra esas dos líneas junto con el `noindex`. Al publicarla, se borra esa línea y se añade al sitemap.
+- Una página en borrador lleva `<meta name="robots" content="noindex">` y NO está en el sitemap (hoy: `machine/`; las plantillas están además bloqueadas en `robots.txt`). Al publicarla, se borra esa línea y se añade al sitemap.
 - Los enlaces del menú llevan la barra final (`/about/`) para no pasar por una redirección.
 - Google no se entera solo: hay que dar de alta la web en Google Search Console y enviar `https://www.dizmar.xyz/sitemap.xml` (con tu cuenta de Google, en search.google.com/search-console).
 
