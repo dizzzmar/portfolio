@@ -1,5 +1,5 @@
 /* CONTACT · la ventana del sobre de ketchup DIZ (js/contact-sachet.js). Fondo de cielo, como la portada; el sobre en el centro y un único texto,
-   «Tear top open». Al rasgarlo se abre la app de correo; el email solo se enseña (arriba) si la ventana sigue en primer plano. */
+   «Tear top open». Al rasgarlo se abre la app de correo; el email solo se enseña (debajo) si la ventana sigue en primer plano. */
 .sachet {
   position: fixed;
   inset: 0;
@@ -50,12 +50,12 @@
 .sachet .sachet-tear { padding: 8px 0; border: 0; background: none; font-size: var(--fs-read); font-weight: var(--fw-bold); letter-spacing: -.01em; }
 .sachet:not([data-state="closed"]) .sachet-hint { opacity: 0; pointer-events: none; }
 
-/* Si tras rasgar el sobre la ventana sigue en primer plano (no hay app de correo), el email aparece arriba para copiarlo */
+/* Si tras rasgar el sobre la ventana sigue en primer plano (no hay app de correo), el email aparece debajo del sobre, con un botón para copiarlo */
 .sachet-fallback {
   position: absolute;
   left: 24px;
   right: 24px;
-  top: max(84px, calc(env(safe-area-inset-top) + 60px)); /* arriba, bajo «Contact» y «Close»: abajo se pisaría con el sobre */
+  bottom: max(36px, env(safe-area-inset-bottom)); /* en el mismo sitio que «Tear top open», que ya se ha ido */
   display: flex;
   flex-wrap: wrap;
   justify-content: center;

@@ -15,11 +15,11 @@ if (link) {
   };
 
   function build() {
-    const copy = el('button', { type: 'button', className: 'sachet-copy', textContent: 'Copy' });
+    const copy = el('button', { type: 'button', className: 'sachet-copy', textContent: 'Copy email' });
     copy.addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(email); copy.textContent = 'Copied ✓'; }
-      catch { copy.textContent = 'Copy'; }
-      setTimeout(() => { copy.textContent = 'Copy'; }, 1800);
+      catch { copy.textContent = 'Copy email'; }
+      setTimeout(() => { copy.textContent = 'Copy email'; }, 1800);
     });
     const tear = el('button', { type: 'button', className: 'sachet-tear', textContent: 'Tear top open' });
     const close = el('button', { type: 'button', className: 'sachet-close', textContent: 'Close ×' });
@@ -130,7 +130,7 @@ async function createStage(dialog, { reduced, onOpen }) {
 
   // Estado: rest = reposo (ligeramente de tres cuartos), drag = giro del usuario, tear 0..1 = cuánto se ha levantado la tira
   const REST = { yaw: -0.32, pitch: 0.06 };
-  const s = { yaw: REST.yaw, pitch: REST.pitch, dragYaw: 0, dragPitch: 0, lift: 0, liftGoal: 0, torn: false, t0: 0, drop: 0, running: false, raf: 0, last: 0 };
+  const s = { yaw: REST.yaw, pitch: REST.pitch, dragYaw: 0, dragPitch: 0, lift: 0, liftGoal: 0, torn: false, t0: 0, running: false, raf: 0, last: 0 };
 
   function resize() {
     const w = dialog.clientWidth, h = dialog.clientHeight;
@@ -225,15 +225,14 @@ async function createStage(dialog, { reduced, onOpen }) {
       stripPivot.rotation.set(-s.lift * 0.25, 0, s.lift * 0.32);
       stripPivot.position.set(-W / 2, tearY + s.lift * 0.002, 0);
     } else {
-      // la tira sale volando hacia arriba a la derecha y se desvanece; el sobre baja un poco y se pone de frente
+      // la tira sale volando hacia arriba a la derecha y se desvanece
       const u = Math.min(1, (now - s.t0) / 900), e = 1 - Math.pow(1 - u, 3);
       stripPivot.rotation.set(-0.25 - e * 0.9, e * 0.6, 0.32 + e * 0.9);
       stripPivot.position.set(-W / 2 + e * W * 0.9, tearY + 0.002 + e * H * 0.55, e * 0.02);
       strip.mats.forEach((m) => { m.opacity = 1 - smoothstep(0.35, 1, u); });
-      s.drop = e * H * 0.14;
       if (u >= 1 && dialog.dataset.state === 'tearing') { stripPivot.visible = false; onOpen(); }
     }
-    holder.position.y = -H * 0.06 - s.drop;
+    holder.position.y = -H * 0.06;
     holder.updateMatrixWorld(true);
     body.world.copy(body.local).applyMatrix4(holder.matrixWorld);
     strip.world.copy(strip.local).applyMatrix4(strip.root.matrixWorld);
@@ -247,7 +246,7 @@ async function createStage(dialog, { reduced, onOpen }) {
     tear,
     start() {
       // Cada vez que se abre, un sobre nuevo sin rasgar
-      Object.assign(s, { yaw: REST.yaw + 0.5, pitch: REST.pitch, dragYaw: 0, dragPitch: 0, lift: 0, liftGoal: 0, torn: false, drop: 0, running: true, last: 0 });
+      Object.assign(s, { yaw: REST.yaw + 0.5, pitch: REST.pitch, dragYaw: 0, dragPitch: 0, lift: 0, liftGoal: 0, torn: false, running: true, last: 0 });
       if (reduced) s.yaw = REST.yaw;
       stripPivot.visible = true;
       strip.mats.forEach((m) => { m.opacity = 1; m.transparent = false; });
