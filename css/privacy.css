@@ -45,6 +45,7 @@ main { padding: 0 var(--gutter); }
 .pv-back { padding: clamp(28px, 3.4vw, 52px) 0; font-weight: var(--fw-bold); }
 .pv-back a { text-decoration: none; }
 .pv-back a:hover { text-decoration: underline; }
+.pv-back a[href^="mailto:"] { text-decoration: underline; text-underline-offset: 4px; } /* «Write to me →» en las FAQs: se ve que es un enlace */
 
 /* ---------- Pie ---------- */
 
