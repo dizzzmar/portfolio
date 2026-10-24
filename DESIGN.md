@@ -29,7 +29,7 @@ Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, pr
 
 | Uso | Valor |
 | --- | --- |
-| Verde y lima (About, Privacy y Machine) | `--green` `#125603` de fondo con `--lime` `#c3f380` de texto (6,98:1). Lo secundario al 80 % de opacidad (5,1:1). El cursor va en lima sobre estas páginas; el rojo daría 2,4:1 |
+| Verde y lima (About, Privacy, FAQs, Machine y la sala) | `--green` `#125603` de fondo con `--lime` `#c3f380` de texto (6,98:1). Lo secundario al 80 % de opacidad (5,1:1). El cursor va en lima sobre estas páginas; el rojo daría 2,4:1. La sala usa el verde «de noche» `#0b2f04` (`--night`) de fondo, con la lista en lima al 70 % (6,4:1) y la escena 3D tal cual |
 | Rojo marca (tomate, cursor, nombre de proyecto encendido en Work) | `#f83d0c` (cursor, nombre de proyecto encendido en Work) |
 | Negro de página (Work, proyectos en oscuro) | `#0c0c0b` |
 | Blanco | `#fff` |

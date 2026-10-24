@@ -41,7 +41,7 @@ const scene = new THREE.Scene();
 // spotlight raking across the wall from the left, a cool moonlight rim from behind for contrast
 // (warm/cool, like a film still), and the tomato lamp doing most of the work (added on load).
 // On top: a soft bloom, a vignette, a warm grade and a little film grain (see `grade` below).
-scene.background = new THREE.Color('#140d09');
+scene.background = new THREE.Color('#0b2f04'); // verde Lincoln «de noche» (css/room.css: --night)
 const reflections = new THREE.PMREMGenerator(renderer);
 scene.environment = reflections.fromScene(new RoomEnvironment(renderer)).texture;
 reflections.dispose();
@@ -170,7 +170,7 @@ const lighting = createRoomLighting({
   scene, camera, renderer, canvas, reduced,
   onChange(dark) {
     if (lampFlicker) { lampFlicker.start = false; setLamp(dark ? 0 : 1); }
-    scene.background.set(dark ? '#030201' : '#140d09');
+    scene.background.set(dark ? '#020c01' : '#0b2f04');
     grade.uniforms.grain.value = dark ? 0 : .035;
     outline.enabled = bloom.enabled = !dark;
     const button = nav.querySelector('[data-object="tomato-lamp"]');

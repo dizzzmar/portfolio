@@ -1,6 +1,6 @@
 /* TRANSICIONES ENTRE PÁGINAS · View Transitions entre documentos (Chrome, Edge y Safari 18.2+; en Firefox la página cambia sin animación).
    Lo que se busca: que se note de dónde viene cada cosa y adónde va, y nada más.
-   · La página nueva aparece con un fundido corto sobre la que se va (sin que ninguna se vea a medias).
+   · La página nueva sube y aparece sobre la que se va, que se aleja un poco y se oscurece (sin que ninguna se vea a medias).
    · El tomate del menú se queda quieto: tiene el mismo tamaño y sitio en todas las páginas.
    Las animaciones de entrada de cada página (las imágenes que se destapan una a una, los textos que suben...) se mantienen tal cual:
    la transición solo cuida el paso de una página a otra. */
@@ -11,10 +11,12 @@
   --vt-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);    /* moverse por la pantalla: arranca y frena */
 }
 
-/* La página que se va se queda quieta debajo; la nueva se funde encima (sin "plus-lighter", que deja un hueco a medias) */
-::view-transition-old(root) { animation: none; mix-blend-mode: normal; }
-::view-transition-new(root) { animation: 280ms var(--vt-ease-out) both vt-in; mix-blend-mode: normal; }
-@keyframes vt-in { from { opacity: 0; } }
+/* La página nueva sube y aparece (12 px, 0,42 s, con frenada suave) sobre la que se va; esta se queda debajo, se aleja un poco (0,985) y se oscurece,
+   como si la nueva pasara por delante. Nunca se cruzan dos páginas a medias: la nueva llega opaca antes de que la vieja se note vacía. */
+::view-transition-old(root) { animation: 420ms var(--vt-ease-out) both vt-recede; mix-blend-mode: normal; }
+::view-transition-new(root) { animation: 420ms var(--vt-ease-out) both vt-in; mix-blend-mode: normal; }
+@keyframes vt-in { from { opacity: 0; transform: translateY(12px); } }
+@keyframes vt-recede { to { transform: scale(.985); filter: brightness(.82); } }
 
 /* El tomate del menú no se mueve entre páginas (mismo tamaño y sitio: css/nav-logo.css) */
 .nav-logo, .case-logo { view-transition-name: site-logo; }
@@ -24,5 +26,7 @@
 
 /* "Reducir movimiento": solo el fundido, sin que nada se agrande ni vuele */
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-new(root) { animation-duration: 150ms; }
+  ::view-transition-old(root) { animation: none; }
+  ::view-transition-new(root) { animation: 150ms linear both vt-fade; }
+  @keyframes vt-fade { from { opacity: 0; } }
 }
