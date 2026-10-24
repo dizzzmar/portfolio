@@ -23,6 +23,8 @@ img, video { display: block; }
 ::selection { background: var(--ink); color: #fff; }
 
 /* ---------- Cabecera ---------- */
+/* Franja del color de la página bajo el tomate y el menú: al hacer scroll el texto pasa por debajo sin pisarlos (en móvil se solapaba) */
+body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height: var(--nav-h); background: var(--bg); pointer-events: none; }
 /* El tomate vuelve a la portada; el nombre, la fecha y el cliente van en columnas y se quedan en la primera pantalla */
 .case-logo { position: fixed; z-index: 21; top: calc((var(--nav-h) - 43px) / 2); left: var(--edge); width: 40px; height: 43px; transition: transform .3s var(--ease-out); }
 .case-logo:hover { transform: rotate(-8deg) scale(1.06); }
