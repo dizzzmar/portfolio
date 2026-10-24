@@ -5,7 +5,7 @@ Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, pr
 
 ## 1. Tipografía
 
-**Una sola letra:** Helvetica Neue (en Apple) o Arial (en el resto). Es la del sistema: no se descarga nada y no se envía ningún dato a terceros. **No hay serif.** Las únicas excepciones son `machine/` (otro modo, a propósito) y el texto de las miniaturas de los sellos, que se escala con el propio sello.
+**Una sola letra:** Schibsted Grotesk (variable, pesos 400–800, licencia OFL), alojada en `assets/fonts/` y declarada en `css/tokens.css`: no se pide nada a terceros. Mientras carga se ve Helvetica Neue o Arial. **No hay serif.** Las únicas excepciones son `machine/` (monoespaciada, otro modo a propósito) y el texto de las miniaturas de los sellos, que se escala con el propio sello.
 
 | Variable | Tamaño | Para qué |
 | --- | --- | --- |
@@ -20,7 +20,7 @@ Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, pr
 | `--fs-h2` | 40 → 76 px | Títulos grandes |
 | `--fs-h1` | 56 → 140 px | Título de página (About, Privacy, Stamps) y nombres de proyecto en Work |
 
-- **Pesos:** 400 (normal) para menú y textos de apoyo, 500 para texto de interfaz con énfasis, 700 para titulares y textos destacados. Nada de 300 ni 600.
+- **Pesos: solo dos.** 700 para lo que orienta (título de página, primer párrafo de cada página y títulos de bloque) y 400 para lo que se lee. Nada de 300 ni 600. (About, Privacy y Machine ya siguen esta regla; Work, Room y los proyectos todavía usan algún 500 y se irán igualando.) El tamaño de lectura es uno solo, `--fs-read` (18 → 22 px), para la entrada, los títulos de bloque y el texto; lo que los distingue es el peso. Lo secundario va a 14 px (`--fs-s`).
 - **Interlineado:** titulares `--lh-tight` (1.05), menús y textos cortos `--lh-ui` (1.3), texto corrido `--lh-body` (1.45).
 - **Espaciado de letras:** titulares apretados (−0,03 a −0,06 em), texto normal 0, etiquetas en mayúsculas `--tracking-label` (.06 em).
 - **Mayúsculas:** solo en etiquetas pequeñas (`--fs-xs`).
@@ -29,8 +29,9 @@ Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, pr
 
 | Uso | Valor |
 | --- | --- |
-| Rojo marca (tomate, cursor, fondo de About) | `#f83d0c` (cursor, nombre de proyecto encendido en Work) · `#d03a22` (fondo de About: más profundo para que el texto crema llegue a 4,5:1; con `#f04a30` eran 3,4:1) |
-| Negro de página (Work, Privacy, proyectos en oscuro) | `#0c0c0b` |
+| Verde y lima (About, Privacy y Machine) | `--green` `#125603` de fondo con `--lime` `#c3f380` de texto (6,98:1). Lo secundario al 80 % de opacidad (5,1:1). El cursor va en lima sobre estas páginas; el rojo daría 2,4:1 |
+| Rojo marca (tomate, cursor, nombre de proyecto encendido en Work) | `#f83d0c` (cursor, nombre de proyecto encendido en Work) |
+| Negro de página (Work, proyectos en oscuro) | `#0c0c0b` |
 | Blanco | `#fff` |
 | Tinta sobre claro | `#111` / `#141414` |
 | Papel (sellos) | `#fbfaf6` |
