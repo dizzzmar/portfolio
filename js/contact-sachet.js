@@ -1,6 +1,7 @@
-// CONTACT · el enlace "Contact" de la barra abre un sobre de ketchup DIZ en 3D. Se rasga por "TEAR HERE" (arrastrando por la tira de arriba,
-// pulsándola o con el botón) y del sobre sale una tarjeta con el email. Arrastrando por el resto del sobre se gira.
-// Sin JavaScript, o si el 3D no carga, Contact sigue siendo el enlace de email de siempre / la tarjeta aparece directamente.
+// CONTACT · el enlace "Contact" de la barra abre un sobre de ketchup DIZ en 3D sobre el cielo. Se rasga por "TEAR HERE" (arrastrando por la tira
+// de arriba, pulsándola o con el botón «Tear top open») y al rasgarlo se abre la app de correo. Arrastrando por el resto del sobre se gira.
+// Si tras rasgarlo la ventana sigue en primer plano (el ordenador no tiene app de correo, o el navegador pregunta), aparece el email para copiarlo.
+// Sin JavaScript, o si el 3D no carga, Contact sigue siendo el enlace de email de siempre.
 const link = document.querySelector('.nav-links a[href^="mailto:"]');
 if (link) {
   const email = decodeURIComponent(link.href.replace(/^mailto:/, '').split('?')[0]);
@@ -14,45 +15,49 @@ if (link) {
   };
 
   function build() {
-    const copy = el('button', { type: 'button', className: 'sachet-copy', textContent: 'Copy email' });
+    const copy = el('button', { type: 'button', className: 'sachet-copy', textContent: 'Copy' });
     copy.addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(email); copy.textContent = 'Copied ✓'; }
-      catch { copy.textContent = email; }
-      setTimeout(() => { copy.textContent = 'Copy email'; }, 1800);
+      catch { copy.textContent = 'Copy'; }
+      setTimeout(() => { copy.textContent = 'Copy'; }, 1800);
     });
-    const tear = el('button', { type: 'button', className: 'sachet-tear', textContent: 'Tear it open' });
+    const tear = el('button', { type: 'button', className: 'sachet-tear', textContent: 'Tear top open' });
     const close = el('button', { type: 'button', className: 'sachet-close', textContent: 'Close ×' });
     dialog = el('dialog', { className: 'sachet' }, [
       el('h2', { className: 'sachet-title', id: 'sachet-title', textContent: 'Contact' }),
       close,
       el('canvas', { className: 'sachet-canvas' }),
-      el('div', { className: 'sachet-hint' }, [el('p', { textContent: 'Tear along the top to say hello' }), tear]),
-      el('div', { className: 'sachet-mouth' }, [
-        el('div', { className: 'sachet-card' }, [
-          el('p', { className: 'sachet-kicker', textContent: 'Say hello' }),
-          el('a', { className: 'sachet-mail', href: link.href, textContent: email }),
-          el('div', { className: 'sachet-actions' }, [el('a', { href: link.href, textContent: 'Write to me ↗' }), copy]),
-        ]),
-      ]),
+      el('div', { className: 'sachet-hint' }, [tear]),
+      el('div', { className: 'sachet-fallback' }, [el('a', { className: 'sachet-mail', href: link.href, textContent: email }), copy]),
     ]);
     dialog.setAttribute('aria-labelledby', 'sachet-title');
     dialog.dataset.state = 'closed';
     close.addEventListener('click', () => dialog.close());
     tear.addEventListener('click', () => (stage ? stage.tear() : reveal()));
     dialog.addEventListener('close', () => {
+      clearTimeout(fallbackTimer);
       document.documentElement.classList.remove('sachet-open');
       stage?.stop();
     });
     document.body.append(dialog);
   }
 
-  // Sin 3D: la tarjeta sale sola en el centro
-  function reveal() { dialog.dataset.state = 'open'; dialog.querySelector('.sachet-mail').focus({ preventScroll: true }); }
+  // Ya rasgado (con 3D o sin él): se abre la app de correo. Si la ventana sigue en primer plano, se enseña el email para copiarlo.
+  let fallbackTimer = 0;
+  function reveal() {
+    dialog.dataset.state = 'open';
+    location.href = link.href;
+    clearTimeout(fallbackTimer);
+    fallbackTimer = setTimeout(() => {
+      if (!dialog.open || document.visibilityState !== 'visible' || !document.hasFocus()) return;
+      dialog.dataset.state = 'fallback';
+      dialog.querySelector('.sachet-mail').focus({ preventScroll: true });
+    }, 1400);
+  }
 
   async function open() {
     if (!dialog) build();
     dialog.dataset.state = 'closed';
-    dialog.style.removeProperty('--mouth-y');
     dialog.showModal();
     document.documentElement.classList.add('sachet-open');
     dialog.querySelector('.sachet-tear').focus({ preventScroll: true });
@@ -203,7 +208,6 @@ async function createStage(dialog, { reduced, onOpen }) {
   }
 
   // ---- Bucle (solo mientras la ventana está abierta y algo se mueve) ----
-  const mouth = new THREE.Vector3();
   function frame(now) {
     s.raf = 0;
     const dt = Math.min(0.05, (now - (s.last || now)) / 1000);
@@ -233,10 +237,6 @@ async function createStage(dialog, { reduced, onOpen }) {
     holder.updateMatrixWorld(true);
     body.world.copy(body.local).applyMatrix4(holder.matrixWorld);
     strip.world.copy(strip.local).applyMatrix4(strip.root.matrixWorld);
-    // dónde queda la boca del sobre en pantalla: de ahí sale la tarjeta
-    mouth.set(0, tearY, 0).applyMatrix4(holder.matrixWorld).project(camera);
-    dialog.style.setProperty('--mouth-y', (((1 - mouth.y) / 2) * dialog.clientHeight).toFixed(1) + 'px');
-    dialog.style.setProperty('--mouth-w', (W * pxPerUnit() * 0.92).toFixed(1) + 'px'); // la tarjeta, del ancho del sobre
     renderer.render(scene, camera);
     if (s.running) s.raf = requestAnimationFrame(frame);
   }

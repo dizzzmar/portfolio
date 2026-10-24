@@ -1,5 +1,5 @@
-/* CONTACT · la ventana del sobre de ketchup (js/contact-sachet.js). Fondo oscuro cálido, como la habitación; el sobre en el centro y,
-   al rasgarlo, la tarjeta del email sale por su boca (--mouth-y, la altura de la boca en pantalla, la pone el JS). */
+/* CONTACT · la ventana del sobre de ketchup DIZ (js/contact-sachet.js). Fondo de cielo, como la portada; el sobre en el centro y un único texto,
+   «Tear top open». Al rasgarlo se abre la app de correo; el email solo se enseña (arriba) si la ventana sigue en primer plano. */
 .sachet {
   position: fixed;
   inset: 0;
@@ -11,11 +11,13 @@
   padding: 0;
   border: 0;
   overflow: hidden;
-  background: radial-gradient(120% 90% at 50% 60%, #2a1410 0%, #120806 70%);
-  color: #f3f0df;
+  background: #4f8fd8 url("/assets/images/sky.webp") center / cover;
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 30, 70, .35); /* el blanco sobre las nubes sigue leyéndose */
   font-family: var(--font-ui);
+  font-size: var(--fs-s); /* en About y Privacy el texto del cuerpo es más grande y se heredaría */
 }
-.sachet::backdrop { background: #120806; }
+.sachet::backdrop { background: #4f8fd8; }
 .sachet button { font: inherit; color: inherit; cursor: pointer; }
 .sachet :focus-visible { outline: 2px solid currentColor; outline-offset: 6px; }
 
@@ -31,7 +33,7 @@
   font-weight: 400;
   line-height: 44px; /* a la altura del texto de Close */
 }
-.sachet-close { position: absolute; top: 24px; right: 24px; min-height: 44px; padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); }
+.sachet .sachet-close { position: absolute; top: 24px; right: 24px; min-height: 44px; padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); }
 .sachet-close:hover, .sachet-tear:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* Pista y botón (también para teclado y lectores de pantalla): abajo, se van al rasgar */
@@ -45,56 +47,35 @@
   line-height: var(--lh-ui);
   transition: opacity 200ms var(--ease-out);
 }
-.sachet-hint p { color: rgb(243 240 223 / 62%); }
-.sachet-tear { margin-top: 10px; padding: 8px 0; border: 0; background: none; }
+.sachet .sachet-tear { padding: 8px 0; border: 0; background: none; font-size: var(--fs-read); font-weight: var(--fw-bold); letter-spacing: -.01em; }
 .sachet:not([data-state="closed"]) .sachet-hint { opacity: 0; pointer-events: none; }
 
-/* La boca del sobre: una franja desde arriba hasta la línea de rasgado; la tarjeta vive pegada a su borde de abajo
-   y sube desde dentro (lo que queda por debajo de la boca no se ve, así parece que sale del sobre) */
-.sachet-mouth {
+/* Si tras rasgar el sobre la ventana sigue en primer plano (no hay app de correo), el email aparece arriba para copiarlo */
+.sachet-fallback {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: var(--mouth-y, 62%);
-  overflow: hidden;
-  pointer-events: none;
-}
-.sachet-card {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  width: min(max(var(--mouth-w, 300px), 270px), calc(100% - 32px));
-  padding: 20px 18px 16px;
-  background: #fffaf2;
-  color: #141414;
-  border-radius: 6px 6px 0 0;
-  translate: -50% 100%;
+  left: 24px;
+  right: 24px;
+  top: max(84px, calc(env(safe-area-inset-top) + 60px)); /* arriba, bajo «Contact» y «Close»: abajo se pisaría con el sobre */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 4px 20px;
+  font-size: var(--fs-read);
+  font-weight: var(--fw-bold);
+  letter-spacing: -.01em;
+  opacity: 0;
   visibility: hidden;
-  pointer-events: auto;
-  transition: translate 700ms var(--ease-out), visibility 0s linear 700ms;
+  transition: opacity 300ms var(--ease-out), visibility 0s linear 300ms;
 }
-.sachet[data-state="open"] .sachet-card { translate: -50% 18px; visibility: visible; transition: translate 700ms var(--ease-out), visibility 0s; }
-.sachet-kicker { font-size: var(--fs-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; color: #c41a12; font-weight: 700; }
-.sachet-mail {
-  display: block;
-  margin-top: 10px;
-  font-size: var(--fs-m);
-  font-weight: 700;
-  line-height: var(--lh-tight);
-  letter-spacing: -.02em;
-  color: inherit;
-  text-decoration: none;
-  overflow-wrap: anywhere;
-}
+.sachet[data-state="fallback"] .sachet-fallback { opacity: 1; visibility: visible; transition: opacity 300ms var(--ease-out), visibility 0s; }
+.sachet-mail { color: inherit; text-decoration: none; overflow-wrap: anywhere; }
 .sachet-mail:hover { text-decoration: underline; text-underline-offset: 4px; }
-.sachet-actions { display: flex; gap: 20px; margin-top: 16px; font-size: var(--fs-s); }
-.sachet-actions a, .sachet-copy { padding: 6px 0; border: 0; background: none; color: inherit; text-decoration: underline; text-underline-offset: 4px; }
-.sachet-card :focus-visible { outline-color: #141414; }
+.sachet .sachet-copy { padding: 6px 0; border: 0; background: none; font-size: var(--fs-s); font-weight: var(--fw-regular); text-decoration: underline; text-underline-offset: 4px; }
 
 /* Mientras está abierta, la página de debajo no se desplaza */
 html.sachet-open { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
-  .sachet-card, .sachet[data-state="open"] .sachet-card { transition: none; }
+  .sachet-fallback, .sachet[data-state="fallback"] .sachet-fallback { transition: none; }
 }
