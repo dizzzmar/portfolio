@@ -38,14 +38,23 @@ function nameTexture() {
   c.width = 3200;
   c.height = 128;
   const g = c.getContext('2d');
-  g.fillStyle = '#fff';
-  g.font = '700 92px "Helvetica Neue", Arial, sans-serif';
-  g.textAlign = 'center';
-  g.textBaseline = 'middle';
-  g.fillText('MARIO DIZ', c.width / 2, c.height / 2 + 4);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  // The same letter as the rest of the site (Schibsted Grotesk, bold: css/tokens.css). A canvas can't wait for a web font by itself,
+  // so it is drawn once with the fallback and again as soon as the font is ready.
+  const paint = () => {
+    g.clearRect(0, 0, c.width, c.height);
+    g.fillStyle = '#fff';
+    g.font = '700 92px "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif';
+    if ('letterSpacing' in g) g.letterSpacing = '-3px'; // a little tight, like the titles
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText('MARIO DIZ', c.width / 2, c.height / 2 + 4);
+    tex.needsUpdate = true;
+  };
+  paint();
+  document.fonts?.load('700 92px "Schibsted Grotesk"').then(paint).catch(() => {});
   return tex;
 }
 
