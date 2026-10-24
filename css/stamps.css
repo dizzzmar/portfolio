@@ -51,7 +51,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* ---------- Cabecera ---------- */
 main { width: var(--w); margin: 0 auto; }
 .st-head { padding: calc(var(--nav-h) + clamp(32px, 7vh, 96px)) 0 clamp(28px, 5vh, 56px); max-width: 40em; }
-.st-head h1 { font-size: var(--fs-h1); font-weight: 700; letter-spacing: -.06em; line-height: .9; margin-left: -.04em; }
+.st-head h1 { font-family: var(--font-display); font-size: calc(var(--fs-h1) * var(--display-scale)); font-weight: 400; letter-spacing: 0; line-height: 1; margin-left: -.04em; }
 .st-head p { margin-top: 20px; font-size: var(--fs-lead); font-weight: var(--fw-bold); line-height: 1.35; letter-spacing: -.01em; text-shadow: 0 1px 12px rgba(0, 30, 70, .25); }
 .st-send {
   margin-top: 24px;
@@ -156,7 +156,7 @@ main { width: var(--w); margin: 0 auto; }
 /* ---------- Móvil: dos columnas ---------- */
 @media (max-width: 700px) {
   :root { --cols: 2; --margin: 14px; }
-  .st-head h1 { font-size: var(--fs-h1); }
+  .st-head h1 { font-size: calc(var(--fs-h1) * var(--display-scale)); }
 }
 
 /* ---------- Movimiento: los sellos aparecen uno tras otro al cargar (sin "reducir movimiento") ---------- */

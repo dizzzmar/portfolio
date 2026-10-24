@@ -5,7 +5,7 @@ Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, pr
 
 ## 1. Tipografía
 
-**Una sola letra:** Schibsted Grotesk (variable, pesos 400–800, licencia OFL), alojada en `assets/fonts/` y declarada en `css/tokens.css`: no se pide nada a terceros. Mientras carga se ve Helvetica Neue o Arial. **No hay serif.** Las únicas excepciones son `machine/` (monoespaciada, otro modo a propósito) y el texto de las miniaturas de los sellos, que se escala con el propio sello.
+**Una sola letra:** Schibsted Grotesk (variable, pesos 400–800, licencia OFL), alojada en `assets/fonts/` y declarada en `css/tokens.css`: no se pide nada a terceros. Mientras carga se ve Helvetica Neue o Arial. **Letra de los títulos grandes:** Jacquard 24 (gótica de píxeles, OFL, alojada también en `assets/fonts/`), solo para los títulos de página y los nombres de proyecto: `--font-display`, un solo peso (400, nunca negrita) y sin apretar. Es más pequeña que la sans a igual tamaño, así que esos títulos se escalan con `--display-scale` (1,3 en escritorio, 1,05 en móvil). **No hay serif.** Las únicas excepciones son `machine/` (monoespaciada, otro modo a propósito) y el texto de las miniaturas de los sellos, que se escala con el propio sello.
 
 | Variable | Tamaño | Para qué |
 | --- | --- | --- |
