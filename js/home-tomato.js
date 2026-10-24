@@ -29,7 +29,7 @@ pivot.add(spinner);
 scene.add(pivot);
 
 // ---------- Name ring ----------
-// "MARIO DIZ", once, printed on an open cylinder that circles the tomato.
+// "Mario Diz", once, printed on an open cylinder that circles the tomato.
 // It spins the opposite way; its far side shows faintly through.
 function nameTexture() {
   // The canvas is as wide (relative to its height) as the ring is around,
@@ -50,7 +50,7 @@ function nameTexture() {
     if ('letterSpacing' in g) g.letterSpacing = '-3px'; // a little tight, like the titles
     g.textAlign = 'center';
     g.textBaseline = 'middle';
-    g.fillText('MARIO DIZ', c.width / 2, c.height / 2 + 4);
+    g.fillText('Mario Diz', c.width / 2, c.height / 2 + 4);
     tex.needsUpdate = true;
   };
   paint();
