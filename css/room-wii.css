@@ -64,3 +64,9 @@
 @media (prefers-reduced-motion: reduce) {
   .wii-player[data-state="inserting"] .wii-choices { transition: none; }
 }
+
+/* Al abrirse la ventana, el título y «Back to room» aparecen con un fundido y un pequeño desplazamiento (los discos tienen su propia entrada) */
+@media (prefers-reduced-motion: no-preference) {
+  .wii-player[open] .wii-heading, .wii-player[open] .wii-close { animation: wii-in .45s var(--ease-out) .12s both; }
+}
+@keyframes wii-in { from { opacity: 0; translate: 0 8px; } }
