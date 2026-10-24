@@ -536,7 +536,7 @@ body.white-on { background-color: #fff; }
 }
 
 .work-list { margin-top: clamp(24px, 4vw, 64px); list-style: none; border-bottom: 1px solid rgba(255, 255, 255, .18); }
-.work-item { position: relative; }
+.work-item { position: relative; overflow-x: clip; } /* la tira de miniaturas se mueve de lado con el scroll y ensanchaba la página unos 54 px */
 .work-item::before { content: ""; position: absolute; inset: 0 0 auto; height: 1px; background: rgba(255, 255, 255, .18); transform-origin: left; }
 .work-item > a, .work-link {
   display: grid;

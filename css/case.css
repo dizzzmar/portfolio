@@ -84,7 +84,7 @@ img, video { display: block; }
 .case-lead { font-size: var(--fs-lead); letter-spacing: -.02em; line-height: 1.25; }
 
 /* ---------- Instagram (Lexus) ---------- */
-.case-embed { display: grid; grid-template-columns: 41% minmax(0, 1fr); padding: clamp(60px, 9vw, 120px) var(--edge) 0; border-top: 1px solid var(--line); margin-top: 2vh; }
+.case-embed { display: grid; grid-template-columns: 41% minmax(0, 1fr); padding: clamp(60px, 9vw, 120px) var(--edge) 0; margin-top: 2vh; }
 .case-embed h2 { font-size: var(--fs-read); font-weight: var(--fw-bold); line-height: 1.3; letter-spacing: -.01em; }
 .case-embed .instagram-media { width: min(540px, 100%) !important; min-width: 0 !important; margin: 0 !important; }
 .case-embed blockquote.instagram-media { padding: 24px; background: var(--panel); font-size: var(--fs-s); }
