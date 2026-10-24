@@ -4,7 +4,7 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const machine = location.pathname.startsWith('/machine');
   const PAGES = {
-    home: '/', work: '/#work', about: '/about/', room: '/room.html', machine: '/machine/',
+    home: '/', work: '/#work', about: '/about/', faq: '/faq/', room: '/room.html', machine: '/machine/',
     lexus: '/project/lexus-electrified/', schweppes: '/project/schweppes/', soap: '/project/soap-and-glory-vanilla/',
   };
   const SECTIONS = {
@@ -150,13 +150,13 @@
     if (machine) document.documentElement.classList.add('machine-leaving'); // en el modo máquina la página se funde antes de irse (estilos en machine/index.html)
     setTimeout(() => { location.href = page; }, reduced ? 0 : 240);
   };
-  const LS = () => ['home/  about/  room.html  machine/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/'];
+  const LS = () => ['home/  about/  faq/  room.html  machine/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/'];
   const COMMANDS = {
     help: () => [
       'Commands:',
       '  help                    this list',
       '  ls                      list the pages of dizmar.xyz',
-      '  cd <page>               go to a page: home, work, about, room, machine, lexus, schweppes, soap',
+      '  cd <page>               go to a page: home, work, about, faq, room, machine, lexus, schweppes, soap',
       '  view human | machine    switch between the visual site and the plain-text index',
       '  about | work | contact  print that section here',
       '  whoami                  who is behind this',
@@ -580,7 +580,7 @@
   const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'guide', 'neofetch', 'clear', 'exit',
     ...(roomOn() ? ['look', 'inspect', 'lights', 'play', 'flicker', 'sunset', 'zoom'] : [])];
   const ARGS = () => ({
-    cd: ['home', 'work', 'about', 'room', 'machine', 'lexus', 'schweppes', 'soap', 'contact'],
+    cd: ['home', 'work', 'about', 'faq', 'room', 'machine', 'lexus', 'schweppes', 'soap', 'contact'],
     view: ['human', 'machine'],
     inspect: ['vinyl', 'poster', 'mimikyu', 'lamp', 'plant', 'wii'],
     lights: ['on', 'off'],
