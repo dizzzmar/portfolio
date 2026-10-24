@@ -55,11 +55,9 @@
   nav a[aria-current] { background: var(--ink); color: var(--bg); text-decoration: none; padding: 0 4px; }
   .term-open { color: var(--ink); }
 
-  /* Secciones: texto plano con regla, como una lista de archivos */
+  /* Secciones: texto plano, separadas solo por espacio (sin rayas) */
   section { margin-top: 44px; }
-  h2 { font-size: 14px; font-weight: 700; letter-spacing: .08em; display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-  h2::before { content: "──"; color: var(--rule); }
-  h2::after { content: ""; flex: 1; border-top: 1px solid var(--rule); }
+  h2 { font-size: 14px; font-weight: 700; letter-spacing: .08em; margin-bottom: 16px; }
   dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 0; margin-bottom: 14px; }
   dt { color: var(--dim); white-space: pre; overflow: hidden; width: 14ch; }
   dt::after { content: " ........"; }
@@ -72,7 +70,7 @@
   .links { list-style: none; }
   .links li::before { content: "→ "; color: var(--dim); }
 
-  footer { margin-top: 56px; padding-top: 12px; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: var(--dim); font-size: 12px; }
+  footer { margin-top: 56px; padding-top: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: var(--dim); font-size: 12px; }
 
   @media (max-width: 520px) { body { font-size: 13px; } dt { width: 12ch; } }
 </style>
