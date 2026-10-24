@@ -32,7 +32,8 @@ if (link) {
     ]);
     dialog.setAttribute('aria-labelledby', 'sachet-title');
     dialog.dataset.state = 'closed';
-    close.addEventListener('click', () => dialog.close());
+    close.addEventListener('click', closeSachet);
+    dialog.addEventListener('cancel', (e) => { e.preventDefault(); closeSachet(); }); // Esc: mismo fundido de salida
     tear.addEventListener('click', () => (stage ? stage.tear() : reveal()));
     dialog.addEventListener('close', () => {
       clearTimeout(fallbackTimer);
@@ -40,6 +41,14 @@ if (link) {
       stage?.stop();
     });
     document.body.append(dialog);
+  }
+
+  // Cierre con un fundido corto (0,18 s); con «reducir movimiento» se cierra al instante
+  function closeSachet() {
+    if (!dialog?.open) return;
+    if (reduced) { dialog.close(); return; }
+    dialog.classList.add('is-closing');
+    setTimeout(() => { dialog.classList.remove('is-closing'); dialog.close(); }, 180);
   }
 
   // Ya rasgado (con 3D o sin él): se abre la app de correo. Si la ventana sigue en primer plano, se enseña el email para copiarlo.
