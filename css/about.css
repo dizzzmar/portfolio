@@ -196,6 +196,10 @@ main { padding: 0 var(--margin); }
   mask: var(--logo) center / contain no-repeat;
 }
 
+/* Enlace a las FAQs, al final de la página */
+.faq-link { margin: clamp(48px, 9vh, 96px) 0 clamp(24px, 4vh, 48px); font-weight: var(--fw-bold); }
+.faq-link a { text-underline-offset: 4px; }
+
 /* ---------- Móvil ---------- */
 @media (max-width: 760px) {
   :root { --gutter: 16px; }
