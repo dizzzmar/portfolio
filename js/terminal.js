@@ -147,6 +147,7 @@
   // ---------- Órdenes ----------
   const go = (page) => {
     write(['opening ' + page + ' …']);
+    if (machine) document.documentElement.classList.add('machine-leaving'); // en el modo máquina la página se funde antes de irse (estilos en machine/index.html)
     setTimeout(() => { location.href = page; }, reduced ? 0 : 240);
   };
   const LS = () => ['home/  about/  room.html  machine/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/'];
