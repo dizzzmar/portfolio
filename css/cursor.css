@@ -52,10 +52,9 @@
 }
 
 /* Solo con ratón: se esconde el cursor del sistema desde el primer fotograma de cada página (sin esperar al JavaScript), también en las
-   transiciones entre páginas y detrás de las ventanas. Menos en el formulario de Stamps, que es de otro servicio. */
+   transiciones entre páginas y detrás de las ventanas. */
 @media (hover: hover) and (pointer: fine) {
   html, html *, html ::backdrop, ::view-transition, ::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { cursor: none !important; }
-  html dialog.st-form, html dialog.st-form *, html dialog.st-form::backdrop { cursor: auto !important; }
 }
 
 /* TODOS LOS ENLACES DE TEXTO, UN SOLO ESTILO: con ratón no crece el punto (se esconde) y el enlace se subraya con una raya de 1 px.
