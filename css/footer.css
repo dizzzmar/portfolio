@@ -1,6 +1,6 @@
 /* PIE DE PÁGINA · el mismo en todas las páginas (con "Back to top ↑"): a la izquierda "Mario Diz, Madrid · Privacy" y a la derecha
    "Back to top ↑", a 24 px de los bordes (14 px en móvil), igual que el logo y los enlaces de la barra de arriba.
-   El color se ajusta al fondo con una clase: por defecto, fondo oscuro (blanco al 70 %); on-light (blanco), on-sky (cielo), on-red (rojo). */
+   El color se ajusta al fondo con una clase: por defecto, fondo oscuro (blanco al 70 %); on-light (blanco), on-sky (cielo), on-red (rojo), on-green (verde Lincoln, texto lima). */
 .site-foot {
   position: relative;
   z-index: 5;
@@ -23,5 +23,7 @@
 .site-foot.on-light a:hover { color: #000; }
 .site-foot.on-sky { color: #fff; text-shadow: 0 1px 8px rgba(0, 30, 70, .25); }
 .site-foot.on-red { color: rgba(255, 255, 255, .9); }
+.site-foot.on-green { color: var(--lime); }
+.site-foot.on-green a:hover { color: #fff; }
 
 @media (max-width: 700px) { .site-foot { padding-left: 14px; padding-right: 14px; } }

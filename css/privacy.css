@@ -1,46 +1,47 @@
-/* PRIVACY — estilos de privacy/index.html, con el aspecto de Work: fondo casi negro, Helvetica apretada,
-   líneas finas, etiquetas apagadas que se encienden al pasar el ratón y esquinas rectas.
+/* PRIVACY — estilos de privacy/index.html: verde Lincoln con texto lima (6,98:1), la misma letra y los mismos dos pesos que About
+   (700 título, entrada y títulos de bloque; 400 lectura), sin rayas ni etiquetas apagadas.
    Orden: colores y base · barra de navegación · título · filas · pie · móvil · movimiento. */
 
 :root {
-  --bg: #0c0c0b;
-  --dim: rgba(255, 255, 255, .6);
-  --faint: rgba(255, 255, 255, .52); /* 5:1 sobre el negro de la página (con .32 eran 2,8:1) */
+  --bg: var(--green);
+  --ink: var(--lime);
+  --dim: .8; /* opacidad de lo secundario: 5,1:1 sobre el verde */
   --nav-h: 64px;
   --gutter: clamp(16px, 1.2vw, 24px);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { overflow-x: clip; color: #fff; background: var(--bg); font-family: var(--font-ui); font-size: var(--fs-m); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+body { overflow-x: clip; color: var(--ink); background: var(--bg); font-family: var(--font-ui); font-size: var(--fs-read); font-weight: var(--fw-regular); line-height: 1.3; letter-spacing: -.01em; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-underline-offset: 4px; }
 img { display: block; max-width: 100%; height: auto; }
-::selection { background: #fff; color: var(--bg); }
-:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+::selection { background: var(--ink); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 /* ---------- Barra de navegación (como la del resto de la web) ---------- */
 .nav { position: fixed; inset: 0 0 auto; z-index: 9; height: var(--nav-h); display: flex; align-items: center; padding: 0 24px; }
 .nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s var(--ease-out); }
 .nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
 .nav-links { display: flex; align-self: stretch; margin: 0 -16px 0 auto; list-style: none; }
-.nav-links a { display: flex; align-items: center; height: 100%; padding: 0 16px; color: rgba(255, 255, 255, .7); font-size: var(--fs-s); text-decoration: none; transition: color .2s; }
-.nav-links a:hover { color: #fff; }
+.nav-links a { display: flex; align-items: center; height: 100%; padding: 0 16px; color: var(--ink); font-size: var(--fs-s); letter-spacing: 0; text-decoration: none; }
+body .nav-links a { color: var(--ink); }
+.nav-links a:hover, .nav-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 
 main { padding: 0 var(--gutter); }
 
 /* ---------- Título ---------- */
 .pv-head { padding: calc(var(--nav-h) + clamp(40px, 7vw, 110px)) 0 clamp(40px, 6vw, 96px); }
-.pv-head h1 { font-size: var(--fs-h1); font-weight: 700; letter-spacing: -.055em; line-height: .95; }
-.pv-updated { margin-top: clamp(14px, 1.6vw, 24px); color: var(--faint); font-size: var(--fs-s); font-weight: 500; }
+.pv-head h1 { font-size: var(--fs-h1); font-weight: var(--fw-bold); letter-spacing: -.055em; line-height: .95; }
+.pv-updated { margin-top: clamp(14px, 1.6vw, 24px); opacity: var(--dim); font-size: var(--fs-s); letter-spacing: 0; }
 
-/* ---------- Filas: línea fina arriba, título a la izquierda y texto a la derecha ---------- */
+/* ---------- Filas: título a la izquierda y texto a la derecha, separadas solo por espacio ---------- */
 .pv-row { display: grid; grid-template-columns: 25% minmax(0, 1fr); column-gap: 16px; padding: clamp(28px, 3.4vw, 52px) 0; }
-.pv-row h2 { font-size: var(--fs-s); font-weight: 500; line-height: 1.5; color: var(--faint); transition: color .5s ease; }
-.pv-row:hover h2 { color: rgba(255, 255, 255, .95); }
-.pv-row p { max-width: 38em; }
+.pv-row h2 { font-size: inherit; font-weight: var(--fw-bold); line-height: 1.3; }
+.pv-row p { max-width: 34em; }
+.pv-row:first-of-type p { font-weight: var(--fw-bold); } /* la entrada: el primer párrafo de la página */
 .pv-row p a { text-decoration-thickness: 1px; }
 .pv-row p a:hover { text-decoration-thickness: 2px; }
 
-.pv-back { padding: clamp(28px, 3.4vw, 52px) 0; font-size: var(--fs-lead); font-weight: 500; letter-spacing: -.03em; }
+.pv-back { padding: clamp(28px, 3.4vw, 52px) 0; font-weight: var(--fw-bold); }
 .pv-back a { text-decoration: none; }
 .pv-back a:hover { text-decoration: underline; }
 

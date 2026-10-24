@@ -1,9 +1,27 @@
+@font-face {
+  font-family: "Schibsted Grotesk";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/assets/fonts/schibsted-grotesk-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* TOKENS · la tipografía de toda la web en un solo sitio (la guía completa está en DESIGN.md).
    Se carga la primera en todas las páginas (menos "machine", que es a propósito otro estilo). Para cambiar un tamaño de texto, cámbialo aquí:
    no pongas tamaños sueltos (14px, 15px…) en los demás css; usa estas variables. */
 :root {
-  /* Letra: una sola, la del sistema (Helvetica Neue en Apple, Arial en el resto). Sin serif. */
-  --font-ui: "Helvetica Neue", Arial, sans-serif;
+  /* Pesos: solo dos. 700 para lo que orienta (título, entrada, títulos de bloque) y 400 para lo que se lee. */
+  --fw-bold: 700;
+  --fw-regular: 400;
+  /* Tamaño de lectura: el mismo para la entrada, los títulos de bloque y el texto (18 px en móvil → 22 px en escritorio) */
+  --fs-read: clamp(18px, 1.5vw + 8px, 22px);
+  /* Verde y lima (About, Privacy y Machine): 6,98:1 entre sí. Lo secundario va al 80 % sobre verde (5,1:1). */
+  --green: #125603;
+  --lime: #c3f380;
+  /* Letra: una sola familia, Schibsted Grotesk (variable, pesos 400–800), alojada en este mismo repositorio (assets/fonts): no se pide nada a terceros.
+     Mientras carga (o si no carga) se ve Helvetica Neue / Arial. Sin serif. */
+  --font-ui: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
 
   /* Tamaños fijos: 6 escalones */
   --fs-xs: 11px;   /* etiquetas en mayúsculas, créditos, pies pequeños */

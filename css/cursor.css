@@ -22,6 +22,8 @@
   transition: transform .45s cubic-bezier(.85, 0, .15, 1), opacity .3s ease; /* al volver: ease-in-out circ */
 }
 .cursor-dot b { display: block; width: 100%; height: 100%; border-radius: 50%; background: #f83d0c; }
+/* Páginas verdes (About, Privacy): el rojo daría 2,4:1 sobre el verde; el punto va en lima, también durante las animaciones de color */
+.theme-green .cursor-dot b { background: var(--lime) !important; }
 
 /* Sobre enlaces y botones: crece ×2.5 con un pequeño rebote y se vuelve algo transparente */
 .cursor-dot.is-hot i { transform: scale(2.5); opacity: .7; transition: transform .5s cubic-bezier(.34, 1.56, .64, 1), opacity .3s ease; }
