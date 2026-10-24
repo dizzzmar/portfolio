@@ -14,6 +14,8 @@
 <title>Mario Diz (dizmar) — machine mode, plain-text index</title>
 <meta name="description" content="Machine mode: the plain-text index of dizmar.xyz, the portfolio of Mario Diz, art director and visual designer based in Madrid.">
 <link rel="stylesheet" href="/css/terminal.css?v=20261024b">
+<link rel="stylesheet" href="/css/transitions.css?v=20261021g">
+<script src="/js/transitions.js?v=20261020p"></script>
 <meta name="robots" content="noindex"> <!-- Oculto por ahora: borra esta línea al volver a activar el modo máquina -->
 <link rel="canonical" href="https://www.dizmar.xyz/machine/">
 <meta property="og:title" content="Mario Diz (dizmar) — machine-readable index">
@@ -71,6 +73,24 @@
   .links li::before { content: "→ "; color: var(--dim); }
 
   footer { margin-top: 56px; padding-top: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: var(--dim); font-size: 12px; }
+
+
+  /* Entrar y salir del modo máquina: la página se «arranca» (los bloques suben de uno en uno y el logo se borda cruz a cruz)
+     y al volver a Human se funde antes de irse. Solo si no se pidió «reducir movimiento». */
+  @media (prefers-reduced-motion: no-preference) {
+    .top, .intro, nav[aria-label="Sections"], main > section, footer { animation: boot-in .5s var(--ease-out, cubic-bezier(.23, 1, .32, 1)) both; }
+    .top { animation-delay: .02s; }
+    .intro { animation-delay: .22s; }
+    nav[aria-label="Sections"] { animation-delay: .3s; }
+    main > section:nth-of-type(1) { animation-delay: .36s; }
+    main > section:nth-of-type(2) { animation-delay: .44s; }
+    main > section:nth-of-type(3) { animation-delay: .52s; }
+    main > section:nth-of-type(n+4), footer { animation-delay: .6s; }
+    .stitch-title use { animation: stitch-in .3s ease-out both; animation-delay: var(--d, 0ms); }
+    html.machine-leaving body { opacity: 0; transform: translateY(-6px); transition: opacity .2s ease-in, transform .2s ease-in; }
+  }
+  @keyframes boot-in { from { opacity: 0; transform: translateY(10px); } }
+  @keyframes stitch-in { from { opacity: 0; } }
 
   @media (max-width: 520px) { body { font-size: 13px; } dt { width: 12ch; } }
 </style>
@@ -175,6 +195,22 @@ Key visuals and product shots that place real products in a fantasy, food-inspir
 <span>Last updated 2026-10-23</span>
 </footer>
 </div>
-<script src="/js/terminal.js?v=20261024b" defer></script>
+<script>
+/* Modo máquina: el logo se borda de izquierda a derecha (cada cruz entra un poco después que la anterior) y, al pulsar Human, la página se funde antes de irse. */
+(() => {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.stitch-title use').forEach((u) => {
+    u.style.setProperty('--d', Math.round(Number(u.getAttribute('x')) * 1.6 + Number(u.getAttribute('y')) * 0.5 + 200) + 'ms');
+  });
+  const human = document.querySelector('.switch a');
+  if (human) human.addEventListener('click', (e) => {
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+    e.preventDefault();
+    document.documentElement.classList.add('machine-leaving');
+    setTimeout(() => { location.href = human.href; }, 200);
+  });
+})();
+</script>
+<script src="/js/terminal.js?v=20261024c" defer></script>
 </body>
 </html>
