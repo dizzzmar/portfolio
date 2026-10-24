@@ -14,10 +14,10 @@ body, button, input, select, textarea { font-family: var(--font-ui); }
 .case-kicker, .case-label, .case-link, .work-cursor,
 .player .player-toggle, .player-bar, .player-bar button {
   font-family: var(--font-ui);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-s);
   font-weight: 400;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
-.case-facts { font-size: var(--fs-xs); letter-spacing: 0; }
-.player-time { font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 400; letter-spacing: .02em; }
+.case-facts { font-size: var(--fs-s); letter-spacing: 0; }
+.player-time { font-family: var(--font-ui); font-size: var(--fs-s); font-weight: 400; letter-spacing: 0; }

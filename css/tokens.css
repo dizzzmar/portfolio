@@ -14,6 +14,10 @@
   /* Pesos: solo dos. 700 para lo que orienta (título, entrada, títulos de bloque) y 400 para lo que se lee. */
   --fw-bold: 700;
   --fw-regular: 400;
+  /* Ancho de lectura: el mismo para todo el texto corrido (entrada, descripciones, privacidad) */
+  --measure: 34em;
+  /* Espaciado de los nombres grandes: el mismo en Work, proyectos y barra */
+  --tracking-display: -.05em;
   /* Tamaño de lectura: el mismo para la entrada, los títulos de bloque y el texto (18 px en móvil → 22 px en escritorio) */
   --fs-read: clamp(18px, 1.5vw + 8px, 22px);
   /* Verde y lima (About, Privacy y Machine): 6,98:1 entre sí. Lo secundario va al 80 % sobre verde (5,1:1). */
