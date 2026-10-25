@@ -27,11 +27,11 @@
   };
 
   // ---------- Construcción (una vez) ----------
-  // Entrada: un enlace «Terminal» en el pie de página (también en móvil y en las páginas de proyecto). La tecla ` la abre desde cualquier sitio.
+  // Entrada: «Terminal» en la fila pequeña del menú (js/menu.js); donde no hay menú (Machine, 404), un enlace en el pie. La tecla ` la abre desde cualquier sitio.
   const triggers = [];
   let lastTrigger = null;
   const foot = document.querySelector('.site-foot, .room-foot, .wrap > footer');
-  if (foot) {
+  if (foot && !document.querySelector('.menu-li')) {
     const footLink = document.createElement('a');
     footLink.href = '#terminal';
     footLink.className = 'term-open term-foot';
