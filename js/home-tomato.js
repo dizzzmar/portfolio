@@ -31,12 +31,17 @@ scene.add(pivot);
 // ---------- Name ring ----------
 // "Mario Diz", once, printed on an open cylinder that circles the tomato.
 // It spins the opposite way; its far side shows faintly through.
+// The size of the letters is the height of the band (RING_H, in tomato heights): raise it to make the name bigger.
+const RING_R = 0.6;   // radius: just outside the tomato, whose body reaches 0.47 from its axis
+const RING_H = 0.21;  // height of the band (was 0.15)
+const RING_PX = Math.round(3200 * RING_H / (2 * Math.PI * RING_R)); // canvas height with the same proportions as the band
+const FONT_PX = Math.round(RING_PX * 0.72);
 function nameTexture() {
   // The canvas is as wide (relative to its height) as the ring is around,
   // so the letters keep their proportions once wrapped.
   const c = document.createElement('canvas');
   c.width = 3200;
-  c.height = 128;
+  c.height = RING_PX; // la altura del lienzo sigue a la del anillo: así las letras no se deforman
   const g = c.getContext('2d');
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -46,15 +51,15 @@ function nameTexture() {
   const paint = () => {
     g.clearRect(0, 0, c.width, c.height);
     g.fillStyle = '#fff';
-    g.font = '700 92px "Funnel Display", "Helvetica Neue", Arial, sans-serif';
-    if ('letterSpacing' in g) g.letterSpacing = '-3px'; // a little tight, like the titles
+    g.font = `700 ${FONT_PX}px "Funnel Display", "Helvetica Neue", Arial, sans-serif`;
+    if ('letterSpacing' in g) g.letterSpacing = `${-Math.round(FONT_PX * 0.033)}px`; // a little tight, like the titles
     g.textAlign = 'center';
     g.textBaseline = 'middle';
-    g.fillText('Mario Diz', c.width / 2, c.height / 2 + 4);
+    g.fillText('Mario Diz', c.width / 2, c.height / 2 + Math.round(FONT_PX * 0.043));
     tex.needsUpdate = true;
   };
   paint();
-  document.fonts?.load('700 92px "Funnel Display"').then(paint).catch(() => {});
+  document.fonts?.load(`700 ${FONT_PX}px "Funnel Display"`).then(paint).catch(() => {});
   return tex;
 }
 
@@ -73,8 +78,7 @@ function setTint(v) {
 }
 
 const ringTex = nameTexture();
-// Radius 0.6: just outside the tomato, whose body reaches 0.47 from its axis
-const ringGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.15, 128, 1, true);
+const ringGeo = new THREE.CylinderGeometry(RING_R, RING_R, RING_H, 128, 1, true);
 const ringBack = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
   map: ringTex, side: THREE.BackSide, transparent: true, opacity: 0.35, depthWrite: false,
 }));
