@@ -41,12 +41,12 @@ function nameTexture() {
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  // The same letter as the rest of the site (Schibsted Grotesk, bold: css/tokens.css). A canvas can't wait for a web font by itself,
+  // The same letter as the rest of the site (Funnel Display, bold: css/tokens.css). A canvas can't wait for a web font by itself,
   // so it is drawn once with the fallback and again as soon as the font is ready.
   const paint = () => {
     g.clearRect(0, 0, c.width, c.height);
     g.fillStyle = '#fff';
-    g.font = '700 92px "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif';
+    g.font = '700 92px "Funnel Display", "Helvetica Neue", Arial, sans-serif';
     if ('letterSpacing' in g) g.letterSpacing = '-3px'; // a little tight, like the titles
     g.textAlign = 'center';
     g.textBaseline = 'middle';
@@ -54,7 +54,7 @@ function nameTexture() {
     tex.needsUpdate = true;
   };
   paint();
-  document.fonts?.load('700 92px "Schibsted Grotesk"').then(paint).catch(() => {});
+  document.fonts?.load('700 92px "Funnel Display"').then(paint).catch(() => {});
   return tex;
 }
 
@@ -137,7 +137,7 @@ function unitsPerPixel() {
 // The stem puts the model's center above the body: the body sits 9% of the
 // tomato's size below it. Measured from renders on desktop and phone.
 const BODY_OFFSET = 0.09;
-const firstNavLink = document.querySelector('.nav-links a');
+const navBar = document.querySelector('.nav'); // el tomate se acopla a la altura central de la barra (los enlaces de la barra pueden estar ocultos tras el botón Menu)
 
 function layout(progress) {
   const upp = unitsPerPixel();
@@ -152,7 +152,7 @@ function layout(progress) {
   // Screen position of the tomato's center, in pixels from the top-left
   const xPx = THREE.MathUtils.lerp(width / 2, margin + dockPx / 2, progress);
   // Docked, the body's center lines up with the middle of the nav links
-  const r = firstNavLink.getBoundingClientRect();
+  const r = navBar.getBoundingClientRect();
   const dockY = (r.top + r.bottom) / 2 - dockPx * BODY_OFFSET;
   const yPx = THREE.MathUtils.lerp(h.top + h.height / 2, dockY, progress);
 
@@ -266,7 +266,7 @@ function journeyLayout(j, J) {
   const heroPx = Math.min(width, h.height) * 0.5;
   const dockPx = width < 700 ? 36 : 44;
   const margin = width < 700 ? 14 : 24;
-  const r = firstNavLink.getBoundingClientRect();
+  const r = navBar.getBoundingClientRect();
   const dockX = margin + dockPx / 2;
   const dockY = (r.top + r.bottom) / 2 - dockPx * BODY_OFFSET;
   let x, y, size, tint = 1, behind = false;
@@ -320,7 +320,7 @@ function setCrop(on) {
   if (on) {
     const dockPx = width < 700 ? 36 : 44;
     const margin = width < 700 ? 14 : 24;
-    const r = firstNavLink.getBoundingClientRect();
+    const r = navBar.getBoundingClientRect();
     const box = Math.ceil(dockPx * 2);
     const left = Math.round(margin + dockPx / 2 - box / 2);
     const top = Math.round((r.top + r.bottom) / 2 - dockPx * BODY_OFFSET - box / 2);
