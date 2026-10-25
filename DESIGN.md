@@ -174,6 +174,9 @@ Close and a little funny: precise when used daily, playful where visitors do not
 - **Small links:** Machine, FAQs, Terminal, Privacy in 14 px, underlined. Machine mode, which has no menu, keeps its own Human | Machine switch and a Terminal link in its footer.
 - **Keyboard:** focus moves into the panel, Tab stays inside, Esc closes and focus returns to "Menu". With reduced motion the panel only fades (0.15 s).
 
+### Breadcrumbs
+A single line in the bar, right of the tomato: "Home / About" (14 px, Home at 80 % opacity as a link, the current page at full strength and not a link). Only on the one-level green pages (About, FAQs, Privacy, Room); project pages already carry their name and the back button. Every page also declares a `BreadcrumbList` in JSON-LD. A new one-level page needs both the visible line and the JSON-LD.
+
 ### Text links
 No fixed underline. On hover a 1 px line draws in from the side the pointer enters and leaves from the side it exits (0.4 s). In a paragraph there is also a faint permanent line. On touch it is a normal underline. The current page keeps the full line.
 
