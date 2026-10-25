@@ -517,7 +517,8 @@ function freeArea() {
   const width = innerWidth, height = innerHeight;
   if (wiiPlayer.active) return { left: 24, top: 100, right: 24, bottom: 100 };
   const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 64;
-  const panel = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--panel')) || 0;
+  // En escritorio la columna de texto (título y lista) ocupa la izquierda y la habitación el resto; en móvil la habitación queda entre el título y la lista
+  const panel = innerWidth > 900 ? document.querySelector('.intro').getBoundingClientRect().right + 24 : 0;
   if (panel) return { left: panel, top: navH, right: 0, bottom: 24 };
   const intro = document.querySelector('.intro-head').getBoundingClientRect();
   const list = document.getElementById('object-nav').getBoundingClientRect();
