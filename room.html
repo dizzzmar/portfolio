@@ -20,14 +20,17 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" as="image" href="/assets/room/now-playing-sticker.webp">
   <link rel="preload" as="image" href="/assets/room/film-poster.webp">
-  <script>document.documentElement.classList.add('has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
+  <script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.dizmar.xyz/"}, {"@type": "ListItem", "position": 2, "name": "Room", "item": "https://www.dizmar.xyz/room.html"}]}
+</script>
+<script>document.documentElement.classList.add('has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
   <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/tokens.css?v=20261025c">
   <link rel="stylesheet" href="/css/room.css?v=20261025e">
   <link rel="stylesheet" href="/css/room-wii.css?v=20261024n">
   <link rel="stylesheet" href="/css/nav-logo.css?v=20261023c">
-  <link rel="stylesheet" href="/css/nav-links.css?v=20261021g">
+  <link rel="stylesheet" href="/css/nav-links.css?v=20261025j">
 <link rel="stylesheet" href="/css/menu.css?v=20261025i">
   <link rel="stylesheet" href="/css/transitions.css?v=20261024n">
   <script type="importmap">
@@ -55,6 +58,7 @@
     <li class="menu-li"><a class="menu-toggle" href="#menu" role="button" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false">Menu</a></li>
     </ul>
   </nav>
+  <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Room</li></ol></nav>
   <section class="intro" aria-labelledby="room-title">
     <header class="intro-head">
       <h1 id="room-title">Room</h1>
@@ -80,7 +84,7 @@
   </dialog>
   <script type="module" src="/js/room.js?v=20261025b"></script>
   <script type="module" src="/js/nav-tomato.js?v=20261020b"></script>
-  <script src="/js/cursor.js?v=20261024q" defer></script>
+  <script src="/js/cursor.js?v=20261025r" defer></script>
     <script type="module" src="/js/contact-sachet.js?v=20261024n"></script>
 <script src="/js/menu.js?v=20261025d" defer></script>
 <script src="/js/terminal.js?v=20261025a" defer></script>

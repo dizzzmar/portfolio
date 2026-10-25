@@ -27,10 +27,19 @@
   text-decoration-thickness: 1px;
 }
 
+/* MIGAS DE PAN · «Home / About», en la barra, a la derecha del tomate (solo en las páginas verdes de un nivel; los proyectos ya tienen su nombre y el botón de volver).
+   Heredan el color del texto de la página (lima): el actual va entero y el resto al 80 % (5,1:1 sobre el verde). */
+.crumbs { position: fixed; z-index: 9; top: 0; left: 84px; height: var(--nav-h); display: flex; align-items: center; font-size: var(--fs-s); line-height: var(--lh-ui); color: inherit; }
+.crumbs ol { display: flex; align-items: center; list-style: none; margin: 0; padding: 0; }
+.crumbs li + li::before { content: "/"; margin: 0 .6em; opacity: .6; }
+.crumbs a { display: flex; align-items: center; height: var(--nav-h); color: inherit; opacity: .8; text-decoration: none; text-underline-offset: 6px; text-decoration-thickness: 1px; transition: opacity .2s; }
+.crumbs a:hover, .crumbs a:focus-visible { opacity: 1; text-decoration: underline; }
+
 @media (max-width: 700px) {
   .nav, .case-nav { padding: 0 14px; }
   .nav-links, .case-nav ul { margin-right: -7px; }
   .nav-links a, .case-nav a { padding: 0 7px; }
+  .crumbs { left: 62px; }
 }
 /* En los proyectos, el móvil también lleva los enlaces (antes solo se veía el tomate) */
 @media (max-width: 760px) { .case-nav { display: flex; } }
