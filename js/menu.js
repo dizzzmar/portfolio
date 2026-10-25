@@ -55,6 +55,7 @@
   panel.setAttribute('aria-modal', 'true');
   panel.setAttribute('aria-label', 'Menu');
   panel.dataset.open = 'false';
+  panel.tabIndex = -1;
   panel.inert = true;
   document.body.append(panel);
 
@@ -88,7 +89,7 @@
     toggle.setAttribute('aria-expanded', 'true');
     // un fotograma después, para que la transición parta del estado cerrado
     requestAnimationFrame(() => requestAnimationFrame(() => { panel.dataset.open = 'true'; }));
-    setTimeout(() => panel.querySelector('.menu-item a')?.focus({ preventScroll: true }), reduced ? 0 : 300);
+    setTimeout(() => panel.focus({ preventScroll: true }), reduced ? 0 : 300); // el foco entra en el panel, no en un enlace: así no se dibuja un aro en el primero (en iPhone salía una raya bajo «Work»)
   }
   function shut(returnFocus = true) {
     if (!isOpen) return;
