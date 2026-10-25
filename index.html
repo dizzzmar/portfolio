@@ -13,7 +13,7 @@
 -->
 <html lang="en">
 <head>
-  <script>document.documentElement.classList.add('js','has-menu')</script>
+  <script>document.documentElement.classList.add('js','has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mario Diz — Art director &amp; visual designer in Madrid · dizmar</title>
@@ -54,7 +54,7 @@
 <link rel="stylesheet" href="/css/cursor.css?v=20261024q">
   <link rel="stylesheet" href="/css/contact-sachet.css?v=20261024o">
   <link rel="stylesheet" href="/css/terminal.css?v=20261024b">
-  <link rel="stylesheet" href="/css/menu.css?v=20261025d">
+  <link rel="stylesheet" href="/css/menu.css?v=20261025f">
 </head>
 <body class="intro-lock" data-intro="work"> <!-- El tomate gira en la landing; solo sube al pulsar Work. -->
   <div class="sky" aria-hidden="true"><div class="sky-sharp"></div><div class="sky-soft"></div></div>
@@ -166,7 +166,7 @@
   <script type="module" src="/js/home-tomato.js?v=20261024s"></script>
 <script src="/js/cursor.js?v=20261024q" defer></script>
   <script type="module" src="/js/contact-sachet.js?v=20261024n"></script>
-<script src="/js/menu.js?v=20261025b" defer></script>
+<script src="/js/menu.js?v=20261025c" defer></script>
 <script src="/js/terminal.js?v=20261025a" defer></script>
 </body>
 </html>
