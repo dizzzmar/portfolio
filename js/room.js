@@ -19,7 +19,6 @@ import { createRoomLighting } from './room/lighting.js?v=20261023a';
 import { addRoomRug } from './room/rug.js?v=20261022a';
 
 const canvas = document.getElementById('room');
-const label = document.getElementById('label');
 const status = document.getElementById('status');
 const nav = document.getElementById('object-nav');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -275,10 +274,8 @@ function highlight(selection) {
     ? meshes.filter(mesh => destinationFor(mesh)?.key === selection.item.key)
     : [];
   const track = selection?.item.track;
-  label.hidden = !selection || !!track;
   if (track) showSticker(track); else hideSticker();
   for (const button of nav.querySelectorAll('button')) button.classList.toggle('active', !!selection && button.textContent === selection.item.label);
-  if (selection && !track) label.textContent = selection.item.poster ? selection.item.poster.title : selection.item.label + ' +';
   canvas.style.cursor = selection ? 'pointer' : 'default';
   document.documentElement.classList.toggle('dot-hot', !!selection); // el punto rojo (js/cursor.js) crece sobre un objeto
 }
