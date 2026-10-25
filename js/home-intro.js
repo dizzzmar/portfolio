@@ -235,6 +235,7 @@ function createWordCycler(word, { visible = true } = {}) {
   // Cada paso que deslizas avanza el viaje un poco (abajo: hacia Work · arriba: de vuelta a la portada) y si te paras, se queda donde esté.
   // En la portada vale cualquier gesto; ya en Work, solo subir estando arriba del todo.
   const locked = () => document.body.classList.contains('intro-lock');
+  const menuOpen = () => document.documentElement.classList.contains('menu-open'); // con el menú abierto la portada no se mueve (js/menu.js)
   const atTop = () => scrollY <= 1;
   // Cuánto hay que deslizar para el viaje entero: rueda ≈ 1.600 px (unas 16 muescas), dedo ≈ 40 % de la pantalla (un deslizamiento normal).
   // Además, un golpe rápido de dedo (flick) lo completa del todo, como la inercia de un scroll normal.
@@ -247,13 +248,13 @@ function createWordCycler(word, { visible = true } = {}) {
     else if (J.target > 0 && (locked() || atTop())) scrub(dy / perJourney);
   }
   addEventListener('wheel', (e) => {
-    if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY) || menuOpen()) return;
     if (e.target instanceof Element && e.target.closest('.term')) return; // la terminal se desplaza sola, no mueve la portada
     drag(e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY, WHEEL_PX);
   }, { passive: true });
   let touchY = null, samples = [];
   addEventListener('touchstart', (e) => {
-    touchY = e.target instanceof Element && e.target.closest('.term') ? null : e.touches[0].clientY;
+    touchY = menuOpen() || (e.target instanceof Element && e.target.closest('.term')) ? null : e.touches[0].clientY;
     samples = [];
   }, { passive: true });
   addEventListener('touchmove', (e) => {
@@ -274,7 +275,7 @@ function createWordCycler(word, { visible = true } = {}) {
     else if (v < -FLICK && J.target > 0 && (locked() || atTop())) go(0);
   }, { passive: true });
   addEventListener('keydown', (e) => {
-    if (e.altKey || e.ctrlKey || e.metaKey || J.simple || J.hold) return;
+    if (e.altKey || e.ctrlKey || e.metaKey || J.simple || J.hold || menuOpen()) return;
     if (e.target instanceof Element && e.target.closest('.term')) return; // escribir en la terminal no mueve la portada
     const onControl = e.target instanceof Element && e.target.closest('a, button, input, select, textarea');
     const down = { ArrowDown: 0.1, PageDown: 0.3, ' ': 0.3, End: 1 }[e.key];

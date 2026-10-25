@@ -679,6 +679,7 @@
   refreshSuggestions();
 
   triggers.forEach((t) => t.addEventListener('click', (e) => { e.preventDefault(); lastTrigger = t; panel.hidden ? openTerm() : closeTerm(); }));
+  document.addEventListener('terminal:open', () => { if (panel.hidden) openTerm(); }); // la fila pequeña del menú (js/menu.js)
   close.addEventListener('click', closeTerm);
   row.addEventListener('submit', (e) => { e.preventDefault(); run(input.value); input.value = ''; });
   input.addEventListener('keydown', (e) => {
