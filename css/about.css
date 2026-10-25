@@ -80,6 +80,7 @@ main { padding: 0 var(--margin); }
 }
 
 .name {
+  font-family: var(--font-display);
   grid-area: name;
   margin-left: -.04em; /* alinea la tinta de la M con el margen */
   font-size: var(--fs-h1);

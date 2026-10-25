@@ -20,7 +20,7 @@ figure { margin: 0; }
 .project-intro { padding: 28px 24px 64px; }
 .project-intro { display: grid; gap: 4px; }
 .project-brand { margin: 0; font-family: var(--font-ui); font-weight: var(--fw-bold); font-size: var(--fs-lead); letter-spacing: -.035em; line-height: 1.1; }
-.project-intro h1 { margin: 0 0 0 -.045em; font-size: var(--fs-h2); font-weight: var(--fw-bold); letter-spacing: -.055em; line-height: 1; }
+.project-intro h1 { font-family: var(--font-display); margin: 0 0 0 -.045em; font-size: var(--fs-h2); font-weight: var(--fw-bold); letter-spacing: -.055em; line-height: 1; }
 .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
 .project-tags li { padding: 5px 11px 4px; border: 1px solid #171717; border-radius: 999px; font-size: var(--fs-xs); font-weight: 400; letter-spacing: .06em; line-height: 1.2; text-transform: uppercase; }
 .project-tags .project-year { margin-left: auto; padding: 0; border: 0; font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 400; letter-spacing: 0; font-variant-numeric: lining-nums; transform: translateY(2.5px); }

@@ -22,7 +22,7 @@ body { background: var(--night); color: var(--lime); font-family: var(--font-ui)
 /* ---------- Columna izquierda: título y objetos; la habitación ocupa el resto ---------- */
 .intro { position: fixed; z-index: 2; top: calc(var(--nav-h) + 24px); left: 24px; width: calc(var(--panel) - 48px); pointer-events: none; }
 /* Misma estructura que About, FAQs y Privacy: título de página grande en negrita (--fs-h1) y debajo, la lista en tamaño de lectura (negrita = lo que orienta) */
-.intro-head h1 { font-size: var(--fs-h1); font-weight: var(--fw-bold); letter-spacing: var(--tracking-display); line-height: var(--lh-tight); color: var(--lime); }
+.intro-head h1 { font-family: var(--font-display); font-size: var(--fs-h1); font-weight: var(--fw-bold); letter-spacing: var(--tracking-display); line-height: var(--lh-tight); color: var(--lime); }
 .object-nav { margin-top: 40px; display: flex; flex-direction: column; align-items: start; gap: 10px; pointer-events: auto; }
 /* Cada objeto: negrita a tamaño de lectura, lima al 80 % (5,1:1); la sala o el objeto elegido, lima pleno y subrayado, como la página actual en el menú */
 .object-nav button { appearance: none; border: 0; background: transparent; padding: 0; cursor: pointer; text-align: left; color: rgba(195, 243, 128, 0.8); font: inherit; font-size: var(--fs-read); font-weight: var(--fw-bold); line-height: var(--lh-ui); text-underline-offset: .18em; text-decoration: underline transparent; transition: color 0.2s, text-decoration-color 0.2s; }

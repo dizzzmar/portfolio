@@ -60,6 +60,7 @@ body {
 
 /* "4 [tomate] 4": el tomate hace de 0 */
 .code {
+  font-family: var(--font-display);
   display: flex;
   align-items: center;
   font-size: clamp(110px, min(32vw, 46vh), 440px); /* también cabe en pantallas bajas y anchas */

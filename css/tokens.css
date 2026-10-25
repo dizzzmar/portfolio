@@ -1,9 +1,18 @@
 @font-face {
-  font-family: "Schibsted Grotesk";
+  font-family: "Funnel Sans";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url("/assets/fonts/funnel-sans-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Funnel Display";
   font-style: normal;
   font-weight: 400 800;
   font-display: swap;
-  src: url("/assets/fonts/schibsted-grotesk-latin.woff2") format("woff2");
+  src: url("/assets/fonts/funnel-display-latin.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
@@ -23,9 +32,11 @@
   /* Verde y lima (About, Privacy y Machine): 6,98:1 entre sí. Lo secundario va al 80 % sobre verde (5,1:1). */
   --green: #125603;
   --lime: #c3f380;
-  /* Letra: una sola familia, Schibsted Grotesk (variable, pesos 400–800), alojada en este mismo repositorio (assets/fonts): no se pide nada a terceros.
-     Mientras carga (o si no carga) se ve Helvetica Neue / Arial. Sin serif. */
-  --font-ui: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  /* Letra: la familia Funnel (dos archivos variables, pesos 400–800), alojada en este mismo repositorio (assets/fonts): no se pide nada a terceros.
+     Funnel Sans para todo lo que se lee y los textos pequeños (--font-ui); Funnel Display solo para títulos grandes (--font-display), que tiene remates más decorativos.
+     Mientras cargan (o si no cargan) se ve Helvetica Neue / Arial. Sin serif. */
+  --font-ui: "Funnel Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Funnel Display", "Helvetica Neue", Arial, sans-serif;
 
   /* Tamaños fijos: 6 escalones */
   --fs-xs: 11px;   /* etiquetas en mayúsculas, créditos, pies pequeños */
