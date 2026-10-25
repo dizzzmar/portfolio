@@ -5,7 +5,7 @@
 .nav-logo, .case-logo {
   position: fixed;
   z-index: 21;
-  left: 24px;
+  left: var(--bar-gutter);
   top: calc((var(--nav-h) - 47px) / 2);
   width: 44px;
   height: 47px;
@@ -14,8 +14,7 @@
 .nav-logo img, .case-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 
 @media (max-width: 700px) {
-  :root { --nav-h: 56px; }
-  .nav-logo, .case-logo { left: 14px; top: calc((var(--nav-h) - 39px) / 2); width: 36px; height: 39px; }
+  .nav-logo, .case-logo { top: calc((var(--nav-h) - 39px) / 2); width: 36px; height: 39px; }
   /* La zona que responde al dedo llega a 48 × 47 px (el tomate sigue midiendo 36 × 39) */
   .nav-logo::after, .case-logo::after { content: ""; position: absolute; inset: -4px -6px; }
 }

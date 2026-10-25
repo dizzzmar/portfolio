@@ -21,7 +21,7 @@
   opacity: .92;
   transition: transform .45s cubic-bezier(.85, 0, .15, 1), opacity .3s ease; /* al volver: ease-in-out circ */
 }
-.cursor-dot b { display: block; width: 100%; height: 100%; border-radius: 50%; background: #f83d0c; }
+.cursor-dot b { display: block; width: 100%; height: 100%; border-radius: 50%; background: var(--tomato); }
 /* Páginas verdes (About, Privacy): el rojo daría 2,4:1 sobre el verde; el punto va en lima, también durante las animaciones de color */
 .theme-green .cursor-dot b { background: var(--lime) !important; }
 
@@ -39,16 +39,16 @@
 .cursor-dot.to-white b { animation: dot-to-white 1.1s both; }
 .cursor-dot.to-red b { animation: dot-to-red 1.1s both; }
 @keyframes dot-to-white {
-  0%   { scale: 1;  background: #f83d0c; animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
-  30%  { scale: .2; background: #f83d0c; animation-timing-function: step-end; }
+  0%   { scale: 1;  background: var(--tomato); animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
+  30%  { scale: .2; background: var(--tomato); animation-timing-function: step-end; }
   32%  { scale: .2; background: #fff; animation-timing-function: linear(0, .4 8%, .9 17%, 1.14 28%, 1.1 36%, .97 50%, 1.02 66%, 1); }
   100% { scale: 1;  background: #fff; }
 }
 @keyframes dot-to-red {
   0%   { scale: 1;  background: #fff; animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
   30%  { scale: .2; background: #fff; animation-timing-function: step-end; }
-  32%  { scale: .2; background: #f83d0c; animation-timing-function: linear(0, .4 8%, .9 17%, 1.14 28%, 1.1 36%, .97 50%, 1.02 66%, 1); }
-  100% { scale: 1;  background: #f83d0c; }
+  32%  { scale: .2; background: var(--tomato); animation-timing-function: linear(0, .4 8%, .9 17%, 1.14 28%, 1.1 36%, .97 50%, 1.02 66%, 1); }
+  100% { scale: 1;  background: var(--tomato); }
 }
 
 /* Solo con ratón: se esconde el cursor del sistema desde el primer fotograma de cada página (sin esperar al JavaScript), también en las

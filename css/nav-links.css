@@ -3,7 +3,7 @@
    (14 px en móvil). La página en la que estás lleva el enlace subrayado (aria-current="page" en el HTML).
    Los enlaces miden toda la altura de la barra, así el texto queda siempre centrado en vertical.
    Lo usan About, Privacy, los proyectos y The room (en los proyectos la barra se mezcla con "difference": ver css/case.css). */
-.nav, .case-nav { padding: 0 24px; }
+.nav, .case-nav { padding: 0 var(--bar-gutter); }
 .nav-links, .case-nav ul { display: flex; align-self: stretch; gap: 0; margin: 0 -16px 0 auto; list-style: none; }
 .nav-links a, .case-nav a {
   display: flex;
@@ -28,7 +28,6 @@
 }
 
 @media (max-width: 700px) {
-  .nav, .case-nav { padding: 0 14px; }
   .nav-links, .case-nav ul { margin-right: -7px; }
   .nav-links a, .case-nav a { padding: 0 7px; }
 }

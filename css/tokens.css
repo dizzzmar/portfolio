@@ -53,8 +53,18 @@
   --fs-h1: clamp(56px, 9vw, 140px);       /* título de página y nombres de proyecto */
   --fs-menu: clamp(52px, 16vw, 84px);     /* los cuatro enlaces grandes del menú (apilados en móvil, en fila desde 821 px: ver abajo) */
 
-  /* Movimiento: una sola curva de salida para todo (rápida al empezar, frena suave). Duraciones en DESIGN.md */
+  /* Movimiento: dos curvas para todo. De salida (rápida al empezar, frena suave) y de ida y vuelta (arranca y frena: moverse por la pantalla). Duraciones en DESIGN.md */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);
+
+  /* Rojo tomate y crema. --tomato: cursor, selección y el nombre encendido en Work. --menu-red: panel del menú (con --cream da 4,5:1; con --tomato bajaba a 3,6:1) */
+  --tomato: #f83d0c;
+  --menu-red: #d03a22;
+  --cream: #fff6ea;
+
+  /* La barra de arriba: 64 px de alto y 24 px de margen a los lados (56 px y 14 px en móvil, hasta 700 px de ancho). Barra, tomate, pie y menú comparten estos dos valores */
+  --nav-h: 64px;
+  --bar-gutter: 24px;
 
   /* Resto de la tipografía */
   --tracking-label: .06em;                /* etiquetas en mayúsculas */
@@ -63,3 +73,4 @@
   --lh-body: 1.45;                        /* texto corrido */
 }
 @media (min-width: 821px) { :root { --fs-menu: clamp(44px, 6.8vw, 112px); } }
+@media (max-width: 700px) { :root { --nav-h: 56px; --bar-gutter: 14px; } }
