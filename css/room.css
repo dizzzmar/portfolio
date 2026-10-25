@@ -59,7 +59,7 @@ body { background: var(--night); color: var(--lime); font-family: var(--font-ui)
   .object-nav { position: fixed; left: 14px; right: 14px; bottom: 52px; margin: 0; flex-direction: row; flex-wrap: wrap; gap: 4px 16px; }
   .object-nav { gap: 0 16px; }
   .object-nav button { display: inline-flex; align-items: center; min-height: 44px; } /* zona táctil de 44 px */
-  .label, .sticker-slot.floating { bottom: 112px; }
+  .label, .sticker-slot.floating { bottom: 152px; } /* por encima de la lista de objetos, que ocupa dos filas */
   .sticker-slot.floating { font-size: var(--fs-xs); }
 }
 @media (max-width: 700px) {
