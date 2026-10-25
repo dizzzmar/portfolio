@@ -62,7 +62,7 @@ async function start() {
   fit();
   addEventListener('resize', fit);
 
-  new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
+  new GLTFLoader().load('/assets/models/tomato.glb?v=20261025b', (gltf) => {
     const model = gltf.scene;
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
