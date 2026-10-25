@@ -19,7 +19,6 @@ import { createRoomLighting } from './room/lighting.js?v=20261023a';
 import { addRoomRug } from './room/rug.js?v=20261022a';
 
 const canvas = document.getElementById('room');
-const label = document.getElementById('label');
 const status = document.getElementById('status');
 const nav = document.getElementById('object-nav');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -275,10 +274,8 @@ function highlight(selection) {
     ? meshes.filter(mesh => destinationFor(mesh)?.key === selection.item.key)
     : [];
   const track = selection?.item.track;
-  label.hidden = !selection || !!track;
   if (track) showSticker(track); else hideSticker();
   for (const button of nav.querySelectorAll('button')) button.classList.toggle('active', !!selection && button.textContent === selection.item.label);
-  if (selection && !track) label.textContent = selection.item.poster ? selection.item.poster.title : selection.item.label + ' +';
   canvas.style.cursor = selection ? 'pointer' : 'default';
   document.documentElement.classList.toggle('dot-hot', !!selection); // el punto rojo (js/cursor.js) crece sobre un objeto
 }
@@ -517,7 +514,8 @@ function freeArea() {
   const width = innerWidth, height = innerHeight;
   if (wiiPlayer.active) return { left: 24, top: 100, right: 24, bottom: 100 };
   const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 64;
-  const panel = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--panel')) || 0;
+  // En escritorio la columna de texto (título y lista) ocupa la izquierda y la habitación el resto; en móvil la habitación queda entre el título y la lista
+  const panel = innerWidth > 900 ? document.querySelector('.intro').getBoundingClientRect().right + 24 : 0;
   if (panel) return { left: panel, top: navH, right: 0, bottom: 24 };
   const intro = document.querySelector('.intro-head').getBoundingClientRect();
   const list = document.getElementById('object-nav').getBoundingClientRect();
