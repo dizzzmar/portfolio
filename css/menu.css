@@ -27,6 +27,10 @@ html.has-menu .nav-links li:not(.menu-li), html.has-menu .case-nav li:not(.menu-
 }
 .menu[data-open="true"] { clip-path: inset(0); visibility: visible; transition: clip-path .6s var(--menu-ease), visibility 0s; }
 .menu :focus-visible { outline: 2px solid var(--menu-ink); outline-offset: 6px; }
+.menu:focus { outline: none; }
+/* En los enlaces grandes el aro lo recorta la máscara de la animación (solo se veía una raya abajo): el foco de teclado se marca subrayando el texto, como la página actual */
+.menu-item a:focus-visible { outline: none; }
+.menu-item a:focus-visible > span { text-decoration: underline; text-decoration-thickness: .06em; text-underline-offset: .12em; }
 html.menu-open { overflow: hidden; scrollbar-gutter: stable; background: var(--menu-bg); } /* sin la barra de scroll la página de detrás no se mueve de sitio al abrir */
 .menu { -webkit-tap-highlight-color: transparent; }
 .menu ::selection { background: var(--menu-ink); color: var(--menu-bg); }
