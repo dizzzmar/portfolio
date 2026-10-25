@@ -1,66 +1,205 @@
-# Guía de diseño · dizmar.xyz
+---
+name: dizmar.xyz
+description: Portfolio of Mario Diz, art director in Madrid. One family, two weights, a tomato at the centre.
+colors:
+  tomato: "#f83d0c"
+  menu-red: "#d03a22"
+  cream: "#fff6ea"
+  lincoln-green: "#125603"
+  lime: "#c3f380"
+  night-green: "#0b2f04"
+  page-black: "#0c0c0b"
+  ink: "#111111"
+  white: "#ffffff"
+  sky-blue: "#4f8fd8"
+typography:
+  display:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(56px, 9vw, 140px)"
+    fontWeight: 700
+    lineHeight: 1.05
+    letterSpacing: "-0.05em"
+  headline:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(40px, 5vw, 76px)"
+    fontWeight: 700
+    lineHeight: 1.05
+    letterSpacing: "-0.04em"
+  title:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(24px, 2.8vw, 44px)"
+    fontWeight: 700
+    lineHeight: 1.05
+  body:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(18px, 1.5vw + 8px, 22px)"
+    fontWeight: 400
+    lineHeight: 1.45
+  label:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "14px"
+    fontWeight: 400
+    lineHeight: 1.3
+  caps:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "11px"
+    fontWeight: 400
+    lineHeight: 1.3
+    letterSpacing: "0.06em"
+  menu-link:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(44px, 6.8vw, 112px)"
+    fontWeight: 700
+    lineHeight: 1
+    letterSpacing: "-0.05em"
+rounded:
+  none: "0"
+  pill: "999px"
+spacing:
+  margin: "24px"
+  margin-mobile: "14px"
+  bar-height: "64px"
+components:
+  button-pill:
+    backgroundColor: "{colors.white}"
+    textColor: "{colors.ink}"
+    typography: "{typography.label}"
+    rounded: "{rounded.pill}"
+  nav-link:
+    textColor: "{colors.white}"
+    typography: "{typography.label}"
+    height: "{spacing.bar-height}"
+  menu-panel:
+    backgroundColor: "{colors.menu-red}"
+    textColor: "{colors.cream}"
+  menu-link:
+    textColor: "{colors.cream}"
+    typography: "{typography.menu-link}"
+  menu-small-link:
+    textColor: "{colors.cream}"
+    typography: "{typography.label}"
+---
 
-Cómo se ve y se mueve la web, en un solo sitio. Si algo nuevo no cabe aquí, primero se decide aquí y luego se hace.
-**Regla de oro:** no hay valores sueltos. Los tamaños de letra salen de `css/tokens.css`; si necesitas uno que no existe, se añade ahí (y aquí), no se escribe `15px` en otro archivo.
+# Design System: dizmar.xyz
 
-## 1. Tipografía
+## Overview
 
-**Una sola letra:** Schibsted Grotesk (variable, pesos 400–800, licencia OFL), alojada en `assets/fonts/` y declarada en `css/tokens.css`: no se pide nada a terceros. Mientras carga se ve Helvetica Neue o Arial. **No hay serif.** Las únicas excepciones son `machine/` (monoespaciada, otro modo a propósito).
+**Creative North Star: "The Ripe Tomato"**
 
-| Variable | Tamaño | Para qué |
-| --- | --- | --- |
-| `--fs-xs` | 11 px | Etiquetas en MAYÚSCULAS (con `--tracking-label`), créditos, reproductor, letra pequeña |
-| `--fs-s` | 14 px | Menú, enlaces, botones, fechas, pie de página, textos secundarios |
-| `--fs-m` | 16 px | Texto corrido (párrafos, privacidad, descripciones) |
-| `--fs-l` | 20 px | Destacados cortos |
-| `--fs-xl` | 24 px | Subtítulos |
-| `--fs-2xl` | 32 px | Títulos pequeños de paneles |
-| `--fs-lead` | 18 → 24 px (según pantalla) | Párrafos de entrada y frases destacadas |
-| `--fs-h3` | 24 → 44 px | Títulos de sección y nombre del proyecto en su barra |
-| `--fs-h2` | 40 → 76 px | Títulos grandes |
-| `--fs-h1` | 56 → 140 px | Título de página (About, Privacy, FAQs) y nombres de proyecto en Work |
+One piece of fruit at the centre and everything else arranged around it: the tomato is the logo, the 3D object on the landing page, the cursor and the menu panel. The rest is deliberately plain so the fruit and the work (Lexus, Soap & Glory, Schweppes) stay the loudest things on screen. One typeface, two weights, flat colour, no shadows.
 
-- **Pesos: solo dos.** 700 para lo que orienta (título de página, primer párrafo de cada página y títulos de bloque) y 400 para lo que se lee. Nada de 300 ni 600. (About, Privacy y Machine ya siguen esta regla; Work, Room y los proyectos todavía usan algún 500 y se irán igualando.) El tamaño de lectura es uno solo, `--fs-read` (18 → 22 px), para la entrada, los títulos de bloque y el texto; lo que los distingue es el peso. Lo secundario va a 14 px (`--fs-s`).
-- **Interlineado:** titulares `--lh-tight` (1.05), menús y textos cortos `--lh-ui` (1.3), texto corrido `--lh-body` (1.45).
-- **Espaciado de letras:** titulares apretados (−0,03 a −0,06 em), texto normal 0, etiquetas en mayúsculas `--tracking-label` (.06 em).
-- **Mayúsculas:** solo en etiquetas pequeñas (`--fs-xs`).
+The tone is close and a little funny. Daily paths (reading, navigating) are precise and quiet; the humour lives in the rare places: the envelope you tear to write an email, the terminal, the FAQs, the cursor that bounces. Nothing explains itself with slogans or helper text; if a screen needs a label to make sense, the layout gets fixed instead.
 
-## 2. Color
+Rejected on purpose: serif faces, more than two weights, decorative gradients and shadows, third-party fonts or embeds, and any text whose only job is to explain the interface.
 
-| Uso | Valor |
-| --- | --- |
-| Verde y lima (About, Privacy, FAQs, Machine y la sala) | `--green` `#125603` de fondo con `--lime` `#c3f380` de texto (6,98:1). Lo secundario al 80 % de opacidad (5,1:1). El cursor va en lima sobre estas páginas; el rojo daría 2,4:1. La sala usa el verde «de noche» `#0b2f04` (`--night`) de fondo, con la lista en lima al 70 % (6,4:1) y la escena 3D tal cual |
-| Rojo marca (tomate, cursor, nombre de proyecto encendido en Work) | `#f83d0c` (cursor, nombre de proyecto encendido en Work) |
-| Negro de página (Work, proyectos en oscuro) | `#0c0c0b` |
-| Blanco | `#fff` |
-| Tinta sobre claro | `#111` / `#141414` |
-| Cielo | la foto `assets/images/sky.webp` (azul `#4f8fd8` de reserva) |
+**Key Characteristics:**
+- A single family (Schibsted Grotesk) used at two weights: 700 orients, 400 is read.
+- Flat colour fields: black or sky for the work, Lincoln green with lime for the personal pages, tomato red for the menu.
+- A 64 px bar with the tomato left and links right, the same everywhere.
+- Motion is transform and opacity only, one shared ease-out, and it always has a reduced-motion path.
 
-Texto sobre oscuro: blanco, o blanco al 70 % para lo secundario y al 60 % para lo más tenue. No añadir colores nuevos sin decidirlo aquí.
+## Colors
 
-## 3. Maquetación
+A tomato-and-garden palette: red fruit, green plant, sky above, near-black behind the work.
 
-- **Barra de arriba:** 64 px de alto, siempre. Logo (tomate) a la izquierda a 24 px del borde (14 px en móvil), enlaces a la derecha.
-- **Márgenes laterales:** 24 px (14 px en móvil) en barra y pie; el contenido usa `--margin` de su página.
-- **Pie de página:** el mismo en todas: «Mario Diz, Madrid · Privacy» y «Back to top ↑».
-- **Esquinas:** rectas en las imágenes de proyecto; redondas del todo (píldora) en botones.
+### Primary
+- **Tomato** (#f83d0c): the brand red. The cursor dot, the highlighted project name in Work, the tomato itself.
+- **Menu Red** (#d03a22): the full-screen menu panel. A deeper tomato chosen so cream text on it reaches 4.55:1 (the brand red gives only 3.6:1).
 
-## 4. Componentes
+### Secondary
+- **Lincoln Green** (#125603): background of About, Privacy, FAQs and Machine, paired with Lime.
+- **Lime** (#c3f380): all text and the cursor on green pages (6.98:1 on Lincoln Green). Secondary text on green runs at 80 % opacity (5.1:1).
+- **Night Green** (#0b2f04): the Room only, where the 3D scene sits in a darker green; its list is lime at 70 % (6.4:1).
 
-- **Enlace de texto** (menú, pie, privacidad, volver, «Go to film»…): sin subrayado fijo. Al pasar el ratón se dibuja una raya de 1 px que entra por el lado por el que llega el ratón y sale por el lado por el que se va (0,4 s). En un párrafo lleva además una raya tenue fija. La página actual en el menú lleva la raya completa. En táctil: subrayado normal.
-- **Botón:** píldora, texto `--fs-s`, blanco con texto oscuro (o contorno blanco sobre el cielo).
-- **Cursor (solo con ratón):** punto rojo de 24 px. Sobre botones, tarjetas y objetos crece ×2,5 con un pequeño rebote; sobre enlaces de texto, sobre «View project» y sobre vídeos se oculta (la raya, la etiqueta o PLAY/PAUSE hacen de indicador); sobre fondo rojo se encoge, pasa a blanco y vuelve a crecer; al desplazar se estira como una gota.
+### Neutral
+- **Cream** (#fff6ea): text on the menu panel.
+- **Page Black** (#0c0c0b): Work and the project pages in dark.
+- **Ink** (#111111): text on light surfaces (buttons, the sky pages).
+- **White** (#ffffff): text on dark (70 % for secondary, 60 % for the quietest) and button fills.
+- **Sky Blue** (#4f8fd8): fallback for the sky photograph (`assets/images/sky.webp`) behind the landing page and Contact.
 
-## 5. Movimiento
+### Named Rules
+**The Green Pair Rule.** On green pages the only text colour is lime, never white or red. The red cursor would fall to 2.4:1 there, so it turns lime too.
 
-- Solo se animan `transform` y `opacity` (nada de animar tamaños ni sombras).
-- Curva de salida de todo: `var(--ease-out)` (`cubic-bezier(0.23, 1, 0.32, 1)`, en `css/tokens.css`); no escribir otras curvas sueltas. Duraciones: interfaz 150–300 ms; subrayado 400 ms; entradas de sección hasta 700 ms.
-- Con «reducir movimiento» se quita el desplazamiento y se mantienen los cambios que ayudan a entender (opacidad, color).
-- Las animaciones largas (el tomate de la portada, las transiciones entre páginas) son raras; las de uso diario, casi invisibles.
+**The No New Colours Rule.** A colour that is not in this list is decided here first, then written into `css/tokens.css`.
 
-## 6. Reglas de trabajo
+## Typography
 
-- Nada de claves, contraseñas ni datos personales en el repositorio (ver `CLAUDE.md`).
-- Sin servicios ni scripts de terceros sin decidirlo (hoy solo three.js desde jsDelivr).
-- Al cambiar un `.css` o `.js`, sube el número `?v=` de su enlace en todas las páginas (ver `README.md`).
-- Al añadir una página nueva: enlazar primero `css/tokens.css`, después los demás; barra y pie iguales a los del resto.
+**Display Font:** Schibsted Grotesk (variable 400–800, OFL licence), self-hosted in `assets/fonts/` and preloaded; Helvetica Neue or Arial while it loads.
+**Body Font:** the same.
+**Label/Mono Font:** none, except Machine mode, which is monospace on purpose.
+
+**Character:** a warm, slightly squared grotesk that stays friendly at 140 px and neutral at 14 px. Hierarchy comes from weight and size, never from a second family.
+
+### Hierarchy
+- **Display** (700, 56–140 px, 1.05, −0.05 em): page titles (About, Privacy, FAQs) and project names in Work.
+- **Headline** (700, 40–76 px, 1.05): large section titles.
+- **Title** (700, 24–44 px, 1.05): section titles and the project name in its bar.
+- **Body** (400, 18–22 px, 1.45, measure 34 em): running text. The first paragraph of each page and the block headings share this size in 700.
+- **Label** (400, 14 px, 1.3): bar links, buttons, footer, dates and every secondary line.
+- **Caps** (400, 11 px, 0.06 em, uppercase): small labels and credits only.
+- **Menu link** (700, 44–112 px, 1, −0.05 em): the four big links in the menu.
+
+### Named Rules
+**The Two Weights Rule.** Only 700 and 400 exist. 700 orients (titles, first paragraph, block headings); 400 is what you read. No 300, 500 or 600.
+
+**The One Source Rule.** Every size comes from `css/tokens.css`. If a size is missing, add it there and here; never write `15px` in another file.
+
+## Layout
+
+A single column of content under a fixed 64 px bar. Side margins are 24 px (14 px on mobile) on the bar, the footer and the menu; content uses the page's own `--margin`. Reading text never exceeds 34 em. The footer is the same on every page: "Mario Diz, Madrid · Privacy" and "Back to top ↑".
+
+The menu uses the whole viewport: on desktop the four big links sit on one row, spread edge to edge at the vertical centre; at 820 px and below they stack and drop to thumb height just above the small row, so the thumb reaches them without stretching. The small row (Machine, FAQs, Terminal, Privacy) is pinned to the bottom, two links on each side.
+
+## Elevation & Depth
+
+Flat. There are no shadows at rest and none are added on interaction. Depth comes from colour fields and movement: when you change page, the new page rises 12 px over the old one, which recedes (scale 0.985, 82 % brightness); the menu panel is a curtain that covers the page.
+
+## Shapes
+
+Straight corners on project imagery; a full pill (999 px) on buttons. The tomato logo and 3D tomato are the only organic silhouettes. No borders or boxes around content: groups are separated by space, not lines.
+
+## Components
+
+Close and a little funny: precise when used daily, playful where visitors do not go every day.
+
+### Navigation
+- **Bar:** 64 px high, tomato logo at the left (24 px, 14 px on mobile), links right in 14 px white at 70 %. On every page with a bar the links are replaced by one word, **Menu**.
+- **Menu:** the "Menu" word, right-aligned in the bar, opens a full-screen **Menu Red** panel with cream text. The panel falls from the top like a curtain (0.6 s, `cubic-bezier(.77,0,.175,1)`); the four big links rise one by one out of a mask (0.7 s, 70 ms apart); the small row fades in last. Closing is the same animation reversed and faster. The tomato and "Close" are drawn exactly where the page's tomato and "Menu" are, so the bar appears not to move.
+- **Big links:** Work, About, Room, Contact. Hovering one lowers the others to 75 % opacity (still 3:1); the current page is underlined.
+- **Small links:** Machine, FAQs, Terminal, Privacy in 14 px, underlined. Machine mode, which has no menu, keeps its own Human | Machine switch and a Terminal link in its footer.
+- **Keyboard:** focus moves into the panel, Tab stays inside, Esc closes and focus returns to "Menu". With reduced motion the panel only fades (0.15 s).
+
+### Text links
+No fixed underline. On hover a 1 px line draws in from the side the pointer enters and leaves from the side it exits (0.4 s). In a paragraph there is also a faint permanent line. On touch it is a normal underline. The current page keeps the full line.
+
+### Buttons
+- **Shape:** a full pill (999 px).
+- **Primary:** white fill, ink text, 14 px; on the sky pages, a white outline instead.
+- **Hover / Focus:** a quick scale on press; the cursor grows ×2.5 with a small bounce.
+
+### Cursor (mouse only)
+A 24 px tomato dot. It grows over buttons, cards and objects; disappears over text links, "View project" and videos (the line, the label or PLAY/PAUSE act as the indicator); shrinks and turns white over red; stretches like a drop while scrolling. Lime on green pages.
+
+### The Envelope (Contact)
+A sky background and one phrase, "Tear top open". Tearing the top opens the mail app directly; if nothing opens within 1.4 s, the address and a "Copy email" button appear below.
+
+### The Terminal
+A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scramble on its title and hidden commands. It is the clearest place for humour in the site.
+
+## Do's and Don'ts
+
+### Do:
+- **Do** use only Schibsted Grotesk at 700 and 400, sizes from `css/tokens.css`.
+- **Do** animate only `transform` and `opacity`, with `var(--ease-out)` (`cubic-bezier(0.23, 1, 0.32, 1)`) for arrivals; UI 150–300 ms, underline 400 ms, section entrances up to 700 ms, the menu up to 0.7 s because it is a deliberate moment.
+- **Do** give every animation a reduced-motion path that keeps opacity and colour changes.
+- **Do** keep text on Lincoln Green in Lime, and check any new pair for 4.5:1 (3:1 for large text).
+- **Do** choose, between options, the one that improves visitors, maintainers and agents together (meaningful HTML, real links, `machine/`, `llms.txt` and `sitemap.xml` up to date).
+- **Do** link `css/tokens.css` first on every page, then the rest; bar and footer identical to the other pages. A new page also needs the `li.menu-li` button and `has-menu` in the head script.
+- **Do** bump the `?v=` number of any changed `.css` or `.js` on every page.
+
+### Don't:
+- **Don't** add slogans, helper text or secondary labels; fix the layout instead. Only legal text, screen-reader names and informative errors or loading states stay.
+- **Don't** use a serif, a third weight, shadows, gradients or borders to separate content.
+- **Don't** add third-party code, fonts, embeds or analytics without deciding it first (today only three.js from jsDelivr), and never put keys, passwords or personal data in the repository (see `CLAUDE.md`).
+- **Don't** animate sizes, margins or shadows.
