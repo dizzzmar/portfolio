@@ -339,6 +339,7 @@ body.white-on { background-color: #fff; }
 }
 
 .project-caption h2 {
+  font-family: var(--font-display);
   font-size: var(--fs-h2);
   font-weight: 700;
   letter-spacing: -0.06em;
@@ -423,7 +424,7 @@ body.white-on { background-color: #fff; }
   transition: background 0.2s, box-shadow 0.2s;
 }
 .room-entry span { font-size: var(--fs-s); }
-.room-entry strong { display: block; margin-top: 12px; font-size: var(--fs-h1); line-height: .85; font-weight: var(--fw-bold); letter-spacing: var(--tracking-display); }
+.room-entry strong { font-family: var(--font-display); display: block; margin-top: 12px; font-size: var(--fs-h1); line-height: .85; font-weight: var(--fw-bold); letter-spacing: var(--tracking-display); }
 .room-entry .room-arrow { font-size: var(--fs-h2); line-height: 1; }
 .room-entry:hover, .room-entry:focus-visible { background: rgba(233, 239, 228, .08); box-shadow: 0 0 0 3px #91c9ff, 0 0 25px #62b9ff77; outline: none; }
 
@@ -471,6 +472,7 @@ body.white-on { background-color: #fff; }
 /* ---------- "Creative ___": aparece en el centro cuando el tomate llega al menú ----------
    La segunda palabra cambia muy rápido (js/home-intro.js). */
 .intro-line {
+  font-family: var(--font-display);
   position: absolute;
   inset: 0;
   display: flex;
@@ -554,6 +556,7 @@ body.white-on { background-color: #fff; }
 .wi-date { grid-area: date; justify-self: start; font-variant-numeric: lining-nums; }
 .wi-tags { grid-area: tags; justify-self: end; text-align: right; list-style: none; }
 .wi-name {
+  font-family: var(--font-display);
   grid-area: name;
   min-width: 0;
   padding: 0 .02em .1em;

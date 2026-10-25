@@ -53,6 +53,7 @@ html.menu-open { overflow: hidden; scrollbar-gutter: stable; background: var(--m
 
 /* Enlaces grandes: en fila en escritorio, apilados en móvil */
 .menu-items {
+  font-family: var(--font-display);
   position: absolute;
   left: 24px;
   right: 24px;

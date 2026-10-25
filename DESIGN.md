@@ -31,17 +31,17 @@ typography:
     fontWeight: 700
     lineHeight: 1.05
   body:
-    fontFamily: "Funnel Display, Helvetica Neue, Arial, sans-serif"
+    fontFamily: "Funnel Sans, Helvetica Neue, Arial, sans-serif"
     fontSize: "clamp(18px, 1.5vw + 8px, 22px)"
     fontWeight: 400
     lineHeight: 1.45
   label:
-    fontFamily: "Funnel Display, Helvetica Neue, Arial, sans-serif"
+    fontFamily: "Funnel Sans, Helvetica Neue, Arial, sans-serif"
     fontSize: "14px"
     fontWeight: 400
     lineHeight: 1.3
   caps:
-    fontFamily: "Funnel Display, Helvetica Neue, Arial, sans-serif"
+    fontFamily: "Funnel Sans, Helvetica Neue, Arial, sans-serif"
     fontSize: "11px"
     fontWeight: 400
     lineHeight: 1.3
@@ -93,7 +93,7 @@ The tone is close and a little funny. Daily paths (reading, navigating) are prec
 Rejected on purpose: serif faces, more than two weights, decorative gradients and shadows, third-party fonts or embeds, and any text whose only job is to explain the interface.
 
 **Key Characteristics:**
-- A single family (Funnel Display) used at two weights: 700 orients, 400 is read.
+- One family, Funnel, in two cuts: Funnel Display for large titles only, Funnel Sans for everything that is read; both at two weights: 700 orients, 400 is read.
 - Flat colour fields: black or sky for the work, Lincoln green with lime for the personal pages, tomato red for the menu.
 - A 64 px bar with the tomato left and links right, the same everywhere.
 - Motion is transform and opacity only, one shared ease-out, and it always has a reduced-motion path.
@@ -125,11 +125,11 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 
 ## Typography
 
-**Display Font:** Funnel Display (variable 400–800, OFL licence), self-hosted in `assets/fonts/` and preloaded; Helvetica Neue or Arial while it loads.
-**Body Font:** the same.
+**Display Font:** Funnel Display (variable, OFL licence), only for large titles: page titles, project names, the menu links, the 404 and the landing's tomato name. Its flared, decorative terminals are the point there and too busy for paragraphs.
+**Body Font:** Funnel Sans (variable, OFL licence), the calmer sibling with the same bones, for running text, lists, labels and every small size. Both are self-hosted in `assets/fonts/` and preloaded; Helvetica Neue or Arial while they load.
 **Label/Mono Font:** none, except Machine mode, which is monospace on purpose.
 
-**Character:** a warm, slightly squared grotesk that stays friendly at 140 px and neutral at 14 px. Hierarchy comes from weight and size, never from a second family.
+**Character:** a sharp, slightly decorative grotesk at 140 px that settles into a calm, neutral one at 14 px. Hierarchy comes from weight and size; the Display/Sans split is a size threshold (titles large enough to carry the flourishes), never decoration on small text.
 
 ### Hierarchy
 - **Display** (700, 56–140 px, 1.05, −0.05 em): page titles (About, Privacy, FAQs) and project names in Work.
@@ -191,7 +191,7 @@ A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scr
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use only Funnel Display at 700 and 400, sizes from `css/tokens.css`.
+- **Do** use only Funnel (Display for large titles via `--font-display`, Sans for the rest via `--font-ui`) at 700 and 400, sizes from `css/tokens.css`.
 - **Do** animate only `transform` and `opacity`, with `var(--ease-out)` (`cubic-bezier(0.23, 1, 0.32, 1)`) for arrivals; UI 150–300 ms, underline 400 ms, section entrances up to 700 ms, the menu up to 0.7 s because it is a deliberate moment.
 - **Do** give every animation a reduced-motion path that keeps opacity and colour changes.
 - **Do** keep text on Lincoln Green in Lime, and check any new pair for 4.5:1 (3:1 for large text).
