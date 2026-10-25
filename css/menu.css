@@ -2,9 +2,9 @@
    suben uno a uno desde una máscara y abajo hay una fila pequeña. Al cerrar hace lo mismo al revés (transiciones: la salida es la entrada invertida).
    Referencia: pesqueradiez.com. Sin JavaScript no se ve nada de esto: la barra con los enlaces de siempre sigue funcionando. */
 :root {
-  --menu-bg: #d03a22;   /* rojo tomate: con el texto crema, 4,5:1 (con #f83d0c bajaba a 3,6:1) */
-  --menu-ink: #fff6ea;
-  --menu-ease: cubic-bezier(.77, 0, .175, 1); /* arranca y frena: movimiento por la pantalla */
+  --menu-bg: var(--menu-red);   /* rojo tomate: con el texto crema, 4,5:1 (con var(--tomato) bajaba a 3,6:1) */
+  --menu-ink: var(--cream);
+  --menu-ease: var(--ease-in-out); /* arranca y frena: movimiento por la pantalla */
   --menu-out: cubic-bezier(.16, 1, .3, 1);    /* frenada suave: llegada de los textos */
 }
 
@@ -59,8 +59,8 @@ html.menu-open { overflow: hidden; scrollbar-gutter: stable; background: var(--m
 .menu-items {
   font-family: var(--font-display);
   position: absolute;
-  left: 24px;
-  right: 24px;
+  left: var(--bar-gutter);
+  right: var(--bar-gutter);
   top: 50%;
   translate: 0 -50%;
   display: flex;
@@ -82,8 +82,8 @@ html.menu-open { overflow: hidden; scrollbar-gutter: stable; background: var(--m
 /* Fila pequeña de abajo */
 .menu-small {
   position: absolute;
-  left: 24px;
-  right: 24px;
+  left: var(--bar-gutter);
+  right: var(--bar-gutter);
   bottom: max(24px, env(safe-area-inset-bottom));
   display: flex;
   flex-wrap: wrap;

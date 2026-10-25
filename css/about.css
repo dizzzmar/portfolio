@@ -7,7 +7,6 @@
   --bg: var(--green);
   --bg-deep: rgba(0, 0, 0, .25); /* el recuadro de la foto */
   --ink: var(--lime);     /* el texto (y los logos) */
-  --nav-h: 64px;
   --gutter: 20px;
   --margin: clamp(24px, 6vw, 96px); /* margen a los lados de la página */
 }

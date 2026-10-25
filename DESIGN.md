@@ -118,6 +118,9 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **White** (#ffffff): text on dark (70 % for secondary, 60 % for the quietest) and button fills.
 - **Sky Blue** (#4f8fd8): fallback for the sky photograph (`assets/images/sky.webp`) behind the landing page and Contact.
 
+### Tokens
+`--tomato` (#f83d0c), `--menu-red` (#d03a22) and `--cream` (#fff6ea) live in `css/tokens.css`; so do the two curves, `--ease-out` for arrivals and `--ease-in-out` (`cubic-bezier(.77, 0, .175, 1)`) for moving across the screen. Do not write these values in other files.
+
 ### Named Rules
 **The Green Pair Rule.** On green pages the only text colour is lime, never white or red. The red cursor would fall to 2.4:1 there, so it turns lime too.
 
@@ -147,7 +150,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 
 ## Layout
 
-A single column of content under a fixed 64 px bar. Side margins are 24 px (14 px on mobile) on the bar, the footer and the menu; content uses the page's own `--margin`. Reading text never exceeds 34 em. The footer is the same on every page: "Mario Diz, Madrid · Privacy" and "Back to top ↑".
+A single column of content under a fixed bar (`--nav-h`: 64 px, 56 px up to 700 px wide). Side margins are `--bar-gutter` (24 px, 14 px up to 700 px wide) on the bar, the tomato, the footer, the menu and the Room's footer; content uses the page's own `--margin`. Reading text never exceeds 34 em. The footer is the same on every page: "Mario Diz, Madrid · Privacy" and "Back to top ↑".
 
 The menu uses the whole viewport: on desktop the four big links sit on one row, spread edge to edge at the vertical centre; at 820 px and below they stack and drop to thumb height just above the small row, so the thumb reaches them without stretching. The small row (Machine, FAQs, Terminal, Privacy) is pinned to the bottom, two links on each side.
 

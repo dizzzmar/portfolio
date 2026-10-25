@@ -11,7 +11,6 @@
   --line: rgba(20, 20, 20, .16);
   --panel: #f1f1ee;                  /* hueco de las imágenes mientras cargan */
   --edge: clamp(16px, 1.2vw, 24px);
-  --nav-h: 64px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -160,7 +159,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height
 
 /* ---------- Móvil: el nombre pasa a su propia línea y las tarjetas se recorren con el dedo ---------- */
 @media (max-width: 760px) {
-  :root { --nav-h: 56px; }
   .case-head { height: auto; position: relative; inset: auto; padding: calc(var(--nav-h) + 8px) var(--edge) 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
   .case-head > * { position: static; transform: none; }
   .case-name { grid-column: 1 / -1; font-size: var(--fs-h2); white-space: normal; }
@@ -190,7 +188,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height
 
 /* ---------- Movimiento: las tarjetas se destapan una a una al abrir; Instagram sube un poco al aparecer ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .js .p-card { animation: card-in 1.2s cubic-bezier(.77, 0, .18, 1) both; animation-delay: calc(.15s + var(--i, 0) * 110ms); }
+  .js .p-card { animation: card-in 1.2s var(--ease-in-out) both; animation-delay: calc(.15s + var(--i, 0) * 110ms); }
   .js .p-card img, .js .p-card video { animation: card-zoom 1.6s var(--ease-out) both; animation-delay: calc(.15s + var(--i, 0) * 110ms); }
   .js .case-name, .js .case-meta, .js .case-info { animation: fade-up .9s var(--ease-out) both .1s; }
   .js [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .85s var(--ease-out); }

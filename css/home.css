@@ -67,7 +67,6 @@ body.white-on { background-color: #fff; }
 }
 
 /* ---------- Barra de navegación ---------- */
-:root { --nav-h: 64px; }
 
 /* Barra superior sin fondo; el tomate, ya acoplado, hace de logo */
 .nav {
@@ -80,7 +79,7 @@ body.white-on { background-color: #fff; }
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 0 24px;
+  padding: 0 var(--bar-gutter);
   /* La barra entera recoge los toques: así un toque que cae entre dos enlaces (o un poco
      por encima o por debajo) no atraviesa la barra y abre la card que pasa por debajo */
 }
@@ -441,8 +440,7 @@ body.white-on { background-color: #fff; }
 
 @media (max-width: 700px) {
   .work { padding: 80px 8px 80px; }
-  :root { --nav-h: 56px; }
-  .nav { gap: 10px; padding: 0 14px; }
+  .nav { gap: 10px; }
   .nav-logo { width: 36px; height: 36px; }
   .nav-links { margin-right: -7px; }
   .nav-links a { padding: 0 7px; }
@@ -599,7 +597,7 @@ body.white-on { background-color: #fff; }
   inset: 0 auto auto 0;
   z-index: 11;
   padding: 9px 14px 8px;
-  background: #f83d0c; /* el rojo de la marca, el mismo del punto del cursor */
+  background: var(--tomato); /* el rojo de la marca, el mismo del punto del cursor */
   color: #fff;
   pointer-events: none;
   white-space: nowrap;
@@ -620,10 +618,10 @@ body.white-on { background-color: #fff; }
 @media (prefers-reduced-motion: no-preference) {
   .wi-slot img, .wi-slot video { transition: scale 1.1s var(--ease-out); }
   .wi-slot { transition: translate .7s var(--ease-out) calc(var(--i, 0) * 22ms); }
-  .work-motion .work-item::before { transition: transform .9s cubic-bezier(.77, 0, .18, 1); }
+  .work-motion .work-item::before { transition: transform .9s var(--ease-in-out); }
   .work-motion .wi-name > span { transition: translate 1.1s var(--ease-out) .15s; }
   .work-motion .wi-date, .work-motion .wi-tags { transition: color .5s ease, opacity .9s ease .45s, translate .9s var(--ease-out) .45s; }
-  .work-motion .wi-slot { transition: clip-path .8s cubic-bezier(.77, 0, .18, 1) calc(.35s + var(--i, 0) * 70ms), translate .7s var(--ease-out) calc(var(--i, 0) * 22ms); }
+  .work-motion .wi-slot { transition: clip-path .8s var(--ease-in-out) calc(.35s + var(--i, 0) * 70ms), translate .7s var(--ease-out) calc(var(--i, 0) * 22ms); }
   /* Antes de entrar: la línea sin dibujar, el nombre escondido bajo su máscara y las miniaturas tapadas */
   .work-motion .work-item:not(.is-in)::before { transform: scaleX(0); }
   .work-motion .work-item:not(.is-in) .wi-name > span { translate: 0 112%; }
@@ -676,10 +674,10 @@ body.white-on { background-color: #fff; }
 .light-on .wi-date, .light-on .wi-tags { color: rgba(12, 12, 11, .62); } /* 5,7:1 sobre blanco (con .4 eran 2,8:1) */
 /* El rojo de la marca en Work: el nombre de la fila encendida (ratón encima, foco de teclado o la del centro en el móvil) pasa del negro al rojo tomate,
    el mismo del punto del cursor y del botón «View project», así los tres se leen como una sola cosa. El rojo sobre blanco da 3,6:1: vale porque el nombre es enorme (≥3:1) */
-.light-on .work-item.is-hot .wi-name, .light-on .work-item.is-back .wi-name, .light-on .work-item > a:focus-visible .wi-name { color: #f83d0c; }
-@media (hover: hover) and (pointer: fine) { .light-on .work-item > a:hover .wi-name { color: #f83d0c; } }
-.light-on .work-item > a:focus-visible { outline-color: #f83d0c; }
-.light-on ::selection { background: #f83d0c; color: #fff; }
+.light-on .work-item.is-hot .wi-name, .light-on .work-item.is-back .wi-name, .light-on .work-item > a:focus-visible .wi-name { color: var(--tomato); }
+@media (hover: hover) and (pointer: fine) { .light-on .work-item > a:hover .wi-name { color: var(--tomato); } }
+.light-on .work-item > a:focus-visible { outline-color: var(--tomato); }
+.light-on ::selection { background: var(--tomato); color: #fff; }
 .light-on .work-cursor { box-shadow: 0 0 0 3px #fff; } /* un aro blanco: cuando el botón pasa sobre las letras rojas del nombre no se funde con ellas */
 .light-on .wi-slot { background: rgba(248, 61, 12, .08); } /* el hueco de la miniatura, mientras carga, ya es rojizo */
 .light-on .work-item > a:hover .wi-date, .light-on .work-item > a:hover .wi-tags,

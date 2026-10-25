@@ -9,8 +9,8 @@ body { background: var(--night); color: var(--lime); font-family: var(--font-ui)
 #room { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 
 /* ---------- Barra de navegación: igual que la de la home ---------- */
-:root { --nav-h: 64px; --panel: clamp(380px, 34vw, 560px); } /* la columna de texto crece con la pantalla; la habitación ocupa el resto */
-.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 9; height: var(--nav-h); display: flex; align-items: center; gap: 16px; padding: 0 24px; pointer-events: none; }
+:root { --panel: clamp(380px, 34vw, 560px); } /* la columna de texto crece con la pantalla; la habitación ocupa el resto */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 9; height: var(--nav-h); display: flex; align-items: center; gap: 16px; padding: 0 var(--bar-gutter); pointer-events: none; }
 .nav > * { pointer-events: auto; }
 .nav-logo { flex: none; width: 44px; height: 44px; border-radius: 50%; }
 .nav-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
@@ -62,8 +62,7 @@ body { background: var(--night); color: var(--lime); font-family: var(--font-ui)
   .sticker-slot.floating { font-size: var(--fs-xs); }
 }
 @media (max-width: 700px) {
-  :root { --nav-h: 56px; }
-  .nav { gap: 10px; padding: 0 14px; }
+  .nav { gap: 10px; }
   .nav-logo { width: 36px; height: 36px; }
   .nav-links { gap: 14px; }
   .nav-links a { font-size: var(--fs-s); }
@@ -71,7 +70,7 @@ body { background: var(--night); color: var(--lime); font-family: var(--font-ui)
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
 
 /* Pie mínimo: en escritorio, abajo a la izquierda (la sala queda a la derecha); en móvil, justo encima de la lista de objetos */
-.room-foot { position: fixed; z-index: 2; left: 24px; bottom: 24px; margin: 0; font-family: var(--font-ui); font-size: var(--fs-s); line-height: 1.4; color: rgba(195, 243, 128, .8); } /* 5,1:1 sobre el verde */
+.room-foot { position: fixed; z-index: 2; left: var(--bar-gutter); bottom: 24px; margin: 0; font-family: var(--font-ui); font-size: var(--fs-s); line-height: 1.4; color: rgba(195, 243, 128, .8); } /* 5,1:1 sobre el verde */
 .room-foot a { color: inherit; text-underline-offset: 3px; }
 @media (pointer: coarse) { .room-foot a { display: inline-block; padding-block: 14px; margin-block: -14px; } }
 .room-foot a:hover { color: var(--lime); }

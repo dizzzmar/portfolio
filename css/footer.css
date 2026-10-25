@@ -7,7 +7,7 @@
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  padding: clamp(48px, 8vh, 96px) 24px 24px;
+  padding: clamp(48px, 8vh, 96px) var(--bar-gutter) 24px;
   color: rgba(255, 255, 255, .7);
   font-size: var(--fs-s);
   font-weight: 400;
@@ -26,4 +26,3 @@
 .site-foot.on-green { color: var(--lime); }
 .site-foot.on-green a:hover { color: #fff; }
 
-@media (max-width: 700px) { .site-foot { padding-left: 14px; padding-right: 14px; } }
