@@ -19,7 +19,7 @@ camera.position.z = 0.7 / Math.tan(THREE.MathUtils.degToRad(15));
 const spinner = new THREE.Group();
 scene.add(spinner);
 
-new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
+new GLTFLoader().load('/assets/models/tomato.glb?v=20261025b', (gltf) => {
   const model = gltf.scene;
   // Center the model and normalize it to 1 unit (the model is unlit, so no lights)
   const box = new THREE.Box3().setFromObject(model);

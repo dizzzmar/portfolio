@@ -89,7 +89,7 @@ ringBack.renderOrder = 0;
 ringFront.renderOrder = 2;
 ring.add(ringBack, ringFront);
 
-new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
+new GLTFLoader().load('/assets/models/tomato.glb?v=20261025b', (gltf) => {
   const model = gltf.scene;
   // Center the model and normalize it to a height of 1 unit
   const box = new THREE.Box3().setFromObject(model);
