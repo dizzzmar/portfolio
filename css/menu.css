@@ -27,7 +27,7 @@ html.has-menu .nav-links li:not(.menu-li), html.has-menu .case-nav li:not(.menu-
 }
 .menu[data-open="true"] { clip-path: inset(0); visibility: visible; transition: clip-path .6s var(--menu-ease), visibility 0s; }
 .menu :focus-visible { outline: 2px solid var(--menu-ink); outline-offset: 6px; }
-html.menu-open { overflow: hidden; scrollbar-gutter: stable; } /* sin la barra de scroll la página de detrás no se mueve de sitio al abrir */
+html.menu-open { overflow: hidden; scrollbar-gutter: stable; background: var(--menu-bg); } /* sin la barra de scroll la página de detrás no se mueve de sitio al abrir */
 .menu { -webkit-tap-highlight-color: transparent; }
 .menu ::selection { background: var(--menu-ink); color: var(--menu-bg); }
 
@@ -100,10 +100,23 @@ html.menu-open { overflow: hidden; scrollbar-gutter: stable; } /* sin la barra d
   .menu-small { left: 14px; right: 14px; }
 }
 
+/* Al elegir una opción de otra página: los textos salen hacia arriba (el elegido, el último) y la fila pequeña se apaga; el rojo se queda */
+.menu[data-leaving="true"] .menu-item a > span { transform: translateY(-112%); transition: transform .4s var(--menu-ease) calc(var(--i) * 40ms + var(--leave, 0) * 120ms); }
+.menu[data-leaving="true"] .menu-small, .menu[data-leaving="true"] .menu-close span { opacity: 0; transition: opacity .25s ease 0s; }
+.menu[data-leaving="true"] .menu-close span { transform: translateY(-110%); transition: transform .3s var(--menu-ease) 0s; }
+
+/* La página nueva llega tapada por el mismo rojo (html.menu-arriving la pone un script del <head>, antes de pintar nada) y la cortina sube al cargar (js/menu.js).
+   Por si el script no llega a cargar, el rojo se quita solo a los 3 s. */
+html.menu-arriving { overflow: hidden; background: var(--menu-bg); }
+html.menu-arriving body::before { content: ""; position: fixed; inset: 0; z-index: 59; background: var(--menu-bg); clip-path: inset(0); animation: menu-cover-off .01s linear 3s forwards; }
+html.menu-arriving-out body::before { clip-path: inset(0 0 100% 0); transition: clip-path .6s var(--menu-ease); }
+@keyframes menu-cover-off { to { visibility: hidden; } }
+
 /* Con «reducir movimiento»: sin cortina ni textos que suben; solo un fundido corto */
 @media (prefers-reduced-motion: reduce) {
   .menu { clip-path: none; opacity: 0; transition: opacity .15s linear, visibility 0s linear .15s; }
   .menu[data-open="true"] { opacity: 1; transition: opacity .15s linear, visibility 0s; }
   .menu-item a > span, .menu[data-open="true"] .menu-item a > span, .menu-close span, .menu[data-open="true"] .menu-close span { transform: none; transition: none; }
   .menu-small, .menu[data-open="true"] .menu-small { opacity: 1; transition: none; }
+  html.menu-arriving body::before { display: none; }
 }
