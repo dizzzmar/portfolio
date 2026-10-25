@@ -1,0 +1,109 @@
+/* MENÚ · el botón «Menu» de arriba a la derecha (js/menu.js) abre un panel de color liso que baja desde arriba y cubre la pantalla; los enlaces grandes
+   suben uno a uno desde una máscara y abajo hay una fila pequeña. Al cerrar hace lo mismo al revés (transiciones: la salida es la entrada invertida).
+   Referencia: pesqueradiez.com. Sin JavaScript no se ve nada de esto: la barra con los enlaces de siempre sigue funcionando. */
+:root {
+  --menu-bg: #d03a22;   /* rojo tomate: con el texto crema, 4,5:1 (con #f83d0c bajaba a 3,6:1) */
+  --menu-ink: #fff6ea;
+  --menu-ease: cubic-bezier(.77, 0, .175, 1); /* arranca y frena: movimiento por la pantalla */
+  --menu-out: cubic-bezier(.16, 1, .3, 1);    /* frenada suave: llegada de los textos */
+}
+
+/* El botón es un enlace más de la barra (hereda su color y su estilo en cada página). Sin JS (clase has-menu) no se ve y quedan los enlaces de siempre. */
+.menu-li { display: none; }
+html.has-menu .menu-li { display: list-item; }
+html.has-menu .nav-links li:not(.menu-li), html.has-menu .case-nav li:not(.menu-li) { display: none; }
+
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: block;
+  background: var(--menu-bg);
+  color: var(--menu-ink);
+  font-family: var(--font-ui);
+  clip-path: inset(0 0 100% 0);
+  visibility: hidden;
+  transition: clip-path .55s var(--menu-ease) .2s, visibility 0s linear .75s; /* al cerrar espera a que los textos se hayan ido */
+}
+.menu[data-open="true"] { clip-path: inset(0); visibility: visible; transition: clip-path .6s var(--menu-ease), visibility 0s; }
+.menu :focus-visible { outline: 2px solid var(--menu-ink); outline-offset: 6px; }
+html.menu-open { overflow: hidden; scrollbar-gutter: stable; } /* sin la barra de scroll la página de detrás no se mueve de sitio al abrir */
+.menu { -webkit-tap-highlight-color: transparent; }
+.menu ::selection { background: var(--menu-ink); color: var(--menu-bg); }
+
+/* Cabecera: el tomate y «Close» en el mismo sitio que el tomate y «Menu» de la página (js/menu.js mide dónde están) */
+.menu-logo { position: absolute; left: var(--logo-x, 24px); top: var(--logo-y, 10px); width: var(--logo-w, 44px); height: var(--logo-h, 47px); }
+.menu-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.menu-close {
+  position: absolute;
+  right: var(--btn-right, 8px);
+  top: var(--btn-top, 0);
+  height: var(--btn-h, 64px);
+  padding: 0 16px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--fs-s);
+  cursor: pointer;
+  overflow: hidden;
+}
+.menu-close span { display: block; line-height: var(--btn-h, 64px); transform: translateY(110%); transition: transform .3s var(--menu-ease) 0s; }
+.menu[data-open="true"] .menu-close span { transform: none; transition: transform .5s var(--menu-out) .35s; }
+
+/* Enlaces grandes: en fila en escritorio, apilados en móvil */
+.menu-items {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 50%;
+  translate: 0 -50%;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px 24px;
+  list-style: none;
+  font-size: var(--fs-menu);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-display);
+  line-height: 1;
+}
+.menu-item { overflow: hidden; padding-bottom: .14em; margin-bottom: -.14em; } /* la máscara; el relleno deja sitio a la «y» y a la «p» */
+.menu-item a { display: block; color: inherit; text-decoration: none; transition: opacity .3s; }
+.menu-item a[aria-current] > span { text-decoration: underline; text-decoration-thickness: .05em; text-underline-offset: .12em; } /* la página en la que estás, como en la barra */
+.menu-item a > span { display: block; transform: translateY(112%); transition: transform .35s var(--menu-ease) calc((3 - var(--i)) * 40ms); }
+.menu[data-open="true"] .menu-item a > span { transform: none; transition: transform .7s var(--menu-out) calc(.3s + var(--i) * 70ms); }
+@media (hover: hover) { .menu-items:hover a:not(:hover) { opacity: .75; } } /* el resto se apaga al señalar uno (como en Work) */
+
+/* Fila pequeña de abajo */
+.menu-small {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  list-style: none;
+  font-size: var(--fs-s);
+  opacity: 0;
+  transition: opacity .2s ease 0s;
+}
+.menu[data-open="true"] .menu-small { opacity: 1; transition: opacity .5s ease .55s; }
+.menu-small ul { display: flex; gap: 20px; list-style: none; }
+.menu-small a { color: inherit; text-underline-offset: 4px; }
+@media (pointer: coarse) { .menu-small a { display: inline-block; padding-block: 12px; margin-block: -12px; } }
+
+/* Móvil y tabla vertical: los enlaces se apilan y bajan hasta la altura del pulgar, justo encima de la fila pequeña */
+@media (max-width: 820px) {
+  .menu-items { flex-direction: column; justify-content: flex-start; left: 14px; right: 14px; top: auto; bottom: calc(max(24px, env(safe-area-inset-bottom)) + 72px); translate: none; gap: 4px; }
+  .menu-small { left: 14px; right: 14px; }
+}
+
+/* Con «reducir movimiento»: sin cortina ni textos que suben; solo un fundido corto */
+@media (prefers-reduced-motion: reduce) {
+  .menu { clip-path: none; opacity: 0; transition: opacity .15s linear, visibility 0s linear .15s; }
+  .menu[data-open="true"] { opacity: 1; transition: opacity .15s linear, visibility 0s; }
+  .menu-item a > span, .menu[data-open="true"] .menu-item a > span, .menu-close span, .menu[data-open="true"] .menu-close span { transform: none; transition: none; }
+  .menu-small, .menu[data-open="true"] .menu-small { opacity: 1; transition: none; }
+}
