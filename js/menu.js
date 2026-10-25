@@ -100,6 +100,19 @@
   }
 
   toggle.addEventListener('click', (e) => { e.preventDefault(); isOpen ? shut() : open(); });
+  toggle.addEventListener('keydown', (e) => { if (e.key === ' ') { e.preventDefault(); isOpen ? shut() : open(); } }); // un enlace con role=button también se activa con la barra espaciadora
+  // Al volver con «atrás» la página puede salir de la memoria con el panel abierto: se cierra sin animación
+  addEventListener('pageshow', (e) => {
+    if (!e.persisted) return;
+    isOpen = false;
+    clearTimeout(closeTimer);
+    panel.style.transition = 'none';
+    panel.dataset.open = 'false';
+    panel.inert = true;
+    root.classList.remove('menu-open');
+    toggle.setAttribute('aria-expanded', 'false');
+    requestAnimationFrame(() => { panel.style.transition = ''; });
+  });
   close.addEventListener('click', () => shut());
   addEventListener('resize', () => { if (isOpen) place(); });
   document.addEventListener('keydown', (e) => {

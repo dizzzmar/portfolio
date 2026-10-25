@@ -138,7 +138,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **Body** (400, 18–22 px, 1.45, measure 34 em): running text. The first paragraph of each page and the block headings share this size in 700.
 - **Label** (400, 14 px, 1.3): bar links, buttons, footer, dates and every secondary line.
 - **Caps** (400, 11 px, 0.06 em, uppercase): small labels and credits only.
-- **Menu link** (700, 44–112 px, 1, −0.05 em): the four big links in the menu.
+- **Menu link** (700, 44–112 px from 821 px wide, 52–84 px below, 1, −0.05 em): the four big links in the menu (`--fs-menu`).
 
 ### Named Rules
 **The Two Weights Rule.** Only 700 and 400 exist. 700 orients (titles, first paragraph, block headings); 400 is what you read. No 300, 500 or 600.
