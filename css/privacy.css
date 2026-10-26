@@ -29,7 +29,7 @@ main { padding: 0 var(--gutter); }
 
 /* ---------- Título ---------- */
 .pv-head { padding: calc(var(--nav-h) + clamp(40px, 7vw, 110px)) 0 clamp(40px, 6vw, 96px); }
-.pv-head h1 { font-family: var(--font-display); font-size: var(--fs-h1); font-weight: var(--fw-bold); letter-spacing: -.055em; line-height: .95; }
+.pv-head h1 { font-family: var(--font-display); font-size: var(--fs-h1); font-weight: var(--fw-title); letter-spacing: -.055em; line-height: .95; }
 .pv-updated { margin-top: clamp(14px, 1.6vw, 24px); opacity: var(--dim); font-size: var(--fs-s); letter-spacing: 0; }
 
 /* ---------- Filas: título a la izquierda y texto a la derecha, separadas solo por espacio ---------- */
