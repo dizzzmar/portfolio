@@ -495,6 +495,9 @@ body.white-on { background-color: #fff; }
 .work-top p > strong { display: block; font-weight: inherit; }
 .work-top p > span { display: block; color: rgba(255, 255, 255, .6); }
 .work-top p { grid-column: 2; }
+.work-top .wt-creative { grid-column: 1; }
+.work-top .wt-creative > strong { color: #fff; white-space: nowrap; }
+.wb-word { display: inline; font-variant-ligatures: none; }
 @media (max-width: 1000px) {
   .work-top { grid-template-columns: 1fr 1fr; }
 }
@@ -600,6 +603,7 @@ body.white-on { background-color: #fff; }
 @media (max-width: 760px) {
   /* La barra fija ocupa también el hueco de la barra de enlaces (así los proyectos no pasan por detrás) */
   .work-top { grid-template-columns: 1fr; height: auto; padding: var(--nav-h) clamp(16px, 1.2vw, 24px) 12px; font-size: var(--fs-s); }
+  .work-top p:not(.wt-creative) { display: none; } /* en móvil la barra solo lleva «Creative ___» */
   .work-top p { grid-column: 1; }
   .work-item > a, .work-link { grid-template-columns: 1fr auto; grid-template-areas: "date tags" "name name" "strip strip"; row-gap: 12px; padding: 26px 0 30px; }
   .wi-date, .wi-tags { margin-top: 0; font-size: var(--fs-s); }
@@ -626,7 +630,8 @@ body.white-on { background-color: #fff; }
 .white-on .work-grid { background-color: #fff; }
 .white-on .work-top, .white-on .nav { mix-blend-mode: difference; }
 /* Blanco puro (sin grises): con "difference" cada trozo de una letra sale negro o blanco según lo que tenga justo detrás, aunque sea dentro de una misma palabra */
-.white-on .work-top { color: #fff; }
+.light-on .work-top .wt-creative > strong { color: #0c0c0b; }
+.white-on .work-top, .white-on .work-top .wt-creative > strong { color: #fff; }
 .white-on .work-top p > span { color: rgba(255, 255, 255, .55); } /* la hora y "Selected work": en gris, como antes (el gris se ve igual de legible sobre blanco y sobre negro) */
 .light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
 .light-on .work-item::before { background: rgba(12, 12, 11, .16); }
