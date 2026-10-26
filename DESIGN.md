@@ -211,5 +211,5 @@ A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scr
 ### Don't:
 - **Don't** add slogans, helper text or secondary labels; fix the layout instead. Only legal text, screen-reader names and informative errors or loading states stay.
 - **Don't** use a serif, a third weight, shadows, gradients or borders to separate content.
-- **Don't** add third-party code, fonts, embeds or analytics without deciding it first (today only three.js from jsDelivr), and never put keys, passwords or personal data in the repository (see `CLAUDE.md`).
+- **Don't** add third-party code, fonts, embeds or analytics without deciding it first (today none: three.js is self-hosted in `assets/vendor/three/`), and never put keys, passwords or personal data in the repository (see `CLAUDE.md`).
 - **Don't** animate sizes, margins or shadows.

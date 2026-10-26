@@ -33,7 +33,7 @@ body {
   position: fixed;
   inset: -8%;
   z-index: -1;
-  animation: drift 40s ease-in-out infinite alternate;
+  animation: drift 40s ease-in-out 1 both; /* una sola pasada y se queda: con el grano a pantalla completa encima (mezcla overlay), un cielo que se mueve para siempre obliga a recomponer toda la pantalla cada fotograma */
   will-change: transform, scale;
 }
 /* Con la página ya blanca, el fondo que asoma al rebotar al final (trackpad, móvil) también es blanco, no el azul del cielo */
