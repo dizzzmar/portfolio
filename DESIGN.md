@@ -138,7 +138,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **Display** (600, 56–140 px, 1.05, −0.05 em): page titles (About, Privacy, FAQs) and project names in Work.
 - **Headline** (600, 40–76 px, 1.05): large section titles.
 - **Title** (600, 24–44 px, 1.05): section titles and the project name in its bar.
-- **Body** (400, 18–22 px, 1.45, measure 34 em): running text. The first paragraph of each page and the block headings share this size in 700.
+- **Body** (400, 16 px, 1.45, measure 34 em): all running text, lists and answers, after the reference kellauren.design (one text size; hierarchy by weight and space). The first paragraph of each page and the block headings share this size in 700. Only titles and the Contact envelope are larger.
 - **Label** (400, 14 px, 1.3): bar links, buttons, footer, dates and every secondary line.
 - **Caps** (400, 11 px, 0.06 em, uppercase): small labels and credits only.
 - **Menu link** (600, 44–112 px from 821 px wide, 52–84 px below, 1, −0.05 em): the four big links in the menu (`--fs-menu`).

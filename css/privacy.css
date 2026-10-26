@@ -10,7 +10,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { overflow-x: clip; color: var(--ink); background: var(--bg); font-family: var(--font-ui); font-size: var(--fs-read); font-weight: var(--fw-regular); line-height: 1.3; letter-spacing: -.01em; -webkit-font-smoothing: antialiased; }
+body { overflow-x: clip; color: var(--ink); background: var(--bg); font-family: var(--font-ui); font-size: var(--fs-read); font-weight: var(--fw-regular); line-height: var(--lh-body); letter-spacing: -.01em; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-underline-offset: 4px; }
 img { display: block; max-width: 100%; height: auto; }
 ::selection { background: var(--ink); color: var(--bg); }
