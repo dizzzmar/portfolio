@@ -50,13 +50,13 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   function animateScroll(y1, keep) {
     const y0 = scrollY, token = ++scrollToken;
     if (reduced || Math.abs(y1 - y0) < 4) { scrollTo(0, y1); return; }
-    const dur = 1100, t0 = performance.now();
+    const dur = 1450, t0 = performance.now();
     scrolling = true; // mientras se mueve, la página no está bloqueada aunque el tomate aún vuele
     document.body.classList.remove('intro-lock');
     const step = (now) => {
       if (token !== scrollToken) return; // otra animación ha tomado el relevo
       const u = Math.min(1, (now - t0) / dur);
-      scrollTo(0, y0 + (y1 - y0) * (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2));
+      scrollTo(0, y0 + (y1 - y0) * (1 - Math.cos(Math.PI * u)) / 2); // seno suave: arranca y frena sin el tirón central de una curva cúbica
       if (u < 1 && keep()) { requestAnimationFrame(step); return; }
       scrolling = false;
       apply();
@@ -269,7 +269,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     const y = loading && BACK && SAVED_Y > 0 ? SAVED_Y : loading && location.hash === '#work' && work ? work.offsetTop : scrollY;
     const q = clamp01(y / Math.max(1, work ? work.offsetTop : innerHeight)); // 0 en la portada, 1 al llegar a Work
     const zoom = still ? 0 : smooth(clamp01(q / 0.85));  // el cielo se acerca; las nubes se agrandan y se difuminan
-    const fade = smooth(clamp01((q - 0.5) / 0.45));       // al atravesarlas, todo se funde en blanco
+    const fade = smooth(clamp01((q - 0.3) / 0.65));       // al atravesarlas, todo se funde en blanco (a lo largo de casi todo el recorrido, sin un golpe de blanco)
     // Se escribe directamente en cada elemento (nada de variables CSS en body: se heredan y recalcularían toda la página)
     window.homeJourney.zoom = zoom; // el cielo lo pinta window.homeJourney.paintSky (suma este zoom y el del viaje)
     skySoft.style.opacity = zoom.toFixed(3);
