@@ -567,7 +567,7 @@ body.white-on { background-color: #fff; }
   inset: 0 auto auto 0;
   z-index: 11;
   padding: 9px 14px 8px;
-  background: var(--accent); /* el color de acento, el mismo del punto del cursor */
+  background: var(--accent); /* el color de acento (el punto del cursor sí es rojo: --cursor) */
   color: #fff;
   pointer-events: none;
   white-space: nowrap;

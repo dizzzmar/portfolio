@@ -1,4 +1,4 @@
-/* CURSOR — el punto negro que sustituye al cursor del sistema (estilos en css/cursor.css). Solo con ratón.
+/* CURSOR — el punto rojo que sustituye al cursor del sistema (estilos en css/cursor.css). Solo con ratón.
    Sigue al ratón sin retraso (se escribe en cada movimiento); el resto son clases que cambian lo que ve el visitante:
    is-hot (enlace o botón: crece), is-hide (otro cursor ocupa su sitio), to-white / to-red (sobre lo rojo: encoge, cambia de color y vuelve a crecer). */
 (() => {
