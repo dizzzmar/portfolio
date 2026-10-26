@@ -31,6 +31,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height
 .case-head { position: absolute; z-index: 5; inset: 0 0 auto; height: var(--nav-h); }
 .case-head > * { position: absolute; top: 50%; transform: translateY(-50%); }
 .case-name { font-family: var(--font-display); left: calc(var(--bar-gutter) + 44px + 12px); /* a la derecha del tomate (css/nav-logo.css) */ font-size: var(--fs-xl); font-weight: var(--fw-title); letter-spacing: var(--tracking-display); line-height: 1; white-space: nowrap; }
+.case-name { margin-top: -4.7px; } /* sube el nombre (24 px) para que su línea de base sea la del año, el cliente y Menu (14 px) */
 .case-meta { font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.25; }
 .case-meta.date { left: 41%; }
 .case-meta.client { left: 58%; }
@@ -167,7 +168,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height
 
 /* Nombre largo (class="case-name is-long") en tabletas: más pequeño y los datos (año y cliente) se desplazan a la derecha, para no pisarse */
 @media (min-width: 761px) and (max-width: 1000px) {
-  .case-name.is-long { font-size: 19px; }
+  .case-name.is-long { font-size: 19px; margin-top: -2.2px; } /* con 19 px la diferencia de línea de base es menor */
   .case-name.is-long ~ .case-meta.date { left: 52%; }
   .case-name.is-long ~ .case-meta.client { left: 70%; }
 }
@@ -179,7 +180,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height
   .case-name { position: fixed; z-index: 21; top: calc(var(--nav-h) / 2); left: calc(var(--bar-gutter) + 44px + 12px); transform: translateY(-50%); } /* igual que en escritorio: fijo en la barra (el nombre es el botón de volver) */
   @media (max-width: 700px) { .case-name { left: calc(var(--bar-gutter) + 36px + 12px); } } /* el tomate mide 36 px de ancho */
   /* Nombre largo (class="case-name is-long"): en móvil baja a dos líneas y un poco más pequeño, para no pisar el botón Menu (a la derecha, ~64 px) */
-  @media (max-width: 700px) { .case-name.is-long { right: calc(var(--bar-gutter) + 64px); white-space: normal; font-size: 19px; line-height: 1.05; } }
+  @media (max-width: 700px) { .case-name.is-long { right: calc(var(--bar-gutter) + 64px); white-space: normal; font-size: 19px; line-height: 1.05; margin-top: -1.7px; } }
   .case-first { padding-top: 0; grid-template-rows: auto auto; align-content: start; } /* la galería sube bajo el título; el texto va justo debajo */
   .p-gallery { align-self: start; padding: 4vh 0 0; }
   .case-nav { display: none; } /* en el móvil hay solo la X y el tomate: Work, About, Contact y Room están en la portada */
