@@ -5,7 +5,7 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 ## Cómo está organizado
 
 ```
-index.html                 La home (el tomate gira; al pulsar Work sube al menú, aparece "Creative ___" y se entra en la lista de proyectos)
+index.html                 La home (el tomate gira con su nombre; al pulsar Work o deslizar hacia abajo sube en una curva a la barra y la página baja sola a la lista de proyectos)
 room.html                  La página "The room" (habitación 3D)
 about/index.html           About (nombre grande, presentación, foto, gustos, clientes, preguntas). Estilos: css/about.css. Textos de ejemplo marcados con EDITA
 404.html                   Página de "no encontrada"

@@ -1,21 +1,12 @@
-// HOME · texto "Creative ___" del centro de la pantalla y recorrido del tomate.
+// HOME · recorrido del tomate de la portada a la barra.
 // Un gesto (rueda o dedo hacia abajo en la portada, flecha abajo, Espacio o pulsar Work) lanza el viaje entero y no hace falta seguir tirando:
-//   0 = portada (el tomate gira en el centro, sin texto)
-//   · el tomate sale del centro y rodea el texto "Creative ___", que va apareciendo letra a letra; pasa por detrás de él (js/home-tomato.js)
-//     y sube al logo de la barra, mientras el cielo se acerca un poco (paralaje)
-//   1 = tomato en la barra, texto visible y la página se desbloquea para seguir bajando a Work.
+//   0 = portada (el tomate gira en el centro con su nombre)
+//   · el tomate sube en una curva al logo de la barra (js/home-tomato.js) mientras el cielo se acerca un poco (paralaje)
+//   1 = tomate en la barra y la página se desbloquea para seguir bajando a Work.
 // El gesto contrario hace el viaje al revés: subir arriba del todo en Work, el tomate de la barra o las flechas hacia arriba.
 // Se puede invertir en pleno vuelo y el movimiento enlaza con la velocidad que llevaba (sin saltos).
-// La segunda palabra va cambiando: cada cambio se descifra rápido y la palabra se queda quieta un instante para poder leerla;
-// al final se para en "Designer" y vuelve a empezar.
-// Antes de cambiar, la palabra actual se mezcla; después la siguiente se descifra de izquierda a derecha.
 // Código propio, sin librerías.
-// EDITA aquí las palabras (la primera es en la que se para):
-const WORDS = ['Designer', 'Director', 'Coder', 'Enthusiast', 'Thinker', 'Technologist', 'Maximalist', 'Storyteller', 'Retoucher', '3D Artist', 'Mind', 'Nerd'];
-const SCRAMBLE = 480;  // milisegundos que tarda cada palabra en descifrarse al aparecer
-const SPEED = 950;     // milisegundos entre una palabra y la siguiente: tras descifrarse, la palabra se queda quieta (se lee) el resto
-const BURST = 6000;    // cuánto dura cada ronda de palabras
-const HOLD = 3200;     // cuánto se queda en "Designer" antes de la siguiente ronda
+
 // Volver con Atrás (desde un proyecto): el navegador lo marca como "back_forward". La portada vuelve entonces
 // a la posición donde estaba al salir (guardada en sessionStorage) y sin la entrada del tomate.
 // Lo hacemos nosotros porque la portada bloquea el scroll al cargar y el navegador no lo restauraba.
@@ -31,125 +22,49 @@ try { SAVED_Y = Number(sessionStorage.getItem('dizmar-home-y')) || 0; } catch (e
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y', String(scrollY)); } catch (e) { /* ignore */ } });
 
-// ---- Letras sueltas: cada palabra se pinta como una fila de <span> (uno por letra) ----
-const NBSP = ' ';
-function splitLetters(el, text) {
-  el.textContent = '';
-  let i = 0;
-  for (const ch of text) {
-    const c = document.createElement('span');
-    c.className = 'ch';
-    c.style.setProperty('--i', String(i++));
-    c.textContent = ch === ' ' ? NBSP : ch;
-    el.append(c);
-  }
-}
-
-// ---- Palabra cambiante: se mezcla la actual y se descifra la siguiente ----
-// La usan la portada (aquí) y el título fijo de Work (js/home-work.js). Cada una corre solo mientras se ve (watch).
-function createWordCycler(word, { visible = true } = {}) {
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
-  let timer = 0, scrambleRaf = 0, shown = visible;
-
-  function setWord(text, ms = SCRAMBLE) {
-    cancelAnimationFrame(scrambleRaf);
-    if (reduced) { splitLetters(word, text); return; }
-    const previous = word.textContent.replaceAll(NBSP, ' ');
-    if (previous === text) { splitLetters(word, text); return; }
-    const start = performance.now();
-    const mixDuration = ms * 0.35;
-    let revealing = false, lastFrame = -Infinity;
-    let chars = [...word.children];
-    if (!chars.length) { splitLetters(word, previous); chars = [...word.children]; }
-    const step = (now) => {
-      const elapsed = now - start;
-      if (elapsed >= ms) { splitLetters(word, text); return; }
-      // Limitar el ruido a 25 fps mantiene las letras legibles entre cambios.
-      if (now - lastFrame >= 40) {
-        lastFrame = now;
-        if (elapsed >= mixDuration && !revealing) {
-          splitLetters(word, text);
-          chars = [...word.children];
-          revealing = true;
-        }
-        const progress = revealing ? (elapsed - mixDuration) / (ms - mixDuration) : 0;
-        const source = revealing ? text : previous;
-        chars.forEach((c, i) => {
-          const final = source[i] === ' ' ? NBSP : source[i];
-          c.textContent = final === NBSP || (revealing && i < Math.floor(progress * chars.length))
-            ? final
-            : GLYPHS[(Math.random() * GLYPHS.length) | 0];
-        });
-      }
-      scrambleRaf = requestAnimationFrame(step);
-    };
-    scrambleRaf = requestAnimationFrame(step);
-  }
-
-  function burst() {
-    clearTimeout(timer);
-    if (!shown || reduced) { setWord(WORDS[0], 450); return; }
-    const end = performance.now() + BURST;
-    let i = 1;
-    const tick = () => {
-      if (performance.now() >= end) {
-        setWord(WORDS[0], 450);
-        timer = setTimeout(burst, HOLD);
-        return;
-      }
-      setWord(WORDS[i % WORDS.length]);
-      i += 1;
-      timer = setTimeout(tick, SPEED);
-    };
-    tick();
-  }
-
-  function stop() { clearTimeout(timer); setWord(WORDS[0]); }
-
-  // La ráfaga solo corre mientras la palabra se ve (y, si se indica, mientras active() sea verdadero)
-  function watch(target, active = () => true) {
-    new IntersectionObserver(([e]) => {
-      shown = e.isIntersecting && !document.hidden;
-      if (active()) shown ? burst() : stop();
-    }).observe(target);
-  }
-
-  return { setWord, burst, stop, watch };
-}
 
 (() => {
-  const word = document.querySelector('.intro-word');
-  const line = document.querySelector('.intro-line');
-  const first = document.querySelector('.intro-line > span:first-child');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Llegada desde el tomate de otra página (js/transitions.js pone land-fly): el tomate empieza en la barra y vuela al centro
   const FLY_FROM_NAV = document.documentElement.classList.contains('land-fly') && !reduced;
   const clamp01 = (v) => Math.min(1, Math.max(0, v));
   const smooth = (v) => v * v * (3 - 2 * v);
-  let started = false;
-  splitLetters(first, first.textContent.trim());
-  splitLetters(word, word.textContent.trim()); // las dos palabras ya en letras sueltas: el CSS las oculta y las muestra una a una
-  const cycler = createWordCycler(word);
 
   // ---- El viaje ----
   // j es lo que se ve (de 0 a 1) y target adonde tiene que llegar. Al deslizar (rueda, dedo, flechas) el target avanza lo que avanzas tú, y j lo sigue
   // con un amortiguador crítico: sin tirones, sin rebotes, y si te paras el tomate se queda donde esté (no vuelve ni sigue solo).
   // Los botones (Work, el tomate de la barra, Inicio/Fin) lanzan el viaje entero con una curva de Hermite que empieza con la velocidad que llevaba.
   // Todo va por tiempo real, no por fotogramas: en un móvil lento dura lo mismo, solo se ve con menos pasos.
-  const J = window.homeJourney = { j: 0, target: 0, v: 0, simple: false, q: 0, zoom: 0, workOn: false, dx: 0 };
-  const FULL = 2.5, FULL_SIMPLE = 1.2; // segundos del viaje completo (el simple es el vuelo directo de otra página)
+  const J = window.homeJourney = { j: 0, target: 0, v: 0, simple: false, q: 0, zoom: 0 };
+  const FULL = 1.3, FULL_SIMPLE = 1.2; // segundos del viaje completo (el simple es el vuelo directo de otra página)
   const SMOOTH = 0.32; // segundos que tarda j en alcanzar al target al deslizar (más = más suave y lento)
   let raf = 0, anim = null, last = 0;
+  // Sin pantalla intermedia: en cuanto el tomate llega a la barra, la página baja sola a la lista de Work (el cielo se acerca y se funde en blanco por el camino)
+  let wantWork = false;
+  const workEl = document.getElementById('work');
+  function scrollToWork() {
+    if (!workEl) return;
+    const y0 = scrollY, y1 = workEl.offsetTop;
+    if (reduced || y1 - y0 < 4) { scrollTo(0, y1); return; }
+    const dur = 700, t0 = performance.now();
+    const step = (now) => {
+      const u = Math.min(1, (now - t0) / dur);
+      scrollTo(0, y0 + (y1 - y0) * (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2));
+      if (u < 1 && J.target >= 1) requestAnimationFrame(step); // si el visitante da marcha atrás, se para
+    };
+    requestAnimationFrame(step);
+  }
   function scrub(d) { // d = fracción del viaje que se avanza (negativa = hacia atrás)
     anim = null;
     J.target = clamp01(J.target + d);
+    wantWork = d > 0 && J.target >= 1;
     if (reduced) { J.j = J.target; J.v = 0; apply(); return; }
     kick();
   }
   function go(t) {
     t = clamp01(t);
     J.target = t;
+    wantWork = t >= 1;
     if (reduced) { J.j = t; J.v = 0; anim = null; apply(); return; }
     const dist = Math.abs(t - J.j);
     if (dist < 0.0005) { J.j = t; J.v = 0; anim = null; apply(); return; }
@@ -181,43 +96,21 @@ function createWordCycler(word, { visible = true } = {}) {
   const kick = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
   J.go = go;
 
-  const revealOf = () => (J.simple ? 0 : reduced ? (J.j > 0.5 ? 1 : 0) : smooth(clamp01((J.j - 0.06) / 0.4)));
-  // El texto: cada letra aparece subiendo, una tras otra, mientras el tomate sale del centro (--r lo recorre; el CSS pone el escalonado);
-  // el bloque se desplaza un poco al revés que el tomate (paralaje) y después sigue al scroll. El cielo se acerca con el viaje y con el scroll.
+  // El cielo se acerca con el viaje y con el scroll (zoom lo pone el segundo bloque de este archivo)
   const sky = document.querySelector('.sky');
-  J.paintLine = () => {
-    const reveal = revealOf();
-    const scroll = reduced ? 0 : -(J.q || 0) * 48;
-    const drift = reduced ? 0 : -(J.dx || 0) * 16;
-    const fade = J.workOn ? 0 : (1 - smooth(clamp01((J.q || 0) / 0.5)));
-    line.style.setProperty('--r', reveal.toFixed(3));
-    line.style.opacity = fade.toFixed(3);
-    line.style.translate = reduced ? '' : drift.toFixed(1) + 'px ' + scroll.toFixed(1) + 'px';
-    line.style.scale = reduced ? '' : (0.97 + 0.03 * reveal).toFixed(4);
+  J.paintSky = () => {
     if (sky) sky.style.scale = (1 + (J.zoom || 0) * 1.5 + (reduced || J.simple ? 0 : 0.07 * smooth(clamp01(J.j)))).toFixed(3);
   };
-  function startText() {
-    if (started) return;
-    started = true;
-    document.body.classList.add('intro-on');
-    cycler.burst();
-  }
-  function stopText() {
-    if (!started) return;
-    started = false;
-    document.body.classList.remove('intro-on');
-    cycler.stop();
-  }
   function apply() {
     const body = document.body;
     if (J.simple && J.j <= 0.001 && J.target <= 0.001) J.simple = false; // el tomate ya llegó al centro: el próximo viaje es el completo
     // La página solo baja cuando el viaje está completo; hasta entonces la portada queda quieta
     body.classList.toggle('intro-lock', !(J.j >= 0.999 && J.target >= 1));
     body.classList.toggle('work-engaged', J.j > 0.001 || J.target > 0);
-    if (revealOf() > 0.02) startText(); else if (J.j < 0.02) stopText();
     if (J.j > 0.02 || J.target > 0) hintDone = true; // quien ya ha empezado el viaje no necesita la pista
     hint?.classList.toggle('is-on', hintReady && !hintDone && !J.hold);
-    J.paintLine();
+    J.paintSky();
+    if (wantWork && J.j >= 0.999 && J.target >= 1) { wantWork = false; scrollToWork(); }
   }
 
   // ---- La pista de la portada ----
@@ -331,15 +224,11 @@ function createWordCycler(word, { visible = true } = {}) {
     setTimeout(() => { if (J.simple && J.j === 1) go(0); }, 2500); // por si el 3D no llega a cargar
   } else apply();
 
-  // La ráfaga solo corre mientras el texto se ve
-  cycler.watch(word.parentElement, () => started);
 })();
 
-// ---------- Al bajar: el cielo se acerca (las nubes crecen y se desenfocan), se funde en blanco y "Creative ___" sube ----------
+// ---------- Al bajar: el cielo se acerca (las nubes crecen y se desenfocan) y se funde en blanco ----------
 // Todo sigue el scroll hasta llegar a Work. Al subir, se deshace exactamente al revés.
 (() => {
-  const line = document.querySelector('.intro-line');
-  if (!line) return;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const work = document.getElementById('work');
   const sky = document.querySelector('.sky');
@@ -350,25 +239,24 @@ function createWordCycler(word, { visible = true } = {}) {
   let queued = false;
   const update = () => {
     queued = false;
-    // Mientras la página carga y se restaura la posición (Atrás o #work), se usa la posición de destino: así no hay un destello del texto grande
+    // Mientras la página carga y se restaura la posición (Atrás o #work), se usa la posición de destino: así no hay un destello de la portada
     const loading = document.readyState !== 'complete';
     const y = loading && BACK && SAVED_Y > 0 ? SAVED_Y : loading && location.hash === '#work' && work ? work.offsetTop : scrollY;
     const q = clamp01(y / Math.max(1, work ? work.offsetTop : innerHeight)); // 0 en la portada, 1 al llegar a Work
     const zoom = still ? 0 : smooth(clamp01(q / 0.85));  // el cielo se acerca; las nubes se agrandan y se difuminan
     const fade = smooth(clamp01((q - 0.5) / 0.45));       // al atravesarlas, todo se funde en blanco
     // Se escribe directamente en cada elemento (nada de variables CSS en body: se heredan y recalcularían toda la página)
-    window.homeJourney.zoom = zoom; // el cielo lo pinta window.homeJourney.paintLine (suma este zoom y el del viaje)
+    window.homeJourney.zoom = zoom; // el cielo lo pinta window.homeJourney.paintSky (suma este zoom y el del viaje)
     skySoft.style.opacity = zoom.toFixed(3);
     fadeEl.style.opacity = fade.toFixed(3);
     document.body.classList.toggle('light-on', fade > 0.5); // el menú y los textos pasan a oscuro cuando el fondo ya es claro
     document.body.classList.toggle('white-on', fade > 0.999); // la página ya es del todo blanca: ahora sí la barra se mezcla con "difference" (si fuera antes, el blanco de la sección taparía el cielo)
-    // Al llegar a Work, el "Creative ___" del centro desaparece: la palabra sigue en el título fijo de la izquierda
+    // Al llegar a Work se marca work-on (el CSS lo usa para la barra y el pie)
     const workOn = !!work && work.offsetTop - y < innerHeight * 0.5;
     document.body.classList.toggle('work-on', workOn);
-    // El texto sube con el scroll y se apaga; lo pinta window.homeJourney (también lo mueven la aparición y el paralaje del viaje)
     const J = window.homeJourney;
-    J.q = q; J.workOn = workOn;
-    J.paintLine();
+    J.q = q;
+    J.paintSky();
   };
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
   addEventListener('resize', update);
