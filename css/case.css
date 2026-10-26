@@ -84,6 +84,17 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height
 .case-film-link:hover { opacity: .6; }
 .case-lead { font-size: var(--fs-lead); letter-spacing: -.02em; line-height: 1.25; }
 
+/* ---------- Proyecto con un solo asset (class="is-single" en .p-gallery) ----------
+   Sin tira que recorrer: no hay línea de progreso ni «Go to film». El asset empieza donde empiezan las tarjetas de los demás proyectos (25 % del ancho),
+   se ve entero (16:9, o su proporción) y nunca más alto que lo que deja la pantalla para que el texto de abajo se vea sin hacer scroll. En móvil, a todo el ancho. */
+.p-gallery.is-single .p-progress, .case-first:has(.p-gallery.is-single) .case-film-link { display: none; }
+.p-gallery.is-single .p-track { overflow: visible; cursor: default; }
+.p-gallery.is-single .p-card { flex: none; height: auto; width: min(100%, calc((100svh - var(--nav-h) - 230px) * var(--r, 1.7778))); }
+@media (max-width: 760px) {
+  .p-gallery.is-single .p-track { padding: 0 var(--edge); }
+  .p-gallery.is-single .p-card, .p-gallery.is-single .p-card.player { width: 100%; }
+}
+
 /* ---------- Instagram (Lexus) ---------- */
 .case-embed { display: grid; grid-template-columns: 41% minmax(0, 1fr); padding: clamp(60px, 9vw, 120px) var(--edge) 0; margin-top: 2vh; }
 .case-embed h2 { font-size: var(--fs-read); font-weight: var(--fw-bold); line-height: 1.3; letter-spacing: -.01em; }

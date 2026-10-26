@@ -152,6 +152,8 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 
 A single column of content under a fixed bar (`--nav-h`: 64 px, 56 px up to 700 px wide). Side margins are `--bar-gutter` (24 px, 14 px up to 700 px wide) on the bar, the tomato, the footer, the menu and the Room's footer; content uses the page's own `--margin`. Reading text never exceeds 34 em. The footer is the same on every page: "Mario Diz, Madrid · Privacy" and "Back to top ↑".
 
+A project page with a single asset (`class="is-single"` on `.p-gallery`, see `templates/project-template/`) has no strip to scroll: the asset starts on the same line as the cards of the other projects (25 % of the width), is shown whole at its own ratio and never taller than the screen leaves room for the text below, and on mobile fills the width. No progress hairline and no "Go to film" link.
+
 The menu uses the whole viewport: on desktop the four big links sit on one row, spread edge to edge at the vertical centre; at 820 px and below they stack and drop to thumb height just above the small row, so the thumb reaches them without stretching. The small row (Machine, FAQs, Terminal, Privacy) is pinned to the bottom, two links on each side.
 
 ## Elevation & Depth
