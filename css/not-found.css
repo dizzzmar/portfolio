@@ -64,7 +64,7 @@ body {
   display: flex;
   align-items: center;
   font-size: clamp(110px, min(32vw, 46vh), 440px); /* también cabe en pantallas bajas y anchas */
-  font-weight: 700;
+  font-weight: var(--fw-title);
   line-height: 1;
   letter-spacing: -0.04em;
   text-shadow: 0 6px 30px rgba(0, 30, 80, 0.25);

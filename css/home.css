@@ -340,7 +340,7 @@ body.white-on { background-color: #fff; }
 .project-caption h2 {
   font-family: var(--font-display);
   font-size: var(--fs-h2);
-  font-weight: 700;
+  font-weight: var(--fw-title);
   letter-spacing: -0.06em;
   line-height: 0.88;
   margin-left: -0.045em; /* compensa el hueco lateral de la letra para que la tinta se alinee con la marca y las etiquetas */
@@ -423,7 +423,7 @@ body.white-on { background-color: #fff; }
   transition: background 0.2s, box-shadow 0.2s;
 }
 .room-entry span { font-size: var(--fs-s); }
-.room-entry strong { font-family: var(--font-display); display: block; margin-top: 12px; font-size: var(--fs-h1); line-height: .85; font-weight: var(--fw-bold); letter-spacing: var(--tracking-display); }
+.room-entry strong { font-family: var(--font-display); display: block; margin-top: 12px; font-size: var(--fs-h1); line-height: .85; font-weight: var(--fw-title); letter-spacing: var(--tracking-display); }
 .room-entry .room-arrow { font-size: var(--fs-h2); line-height: 1; }
 .room-entry:hover, .room-entry:focus-visible { background: rgba(233, 239, 228, .08); box-shadow: 0 0 0 3px #91c9ff, 0 0 25px #62b9ff77; outline: none; }
 
@@ -479,7 +479,7 @@ body.white-on { background-color: #fff; }
   justify-content: center;
   color: #fff;
   font-size: var(--fs-h1);
-  font-weight: 700;
+  font-weight: var(--fw-title);
   letter-spacing: -0.055em;
   line-height: 0.9;
   text-align: center;
@@ -562,7 +562,7 @@ body.white-on { background-color: #fff; }
   overflow: hidden; /* máscara: el nombre sube desde abajo al aparecer */
   font-family: var(--font-ui);
   font-size: var(--fs-h1);
-  font-weight: 700;
+  font-weight: var(--fw-title);
   letter-spacing: var(--tracking-display);
   line-height: .95;
   text-align: center;

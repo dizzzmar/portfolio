@@ -16,19 +16,19 @@ typography:
   display:
     fontFamily: "Funnel Display, Helvetica Neue, Arial, sans-serif"
     fontSize: "clamp(56px, 9vw, 140px)"
-    fontWeight: 700
+    fontWeight: 600
     lineHeight: 1.05
     letterSpacing: "-0.05em"
   headline:
     fontFamily: "Funnel Display, Helvetica Neue, Arial, sans-serif"
     fontSize: "clamp(40px, 5vw, 76px)"
-    fontWeight: 700
+    fontWeight: 600
     lineHeight: 1.05
     letterSpacing: "-0.04em"
   title:
     fontFamily: "Funnel Display, Helvetica Neue, Arial, sans-serif"
     fontSize: "clamp(24px, 2.8vw, 44px)"
-    fontWeight: 700
+    fontWeight: 600
     lineHeight: 1.05
   body:
     fontFamily: "Funnel Sans, Helvetica Neue, Arial, sans-serif"
@@ -49,7 +49,7 @@ typography:
   menu-link:
     fontFamily: "Funnel Display, Helvetica Neue, Arial, sans-serif"
     fontSize: "clamp(44px, 6.8vw, 112px)"
-    fontWeight: 700
+    fontWeight: 600
     lineHeight: 1
     letterSpacing: "-0.05em"
 rounded:
@@ -93,7 +93,7 @@ The tone is close and a little funny. Daily paths (reading, navigating) are prec
 Rejected on purpose: serif faces, more than two weights, decorative gradients and shadows, third-party fonts or embeds, and any text whose only job is to explain the interface.
 
 **Key Characteristics:**
-- One family, Funnel, in two cuts: Funnel Display for large titles only, Funnel Sans for everything that is read; both at two weights: 700 orients, 400 is read.
+- One family, Funnel, in two cuts: Funnel Display for large titles only, Funnel Sans for everything that is read; text at two weights (700 orients, 400 is read) and large titles one step lighter at 600.
 - Flat colour fields: black or sky for the work, Lincoln green with lime for the personal pages, tomato red for the menu.
 - A 64 px bar with the tomato left and links right, the same everywhere.
 - Motion is transform and opacity only, one shared ease-out, and it always has a reduced-motion path.
@@ -135,22 +135,24 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 **Character:** a sharp, slightly decorative grotesk at 140 px that settles into a calm, neutral one at 14 px. Hierarchy comes from weight and size; the Display/Sans split is a size threshold (titles large enough to carry the flourishes), never decoration on small text.
 
 ### Hierarchy
-- **Display** (700, 56–140 px, 1.05, −0.05 em): page titles (About, Privacy, FAQs) and project names in Work.
-- **Headline** (700, 40–76 px, 1.05): large section titles.
-- **Title** (700, 24–44 px, 1.05): section titles and the project name in its bar.
-- **Body** (400, 18–22 px, 1.45, measure 34 em): running text. The first paragraph of each page and the block headings share this size in 700.
+- **Display** (600, 56–140 px, 1.05, −0.05 em): page titles (About, Privacy, FAQs) and project names in Work.
+- **Headline** (600, 40–76 px, 1.05): large section titles.
+- **Title** (600, 24–44 px, 1.05): section titles and the project name in its bar.
+- **Body** (400, 16 px, 1.45, measure 34 em): all running text, lists and answers, after the reference kellauren.design (one text size; hierarchy by weight and space). The first paragraph of each page and the block headings share this size in 700. Only titles and the Contact envelope are larger.
 - **Label** (400, 14 px, 1.3): bar links, buttons, footer, dates and every secondary line.
 - **Caps** (400, 11 px, 0.06 em, uppercase): small labels and credits only.
-- **Menu link** (700, 44–112 px from 821 px wide, 52–84 px below, 1, −0.05 em): the four big links in the menu (`--fs-menu`).
+- **Menu link** (600, 44–112 px from 821 px wide, 52–84 px below, 1, −0.05 em): the four big links in the menu (`--fs-menu`).
 
 ### Named Rules
-**The Two Weights Rule.** Only 700 and 400 exist. 700 orients (titles, first paragraph, block headings); 400 is what you read. No 300, 500 or 600.
+**The Weights Rule.** Text has two weights: 700 orients (first paragraph, block headings) and 400 is what you read. Large titles in Funnel Display sit one step lighter, at 600 (`--fw-title`). No 300 or 500.
 
 **The One Source Rule.** Every size comes from `css/tokens.css`. If a size is missing, add it there and here; never write `15px` in another file.
 
 ## Layout
 
 A single column of content under a fixed bar (`--nav-h`: 64 px, 56 px up to 700 px wide). Side margins are `--bar-gutter` (24 px, 14 px up to 700 px wide) on the bar, the tomato, the footer, the menu and the Room's footer; content uses the page's own `--margin`. Reading text never exceeds 34 em. The footer is the same on every page: "Mario Diz, Madrid · Privacy" and "Back to top ↑".
+
+A project page with a single asset (`class="is-single"` on `.p-gallery`, see `templates/project-template/`) has no strip to scroll: the asset starts on the same line as the cards of the other projects (25 % of the width), is shown whole at its own ratio and never taller than the screen leaves room for the text below, and on mobile fills the width. No progress hairline and no "Go to film" link.
 
 The menu uses the whole viewport: on desktop the four big links sit on one row, spread edge to edge at the vertical centre; at 820 px and below they stack and drop to thumb height just above the small row, so the thumb reaches them without stretching. The small row (Machine, FAQs, Terminal, Privacy) is pinned to the bottom, two links on each side.
 
@@ -200,7 +202,7 @@ A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scr
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use only Funnel (Display for large titles via `--font-display`, Sans for the rest via `--font-ui`) at 700 and 400, sizes from `css/tokens.css`.
+- **Do** use only Funnel (Display for large titles via `--font-display`, Sans for the rest via `--font-ui`) at 400 and 700 (large titles at 600), sizes from `css/tokens.css`.
 - **Do** animate only `transform` and `opacity`, with `var(--ease-out)` (`cubic-bezier(0.23, 1, 0.32, 1)`) for arrivals; UI 150–300 ms, underline 400 ms, section entrances up to 700 ms, the menu up to 0.7 s because it is a deliberate moment.
 - **Do** give every animation a reduced-motion path that keeps opacity and colour changes.
 - **Do** keep text on Lincoln Green in Lime, and check any new pair for 4.5:1 (3:1 for large text).
