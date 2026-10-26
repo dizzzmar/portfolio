@@ -174,6 +174,9 @@ Close and a little funny: precise when used daily, playful where visitors do not
 - **Small links:** Machine, FAQs, Terminal, Privacy in 14 px, underlined. Machine mode, which has no menu, keeps its own Human | Machine switch and a Terminal link in its footer.
 - **Keyboard:** focus moves into the panel, Tab stays inside, Esc closes and focus returns to "Menu". With reduced motion the panel only fades (0.15 s).
 
+### Project pages
+The bar carries the tomato and the project name next to it, in Funnel Display at 24 px (desktop and mobile alike); the name is the back button to Work (on hover it becomes "Back to projects"). Year and client sit in the bar's columns on desktop and in one row under the bar on mobile. No big title in the page: the asset leads.
+
 ### Breadcrumbs
 A single line in the bar, right of the tomato: "Home / About" (14 px, Home at 80 % opacity as a link, the current page at full strength and not a link). Only on the one-level green pages (About, FAQs, Privacy, Room); project pages already carry their name and the back button. Every page also declares a `BreadcrumbList` in JSON-LD. A new one-level page needs both the visible line and the JSON-LD.
 
