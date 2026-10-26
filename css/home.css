@@ -567,7 +567,7 @@ body.white-on { background-color: #fff; }
   inset: 0 auto auto 0;
   z-index: 11;
   padding: 9px 14px 8px;
-  background: var(--tomato); /* el rojo de la marca, el mismo del punto del cursor */
+  background: var(--accent); /* el color de acento (el punto del cursor sí es rojo: --cursor) */
   color: #fff;
   pointer-events: none;
   white-space: nowrap;
@@ -639,14 +639,11 @@ body.white-on { background-color: #fff; }
 .light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
 .light-on .work-item::before { background: rgba(12, 12, 11, .16); }
 .light-on .wi-date, .light-on .wi-tags { color: rgba(12, 12, 11, .62); } /* 5,7:1 sobre blanco (con .4 eran 2,8:1) */
-/* El rojo de la marca en Work: el nombre de la fila encendida (ratón encima, foco de teclado o la del centro en el móvil) pasa del negro al rojo tomate,
-   el mismo del punto del cursor y del botón «View project», así los tres se leen como una sola cosa. El rojo sobre blanco da 3,6:1: vale porque el nombre es enorme (≥3:1) */
-.light-on .work-item.is-hot .wi-name, .light-on .work-item.is-back .wi-name, .light-on .work-item > a:focus-visible .wi-name { color: var(--tomato); }
-@media (hover: hover) and (pointer: fine) { .light-on .work-item > a:hover .wi-name { color: var(--tomato); } }
-.light-on .work-item > a:focus-visible { outline-color: var(--tomato); }
-.light-on ::selection { background: var(--tomato); color: #fff; }
+/* En Work no hay color de acento sobre el texto: la fila encendida (ratón encima, foco de teclado o la del centro en el móvil) se lee porque las demás se atenúan (regla :has de arriba). */
+.light-on .work-item > a:focus-visible { outline-color: var(--accent); }
+.light-on ::selection { background: var(--accent); color: #fff; }
 .light-on .work-cursor { box-shadow: 0 0 0 3px #fff; } /* un aro blanco: cuando el botón pasa sobre las letras rojas del nombre no se funde con ellas */
-.light-on .wi-slot { background: rgba(248, 61, 12, .08); } /* el hueco de la miniatura, mientras carga, ya es rojizo */
+.light-on .wi-slot { background: rgba(12, 12, 11, .06); } /* el hueco de la miniatura, mientras carga, ya es gris claro */
 .light-on .work-item > a:hover .wi-date, .light-on .work-item > a:hover .wi-tags,
 .light-on .work-item > a:focus-visible .wi-date, .light-on .work-item > a:focus-visible .wi-tags,
 .light-on .work-item.is-hot .wi-date, .light-on .work-item.is-hot .wi-tags,

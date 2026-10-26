@@ -2,7 +2,8 @@
 name: dizmar.xyz
 description: Portfolio of Mario Diz, art director in Madrid. One family, two weights, a tomato at the centre.
 colors:
-  tomato: "#f83d0c"
+  accent: "#0c0c0b"
+  cursor: "#f83d0c"
   menu-red: "#d03a22"
   cream: "#fff6ea"
   lincoln-green: "#125603"
@@ -86,7 +87,7 @@ components:
 
 **Creative North Star: "The Ripe Tomato"**
 
-One piece of fruit at the centre and everything else arranged around it: the tomato is the logo, the 3D object on the landing page, the cursor and the menu panel. The rest is deliberately plain so the fruit and the work (Lexus, Soap & Glory, Schweppes) stay the loudest things on screen. One typeface, two weights, flat colour, no shadows.
+One piece of fruit at the centre and everything else arranged around it: the tomato is the logo, the 3D object on the landing page and the colour of the menu panel. The rest is deliberately plain so the fruit and the work (Lexus, Soap & Glory, Schweppes) stay the loudest things on screen. One typeface, two weights, flat colour, no shadows.
 
 The tone is close and a little funny. Daily paths (reading, navigating) are precise and quiet; the humour lives in the rare places: the envelope you tear to write an email, the terminal, the FAQs, the cursor that bounces. Nothing explains itself with slogans or helper text; if a screen needs a label to make sense, the layout gets fixed instead.
 
@@ -103,7 +104,8 @@ Rejected on purpose: serif faces, more than two weights, decorative gradients an
 A tomato-and-garden palette: red fruit, green plant, sky above, near-black behind the work.
 
 ### Primary
-- **Tomato** (#f83d0c): the brand red. The cursor dot, the highlighted project name in Work, the tomato itself.
+- **Accent** (#0c0c0b, `--accent`): near-black. The "View project" button, text selection and focus rings in Work. There is no coloured accent on text or buttons.
+- **Cursor** (#f83d0c, `--cursor`): tomato red, used only for the cursor dot (and the tomato itself).
 - **Menu Red** (#d03a22): the full-screen menu panel. A deeper tomato chosen so cream text on it reaches 4.55:1 (the brand red gives only 3.6:1).
 
 ### Secondary
@@ -119,7 +121,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **Sky Blue** (#4f8fd8): fallback for the sky photograph (`assets/images/sky.webp`) behind the landing page and Contact.
 
 ### Tokens
-`--tomato` (#f83d0c), `--menu-red` (#d03a22) and `--cream` (#fff6ea) live in `css/tokens.css`; so do the two curves, `--ease-out` for arrivals and `--ease-in-out` (`cubic-bezier(.77, 0, .175, 1)`) for moving across the screen. Do not write these values in other files.
+`--accent` (#0c0c0b), `--cursor` (#f83d0c), `--menu-red` (#d03a22) and `--cream` (#fff6ea) live in `css/tokens.css`; so do the two curves, `--ease-out` for arrivals and `--ease-in-out` (`cubic-bezier(.77, 0, .175, 1)`) for moving across the screen. Do not write these values in other files.
 
 ### Named Rules
 **The Green Pair Rule.** On green pages the only text colour is lime, never white or red. The red cursor would fall to 2.4:1 there, so it turns lime too.

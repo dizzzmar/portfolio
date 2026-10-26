@@ -59,8 +59,9 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(.77, 0, .175, 1);
 
-  /* Rojo tomate y crema. --tomato: cursor, selección y el nombre encendido en Work. --menu-red: panel del menú (con --cream da 4,5:1; con --tomato bajaba a 3,6:1) */
-  --tomato: #f83d0c;
+  /* Acento (botón «View project», selección y foco en Work): negro. Cambiar de color es cambiar esta línea. Menú: --menu-red es el panel del menú (con --cream da 4,5:1) */
+  --accent: #0c0c0b;
+  --cursor: #f83d0c; /* el punto del cursor sigue siendo rojo tomate */
   --menu-red: #d03a22;
   --cream: #fff6ea;
 
