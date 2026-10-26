@@ -39,18 +39,24 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   const FULL = 1.3, FULL_SIMPLE = 1.2; // segundos del viaje completo (el simple es el vuelo directo de otra página)
   const SMOOTH = 0.32; // segundos que tarda j en alcanzar al target al deslizar (más = más suave y lento)
   let raf = 0, anim = null, last = 0;
-  // Sin pantalla intermedia: en cuanto el tomate llega a la barra, la página baja sola a la lista de Work (el cielo se acerca y se funde en blanco por el camino)
-  let wantWork = false;
+  // Sin pantalla intermedia: la página empieza a bajar sola a la lista de Work cuando el tomate aún está volando (a partir de SCROLL_AT del viaje) y las dos cosas
+  // terminan a la vez; así nunca hay un momento con solo el cielo. El cielo se acerca y se funde en blanco por el camino.
+  const SCROLL_AT = 0.4;
+  let wantWork = false, scrolling = false;
   const workEl = document.getElementById('work');
   function scrollToWork() {
     if (!workEl) return;
     const y0 = scrollY, y1 = workEl.offsetTop;
     if (reduced || y1 - y0 < 4) { scrollTo(0, y1); return; }
-    const dur = 700, t0 = performance.now();
+    const dur = 650, t0 = performance.now();
+    scrolling = true; // mientras baja, la página no está bloqueada aunque el tomate aún vuele
+    document.body.classList.remove('intro-lock');
     const step = (now) => {
       const u = Math.min(1, (now - t0) / dur);
       scrollTo(0, y0 + (y1 - y0) * (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2));
-      if (u < 1 && J.target >= 1) requestAnimationFrame(step); // si el visitante da marcha atrás, se para
+      if (u < 1 && J.target >= 1) { requestAnimationFrame(step); return; } // si el visitante da marcha atrás, se para
+      scrolling = false;
+      apply();
     };
     requestAnimationFrame(step);
   }
@@ -105,12 +111,13 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     const body = document.body;
     if (J.simple && J.j <= 0.001 && J.target <= 0.001) J.simple = false; // el tomate ya llegó al centro: el próximo viaje es el completo
     // La página solo baja cuando el viaje está completo; hasta entonces la portada queda quieta
-    body.classList.toggle('intro-lock', !(J.j >= 0.999 && J.target >= 1));
+    // Bloqueada hasta que el viaje termina; salvo si la página ya está bajando (o ya bajó) a Work con el tomate todavía volando: bloquearla ahí la devolvería arriba del todo
+    body.classList.toggle('intro-lock', !(J.j >= 0.999 && J.target >= 1) && !(J.target >= 1 && (scrolling || scrollY > 4)));
     body.classList.toggle('work-engaged', J.j > 0.001 || J.target > 0);
     if (J.j > 0.02 || J.target > 0) hintDone = true; // quien ya ha empezado el viaje no necesita la pista
     hint?.classList.toggle('is-on', hintReady && !hintDone && !J.hold);
     J.paintSky();
-    if (wantWork && J.j >= 0.999 && J.target >= 1) { wantWork = false; scrollToWork(); }
+    if (wantWork && J.j >= SCROLL_AT && J.target >= 1) { wantWork = false; scrollToWork(); }
   }
 
   // ---- La pista de la portada ----
