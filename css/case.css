@@ -165,6 +165,13 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height
 
 /* ---------- Pie ---------- */
 
+/* Nombre largo (class="case-name is-long") en tabletas: más pequeño y los datos (año y cliente) se desplazan a la derecha, para no pisarse */
+@media (min-width: 761px) and (max-width: 1000px) {
+  .case-name.is-long { font-size: 19px; }
+  .case-name.is-long ~ .case-meta.date { left: 52%; }
+  .case-name.is-long ~ .case-meta.client { left: 70%; }
+}
+
 /* ---------- Móvil: el nombre sigue en la barra, junto al tomate; los datos pasan a una fila y las tarjetas se recorren con el dedo ---------- */
 @media (max-width: 760px) {
   .case-head { height: auto; position: relative; inset: auto; padding: calc(var(--nav-h) + 4px) var(--edge) 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }

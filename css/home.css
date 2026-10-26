@@ -604,6 +604,7 @@ body.white-on { background-color: #fff; }
   .work-item > a, .work-link { grid-template-columns: 1fr auto; grid-template-areas: "date tags" "name name" "strip strip"; row-gap: 12px; padding: 26px 0 30px; }
   .wi-date, .wi-tags { margin-top: 0; font-size: var(--fs-s); }
   .wi-name { text-align: left; font-size: var(--fs-h1); letter-spacing: -.04em; } /* a 56 px, −5 % hace que las letras se toquen */
+  .wi-name.is-long { font-size: min(var(--fs-h1), 13vw); } /* nombre largo (class="wi-name is-long"): se encoge con la pantalla para que «The Gentlemen» quepa en una línea */
   .wi-strip { justify-content: flex-start; overflow-x: auto; margin-right: calc(-1 * clamp(16px, 1.2vw, 24px)); margin-top: 8px; scrollbar-width: none; translate: none; }
   .wi-strip::-webkit-scrollbar { display: none; }
   .wi-slot { width: 26vw; }
