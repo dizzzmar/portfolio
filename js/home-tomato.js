@@ -51,7 +51,7 @@ function nameTexture() {
   const paint = () => {
     g.clearRect(0, 0, c.width, c.height);
     g.fillStyle = '#fff';
-    g.font = `700 ${FONT_PX}px "Funnel Display", "Helvetica Neue", Arial, sans-serif`;
+    g.font = `600 ${FONT_PX}px "Funnel Display", "Helvetica Neue", Arial, sans-serif`;
     if ('letterSpacing' in g) g.letterSpacing = `${-Math.round(FONT_PX * 0.033)}px`; // a little tight, like the titles
     g.textAlign = 'center';
     g.textBaseline = 'middle';
@@ -59,7 +59,7 @@ function nameTexture() {
     tex.needsUpdate = true;
   };
   paint();
-  document.fonts?.load(`700 ${FONT_PX}px "Funnel Display"`).then(paint).catch(() => {});
+  document.fonts?.load(`600 ${FONT_PX}px "Funnel Display"`).then(paint).catch(() => {});
   return tex;
 }
 

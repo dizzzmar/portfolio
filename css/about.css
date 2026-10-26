@@ -83,7 +83,7 @@ main { padding: 0 var(--margin); }
   grid-area: name;
   margin-left: -.04em; /* alinea la tinta de la M con el margen */
   font-size: var(--fs-h1);
-  font-weight: var(--fw-bold);
+  font-weight: var(--fw-title);
   letter-spacing: -.055em;
   line-height: .9;
 }
