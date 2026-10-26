@@ -24,7 +24,7 @@ body {
    js/home-intro.js escribe directamente en tres elementos (sin variables CSS, que se heredan y obligan a recalcular toda la página
    en cada fotograma): el zoom en .sky (scale), el desenfoque en .sky-soft (opacity de una capa ya desenfocada) y el fundido en .fade (opacity).
    La capa blanca es fija, así que todos los proyectos se acumulan sobre el mismo fondo limpio. */
-.fade { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #fff; opacity: 0; }
+.fade { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #fff; opacity: 0; will-change: opacity; }
 
 /* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes.
    Son dos capas iguales: la nítida y encima una desenfocada (el desenfoque se calcula una sola vez); al bajar, la desenfocada
@@ -48,7 +48,7 @@ body.white-on { background-color: #fff; }
     url("/assets/images/sky.webp") center / cover,
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
 }
-.sky-soft { filter: blur(10px); opacity: 0; }
+.sky-soft { filter: blur(10px); opacity: 0; will-change: opacity; }
 
 /* El grano va en su propia capa, encima del cielo, para que siga nítido aunque el cielo se emborrone */
 .grain {

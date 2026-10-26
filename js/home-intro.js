@@ -36,13 +36,13 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   // Los botones (Work, el tomate de la barra, Inicio/Fin) lanzan el viaje entero con una curva de Hermite que empieza con la velocidad que llevaba.
   // Todo va por tiempo real, no por fotogramas: en un móvil lento dura lo mismo, solo se ve con menos pasos.
   const J = window.homeJourney = { j: 0, target: 0, v: 0, simple: false, q: 0, zoom: 0 };
-  const FULL = 1.3, FULL_SIMPLE = 1.2; // segundos del viaje completo (el simple es el vuelo directo de otra página)
+  const FULL = 1.8, FULL_SIMPLE = 1.4; // segundos del viaje completo (el simple es el vuelo directo de otra página)
   const COMMIT = 0.12; // fracción del viaje a partir de la cual se completa solo: una muesca de la rueda o un deslizamiento corto del dedo
   const SMOOTH = 0.32; // segundos que tarda j en alcanzar al target al deslizar (más = más suave y lento)
   let raf = 0, anim = null, last = 0;
   // Sin pantalla intermedia: la página empieza a bajar sola a la lista de Work cuando el tomate aún está volando (a partir de SCROLL_AT del viaje) y las dos cosas
   // terminan a la vez; así nunca hay un momento con solo el cielo. El cielo se acerca y se funde en blanco por el camino.
-  const SCROLL_AT = 0.4;
+  const SCROLL_AT = 0.3;
   let wantWork = false, scrolling = false;
   const workEl = document.getElementById('work');
   let scrollToken = 0;
@@ -50,7 +50,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   function animateScroll(y1, keep) {
     const y0 = scrollY, token = ++scrollToken;
     if (reduced || Math.abs(y1 - y0) < 4) { scrollTo(0, y1); return; }
-    const dur = 650, t0 = performance.now();
+    const dur = 1100, t0 = performance.now();
     scrolling = true; // mientras se mueve, la página no está bloqueada aunque el tomate aún vuele
     document.body.classList.remove('intro-lock');
     const step = (now) => {
