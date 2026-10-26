@@ -93,4 +93,4 @@ Cada página pública lleva en su `<head>`: `<title>`, `<meta name="description"
 - Si cambias el nombre de la carpeta de un proyecto, cambia también el enlace en la card de la home y la flecha "← Back" del proyecto.
 - El diseño de las páginas de proyecto es común (`css/case.css`): un cambio ahí afecta a todos los proyectos.
 - Para ver cómo queda en tu ordenador, abre una terminal en esta carpeta y ejecuta `python3 -m http.server 8000`; después entra en <http://localhost:8000>. (No vale abrir el `.html` con doble clic: las rutas con `/` necesitan un servidor.)
-- Los tomates 3D usan la librería [three.js](https://threejs.org), que se carga desde internet (jsDelivr).
+- Los tomates 3D usan la librería [three.js](https://threejs.org) (licencia MIT), alojada en `assets/vendor/three/` (no se pide a ningún tercero). Para actualizarla: copiar la misma versión desde npm (`three@x.y.z`) a esa carpeta, con los archivos de `examples/jsm` que se importan, y cambiar los `importmap` de las páginas.

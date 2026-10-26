@@ -151,6 +151,7 @@
     setTimeout(() => { location.href = page; }, reduced ? 0 : 240);
   };
   const LS = () => ['home/  about/  faq/  room.html  machine/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/'];
+  let fpsBusy = false;
   const COMMANDS = {
     help: () => [
       'Commands:',
@@ -163,6 +164,7 @@
       '  date                    today’s date',
       '  echo <text>             print text',
       '  guide                   every command on one screen',
+      '  fps                     measure how smooth this page is on your device (5 s)',
       '  neofetch                the welcome screen again',
       '  clear                   clear this window',
       '  exit                    close the terminal (also Esc)',
@@ -191,7 +193,7 @@
       'GUIDE',
       'go       ls · cd <page> · view human|machine · exit',
       'read     about · work · contact · whoami · date',
-      'screen   neofetch · clear · echo <text>',
+      'screen   neofetch · fps · clear · echo <text>',
       'tomato   spin · stop · go · reverse · faster · slower · paint <color>',
       'colors   hue <0-360> · rainbow · invert · gray · sepia · reset',
       ...(window.dizRoom ? ['room     look · inspect <thing> · lights on|off · play · flicker · sunset · zoom out'] : []),
@@ -304,6 +306,40 @@
       artDir = 1; artSpeed = 1; artPaused = false; startArt();
       [0, 1, 2].forEach((i) => panel.style.removeProperty('--art-' + i));
       return ['everything back to normal.'];
+    },
+    // Mide la fluidez de esta página en este dispositivo durante 5 s: fotogramas por segundo, el fotograma más lento, tareas largas y lienzos 3D
+    fps: () => {
+      if (fpsBusy) return ['already measuring …'];
+      fpsBusy = true;
+      const frames = [], long = [];
+      let po = null;
+      try { po = new PerformanceObserver((l) => l.getEntries().forEach((e) => long.push(e.duration))); po.observe({ entryTypes: ['longtask'] }); } catch (e) { /* Safari no lo tiene */ }
+      const start = performance.now();
+      let last = start;
+      const step = (now) => {
+        frames.push(now - last);
+        last = now;
+        if (now - start < 5000) { requestAnimationFrame(step); return; }
+        po?.disconnect();
+        fpsBusy = false;
+        const sorted = frames.slice(1).sort((a, b) => a - b);
+        const avg = sorted.reduce((a, b) => a + b, 0) / sorted.length;
+        const fpsNow = 1000 / avg;
+        const p95 = sorted[Math.floor(sorted.length * 0.95)];
+        const canvases = [...document.querySelectorAll('canvas')].filter((c) => c.width > 0).map((c) => (c.id || c.parentElement?.className || 'canvas') + ' ' + c.width + '×' + c.height + ' (' + (c.width * c.height / 1e6).toFixed(2) + ' Mpx)');
+        write([
+          'fps          ' + fpsNow.toFixed(1) + '   (the screen refreshes at 60; below 40 it feels rough)',
+          'slowest 5%   ' + p95.toFixed(0) + ' ms or more per frame   (16 ms = smooth)',
+          'worst frame  ' + sorted[sorted.length - 1].toFixed(0) + ' ms',
+          'long tasks   ' + (po ? long.length + (long.length ? ' (' + Math.round(long.reduce((a, b) => a + b, 0)) + ' ms in total)' : '') : 'not available in this browser'),
+          'pixel ratio  ' + devicePixelRatio + '   page ' + location.pathname,
+          'canvases     ' + (canvases.length ? canvases.join(' · ') : 'none'),
+          fpsNow >= 50 ? 'verdict      smooth. the tomato is relaxed.' : fpsNow >= 35 ? 'verdict      a bit rough. the tomato is sweating.' : 'verdict      rough. send these numbers to Mario.',
+        ]);
+        out.scrollTop = out.scrollHeight;
+      };
+      requestAnimationFrame(step);
+      return ['measuring for 5 seconds … leave it still, or scroll the page behind to test that too.'];
     },
     heinz: () => ['we do not speak that name. it has to be Diz.'],
     fortune: () => [FORTUNES[Math.floor(Math.random() * FORTUNES.length)]],
@@ -577,7 +613,7 @@
   // Los comandos escondidos (tomato, ketchup…) nunca se sugieren.
   const NEEDS_ARG = new Set(['cd', 'view', 'inspect', 'lights', 'sunset', 'zoom', 'echo']);
   const roomOn = () => !!window.dizRoom;
-  const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'guide', 'neofetch', 'clear', 'exit',
+  const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'guide', 'fps', 'neofetch', 'clear', 'exit',
     ...(roomOn() ? ['look', 'inspect', 'lights', 'play', 'flicker', 'sunset', 'zoom'] : [])];
   const ARGS = () => ({
     cd: ['home', 'work', 'about', 'faq', 'room', 'machine', 'lexus', 'schweppes', 'soap', 'contact'],

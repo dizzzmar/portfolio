@@ -15,7 +15,8 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const FLY_FROM_NAV = document.documentElement.classList.contains('land-fly') && !reduced;
 
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+// En el móvil (3× de píxeles) un lienzo a pantalla completa con 2× cuesta el doble que con 1,5× y el tomate no gana nitidez que se vea
+renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
@@ -378,6 +379,7 @@ let lastDraw = 0;
 
 function frame(now) {
   requestAnimationFrame(frame);
+  if (document.hidden) return; // pestaña en segundo plano: no se dibuja
   if (cropped && now - lastDraw < 1000 / DOCKED_FPS - 2) return;
   lastDraw = now;
   const dt = Math.min(clock.getDelta(), 0.05);
