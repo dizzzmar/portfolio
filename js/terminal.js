@@ -87,7 +87,7 @@
   panel.append(bar, out, row);
   document.body.append(panel);
 
-  // ---------- Texto que se descifra (como la palabra «Creative ___» de la portada) ----------
+  // ---------- Texto que se descifra ----------
   // Las letras sueltas se mezclan y se van fijando de izquierda a derecha. Con «movimiento reducido» el texto aparece tal cual.
   const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
   const scramble = (node, text, ms = 420, delay = 0, done = null) => {

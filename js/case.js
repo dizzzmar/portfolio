@@ -226,7 +226,7 @@
 })();
 
 // ---------- El nombre del proyecto se mezcla y pasa a "Back to projects" al pasar el ratón ----------
-// Mismo efecto de letras al azar que "Creative ___" de la portada: las letras se van fijando de izquierda a derecha.
+// Efecto de letras al azar: las letras se van fijando de izquierda a derecha.
 (() => {
   const link = document.querySelector('.case-name .case-back');
   const label = link && link.querySelector('.cb-text');

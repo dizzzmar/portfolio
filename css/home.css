@@ -467,40 +467,6 @@ body.white-on { background-color: #fff; }
   .scroll-hint::after, .sky, .ticker-track, .tomato-placeholder, .project-media::after { animation: none; }
 }
 
-/* ---------- "Creative ___": aparece en el centro cuando el tomate llega al menú ----------
-   La segunda palabra cambia muy rápido (js/home-intro.js). */
-.intro-line {
-  font-family: var(--font-display);
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: var(--fs-h1);
-  font-weight: var(--fw-title);
-  letter-spacing: -0.055em;
-  line-height: 0.9;
-  text-align: center;
-  text-shadow: 0 2px 30px rgba(0, 20, 40, 0.25);
-  opacity: 0;
-  /* Sin transición de opacidad ni de movimiento: el texto lo mueve js/home-intro.js en cada fotograma, siguiendo al recorrido del tomate
-     (aparece, se desplaza al revés que él y sigue al scroll) y la rueda o el dedo lo llevan sin retraso. Solo el color se funde. */
-  transition: color .45s ease, text-shadow .45s ease;
-  pointer-events: none;
-}
-.light-on .intro-line { color: #fff; text-shadow: none; }
-.intro-word { font-variant-ligatures: none; }
-/* Cada letra aparece subiendo, una tras otra: js/home-intro.js recorre --r (0 a 1) y cada letra lleva su --i. La segunda palabra empieza un poco después. */
-.intro-line .ch {
-  display: inline-block;
-  --k: clamp(0, calc(var(--r, 0) * 3 - var(--i, 0) * 0.11), 1);
-  opacity: var(--k);
-  translate: 0 calc((1 - var(--k)) * 0.5em);
-}
-.intro-word .ch { --k: clamp(0, calc(var(--r, 0) * 3 - (var(--i, 0) + 3) * 0.11), 1); }
-
 /* ---------- Work: lista de proyectos ----------
    Referencia: 13322566869.com/works, con el estilo de esta web (tinta oscura, Helvetica apretada, esquinas rectas).
    Cada fila: fecha (izquierda), nombre gigante (centro), etiquetas (derecha) y una tira de miniaturas verticales debajo.
@@ -509,7 +475,7 @@ body.white-on { background-color: #fff; }
 .work-grid { position: relative; z-index: 5; padding: 0 clamp(16px, 1.2vw, 24px); color: #fff; scroll-margin-top: 0; } /* al llegar con el enlace Work, la barra de arriba queda justo en el borde de la pantalla */
 
 /* Barra de arriba, fija: se queda pegada arriba al llegar y los proyectos pasan por debajo. Misma tipografía y tamaño en todo;
-   "Creative ___" en rojo (la palabra la cambia js/home-work.js). A la izquierda deja sitio al tomate (44 px + margen) y a la
+   Lleva «Based in Madrid» y la hora. A la izquierda deja sitio al tomate (44 px + margen) y a la
    derecha a los enlaces de la barra, que van encima. */
 .work-top {
   position: sticky;
@@ -528,9 +494,7 @@ body.white-on { background-color: #fff; }
 }
 .work-top p > strong { display: block; font-weight: inherit; }
 .work-top p > span { display: block; color: rgba(255, 255, 255, .6); }
-.work-top .wt-creative > strong { color: #fff; white-space: nowrap; } /* la marca va por clase, no por el orden de los bloques */
-.wb-word { display: inline; font-variant-ligatures: none; }
-.wb-word .ch { display: inline-block; }
+.work-top p { grid-column: 2; }
 @media (max-width: 1000px) {
   .work-top { grid-template-columns: 1fr 1fr; }
 }
@@ -610,10 +574,6 @@ body.white-on { background-color: #fff; }
 /* Sobre una fila, el cursor del sistema se esconde y "View project" ocupa su sitio (js/home-work.js pone has-pill solo con ratón) */
 .has-pill .work-item > a { cursor: none; }
 
-/* "Creative ___" se queda fijo en el centro mientras los proyectos pasan por encima; al bajar se
-   sube y se apaga (js/home-intro.js) al llegar a Work, donde sigue en la cabecera */
-.intro-line { position: fixed; z-index: 1; }
-
 /* ---------- Work: movimiento (solo con JavaScript y sin "reducir movimiento") ---------- */
 @media (prefers-reduced-motion: no-preference) {
   .wi-slot img, .wi-slot video { transition: scale 1.1s var(--ease-out); }
@@ -638,9 +598,9 @@ body.white-on { background-color: #fff; }
 
 /* ---------- Móvil: nombre a todo lo ancho y la tira de miniaturas se desliza con el dedo ---------- */
 @media (max-width: 760px) {
-  /* La barra fija ocupa también el hueco de la barra de enlaces (así los proyectos no pasan por detrás) y solo lleva "Creative ___" */
+  /* La barra fija ocupa también el hueco de la barra de enlaces (así los proyectos no pasan por detrás) */
   .work-top { grid-template-columns: 1fr; height: auto; padding: var(--nav-h) clamp(16px, 1.2vw, 24px) 12px; font-size: var(--fs-s); }
-  .work-top p:not(.wt-creative) { display: none; }
+  .work-top p { grid-column: 1; }
   .work-item > a, .work-link { grid-template-columns: 1fr auto; grid-template-areas: "date tags" "name name" "strip strip"; row-gap: 12px; padding: 26px 0 30px; }
   .wi-date, .wi-tags { margin-top: 0; font-size: var(--fs-s); }
   .wi-name { text-align: left; font-size: var(--fs-h1); letter-spacing: -.04em; } /* a 56 px, −5 % hace que las letras se toquen */
@@ -651,7 +611,6 @@ body.white-on { background-color: #fff; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro-line { transition: none; }
   body::before { transition: none; }
 }
 
@@ -660,14 +619,13 @@ body.white-on { background-color: #fff; }
 .work-grid, .work-top p > span, .wi-date, .wi-tags { transition: color .4s ease; }
 .light-on .work-grid { color: #0c0c0b; }
 .light-on .work-top p > span { color: rgba(12, 12, 11, .62); }
-.light-on .work-top .wt-creative > strong { color: #0c0c0b; }
 /* Cuando la página ya es del todo blanca (clase white-on, que pone js/home-intro.js) la barra de arriba (textos de Work y menú) se mezcla con
    "difference": negra sobre blanco y blanca sobre un nombre de proyecto o una foto oscuros. El fondo blanco va dentro de la propia sección (la capa
    blanca de la página queda fuera de ella y la barra no la "ve"); se pone solo ahora, sin transición, porque antes taparía el cielo que aún se funde. */
 .white-on .work-grid { background-color: #fff; }
 .white-on .work-top, .white-on .nav { mix-blend-mode: difference; }
 /* Blanco puro (sin grises): con "difference" cada trozo de una letra sale negro o blanco según lo que tenga justo detrás, aunque sea dentro de una misma palabra */
-.white-on .work-top, .white-on .work-top .wt-creative > strong { color: #fff; }
+.white-on .work-top { color: #fff; }
 .white-on .work-top p > span { color: rgba(255, 255, 255, .55); } /* la hora y "Selected work": en gris, como antes (el gris se ve igual de legible sobre blanco y sobre negro) */
 .light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
 .light-on .work-item::before { background: rgba(12, 12, 11, .16); }
@@ -684,11 +642,10 @@ body.white-on { background-color: #fff; }
 .light-on .work-item > a:focus-visible .wi-date, .light-on .work-item > a:focus-visible .wi-tags,
 .light-on .work-item.is-hot .wi-date, .light-on .work-item.is-hot .wi-tags,
 .light-on .work-item.is-back .wi-date, .light-on .work-item.is-back .wi-tags { color: rgba(12, 12, 11, .9); }
-/* Al fundirse a blanco, el menú, el "Creative ___" del centro y el pie pasan a oscuro */
+/* Al fundirse a blanco, el menú y el pie pasan a oscuro */
 .light-on .nav-links a { color: rgba(12, 12, 11, .62); }
 .light-on .nav-links a:hover, .light-on .nav-links a[aria-current="true"] { color: #0c0c0b; }
 .white-on .nav-links a, .white-on .nav-links a:hover, .white-on .nav-links a[aria-current="true"] { color: #fff; }
-.light-on .intro-line { color: #0c0c0b; }
 .light-on .site-foot { color: rgba(12, 12, 11, .62); }
 .light-on .site-foot a:hover { color: #0c0c0b; }
 

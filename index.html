@@ -37,7 +37,7 @@
   <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/tokens.css?v=20261026i">
-  <link rel="stylesheet" href="/css/home.css?v=20261026i">
+  <link rel="stylesheet" href="/css/home.css?v=20261026k">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
   <link rel="stylesheet" href="/css/typography.css?v=20261024b">
 <link rel="stylesheet" href="/css/transitions.css?v=20261025k">
@@ -85,9 +85,6 @@
       <img class="tomato-placeholder" src="/assets/images/tomato.webp" width="595" height="640" alt="" aria-hidden="true" fetchpriority="high">
       <!-- La pista aparece si nadie mueve nada en unos segundos (js/home-intro.js); pulsarla hace el viaje entero -->
       <button class="scroll-hint" id="hint" type="button">Scroll</button>
-      <!-- Cuando el tomate llega al menú aparece "Creative ___" y la segunda palabra cambia muy rápido.
-           EDITA la lista de palabras en js/home-intro.js -->
-      <p class="intro-line" aria-hidden="true"><span>Creative</span> <span class="intro-word">Designer</span></p>
     </section>
 
     <!-- Work: lista de proyectos como 13322566869.com/works, con el estilo de esta web.
@@ -96,9 +93,8 @@
          EDITA: para un proyecto nuevo copia una fila y cambia su enlace, fecha, nombre, etiquetas y miniaturas. -->
     <section class="work-grid" id="work" aria-labelledby="work-title">
       <h2 class="sr-only" id="work-title">Selected work</h2>
-      <!-- Barra fija de arriba (se queda pegada al llegar). "Creative ___" en rojo: la palabra cambiante la mueve js/home-work.js -->
+      <!-- Barra fija de arriba (se queda pegada al llegar) -->
       <div class="work-top" aria-hidden="true">
-        <p class="wt-creative"><strong>Creative <span class="wb-word">Designer</span></strong></p>
         <p><strong>Based in Madrid</strong><span class="wt-time" data-madrid-time>&nbsp;</span></p> <!-- la hora de Madrid, al minuto (js/home-work.js) -->
       </div>
       <ol class="work-list">
@@ -161,13 +157,13 @@
   <footer class="site-foot"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
 
 
-  <!-- Scripts: texto "Creative ___" y vídeos · tomate 3D -->
-  <script src="/js/home-intro.js?v=20261023u" defer></script>
-  <script src="/js/home-work.js?v=20261020s" defer></script>
-  <script type="module" src="/js/home-tomato.js?v=20261026i"></script>
+  <!-- Scripts: recorrido del tomate y vídeos · tomate 3D -->
+  <script src="/js/home-intro.js?v=20261026l" defer></script>
+  <script src="/js/home-work.js?v=20261026k" defer></script>
+  <script type="module" src="/js/home-tomato.js?v=20261026k"></script>
 <script src="/js/cursor.js?v=20261025r" defer></script>
   <script type="module" src="/js/contact-sachet.js?v=20261024n"></script>
 <script src="/js/menu.js?v=20261025d" defer></script>
-<script src="/js/terminal.js?v=20261026a" defer></script>
+<script src="/js/terminal.js?v=20261026k" defer></script>
 </body>
 </html>

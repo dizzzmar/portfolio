@@ -1,5 +1,4 @@
 // WORK · lista de proyectos (referencia: 13322566869.com/works, con el estilo de esta web).
-//  · la cabecera tiene "Creative ___": su palabra se descifra con la animación de la portada (createWordCycler, js/home-intro.js);
 //  · cada fila aparece una vez al entrar: la línea se dibuja, el nombre sube desde su máscara y las miniaturas se destapan una a una;
 //  · al hacer scroll la tira de miniaturas se desplaza un poco de lado, con inercia (la fila se mueve distinto que la página);
 //  · al pasar el ratón: se encienden los textos, suben las miniaturas y "View project" hace de cursor (la parte visual está en css/home.css);
@@ -23,11 +22,6 @@
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const rows = [...work.querySelectorAll('.work-item')];
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-
-  // ---- Cabecera: palabra cambiante ----
-  const top = work.querySelector('.work-top');
-  const word = work.querySelector('.wb-word');
-  if (top && word) createWordCycler(word, { visible: false }).watch(top);
 
   // ---- Miniaturas: cada una sabe su posición (--i) para destaparse en cadena ----
   rows.forEach((row) => row.querySelectorAll('.wi-slot').forEach((slot, i) => slot.style.setProperty('--i', i)));
