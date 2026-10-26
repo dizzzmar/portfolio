@@ -48,7 +48,7 @@
   line-height: var(--lh-ui);
   transition: opacity 200ms var(--ease-out);
 }
-.sachet .sachet-tear { padding: 8px 0; border: 0; background: none; font-size: var(--fs-read); font-weight: var(--fw-bold); letter-spacing: -.01em; }
+.sachet .sachet-tear { padding: 8px 0; border: 0; background: none; font-size: var(--fs-lead); font-weight: var(--fw-bold); letter-spacing: -.01em; }
 .sachet:not([data-state="closed"]) .sachet-hint { opacity: 0; pointer-events: none; }
 
 /* Si tras rasgar el sobre la ventana sigue en primer plano (no hay app de correo), el email aparece debajo del sobre, con un botón para copiarlo */
@@ -62,7 +62,7 @@
   justify-content: center;
   align-items: baseline;
   gap: 4px 20px;
-  font-size: var(--fs-read);
+  font-size: var(--fs-lead);
   font-weight: var(--fw-bold);
   letter-spacing: -.01em;
   opacity: 0;

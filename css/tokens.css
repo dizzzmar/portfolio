@@ -27,8 +27,8 @@
   --measure: 34em;
   /* Espaciado de los nombres grandes: el mismo en Work, proyectos y barra */
   --tracking-display: -.05em;
-  /* Tamaño de lectura: el mismo para la entrada, los títulos de bloque y el texto (18 px en móvil → 22 px en escritorio) */
-  --fs-read: clamp(18px, 1.5vw + 8px, 22px);
+  /* Tamaño de lectura: el mismo para la entrada, los títulos de bloque y el texto (16 px, como kellauren.design: todo el texto a un tamaño, y la jerarquía con el peso) */
+  --fs-read: 16px;
   /* Verde y lima (About, Privacy y Machine): 6,98:1 entre sí. Lo secundario va al 80 % sobre verde (5,1:1). */
   --green: #125603;
   --lime: #c3f380;
