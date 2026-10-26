@@ -30,7 +30,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height
 .case-logo img { width: 100%; height: 100%; object-fit: contain; }
 .case-head { position: absolute; z-index: 5; inset: 0 0 auto; height: var(--nav-h); }
 .case-head > * { position: absolute; top: 50%; transform: translateY(-50%); }
-.case-name { font-family: var(--font-display); left: calc(var(--edge) + 56px); font-size: var(--fs-h3); font-weight: var(--fw-bold); letter-spacing: var(--tracking-display); line-height: 1; white-space: nowrap; }
+.case-name { font-family: var(--font-display); left: calc(var(--bar-gutter) + 44px + 12px); /* a la derecha del tomate (css/nav-logo.css) */ font-size: var(--fs-xl); font-weight: var(--fw-bold); letter-spacing: var(--tracking-display); line-height: 1; white-space: nowrap; }
 .case-meta { font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.25; }
 .case-meta.date { left: 41%; }
 .case-meta.client { left: 58%; }
@@ -44,9 +44,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height
 .case-name .case-back { font: inherit; letter-spacing: inherit; text-transform: none; } /* si no, typography.css lo deja en 14px como los demás enlaces */
 .case-name .case-back:focus-visible { outline-offset: 6px; }
 .cb-text { display: inline-block; font-variant-ligatures: none; }
-/* En pantallas táctiles no hay "pasar por encima": se ve siempre un enlace pequeño bajo el nombre */
-.case-back-touch { display: none; font-size: var(--fs-s); font-weight: var(--fw-regular); }
-@media (hover: none) { .case-back-touch { display: inline-block; position: absolute; left: calc(var(--edge) + 56px); top: calc(100% + 2px); transform: none; } }
 
 /* ---------- Primera pantalla: cabecera, galería horizontal y datos ---------- */
 .case-first { min-height: 100vh; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr auto; padding: var(--nav-h) 0 0; }
@@ -157,13 +154,12 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height
 
 /* ---------- Pie ---------- */
 
-/* ---------- Móvil: el nombre pasa a su propia línea y las tarjetas se recorren con el dedo ---------- */
+/* ---------- Móvil: el nombre sigue en la barra, junto al tomate; los datos pasan a una fila y las tarjetas se recorren con el dedo ---------- */
 @media (max-width: 760px) {
-  .case-head { height: auto; position: relative; inset: auto; padding: calc(var(--nav-h) + 8px) var(--edge) 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+  .case-head { height: auto; position: relative; inset: auto; padding: calc(var(--nav-h) + 4px) var(--edge) 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
   .case-head > * { position: static; transform: none; }
-  .case-name { grid-column: 1 / -1; font-size: var(--fs-h2); white-space: normal; }
-  .case-back-touch { position: static; grid-column: 1 / -1; order: 2; margin-bottom: 8px; }
-  .case-meta { order: 3; }
+  .case-name { position: fixed; z-index: 21; top: calc(var(--nav-h) / 2); left: calc(var(--bar-gutter) + 44px + 12px); transform: translateY(-50%); } /* igual que en escritorio: fijo en la barra (el nombre es el botón de volver) */
+  @media (max-width: 700px) { .case-name { left: calc(var(--bar-gutter) + 36px + 12px); } } /* el tomate mide 36 px de ancho */
   .case-first { padding-top: 0; grid-template-rows: auto auto; align-content: start; } /* la galería sube bajo el título; el texto va justo debajo */
   .p-gallery { align-self: start; padding: 4vh 0 0; }
   .case-nav { display: none; } /* en el móvil hay solo la X y el tomate: Work, About, Contact y Room están en la portada */
@@ -210,7 +206,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 4; height
 
 /* Con dedo: los controles sueltos miden al menos 44 px de alto (sin mover nada de sitio: el padding se compensa con margen negativo) */
 @media (pointer: coarse) {
-  .case-back-touch, .case-film-link { padding-block: 14px; margin-block: -14px; }
+  .case-name .case-back { display: inline-block; padding-block: 14px; margin-block: -14px; }
+  .case-film-link { padding-block: 14px; margin-block: -14px; }
   .case-film-link { display: inline-block; }
   .player-bar button { padding-block: 15px; }
   .player .player-toggle { min-height: 44px; }
