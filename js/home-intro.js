@@ -37,6 +37,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   // Todo va por tiempo real, no por fotogramas: en un móvil lento dura lo mismo, solo se ve con menos pasos.
   const J = window.homeJourney = { j: 0, target: 0, v: 0, simple: false, q: 0, zoom: 0 };
   const FULL = 1.3, FULL_SIMPLE = 1.2; // segundos del viaje completo (el simple es el vuelo directo de otra página)
+  const COMMIT = 0.12; // fracción del viaje a partir de la cual se completa solo: una muesca de la rueda o un deslizamiento corto del dedo
   const SMOOTH = 0.32; // segundos que tarda j en alcanzar al target al deslizar (más = más suave y lento)
   let raf = 0, anim = null, last = 0;
   // Sin pantalla intermedia: la página empieza a bajar sola a la lista de Work cuando el tomate aún está volando (a partir de SCROLL_AT del viaje) y las dos cosas
@@ -44,26 +45,38 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   const SCROLL_AT = 0.4;
   let wantWork = false, scrolling = false;
   const workEl = document.getElementById('work');
-  function scrollToWork() {
-    if (!workEl) return;
-    const y0 = scrollY, y1 = workEl.offsetTop;
-    if (reduced || y1 - y0 < 4) { scrollTo(0, y1); return; }
+  let scrollToken = 0;
+  // Baja o sube la página con una curva suave (650 ms) mientras el viaje del tomate sigue; si el visitante da marcha atrás (keep() falso), se para
+  function animateScroll(y1, keep) {
+    const y0 = scrollY, token = ++scrollToken;
+    if (reduced || Math.abs(y1 - y0) < 4) { scrollTo(0, y1); return; }
     const dur = 650, t0 = performance.now();
-    scrolling = true; // mientras baja, la página no está bloqueada aunque el tomate aún vuele
+    scrolling = true; // mientras se mueve, la página no está bloqueada aunque el tomate aún vuele
     document.body.classList.remove('intro-lock');
     const step = (now) => {
+      if (token !== scrollToken) return; // otra animación ha tomado el relevo
       const u = Math.min(1, (now - t0) / dur);
       scrollTo(0, y0 + (y1 - y0) * (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2));
-      if (u < 1 && J.target >= 1) { requestAnimationFrame(step); return; } // si el visitante da marcha atrás, se para
+      if (u < 1 && keep()) { requestAnimationFrame(step); return; }
       scrolling = false;
       apply();
     };
     requestAnimationFrame(step);
   }
+  const scrollToWork = () => { if (workEl) animateScroll(workEl.offsetTop, () => J.target >= 1); };
+  // Volver a la portada desde Work: el tomate vuela de vuelta y la página sube a la vez (un solo gesto, sin tener que subir toda la página)
+  function backToLanding() {
+    wantWork = false;
+    go(0);
+    animateScroll(0, () => J.target <= 0);
+  }
   function scrub(d) { // d = fracción del viaje que se avanza (negativa = hacia atrás)
     anim = null;
     J.target = clamp01(J.target + d);
     wantWork = d > 0 && J.target >= 1;
+    // Un gesto corto basta: pasado COMMIT el viaje se completa solo (o se deshace solo)
+    if (d > 0 && J.target >= COMMIT && J.target < 1) { go(1); return; }
+    if (d < 0 && J.target <= 1 - COMMIT && J.target > 0) { go(0); return; }
     if (reduced) { J.j = J.target; J.v = 0; apply(); return; }
     kick();
   }
@@ -112,7 +125,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     if (J.simple && J.j <= 0.001 && J.target <= 0.001) J.simple = false; // el tomate ya llegó al centro: el próximo viaje es el completo
     // La página solo baja cuando el viaje está completo; hasta entonces la portada queda quieta
     // Bloqueada hasta que el viaje termina; salvo si la página ya está bajando (o ya bajó) a Work con el tomate todavía volando: bloquearla ahí la devolvería arriba del todo
-    body.classList.toggle('intro-lock', !(J.j >= 0.999 && J.target >= 1) && !(J.target >= 1 && (scrolling || scrollY > 4)));
+    body.classList.toggle('intro-lock', !(J.j >= 0.999 && J.target >= 1) && !scrolling && !(J.target >= 1 && scrollY > 4));
     body.classList.toggle('work-engaged', J.j > 0.001 || J.target > 0);
     if (J.j > 0.02 || J.target > 0) hintDone = true; // quien ya ha empezado el viaje no necesita la pista
     hint?.classList.toggle('is-on', hintReady && !hintDone && !J.hold);
@@ -137,15 +150,23 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   const locked = () => document.body.classList.contains('intro-lock');
   const menuOpen = () => document.documentElement.classList.contains('menu-open'); // con el menú abierto la portada no se mueve (js/menu.js)
   const atTop = () => scrollY <= 1;
-  // Cuánto hay que deslizar para el viaje entero: rueda ≈ 1.600 px (unas 16 muescas), dedo ≈ 40 % de la pantalla (un deslizamiento normal).
-  // Además, un golpe rápido de dedo (flick) lo completa del todo, como la inercia de un scroll normal.
-  const WHEEL_PX = 1600;
-  const touchPx = () => Math.max(300, innerHeight * 0.4);
+  // Cuánto equivale al viaje entero: rueda 700 px, dedo ≈ 35 % de la pantalla; como el viaje se completa solo al llegar al 12 % (COMMIT), basta una muesca de
+  // la rueda (≈ 85 px) o un deslizamiento corto del dedo (≈ 35 px). Un golpe rápido de dedo (flick) lo completa del todo, como la inercia de un scroll normal.
+  const WHEEL_PX = 700;
+  const touchPx = () => Math.max(260, innerHeight * 0.35);
   const FLICK = 0.6; // px por milisegundo
+  let upAcc = 0, upAt = 0;
+  const atWorkTop = () => !!workEl && J.target >= 1 && !scrolling && J.j >= 0.999 && scrollY <= workEl.offsetTop + 2;
   function drag(dy, perJourney) { // dy > 0 = hacia abajo
     if (J.simple || J.hold || !dy) return; // hold: el visitante está girando el sobre escondido (js/home-sachet-egg.js)
     if (dy > 0) { if (J.target < 1 && locked()) scrub(dy / perJourney); }
     else if (J.target > 0 && (locked() || atTop())) scrub(dy / perJourney);
+    else if (atWorkTop()) { // arriba del todo de la lista de Work: un gesto hacia arriba vuelve a la portada
+      const now = performance.now();
+      upAcc = now - upAt > 600 ? -dy : upAcc - dy;
+      upAt = now;
+      if (upAcc >= perJourney * COMMIT) { upAcc = 0; backToLanding(); }
+    }
   }
   addEventListener('wheel', (e) => {
     if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY) || menuOpen()) return;
@@ -173,17 +194,19 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     const v = (a.y - b.y) / (b.t - a.t); // > 0: el dedo sube (hacia Work)
     if (v > FLICK && J.target < 1 && locked()) go(1);
     else if (v < -FLICK && J.target > 0 && (locked() || atTop())) go(0);
+    else if (v < -FLICK && atWorkTop()) backToLanding();
   }, { passive: true });
   addEventListener('keydown', (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey || J.simple || J.hold || menuOpen()) return;
     if (e.target instanceof Element && e.target.closest('.term')) return; // escribir en la terminal no mueve la portada
     const onControl = e.target instanceof Element && e.target.closest('a, button, input, select, textarea');
-    const down = { ArrowDown: 0.1, PageDown: 0.3, ' ': 0.3, End: 1 }[e.key];
-    const up = { ArrowUp: 0.1, PageUp: 0.3, Home: 1 }[e.key];
+    const down = { ArrowDown: 1, PageDown: 1, ' ': 1, End: 1 }[e.key]; // cualquier tecla de bajar lanza el viaje entero
+    const up = { ArrowUp: 1, PageUp: 1, Home: 1 }[e.key];
     if (down) {
-      if (locked() && !(e.key === ' ' && onControl)) { e.preventDefault(); if (down >= 1) go(1); else scrub(down); }
+      if (locked() && !(e.key === ' ' && onControl)) { e.preventDefault(); go(1); }
     } else if (up) {
-      if ((locked() || atTop()) && J.target > 0) { e.preventDefault(); if (up >= 1) go(0); else scrub(-up); }
+      if ((locked() || atTop()) && J.target > 0) { e.preventDefault(); go(0); }
+      else if (atWorkTop()) { e.preventDefault(); backToLanding(); }
     }
   });
 
@@ -199,12 +222,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   const goLanding = () => {
     history.replaceState(null, '', location.pathname + location.search);
     if (scrollY < 2) { go(0); return; }
-    scrollTo({ top: 0, behavior: reduced ? 'instant' : 'smooth' });
-    let done = false;
-    const finish = () => { if (done) return; done = true; removeEventListener('scroll', check); clearTimeout(timer); go(0); };
-    const check = () => { if (scrollY < 2) finish(); };
-    const timer = setTimeout(finish, 1200); // si algo impide llegar arriba, el viaje se deshace igualmente
-    addEventListener('scroll', check, { passive: true });
+    backToLanding(); // el viaje y la subida a la vez
   };
   document.querySelector('.nav-logo')?.addEventListener('click', (e) => {
     e.preventDefault();
