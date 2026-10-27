@@ -1,0 +1,46 @@
+/* PANTALLA DE CARGA · solo en la primera visita a la portada de cada sesión (ver el script del <head> de index.html y js/loader.js).
+   Una cortina verde cubre la pantalla mientras llega el tomate 3D: un aro lima gira alrededor de un tomate que se balancea.
+   Cuando el 3D está listo, el aro se cierra, el tomate da un salto y la cortina sube con el borde de abajo curvo, descubriendo el cielo.
+   Sin JavaScript no hay cortina (la clase is-loading la pone el script); si js/loader.js no llegara a cargar, un respaldo en CSS la oculta a los 8 s.
+   Con «reducir movimiento» no se muestra. */
+.loader { display: none; }
+.is-loading .loader {
+  position: fixed;
+  inset: 0;
+  z-index: 2147482000; /* por encima de todo, menos del punto del cursor */
+  display: grid;
+  place-items: center;
+  background: var(--green);
+  will-change: transform;
+  animation: loader-failsafe 0s 8s forwards;
+}
+@keyframes loader-failsafe { to { visibility: hidden; pointer-events: none; } }
+
+.loader-core { position: relative; width: clamp(150px, 17vw, 260px); aspect-ratio: 1; display: grid; place-items: center; }
+.loader-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.loader-ring circle {
+  fill: none;
+  stroke: var(--lime);
+  stroke-width: 2.4;
+  stroke-linecap: butt;
+  stroke-dasharray: 339.3;       /* 2π × 54: la circunferencia entera */
+  stroke-dashoffset: 254;        /* un cuarto de aro visible mientras carga */
+  transform-origin: 60px 60px;
+  animation: ring-spin 1.1s linear infinite, ring-breathe 1.6s ease-in-out infinite alternate;
+}
+@keyframes ring-spin { to { transform: rotate(360deg); } }
+@keyframes ring-breathe { from { stroke-dashoffset: 280; } to { stroke-dashoffset: 120; } } /* el arco crece y se encoge */
+.loader-tomato { width: 44%; height: auto; transform-origin: 50% 65%; animation: tomato-rock 1.1s ease-in-out infinite alternate; }
+@keyframes tomato-rock { from { transform: rotate(-9deg); } to { transform: rotate(9deg); } }
+
+/* Listo: el aro se cierra del todo y el tomate da un salto */
+.loader.is-ready .loader-ring circle { animation: none; stroke-dashoffset: 0; transition: stroke-dashoffset .5s var(--ease-out); }
+.loader.is-ready .loader-tomato { animation: tomato-pop .55s var(--ease-out) both; }
+@keyframes tomato-pop { 0% { transform: scale(1) rotate(0); } 35% { transform: scale(.86, 1.12) translateY(-10px); } 70% { transform: scale(1.12, .92); } 100% { transform: scale(1); } }
+
+/* La cortina sube; mientras sube, su borde de abajo se curva */
+.loader.is-leaving {
+  transform: translateY(-101%);
+  border-radius: 0 0 50% 50% / 0 0 14vh 14vh;
+  transition: transform .95s var(--ease-in-out), border-radius .95s var(--ease-in-out);
+}

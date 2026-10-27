@@ -217,3 +217,7 @@ A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scr
 - **Don't** use a serif, a third weight, shadows, gradients or borders to separate content.
 - **Don't** add third-party code, fonts, embeds or analytics without deciding it first (today none: three.js is self-hosted in `assets/vendor/three/`), and never put keys, passwords or personal data in the repository (see `CLAUDE.md`).
 - **Don't** animate sizes, margins or shadows.
+
+## Loading screen (home)
+
+On the first visit of a session a Lincoln Green curtain covers the home while the 3D tomato loads: a lime ring turns around a rocking tomato (the flat `tomato.webp`). When the 3D is ready (`html.tomato-ready`, at least 1.3 s and at most 7 s) the ring closes, the tomato jumps and the curtain lifts in 0.95 s with its bottom edge curving, uncovering the sky. It never shows with reduced motion, on reload, on return in the same tab, when arriving from another page of the site or with `#work`; while it is up, wheel, touch and keys do not move the landing, and a CSS fallback hides it after 8 s if the script fails. Files: `css/loader.css`, `js/loader.js`, and the `is-loading` check in the `<head>` of `index.html`.

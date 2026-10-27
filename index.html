@@ -13,7 +13,7 @@
 -->
 <html lang="en">
 <head>
-  <script>document.documentElement.classList.add('js','has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
+  <script>document.documentElement.classList.add('js','has-menu');try{if(!sessionStorage.getItem('dizmar-loaded')&&!location.hash&&!document.referrer.startsWith(location.origin)&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&(performance.getEntriesByType('navigation')[0]||{}).type==='navigate')document.documentElement.classList.add('is-loading')}catch(e){}try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mario Diz — Art director &amp; visual designer in Madrid · dizmar</title>
@@ -37,6 +37,7 @@
   <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/tokens.css?v=20261027b">
+  <link rel="stylesheet" href="/css/loader.css?v=20261028b">
   <link rel="stylesheet" href="/css/home.css?v=20261027b">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
   <link rel="stylesheet" href="/css/typography.css?v=20261024b">
@@ -58,6 +59,13 @@
   <link rel="stylesheet" href="/css/menu.css?v=20261026g">
 </head>
 <body class="intro-lock" data-intro="work"> <!-- El tomate gira en la landing; solo sube al pulsar Work. -->
+  <!-- Pantalla de carga (solo en la primera visita de la sesión: css/loader.css, js/loader.js) -->
+  <div class="loader" aria-hidden="true">
+    <div class="loader-core">
+      <svg class="loader-ring" viewBox="0 0 120 120" focusable="false"><circle cx="60" cy="60" r="54"/></svg>
+      <img class="loader-tomato" src="/assets/images/tomato.webp" width="595" height="640" alt="">
+    </div>
+  </div>
   <div class="sky" aria-hidden="true"><div class="sky-sharp"></div><div class="sky-soft"></div></div>
   <div class="fade" aria-hidden="true"></div> <!-- el fundido a blanco al llegar a Work (js/home-intro.js) -->
   <div class="grain" aria-hidden="true"></div> <!-- grano encima del cielo (se queda nítido aunque el cielo se emborrone) -->
@@ -177,6 +185,7 @@
 
 
   <!-- Scripts: recorrido del tomate y vídeos · tomate 3D -->
+  <script src="/js/loader.js?v=20261028a" defer></script>
   <script src="/js/home-intro.js?v=20261026p" defer></script>
   <script src="/js/home-work.js?v=20261026l" defer></script>
   <script type="module" src="/js/home-tomato.js?v=20261026k"></script>

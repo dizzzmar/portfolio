@@ -27,6 +27,7 @@ css/                       Diseño (colores, tipografías, tamaños)
   footer.css               El pie de página, igual en todas las páginas (ver la clase del color en cada <footer>)
   nav-logo.css · nav-links.css   El tomate y los enlaces de la barra, iguales en todas las páginas
   menu.css · js/menu.js          El botón «Menu» de arriba a la derecha: panel a pantalla completa con Work, About, Room, Contact y, abajo, Machine, FAQs, Terminal, Privacy. Los enlaces salen de la barra de cada página (la página nueva necesita el botón `li.menu-li` y `has-menu` en el script del `<head>`)
+  loader.css · js/loader.js      Pantalla de carga de la portada: una cortina verde con un tomate y un aro que gira; sube con el borde curvo cuando el 3D está listo. Solo en la primera visita de cada sesión, sin «reducir movimiento» y sin venir de otra página de la web
   case.css                 Común a TODAS las páginas de proyecto
 
 js/                        Comportamiento (animaciones, tomate 3D, carrusel…)
