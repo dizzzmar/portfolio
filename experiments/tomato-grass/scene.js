@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // A fixed low-resolution frame gives every surface the same pixel scale.
 const CONFIG = { resolution: 300, cycle: 5.6, jumpHeight: 0.72, seed: 71 };
@@ -101,44 +102,32 @@ async function start() {
   shadow.position.set(0.12, 0.012, 0.08);
   scene.add(shadow);
 
-  // Smooth fruit geometry keeps the tomato rounded even in the pixel render.
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x638944, 2.1));
-  const sunlight = new THREE.DirectionalLight(0xfff4de, 3.0);
-  sunlight.position.set(-3, 6, 5);
-  scene.add(sunlight);
-  const tomato = new THREE.Group();
-  const bodyGeometry = new THREE.SphereGeometry(0.77, 96, 64);
-  const positions = bodyGeometry.attributes.position;
-  for (let i = 0; i < positions.count; i++) {
-    const x = positions.getX(i), y = positions.getY(i), z = positions.getZ(i);
-    const angle = Math.atan2(z, x);
-    const lobes = 1 + Math.cos(angle * 5) * 0.025 * (0.5 + Math.abs(y));
-    const depression = y > 0 ? 0.10 * Math.exp(-(x * x + z * z) / 0.075) : 0;
-    positions.setXYZ(i, x * lobes, y * 0.86 + 0.66 - depression, z * lobes);
-  }
-  bodyGeometry.computeVertexNormals();
-  const skin = new THREE.MeshPhysicalMaterial({ color: 0xe51409, roughness: 0.29, metalness: 0, clearcoat: 0.32, clearcoatRoughness: 0.25 });
-  tomato.add(new THREE.Mesh(bodyGeometry, skin));
-  const leafMaterial = new THREE.MeshStandardMaterial({ color: 0x267f17, roughness: 0.8, side: THREE.DoubleSide });
-  for (let i = 0; i < 6; i++) {
-    const angle = i * Math.PI * 2 / 6 + 0.2;
-    const leafVertices = [], leafIndices = [];
-    for (let j = 0; j <= 12; j++) {
-      const t = j / 12, distance = t * (0.43 + (i % 2) * 0.08);
-      const width = Math.sin(Math.PI * t) * 0.09;
-      const y = 1.22 + Math.sin(t * Math.PI) * 0.09 - t * t * 0.16;
-      for (const side of [-1, 1]) leafVertices.push(Math.cos(angle) * distance + Math.sin(angle) * width * side,
-        y - width * 0.25, Math.sin(angle) * distance - Math.cos(angle) * width * side);
-      if (j < 12) { const k = j * 2; leafIndices.push(k, k + 1, k + 2, k + 1, k + 3, k + 2); }
+  const { scene: model } = await new GLTFLoader().loadAsync('../../assets/models/tomato.glb');
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  model.position.set(-center.x, -box.min.y, -center.z);
+  model.traverse(object => {
+    if (!object.isMesh) return;
+    // Enrich only the red skin, preserving the original leaves and pale highlights.
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    for (const material of materials) {
+      material.onBeforeCompile = shader => {
+        shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', `
+          #include <map_fragment>
+          float redSkin = smoothstep(0.04, 0.24, diffuseColor.r - max(diffuseColor.g, diffuseColor.b));
+          vec3 richerRed = diffuseColor.rgb * vec3(1.13, 0.84, 0.86);
+          diffuseColor.rgb = mix(diffuseColor.rgb, richerRed, redSkin);
+        `);
+      };
+      material.customProgramCacheKey = () => 'tomato-gentle-red-v1';
     }
-    const leaf = new THREE.BufferGeometry();
-    leaf.setAttribute('position', new THREE.Float32BufferAttribute(leafVertices, 3));
-    leaf.setIndex(leafIndices);
-    leaf.computeVertexNormals();
-    tomato.add(new THREE.Mesh(leaf, leafMaterial));
-  }
-  const stemCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 1.19, 0), new THREE.Vector3(0.02, 1.36, 0), new THREE.Vector3(0.10, 1.48, -0.03)]);
-  tomato.add(new THREE.Mesh(new THREE.TubeGeometry(stemCurve, 16, 0.035, 8, false), leafMaterial));
+  });
+  const normalized = new THREE.Group();
+  normalized.add(model);
+  normalized.scale.setScalar(1.54 / Math.max(size.x, size.y, size.z));
+  const tomato = new THREE.Group();
+  tomato.add(normalized);
   scene.add(tomato);
   status.hidden = true;
   document.body.dataset.ready = 'true';
