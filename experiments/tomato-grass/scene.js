@@ -18,19 +18,19 @@ function random() {
 
 function grassTexture() {
   const surface = document.createElement('canvas');
-  surface.width = surface.height = 256;
+  surface.width = surface.height = 128;
   const ctx = surface.getContext('2d');
   const palette = ['#419c25', '#54b72d', '#72c73b', '#318622', '#8bd348', '#237324'];
   // Correlated patches and scattered edge pixels avoid a perfectly cut-out disc.
-  for (let y = 0; y < 256; y++) {
-    for (let x = 0; x < 256; x++) {
-      const dx = (x - 128) / 119, dy = (y - 128) / 116;
+  for (let y = 0; y < 128; y++) {
+    for (let x = 0; x < 128; x++) {
+      const dx = (x - 64) / 59.5, dy = (y - 64) / 58;
       const angle = Math.atan2(dy, dx);
       const edge = 0.94 + 0.025 * Math.sin(angle * 7) + 0.018 * Math.cos(angle * 11);
       const distance = Math.hypot(dx, dy);
       if (distance > edge + random() * 0.065 || (distance > edge - 0.05 && random() < 0.35)) continue;
-      const patch = Math.sin(x * 0.06 + Math.sin(y * 0.04)) * Math.cos(y * 0.07);
-      const index = Math.max(0, Math.min(5, Math.floor(2 + patch * 1.8 + random() * 2 - 1)));
+      const patch = Math.sin(x * 0.12 + Math.sin(y * 0.08)) * Math.cos(y * 0.14);
+      const index = Math.max(0, Math.min(5, Math.floor(2 + patch * 1.8 + random() * 0.8 - 0.4)));
       ctx.fillStyle = palette[index];
       ctx.fillRect(x, y, 1, 1);
     }
@@ -57,12 +57,12 @@ async function start() {
   // Curved, tapered blades grow in small clumps, with a clear space for the fruit.
   const vertices = [], colors = [];
   const greens = [0x23852b, 0x3aa522, 0x65c431, 0x88d442, 0x1b702b];
-  for (let i = 0; i < 3100; i++) {
+  for (let i = 0; i < 1800; i++) {
     const angle = random() * Math.PI * 2, radius = Math.sqrt(random()) * 1.82;
     const x = Math.cos(angle) * radius, z = Math.sin(angle) * radius;
     if (radius < 0.7) continue;
     const height = 0.09 + random() ** 2 * 0.30;
-    const width = 0.012 + random() * 0.025;
+    const width = 0.025 + random() * 0.032;
     const direction = random() * Math.PI * 2;
     const lean = 0.03 + random() * 0.12;
     const color = new THREE.Color(greens[Math.floor(random() * greens.length)]);
@@ -75,7 +75,7 @@ async function start() {
       vertices.push(...edge(t, -1), ...edge(t, 1), ...edge(next, -1),
         ...edge(t, 1), ...edge(next, 1), ...edge(next, -1));
       for (let j = 0; j < 6; j++) {
-        const shade = 0.72 + (j < 2 ? t : next) * 0.28;
+        const shade = 0.82 + (j < 2 ? t : next) * 0.18;
         colors.push(color.r * shade, color.g * shade, color.b * shade);
       }
     }
@@ -112,6 +112,13 @@ async function start() {
     // Enrich only the red skin, preserving the original leaves and pale highlights.
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     for (const material of materials) {
+      if (material.map) {
+        // Sample the baked facets crisply, matching the grass texture and canvas grid.
+        material.map.magFilter = THREE.NearestFilter;
+        material.map.minFilter = THREE.NearestFilter;
+        material.map.generateMipmaps = false;
+        material.map.needsUpdate = true;
+      }
       material.onBeforeCompile = shader => {
         shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', `
           #include <map_fragment>
