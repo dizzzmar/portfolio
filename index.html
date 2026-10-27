@@ -52,12 +52,21 @@
     }
   </script>
 <script src="/js/transitions.js?v=20261020p"></script>
+<link rel="stylesheet" href="/css/home-loading.css?v=20261027b">
+<script src="/js/home-loading.js?v=20261027b"></script>
 <link rel="stylesheet" href="/css/cursor.css?v=20261027b">
   <link rel="stylesheet" href="/css/contact-sachet.css?v=20261026e">
   <link rel="stylesheet" href="/css/terminal.css?v=20261024b">
   <link rel="stylesheet" href="/css/menu.css?v=20261026g">
 </head>
 <body class="intro-lock" data-intro="work"> <!-- El tomate gira en la landing; solo sube al pulsar Work. -->
+  <div class="home-loader" role="status" aria-live="polite" aria-label="Loading portfolio">
+    <picture>
+      <source media="(prefers-reduced-motion: reduce)" srcset="/assets/loading/tomato-grass-still.webp">
+      <img src="/assets/loading/tomato-grass.webp" width="144" height="144" alt="" fetchpriority="high">
+    </picture>
+    <p>Loading…</p>
+  </div>
   <div class="sky" aria-hidden="true"><div class="sky-sharp"></div><div class="sky-soft"></div></div>
   <div class="fade" aria-hidden="true"></div> <!-- el fundido a blanco al llegar a Work (js/home-intro.js) -->
   <div class="grain" aria-hidden="true"></div> <!-- grano encima del cielo (se queda nítido aunque el cielo se emborrone) -->
