@@ -109,8 +109,8 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **Menu Red** (#d03a22): the full-screen menu panel. A deeper tomato chosen so cream text on it reaches 4.55:1 (the brand red gives only 3.6:1).
 
 ### Secondary
-- **Lincoln Green** (#125603): background of Privacy, FAQs and Machine, paired with Lime. On About it is the ink on cream paper (8.7:1) and the colour of one full-bleed block, again paired with Lime.
-- **About palette**: cream paper (#fff6ea), Lincoln Green ink, a deeper sky blue (#3b7cc9, 4:1 on cream, only for large type and ornaments) and the tomato red (#f83d0c, ornaments only, never text). Each capability has one ornament and one of these colours.
+- **Lincoln Green** (#125603): background of Privacy, FAQs and Machine, paired with Lime. On About it is the ink on cream paper (8.3:1) and the colour of one full-bleed block, again paired with Lime.
+- **About palette**: cream paper (#fff6ea), Lincoln Green ink (8.3:1), and, for the big shapes, blue (#3b7cc9), tomato orange (#f83d0c), pink (#ff8fb1) and yellow (#ffb81c). Text may use blue and a rose (#d93f73) only at large sizes (4:1); the pink, orange and yellow are never text.
 - **Lime** (#c3f380): all text and the cursor on green pages (6.98:1 on Lincoln Green). Secondary text on green runs at 80 % opacity (5.1:1).
 - **Night Green** (#0b2f04): the Room only, where the 3D scene sits in a darker green; its list is lime at 70 % (6.4:1).
 
@@ -219,8 +219,10 @@ A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scr
 - **Don't** add third-party code, fonts, embeds or analytics without deciding it first (today none: three.js is self-hosted in `assets/vendor/three/`), and never put keys, passwords or personal data in the repository (see `CLAUDE.md`).
 - **Don't** animate sizes, margins or shadows.
 
-## Ornaments (About)
+## About: playful and maximalist, for grown-ups
 
-The small pixel ornaments on About (a robot face, a heart, a framed square, diamond and pinwheel patterns) are letters of **Yarndings 12**, a cross-stitch font (SIL OFL 1.1, self-hosted in `assets/fonts/yarndings-12.woff2`, never loaded from Google). They are decoration only (`aria-hidden`), set at 24–240 px, and every capability keeps the same ornament and colour in the legend and in the big band that drifts sideways while scrolling (still with reduced motion). They are the only use of this face; all text stays in Funnel.
+About is the one page that breaks the one-family rule on purpose, after the reference the owner chose (angellotorres.com/about, structure only; no text, image or logo is copied). It uses three voices, only in big sentences: **Pixelify Sans** 600 in capitals (pixel type) for the first statement, the section titles and the email; **Playfair Display** 800 in capitals (serif) in rose for the second statement and the city; and Funnel for everything that is read. Both extra faces are SIL OFL and self-hosted (`assets/fonts/`), never loaded from Google.
+
+The pixel shapes (checker, arrow, triangles, frame, dot, cross, diamond, block) are hand-drawn on a 12 x 12 grid as an inline SVG sprite and take the colour of the text (`.px`, `.c-*`). They are never faces, hearts or cute animals: the first version used cross-stitch ornaments (Yarndings) and read as childish. Each capability keeps the same shape in the legend and in the huge bands, which are cropped by the screen edges and drift sideways while scrolling, one band in each direction (still with reduced motion). Two shapes sit behind the portrait like stickers; the record and the film poster are tilted a few degrees.
 
 **The 3D tomato on About.** In the green block the tomato (`assets/models/tomato.glb`, loaded only when the block is about to show) turns in front of the values sentence and covers part of its letters, like an object put on top of a printed page. On phones it covers only the last line. The text stays in the page for screen readers; with reduced motion it is one still frame; the flat `tomato.webp` shows while it loads or without WebGL.

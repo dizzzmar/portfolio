@@ -63,23 +63,25 @@
   }
 })();
 
-// TIRA DE ADORNOS · se desplaza de lado al hacer scroll (la variable --drift que lee css/about.css) mientras se ve en pantalla.
+// TIRAS DE FORMAS · se desplazan de lado al hacer scroll (cada una en su sentido: data-dir) (la variable --drift que lee css/about.css) mientras se ve en pantalla.
 // Con "reducir movimiento" se queda quieta. Solo escribe una variable por fotograma.
 (() => {
-  const band = document.querySelector('[data-band]');
-  if (!band || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('[data-band]').forEach((band) => {
   const track = band.querySelector('.band-track');
+  const dir = Number(band.dataset.dir) || 1;
   let queued = false, visible = false;
   const update = () => {
     queued = false;
     const r = band.getBoundingClientRect();
     const p = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight + r.height))); // 0 al entrar por abajo, 1 al salir por arriba
-    track.style.setProperty('--drift', (-p * innerWidth * 0.3).toFixed(1) + 'px');
+    track.style.setProperty('--drift', (-p * innerWidth * 0.3 * dir).toFixed(1) + 'px'); // dir -1: se mueve al revés
   };
   const wake = () => { if (visible && !queued) { queued = true; requestAnimationFrame(update); } };
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; wake(); }).observe(band);
   addEventListener('scroll', wake, { passive: true });
   addEventListener('resize', wake);
+  });
 })();
 
 // BLOQUE VERDE · mientras el ratón está encima, el punto del cursor pasa a lima (clase on-deep en body; ver css/about.css).
