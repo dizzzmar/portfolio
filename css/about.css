@@ -1,14 +1,18 @@
 /* ABOUT — estilos de about/index.html.
-   Como el "about" de nicolo-lombardi.com: todo en Helvetica negrita, pocos tamaños, y lo importante
-   cabe en la primera pantalla. Fondo: verde Lincoln y texto lima (6,98:1). Dos pesos: 700 para el título, la entrada y los títulos de bloque; 400 para el resto.
-   Orden: colores y base · barra de navegación · primera pantalla · clientes · pie · móvil · movimiento. */
+   Papel crema, tinta verde Lincoln y un bloque verde de lado a lado con texto lima. Los adornos son letras de la fuente Yarndings 12 (punto de cruz en píxeles):
+   cada capacidad tiene el suyo y su color (azul, verde, tomate), y se repiten en grande en una tira que se desplaza al hacer scroll.
+   Una sola familia de texto (Funnel): 600 para lo grande, 400 y 700 para lo pequeño.
+   Orden: colores y base · adornos · barra de navegación · presentación · capacidades · bloque verde · cierre · móvil · movimiento. */
 
 :root {
-  --bg: var(--green);
-  --bg-deep: rgba(0, 0, 0, .25); /* el recuadro de la foto */
-  --ink: var(--lime);     /* el texto (y los logos) */
+  --bg: var(--cream);
+  --ink: var(--green);    /* el texto sobre crema: 8,7:1 */
+  --blue: #3b7cc9;        /* azul cielo algo más hondo: 4:1 sobre crema, suficiente para titulares grandes (≥3:1) */
+  --red: #f83d0c;         /* rojo tomate, solo en adornos (no es texto) */
+  --rule: rgba(195, 243, 128, .3); /* líneas finas sobre el bloque verde */
   --gutter: 20px;
   --margin: clamp(24px, 6vw, 96px); /* margen a los lados de la página */
+  --shout: clamp(30px, 4.2vw, 64px); /* frases grandes */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,6 +33,18 @@ img { display: block; max-width: 100%; height: auto; }
 ul { list-style: none; }
 ::selection { background: var(--ink); color: var(--bg); }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- Adornos: letras de Yarndings 12 (font-display: block, para que nunca se vea la letra antes del dibujo) ---------- */
+@font-face {
+  font-family: "Yarndings 12";
+  src: url("/assets/fonts/yarndings-12.woff2") format("woff2");
+  font-display: block;
+}
+.g { font-family: "Yarndings 12", monospace; font-weight: 400; font-style: normal; line-height: 1; letter-spacing: 0; user-select: none; }
+.c-blue { color: var(--blue); }
+.c-green { color: var(--ink); }
+.c-tomato { color: var(--red); }
 
 /* ---------- Barra de navegación (como la de la home) ---------- */
 .nav {
@@ -56,25 +72,25 @@ ul { list-style: none; }
   text-decoration: none;
   transition: opacity .2s;
 }
-/* nav-links.css y footer.css se cargan después y ponen su blanco al 70 % / 90 %: con «body» delante, aquí gana el lima pleno (6,98:1 sobre el verde) */
-body .nav-links a, body .site-foot.on-green, body .site-foot.on-green a { color: var(--ink); }
+/* nav-links.css y footer.css se cargan después y ponen su blanco: con «body» delante, aquí gana el verde pleno */
+body .nav-links a, body .site-foot.on-cream, body .site-foot.on-cream a { color: var(--ink); }
 .nav-links a:hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 .nav-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 
 main { padding: 0 var(--margin); }
 
-/* ---------- 1. Primera pantalla ---------- */
-/* Toda la página usa la misma rejilla de 4 columnas, para que todo quede alineado:
-   nombre y presentación en las tres primeras, la foto en la cuarta; debajo, "What I do" en la
-   primera, "Values" en la segunda y tercera, y "Now playing" en la cuarta, justo bajo la foto. */
-.intro, .facts {
+/* ---------- 1. Presentación ---------- */
+/* Rejilla de 4 columnas para toda la página: el nombre y la tira de adornos arriba, la presentación en las tres primeras
+   y la foto en la cuarta, que se queda fija mientras se lee. */
+.intro, .hello {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   column-gap: var(--gutter);
 }
 .intro {
-  grid-template-areas: "name name name portrait" "statement statement statement portrait";
-  align-items: end;
+  grid-template-areas: "name strip . portrait" "story story story portrait";
+  grid-template-rows: auto 1fr;
+  align-items: start;
   padding-top: calc(var(--nav-h) + clamp(16px, 4vh, 48px));
 }
 
@@ -82,25 +98,37 @@ main { padding: 0 var(--margin); }
   font-family: var(--font-display);
   grid-area: name;
   margin-left: -.04em; /* alinea la tinta de la M con el margen */
-  font-size: var(--fs-h1);
+  font-size: clamp(24px, 2.8vw, 44px);
   font-weight: var(--fw-title);
-  letter-spacing: -.055em;
-  line-height: .9;
+  letter-spacing: -.04em;
+  line-height: 1;
 }
+.strip { grid-area: strip; display: flex; align-items: center; gap: .5em; height: 1em; font-size: clamp(20px, 2vw, 30px); }
 
-.statement {
-  grid-area: statement;
-  max-width: var(--measure); /* líneas más cortas, más fáciles de leer */
-  margin-top: clamp(20px, 4vh, 48px);
-  font-size: var(--fs-read);
-  font-weight: var(--fw-bold);
+.story { grid-area: story; margin-top: clamp(40px, 10vh, 112px); }
+/* Frases grandes: la primera línea entra con sangría, como en un libro. */
+.shout {
+  font-family: var(--font-display);
+  font-size: var(--shout);
+  font-weight: var(--fw-title);
+  letter-spacing: -.04em;
+  line-height: 1.04;
+  text-indent: 16%;
+}
+.shout-blue { color: var(--blue); margin-top: .55em; }
+.lede {
+  max-width: 30em;
+  margin: clamp(32px, 7vh, 80px) 0 0 calc((100% - 2 * var(--gutter)) / 3 + var(--gutter)); /* empieza en la segunda columna */
+  font-size: var(--fs-lead);
+  line-height: 1.4;
   letter-spacing: -.01em;
-  line-height: var(--lh-body);
 }
 
-/* La foto ocupa la cuarta columna */
+/* La foto ocupa la cuarta columna y se queda fija mientras se lee la presentación */
 .portrait {
   grid-area: portrait;
+  position: sticky;
+  top: calc(var(--nav-h) + 24px);
   width: 100%;
   aspect-ratio: 4 / 5;
 }
@@ -117,7 +145,7 @@ main { padding: 0 var(--margin); }
   height: 100%;
   overflow: hidden;
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  box-shadow: var(--sx, 0px) calc(18px + var(--sy, 0px)) 40px -18px rgba(0, 25, 0, .6); /* la sombra se mueve con la inclinación */
+  box-shadow: var(--sx, 0px) calc(18px + var(--sy, 0px)) 40px -18px rgba(0, 25, 0, .45); /* la sombra se mueve con la inclinación */
   will-change: transform;
 }
 .holo-card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; } /* la cara arriba */
@@ -141,52 +169,56 @@ main { padding: 0 var(--margin); }
   mix-blend-mode: overlay;
   opacity: var(--o, 0);
 }
-.portrait-placeholder {
+
+/* ---------- 2. Capacidades y tira de adornos ---------- */
+.what { margin-top: clamp(56px, 12vh, 140px); }
+.legend { display: grid; grid-template-columns: repeat(2, max-content); gap: 14px clamp(32px, 8vw, 128px); }
+.legend li { display: flex; align-items: center; gap: .7em; font-size: var(--fs-lead); font-weight: var(--fw-bold); letter-spacing: -.01em; line-height: 1.1; }
+.legend .g { flex: none; width: 1.1em; font-size: 30px; text-align: center; } /* misma caja para todos: los textos quedan alineados */
+/* La tira: los mismos adornos en grande, de lado a lado de la pantalla y cortados por los bordes. js/about.js la desplaza al hacer scroll (--drift). */
+.band {
+  margin: clamp(24px, 5vh, 48px) calc(-1 * var(--margin)) 0;
+  padding-top: clamp(24px, 5vh, 56px);
+  border-top: 1px solid var(--ink);
+  overflow: hidden;
+}
+.band-track {
   display: flex;
-  align-items: flex-end;
-  padding: 12px;
-  background: var(--bg-deep);
+  gap: 2vw;
+  width: max-content;
+  margin-left: -3vw;
+  font-size: clamp(110px, 15vw, 240px);
+  transform: translateX(var(--drift, 0px));
 }
-.portrait-placeholder span { color: var(--ink); font-family: var(--font-ui); font-style: italic; font-weight: 400; }
 
-/* Columnas en texto pequeño: el título en negrita y el texto normal, para que los párrafos largos se lean bien */
-.facts {
-  row-gap: var(--gutter);
-  margin-top: clamp(32px, 6vh, 64px);
+/* ---------- 3. Bloque verde de lado a lado: clientes y valores ---------- */
+.deep {
+  margin: clamp(56px, 12vh, 140px) calc(-1 * var(--margin)) 0;
+  padding: clamp(56px, 10vh, 112px) var(--margin) clamp(80px, 16vh, 180px);
+  background: var(--green);
+  color: var(--lime); /* 6,98:1 sobre el verde */
 }
-.fact-values { grid-column: 2 / 4; }
-.now-playing { grid-column: 4; }
-.fact h2 { margin-bottom: .5em; font-size: inherit; font-weight: var(--fw-bold); }
-.fact p, .fact li { max-width: var(--measure); font-weight: var(--fw-regular); letter-spacing: -.01em; } /* todas las columnas con el mismo estilo de texto */
-.fact a { text-underline-offset: 3px; transition: opacity .2s; }
-.fact a:hover { opacity: .7; }
-/* LinkedIn y correo: una fila bajo las dos primeras columnas; sus enlaces llevan la raya animada de toda la web (css/cursor.css) */
-.contact-row { margin-top: clamp(28px, 5vh, 56px); }
-.contact-row a:hover { opacity: 1; }
-/* Área de toque: los enlaces de contacto miden ~20 px de alto en móvil. Se amplían con relleno y el mismo margen negativo,
-   así el texto y el hueco entre filas no cambian, pero el dedo acierta (mínimo 44 px de alto). Solo en pantallas táctiles. */
-@media (pointer: coarse) {
-  .contact-row a { display: inline-block; padding: 12px 6px; margin: -12px -6px; }
+.deep ::selection { background: var(--lime); color: var(--green); }
+.deep :focus-visible { outline-color: var(--lime); }
+.deep-title {
+  margin-bottom: clamp(20px, 4vh, 40px);
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.4vw, 52px);
+  font-weight: var(--fw-title);
+  letter-spacing: -.04em;
+  line-height: 1.05;
 }
-/* Now playing: el disco y la película de The room, en pequeño */
-.now-playing { text-decoration: none; }
-.np-row { display: grid; grid-template-columns: 84px 1fr; gap: 16px; align-items: center; }
-.np-row + .np-row { margin-top: 12px; }
-.np-row img { width: 84px; height: 84px; object-fit: cover; }
-.np-row .np-film { height: 120px; }
-.np-row p { font-size: var(--fs-s); line-height: 1.35; }
-.np-row strong { display: inline-block; margin: 2px 0; font-family: var(--font-ui); font-weight: var(--fw-bold); font-size: var(--fs-read); line-height: 1.15; letter-spacing: -.01em; }
-.np-more { text-decoration: underline; text-underline-offset: 3px; }
-.now-playing:hover .np-more { opacity: .7; }
-
-/* ---------- 2. Clientes ---------- */
-.clients { margin-top: clamp(32px, 6vh, 64px); }
-.clients h2 { margin-bottom: 18px; font-size: inherit; font-weight: var(--fw-bold); }
-.client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 44px; max-width: 1100px; }
+.client-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+.client-list li { display: flex; align-items: center; min-height: 88px; padding-block: 22px; border-top: 1px solid var(--rule); } /* filas finas, como una tabla */
 .client-list a { display: block; transition: opacity .2s; }
 .client-list a:hover { opacity: .7; }
-@media (pointer: coarse) { .client-list { row-gap: 28px; } .client-list a { padding-block: 12px; margin-block: -12px; } } /* zona táctil de 44 px sin mover los logos */
-/* Cada logo se pinta del color del texto usando su silueta: así todos quedan en el mismo rojo */
+@media (pointer: coarse) { .client-list a { padding-block: 12px; margin-block: -12px; } } /* zona táctil de 44 px sin mover los logos */
+/* Cada logo se pinta del color del texto usando su silueta: así todos quedan en el mismo lima */
 .client-logo {
   display: block;
   height: var(--h, 28px);
@@ -195,23 +227,65 @@ main { padding: 0 var(--margin); }
   -webkit-mask: var(--logo) center / contain no-repeat;
   mask: var(--logo) center / contain no-repeat;
 }
+.shout-lime {
+  max-width: 19em;
+  margin: clamp(80px, 18vh, 200px) auto 0;
+  font-size: clamp(28px, 4vw, 60px);
+  text-align: center;
+  text-indent: 0;
+}
+.shout-lime .g { font-size: .85em; vertical-align: -.05em; margin-left: .1em; }
+/* En el bloque verde el punto del cursor pasa a lima (el rojo daría 2,4:1 sobre el verde); js/about.js pone la clase */
+body.on-deep .cursor-dot b { background: var(--lime) !important; }
 
-/* Enlace a las FAQs, al final de la página */
-.faq-link { margin: clamp(48px, 9vh, 96px) 0 clamp(24px, 4vh, 48px); font-weight: var(--fw-bold); }
-.faq-link a { text-underline-offset: 4px; }
+/* ---------- 4. Cierre: dónde está, correo y la estantería ---------- */
+.hello { padding: clamp(72px, 14vh, 160px) 0 clamp(32px, 6vh, 64px); align-items: start; }
+.hello-text { grid-column: 1 / 4; }
+.hello-place, .hello-mail {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.4vw, 52px);
+  font-weight: var(--fw-title);
+  letter-spacing: -.04em;
+  line-height: 1.05;
+}
+.hello-place { color: var(--blue); }
+.hello-mail a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .12em; transition: opacity .2s; }
+.hello-mail a:hover { opacity: .7; }
+/* LinkedIn y FAQs: una fila; sus enlaces llevan la raya animada de toda la web (css/cursor.css) */
+.hello-more { display: flex; flex-wrap: wrap; gap: 8px 32px; margin-top: clamp(20px, 4vh, 40px); font-weight: var(--fw-bold); }
+.hello-more a { text-underline-offset: 4px; }
+/* Área de toque: los enlaces miden ~20 px de alto en móvil. Se amplían con relleno y el mismo margen negativo (mínimo 44 px de alto). */
+@media (pointer: coarse) {
+  .contact-row a { display: inline-block; padding: 12px 6px; margin: -12px -6px; }
+}
+/* Now playing: el disco y la película de The room */
+.now-playing { grid-column: 4; display: grid; grid-template-columns: 1fr 1fr; gap: 12px var(--gutter); text-decoration: none; }
+.now-playing h2 { grid-column: 1 / -1; font-size: inherit; font-weight: var(--fw-bold); }
+.np-row { display: block; }
+.np-row img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.np-row .np-film { aspect-ratio: 400 / 571; }
+.np-row p { margin-top: 8px; font-size: var(--fs-s); line-height: 1.35; }
+.np-row strong { font-weight: var(--fw-bold); font-size: var(--fs-read); line-height: 1.15; letter-spacing: -.01em; }
+.np-more { text-decoration: underline; text-underline-offset: 3px; }
+.now-playing:hover .np-more { opacity: .7; }
 
 /* ---------- Móvil ---------- */
 @media (max-width: 760px) {
   :root { --gutter: 16px; }
   .nav-links a { padding: 0 10px; font-size: var(--fs-s); }
   .nav-links { margin-right: -10px; }
-  .intro, .facts { grid-template-columns: 1fr; }
-  .intro { grid-template-areas: "name" "statement" "portrait"; }
-  .fact-values, .now-playing { grid-column: auto; }
-  .name { font-size: var(--fs-h1); }
-  .portrait { width: 55%; margin-top: 32px; }
-  .facts { row-gap: 32px; }
-  .fact h2 { margin-bottom: .6em; }
+  .intro { grid-template-columns: 1fr 1fr; grid-template-areas: "name strip" "story story" "portrait portrait"; }
+  .strip { justify-self: end; }
+  .story { margin-top: 40px; }
+  .shout { text-indent: 12%; }
+  .lede { margin-left: 0; }
+  .portrait { position: static; width: 62%; margin-top: 40px; }
+  .legend { grid-template-columns: 1fr; gap: 14px; }
+  .band-track { margin-left: -8vw; font-size: 34vw; gap: 5vw; }
+  .client-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hello { grid-template-columns: 1fr; row-gap: 56px; }
+  .hello-text, .now-playing { grid-column: 1; }
+  .now-playing { max-width: 420px; }
 }
 
 /* ---------- Movimiento: cada bloque sube y aparece al entrar en pantalla (js/about.js) ----------

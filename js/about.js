@@ -62,3 +62,30 @@
     new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(card);
   }
 })();
+
+// TIRA DE ADORNOS · se desplaza de lado al hacer scroll (la variable --drift que lee css/about.css) mientras se ve en pantalla.
+// Con "reducir movimiento" se queda quieta. Solo escribe una variable por fotograma.
+(() => {
+  const band = document.querySelector('[data-band]');
+  if (!band || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const track = band.querySelector('.band-track');
+  let queued = false, visible = false;
+  const update = () => {
+    queued = false;
+    const r = band.getBoundingClientRect();
+    const p = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight + r.height))); // 0 al entrar por abajo, 1 al salir por arriba
+    track.style.setProperty('--drift', (-p * innerWidth * 0.3).toFixed(1) + 'px');
+  };
+  const wake = () => { if (visible && !queued) { queued = true; requestAnimationFrame(update); } };
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; wake(); }).observe(band);
+  addEventListener('scroll', wake, { passive: true });
+  addEventListener('resize', wake);
+})();
+
+// BLOQUE VERDE · mientras el ratón está encima, el punto del cursor pasa a lima (clase on-deep en body; ver css/about.css).
+(() => {
+  const deep = document.querySelector('[data-deep]');
+  if (!deep || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  deep.addEventListener('pointerenter', () => document.body.classList.add('on-deep'));
+  deep.addEventListener('pointerleave', () => document.body.classList.remove('on-deep'));
+})();

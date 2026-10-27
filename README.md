@@ -7,7 +7,7 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 ```
 index.html                 La home (el tomate gira con su nombre; al pulsar Work o deslizar hacia abajo sube en una curva a la barra y la página baja sola a la lista de proyectos)
 room.html                  La página "The room" (habitación 3D)
-about/index.html           About (nombre grande, presentación, foto, gustos, clientes, preguntas). Estilos: css/about.css. Textos de ejemplo marcados con EDITA
+about/index.html           About (presentación en grande, foto, capacidades con adornos de punto de cruz, clientes, valores, contacto y Now playing). Estilos: css/about.css. Textos de ejemplo marcados con EDITA
 404.html                   Página de "no encontrada"
 machine/index.html         Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 robots.txt · sitemap.xml · llms.txt   Para buscadores y agentes de IA

@@ -95,7 +95,7 @@ Rejected on purpose: serif faces, more than two weights, decorative gradients an
 
 **Key Characteristics:**
 - One family, Funnel, in two cuts: Funnel Display for large titles only, Funnel Sans for everything that is read; text at two weights (700 orients, 400 is read) and large titles one step lighter at 600.
-- Flat colour fields: black or sky for the work, Lincoln green with lime for the personal pages, tomato red for the menu.
+- Flat colour fields: black or sky for the work, Lincoln green with lime for the personal pages (About mixes cream paper with one green block), tomato red for the menu.
 - A 64 px bar with the tomato left and links right, the same everywhere.
 - Motion is transform and opacity only, one shared ease-out, and it always has a reduced-motion path.
 
@@ -109,7 +109,8 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **Menu Red** (#d03a22): the full-screen menu panel. A deeper tomato chosen so cream text on it reaches 4.55:1 (the brand red gives only 3.6:1).
 
 ### Secondary
-- **Lincoln Green** (#125603): background of About, Privacy, FAQs and Machine, paired with Lime.
+- **Lincoln Green** (#125603): background of Privacy, FAQs and Machine, paired with Lime. On About it is the ink on cream paper (8.7:1) and the colour of one full-bleed block, again paired with Lime.
+- **About palette**: cream paper (#fff6ea), Lincoln Green ink, a deeper sky blue (#3b7cc9, 4:1 on cream, only for large type and ornaments) and the tomato red (#f83d0c, ornaments only, never text). Each capability has one ornament and one of these colours.
 - **Lime** (#c3f380): all text and the cursor on green pages (6.98:1 on Lincoln Green). Secondary text on green runs at 80 % opacity (5.1:1).
 - **Night Green** (#0b2f04): the Room only, where the 3D scene sits in a darker green; its list is lime at 70 % (6.4:1).
 
@@ -124,7 +125,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 `--accent` (#0c0c0b), `--cursor` (#f83d0c), `--menu-red` (#d03a22) and `--cream` (#fff6ea) live in `css/tokens.css`; so do the two curves, `--ease-out` for arrivals and `--ease-in-out` (`cubic-bezier(.77, 0, .175, 1)`) for moving across the screen. Do not write these values in other files.
 
 ### Named Rules
-**The Green Pair Rule.** On green pages the only text colour is lime, never white or red. The red cursor would fall to 2.4:1 there, so it turns lime too.
+**The Green Pair Rule.** On green backgrounds the only text colour is lime, never white or red (on About this applies inside the green block; on the cream sections the ink is green and the large type may be blue). The red cursor would fall to 2.4:1 there, so it turns lime too.
 
 **The No New Colours Rule.** A colour that is not in this list is decided here first, then written into `css/tokens.css`.
 
@@ -217,3 +218,7 @@ A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scr
 - **Don't** use a serif, a third weight, shadows, gradients or borders to separate content.
 - **Don't** add third-party code, fonts, embeds or analytics without deciding it first (today none: three.js is self-hosted in `assets/vendor/three/`), and never put keys, passwords or personal data in the repository (see `CLAUDE.md`).
 - **Don't** animate sizes, margins or shadows.
+
+## Ornaments (About)
+
+The small pixel ornaments on About (a robot face, a heart, a framed square, diamond and pinwheel patterns) are letters of **Yarndings 12**, a cross-stitch font (SIL OFL 1.1, self-hosted in `assets/fonts/yarndings-12.woff2`, never loaded from Google). They are decoration only (`aria-hidden`), set at 24–240 px, and every capability keeps the same ornament and colour in the legend and in the big band that drifts sideways while scrolling (still with reduced motion). They are the only use of this face; all text stays in Funnel.

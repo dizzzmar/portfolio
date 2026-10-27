@@ -22,8 +22,9 @@
 <script>document.documentElement.classList.add('js','has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
 <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/yarndings-12.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261027b">
-<link rel="stylesheet" href="/css/about.css?v=20261026g">
+<link rel="stylesheet" href="/css/about.css?v=20261027b">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
@@ -42,7 +43,7 @@
   <link rel="stylesheet" href="/css/contact-sachet.css?v=20261026e">
   <link rel="stylesheet" href="/css/terminal.css?v=20261024b">
 </head>
-<body id="top" class="theme-green">
+<body id="top">
 
 
 <!-- Barra de navegación (igual que la del resto de la web) -->
@@ -60,11 +61,11 @@
 
 <main>
 
-  <!-- 1. Primera pantalla: nombre, presentación, foto, columnas y clientes -->
+  <!-- 1. Primera pantalla: el nombre, una tira de adornos de punto de cruz y la presentación en grande (los adornos son letras de la fuente Yarndings 12, ver css/about.css .g).
+       La foto holográfica va a la derecha y se queda fija mientras se lee la presentación (en escritorio). -->
   <header class="intro">
     <h1 class="name" data-reveal>Mario Diz</h1>
-    <!-- EDITA: tu presentación (resumen de la biografía en un párrafo) -->
-    <p class="statement" data-reveal>Mario’s taste was formed in front of Almodóvar films. An art director with three years of experience, a background in art history and a love of maximalism, he follows every idea from the first spark to the final image. In the AI team at WPP Production Madrid he blends the leading image and video AI tools with traditional craft and high-quality retouching, and he is a self-taught 3D artist.</p>
+    <p class="strip" aria-hidden="true"><span class="g c-blue">6</span><span class="g c-green">x</span><span class="g c-tomato">p</span><span class="g c-blue">Z</span><span class="g c-green">y</span></p>
     <!-- Foto holográfica: se inclina en 3D siguiendo el ratón y un brillo con los colores de la foto recorre el fondo, como una carta coleccionable (js/about.js) -->
     <div class="portrait holo" data-holo data-reveal>
       <div class="holo-card">
@@ -73,27 +74,65 @@
         <span class="holo-glare" aria-hidden="true"></span>
       </div>
     </div>
+    <!-- EDITA: tu presentación. Tres párrafos: dos en grande (verde y azul) y el resto en texto normal -->
+    <div class="story">
+      <p class="shout" data-reveal>Mario’s taste was formed in front of Almodóvar films.</p>
+      <p class="shout shout-blue" data-reveal>An art director with three years of experience, a background in art history and a love of maximalism, he follows every idea from the first spark to the final image.</p>
+      <p class="lede" data-reveal>In the AI team at WPP Production Madrid he blends the leading image and video AI tools with traditional craft and high-quality retouching, and he is a self-taught 3D artist.</p>
+    </div>
   </header>
 
-  <!-- Columnas en texto pequeño, como en la referencia: lo que hace y el resto de la biografía -->
-  <section class="facts" aria-label="About Mario">
-    <div class="fact" data-reveal>
-      <!-- EDITA: una <li> por capacidad -->
-      <h2>Art direction &amp; visual design</h2>
-      <ul>
-        <li>Key visuals</li>
-        <li>AI creative</li>
-        <li>3D &amp; product imagery</li>
-        <li>Audiovisual</li>
-      </ul>
+  <!-- Lo que hace: cada capacidad lleva su adorno y su color; debajo, los mismos adornos en grande (la tira se desplaza un poco al hacer scroll, js/about.js) -->
+  <section class="what" aria-labelledby="what-title">
+    <h2 class="sr-only" id="what-title">Art direction &amp; visual design</h2>
+    <!-- EDITA: una <li> por capacidad (y su letra/color: ver los adornos en css/about.css) -->
+    <ul class="legend" data-reveal>
+      <li><span class="g c-blue" aria-hidden="true">6</span>Key visuals</li>
+      <li><span class="g c-green" aria-hidden="true">x</span>AI creative</li>
+      <li><span class="g c-tomato" aria-hidden="true">p</span>3D &amp; product imagery</li>
+      <li><span class="g c-blue" aria-hidden="true">Z</span>Audiovisual</li>
+    </ul>
+    <div class="band" aria-hidden="true" data-band>
+      <div class="band-track">
+        <span class="g c-blue">6</span><span class="g c-green">x</span><span class="g c-tomato">p</span><span class="g c-blue">Z</span><span class="g c-green">y</span><span class="g c-tomato">u</span><span class="g c-blue">6</span><span class="g c-green">x</span>
+      </div>
     </div>
-    <!-- EDITA: el resto de la biografía -->
-    <div class="fact fact-values" data-reveal>
-      <h2>Values</h2>
-      <p>For him, design and advertising should be a safe space that reflects inclusion and human rights. His work is pro-LGBTQ+, anti-racist, and feminist. No question.</p>
+  </section>
+
+  <!-- 2. Bloque verde de lado a lado: clientes (sus logos en /assets/brands se pintan todos del mismo color, ver .client-logo en css/about.css;
+       --ratio es ancho/alto del logo y --h su altura; las marcas que tienen proyecto enlazan a él) y los valores en grande -->
+  <section class="deep" data-deep>
+    <div class="deep-in">
+      <h2 class="deep-title" id="clients-title" data-reveal>Selected clients</h2>
+      <ul class="client-list" aria-labelledby="clients-title" data-reveal>
+        <li><span class="client-logo" role="img" aria-label="The Coca-Cola Company" style="--logo: url(/assets/brands/coca-cola-company.svg); --ratio: 6.2; --h: 24px"></span></li>
+        <li><span class="client-logo" role="img" aria-label="Heineken" style="--logo: url(/assets/brands/heineken.svg); --ratio: 5.77; --h: 21px"></span></li>
+        <li><span class="client-logo" role="img" aria-label="Verizon" style="--logo: url(/assets/brands/verizon.svg); --ratio: 4.51; --h: 24px"></span></li>
+        <li><span class="client-logo" role="img" aria-label="Ogilvy" style="--logo: url(/assets/brands/ogilvy.svg); --ratio: 2.56; --h: 31px"></span></li>
+        <li><span class="client-logo" role="img" aria-label="WPP" style="--logo: url(/assets/brands/wpp.svg); --ratio: 3.33; --h: 27px"></span></li>
+        <li><span class="client-logo" role="img" aria-label="El Águila" style="--logo: url(/assets/brands/el-aguila.png); --ratio: 1.06; --h: 36px"></span></li>
+        <li><span class="client-logo" role="img" aria-label="Desperados" style="--logo: url(/assets/brands/desperados.png); --ratio: 1.77; --h: 36px"></span></li>
+        <li><span class="client-logo" role="img" aria-label="Toyota" style="--logo: url(/assets/brands/toyota.svg); --ratio: 1.55; --h: 36px"></span></li>
+        <li><span class="client-logo" role="img" aria-label="Schweppes" style="--logo: url(/assets/brands/schweppes.png); --ratio: 1.06; --h: 48px"></span></li>
+        <li><span class="client-logo" role="img" aria-label="Nestlé" style="--logo: url(/assets/brands/nestle.png); --ratio: 0.97; --h: 40px"></span></li>
+        <li><span class="client-logo" role="img" aria-label="Mondelēz International" style="--logo: url(/assets/brands/mondelez.png); --ratio: 4.1; --h: 25px"></span></li>
+        <li><a href="/project/lexus-electrified/"><span class="client-logo" role="img" aria-label="Lexus" style="--logo: url(/assets/brands/lexus.svg); --ratio: 5.89; --h: 21px"></span></a></li>
+        <li><a href="/project/soap-and-glory-vanilla/"><span class="client-logo" role="img" aria-label="Soap &amp; Glory" style="--logo: url(/assets/brands/soap-and-glory.svg); --ratio: 4.67; --h: 23px"></span></a></li>
+      </ul>
+      <h2 class="sr-only">Values</h2>
+      <p class="shout shout-lime" data-reveal>For him, design and advertising should be a safe space that reflects inclusion and human rights. His work is pro-LGBTQ+, anti-racist, and feminist. No question. <span class="g" aria-hidden="true">y</span></p>
+    </div>
+  </section>
+
+  <!-- 3. Cierre: dónde está, el correo (si lo cambias, cámbialo también en js/contact.js y en Privacy, ver README), LinkedIn y The room -->
+  <section class="hello" aria-label="Contact">
+    <div class="hello-text">
+      <p class="hello-place" data-reveal>Madrid, Spain.</p>
+      <p class="hello-mail" data-reveal><a href="mailto:hey.mariodiz@gmail.com">hey.mariodiz@gmail.com</a></p>
+      <p class="hello-more contact-row" data-reveal><a href="https://es.linkedin.com/in/mario-diaz-aguado" target="_blank" rel="noopener">LinkedIn</a><a href="/faq/">FAQs →</a></p>
     </div>
     <!-- Lo mismo que la estantería de The room: actualízalo a la vez que js/room.js -->
-    <a class="fact now-playing" href="/room.html" data-reveal>
+    <a class="now-playing" href="/room.html" data-reveal>
       <h2>Now playing</h2>
       <div class="np-row">
         <img src="/assets/room/vinyl-cover.webp" width="400" height="400" alt="Romance, by Fontaines D.C." loading="lazy">
@@ -105,41 +144,11 @@
       </div>
     </a>
   </section>
-
-  <!-- Dónde encontrarlo: LinkedIn bajo la primera columna y el correo bajo la segunda (misma rejilla que las columnas de arriba).
-       EDITA: si cambias el correo, cámbialo también en js/contact.js y en Privacy (ver README). -->
-  <section class="facts contact-row" aria-label="Contact details">
-    <p class="fact" data-reveal><a href="https://es.linkedin.com/in/mario-diaz-aguado" target="_blank" rel="noopener">LinkedIn</a></p>
-    <p class="fact fact-values" data-reveal><a href="mailto:hey.mariodiz@gmail.com">hey.mariodiz@gmail.com</a></p>
-  </section>
-
-  <!-- 2. Marcas con las que ha trabajado: sus logos (en /assets/brands) se pintan todos del mismo color (ver .client-logo en css/about.css).
-       --ratio es ancho/alto del logo y --h su altura, para que todos se vean de un tamaño parecido. Las que tienen proyecto enlazan a él -->
-  <section class="clients" aria-labelledby="clients-title">
-    <h2 id="clients-title" data-reveal>Selected clients</h2>
-    <ul class="client-list" data-reveal>
-      <li><span class="client-logo" role="img" aria-label="The Coca-Cola Company" style="--logo: url(/assets/brands/coca-cola-company.svg); --ratio: 6.2; --h: 24px"></span></li>
-      <li><span class="client-logo" role="img" aria-label="Heineken" style="--logo: url(/assets/brands/heineken.svg); --ratio: 5.77; --h: 21px"></span></li>
-      <li><span class="client-logo" role="img" aria-label="Verizon" style="--logo: url(/assets/brands/verizon.svg); --ratio: 4.51; --h: 24px"></span></li>
-      <li><span class="client-logo" role="img" aria-label="Ogilvy" style="--logo: url(/assets/brands/ogilvy.svg); --ratio: 2.56; --h: 31px"></span></li>
-      <li><span class="client-logo" role="img" aria-label="WPP" style="--logo: url(/assets/brands/wpp.svg); --ratio: 3.33; --h: 27px"></span></li>
-      <li><span class="client-logo" role="img" aria-label="El Águila" style="--logo: url(/assets/brands/el-aguila.png); --ratio: 1.06; --h: 36px"></span></li>
-      <li><span class="client-logo" role="img" aria-label="Desperados" style="--logo: url(/assets/brands/desperados.png); --ratio: 1.77; --h: 36px"></span></li>
-      <li><span class="client-logo" role="img" aria-label="Toyota" style="--logo: url(/assets/brands/toyota.svg); --ratio: 1.55; --h: 36px"></span></li>
-      <li><span class="client-logo" role="img" aria-label="Schweppes" style="--logo: url(/assets/brands/schweppes.png); --ratio: 1.06; --h: 48px"></span></li>
-      <li><span class="client-logo" role="img" aria-label="Nestlé" style="--logo: url(/assets/brands/nestle.png); --ratio: 0.97; --h: 40px"></span></li>
-      <li><span class="client-logo" role="img" aria-label="Mondelēz International" style="--logo: url(/assets/brands/mondelez.png); --ratio: 4.1; --h: 25px"></span></li>
-      <li><a href="/project/lexus-electrified/"><span class="client-logo" role="img" aria-label="Lexus" style="--logo: url(/assets/brands/lexus.svg); --ratio: 5.89; --h: 21px"></span></a></li>
-      <li><a href="/project/soap-and-glory-vanilla/"><span class="client-logo" role="img" aria-label="Soap &amp; Glory" style="--logo: url(/assets/brands/soap-and-glory.svg); --ratio: 4.67; --h: 23px"></span></a></li>
-    </ul>
-  </section>
-
-  <p class="faq-link" data-reveal><a href="/faq/">FAQs →</a></p>
 </main>
 
-<footer class="site-foot on-green"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
+<footer class="site-foot on-cream"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
 
-<script src="/js/about.js?v=20261020a" defer></script>
+<script src="/js/about.js?v=20261027a" defer></script>
 <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
 <script src="/js/cursor.js?v=20261027b" defer></script>
   <script type="module" src="/js/contact-sachet.js?v=20261024n"></script>
