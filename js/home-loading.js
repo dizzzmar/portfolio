@@ -35,7 +35,7 @@
     remove();
   }
   // Network or WebGL failures must never trap visitors behind the loader.
-  fallback = setTimeout(finish, 12000);
+  fallback = setTimeout(finish, 6000);
   addEventListener('pageshow', event => { if (event.persisted) finish(); });
   document.addEventListener('DOMContentLoaded', async () => {
     if (finished) return;

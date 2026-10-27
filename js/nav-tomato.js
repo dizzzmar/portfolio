@@ -1,7 +1,7 @@
 // TOMATE 3D EN EL LOGO · el tomate de la barra gira en todas las páginas (como en la portada, cuando sube al menú).
 // Se coloca encima del logo (.nav-logo o .case-logo). La imagen plana sigue debajo: se ve mientras carga
 // o si el navegador no tiene WebGL. three.js se carga cuando el navegador está libre, para no retrasar la página.
-// Es el mismo modelo (assets/models/tomato.glb) y la misma biblioteca (three.js desde jsDelivr) que usa la portada.
+// Es el mismo modelo que la portada, en versión ligera (assets/models/tomato-nav.glb), con three.js alojado en este mismo sitio.
 // Para ahorrar batería, el lienzo es un cuadrado pequeño alrededor del tomate y se dibuja a 30 fotogramas por segundo.
 
 const logo = document.querySelector('.nav-logo, .case-logo');

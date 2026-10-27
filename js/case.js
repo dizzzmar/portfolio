@@ -201,17 +201,24 @@
       track.addEventListener('pointerup', () => track.removeEventListener('pointermove', move), { once: true });
     });
     track.addEventListener('keydown', (e) => {
-      const k = { ArrowLeft: -5, ArrowRight: 5 }[e.key];
-      if (k && video.duration) { e.preventDefault(); video.currentTime = Math.min(video.duration, Math.max(0, video.currentTime + k)); }
+      if (!video.duration) return;
+      const k = { ArrowLeft: -5, ArrowDown: -5, ArrowRight: 5, ArrowUp: 5 }[e.key];
+      if (k) { e.preventDefault(); video.currentTime = Math.min(video.duration, Math.max(0, video.currentTime + k)); }
+      else if (e.key === 'Home') { e.preventDefault(); video.currentTime = 0; }
+      else if (e.key === 'End') { e.preventDefault(); video.currentTime = video.duration; }
     });
   });
+  // Con los controles ya montados la tarjeta es más alta: la tira se vuelve a medir (si no, quedan cortados hasta que termina de cargar la página)
+  requestAnimationFrame(() => dispatchEvent(new Event('resize')));
 })();
 
 // ---------- Atrás: vuelve a la portada exactamente donde estaba ----------
 // Si se llegó desde la web, usa el historial (js/home-intro.js guarda y restaura la posición).
 // Si no (por ejemplo, abriendo el proyecto directamente), el enlace lleva a /#work como siempre.
 (() => {
-  if (history.length < 2 || !document.referrer.startsWith(location.origin + '/')) return;
+  // Solo si se llegó desde la portada: desde otro proyecto o desde About, «atrás» devolvería a donde no se prometía (el enlace lleva a /#work)
+  const from = document.referrer.startsWith(location.origin + '/') ? new URL(document.referrer).pathname : '';
+  if (history.length < 2 || from !== '/') return;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.case-back').forEach((back) => back.addEventListener('click', (e) => {
     e.preventDefault();

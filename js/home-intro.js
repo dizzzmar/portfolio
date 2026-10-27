@@ -67,6 +67,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   // Volver a la portada desde Work: el tomate vuela de vuelta y la página sube a la vez (un solo gesto, sin tener que subir toda la página)
   function backToLanding() {
     wantWork = false;
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search); // la portada no debe seguir marcada como #work
     go(0);
     animateScroll(0, () => J.target <= 0);
   }
@@ -125,7 +126,9 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     if (J.simple && J.j <= 0.001 && J.target <= 0.001) J.simple = false; // el tomate ya llegó al centro: el próximo viaje es el completo
     // La página solo baja cuando el viaje está completo; hasta entonces la portada queda quieta
     // Bloqueada hasta que el viaje termina; salvo si la página ya está bajando (o ya bajó) a Work con el tomate todavía volando: bloquearla ahí la devolvería arriba del todo
-    body.classList.toggle('intro-lock', !(J.j >= 0.999 && J.target >= 1) && !scrolling && !(J.target >= 1 && scrollY > 4));
+    const locked = !(J.j >= 0.999 && J.target >= 1) && !scrolling && !(J.target >= 1 && scrollY > 4);
+    body.classList.toggle('intro-lock', locked);
+    if (workEl) workEl.inert = locked && J.target <= 0; // en la portada, el tabulador no entra en una lista que aún no se ve
     body.classList.toggle('work-engaged', J.j > 0.001 || J.target > 0);
     if (J.j > 0.02 || J.target > 0) hintDone = true; // quien ya ha empezado el viaje no necesita la pista
     hint?.classList.toggle('is-on', hintReady && !hintDone && !J.hold);
