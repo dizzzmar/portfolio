@@ -24,7 +24,7 @@
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/yarndings-12.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261027b">
-<link rel="stylesheet" href="/css/about.css?v=20261027b">
+<link rel="stylesheet" href="/css/about.css?v=20261027f">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
@@ -120,7 +120,11 @@
         <li><a href="/project/soap-and-glory-vanilla/"><span class="client-logo" role="img" aria-label="Soap &amp; Glory" style="--logo: url(/assets/brands/soap-and-glory.svg); --ratio: 4.67; --h: 23px"></span></a></li>
       </ul>
       <h2 class="sr-only">Values</h2>
-      <p class="shout shout-lime" data-reveal>For him, design and advertising should be a safe space that reflects inclusion and human rights. His work is pro-LGBTQ+, anti-racist, and feminist. No question. <span class="g" aria-hidden="true">y</span></p>
+      <!-- El tomate 3D gira delante de la frase y tapa parte de las letras (js/about-tomato.js); la imagen plana se ve mientras carga -->
+      <div class="deep-quote">
+        <p class="shout shout-lime" data-reveal>For him, design and advertising should be a safe space that reflects inclusion and human rights. His work is pro-LGBTQ+, anti-racist, and feminist. No question. <span class="g" aria-hidden="true">y</span></p>
+        <div class="tomato3d" aria-hidden="true" data-tomato3d><img src="/assets/images/tomato.webp" width="595" height="640" alt="" loading="lazy"></div>
+      </div>
     </div>
   </section>
 
@@ -149,6 +153,7 @@
 <footer class="site-foot on-cream"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
 
 <script src="/js/about.js?v=20261027a" defer></script>
+<script type="module" src="/js/about-tomato.js?v=20261027b"></script>
 <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
 <script src="/js/cursor.js?v=20261027b" defer></script>
   <script type="module" src="/js/contact-sachet.js?v=20261024n"></script>

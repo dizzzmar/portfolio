@@ -31,6 +31,7 @@ css/                       Diseño (colores, tipografías, tamaños)
 
 js/                        Comportamiento (animaciones, tomate 3D, carrusel…)
   home-*.js · room.js · not-found-*.js
+  about-tomato.js               El tomate 3D que gira delante de la frase de valores en About (se carga solo al acercarse; con «reducir movimiento», un fotograma quieto)
   project-stack.js         Carrusel de imágenes de los proyectos
   project-grid.js          Galería en cuadrícula infinita (hero de Soap & Glory)
 

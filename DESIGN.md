@@ -222,3 +222,5 @@ A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scr
 ## Ornaments (About)
 
 The small pixel ornaments on About (a robot face, a heart, a framed square, diamond and pinwheel patterns) are letters of **Yarndings 12**, a cross-stitch font (SIL OFL 1.1, self-hosted in `assets/fonts/yarndings-12.woff2`, never loaded from Google). They are decoration only (`aria-hidden`), set at 24–240 px, and every capability keeps the same ornament and colour in the legend and in the big band that drifts sideways while scrolling (still with reduced motion). They are the only use of this face; all text stays in Funnel.
+
+**The 3D tomato on About.** In the green block the tomato (`assets/models/tomato.glb`, loaded only when the block is about to show) turns in front of the values sentence and covers part of its letters, like an object put on top of a printed page. On phones it covers only the last line. The text stays in the page for screen readers; with reduced motion it is one still frame; the flat `tomato.webp` shows while it loads or without WebGL.
