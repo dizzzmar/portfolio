@@ -10,4 +10,4 @@ The visual direction borrows the fixed oblique camera, fine pixels, scattered gr
 
 Placement and final motion are pending review. This study does not modify the live portfolio pages.
 
-The shared render grid is 208×208 (roughly 150 pixels across the grass island, based on the reference frame). A final ordered-dither pass applies the same color stepping to fruit, grass and shadow. Grass detail is sized for that grid rather than adding subpixel blades.
+The shared render grid is 144×144 (roughly 100 pixels across the grass island, enlarged for a more pronounced pixel effect). A final ordered-dither pass applies the same color stepping to fruit, grass and shadow. Grass detail is sized for that grid rather than adding subpixel blades.

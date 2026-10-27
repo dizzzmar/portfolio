@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // A fixed low-resolution frame gives every surface the same pixel scale.
-const CONFIG = { resolution: 208, cycle: 5.6, jumpHeight: 0.72, seed: 71 };
+const CONFIG = { resolution: 144, cycle: 5.6, jumpHeight: 0.72, seed: 71 };
 const canvas = document.querySelector('canvas');
 const status = document.querySelector('#status');
 const pause = document.querySelector('#pause');
@@ -46,8 +46,8 @@ async function start() {
   renderer.setSize(CONFIG.resolution, CONFIG.resolution, false);
   renderer.setPixelRatio(1);
   renderer.setClearColor(0xffffff);
-  // The reference's island spans about 150 distinct pixels. Render the whole
-  // diorama on one grid, then apply the same ordered color dithering everywhere.
+  // Render the whole diorama on one deliberately chunky pixel grid, then
+  // apply the same ordered color dithering everywhere.
   const target = new THREE.WebGLRenderTarget(CONFIG.resolution, CONFIG.resolution, {
     minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter,
   });
