@@ -1,0 +1,23 @@
+/* The loader is opt-in: a disabled or blocked script leaves the landing visible. */
+.home-loader { display: none; }
+.home-loading { overflow: hidden; }
+.home-loading body > :not(.home-loader):not(script) { visibility: hidden; }
+.home-loading .home-loader {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  background: #fff;
+  color: #333;
+  cursor: default;
+}
+.home-loader picture { display: block; width: min(92vw, 680px); aspect-ratio: 1; }
+.home-loader img { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.home-loader p { margin: -30px 0 0; padding: 0 0 24px; font: 12px Arial, sans-serif; }
+.home-loading.is-revealing body > :not(.home-loader):not(script) { visibility: visible; }
+.home-loading.is-revealing .home-loader { opacity: 0; transition: opacity 260ms ease-out; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+  .home-loading.is-revealing .home-loader { transition: none; }
+}
