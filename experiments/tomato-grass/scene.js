@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // A fixed low-resolution frame gives every surface the same pixel scale.
-const CONFIG = { resolution: 300, cycle: 5.6, jumpHeight: 0.72, seed: 71 };
+const CONFIG = { resolution: 208, cycle: 5.6, jumpHeight: 0.72, seed: 71 };
 const canvas = document.querySelector('canvas');
 const status = document.querySelector('#status');
 const pause = document.querySelector('#pause');
@@ -46,6 +46,34 @@ async function start() {
   renderer.setSize(CONFIG.resolution, CONFIG.resolution, false);
   renderer.setPixelRatio(1);
   renderer.setClearColor(0xffffff);
+  // The reference's island spans about 150 distinct pixels. Render the whole
+  // diorama on one grid, then apply the same ordered color dithering everywhere.
+  const target = new THREE.WebGLRenderTarget(CONFIG.resolution, CONFIG.resolution, {
+    minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter,
+  });
+  const pixelScene = new THREE.Scene();
+  const pixelCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const pixelMaterial = new THREE.ShaderMaterial({
+    uniforms: { frame: { value: target.texture } },
+    vertexShader: `varying vec2 uvPosition;
+      void main() { uvPosition = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+    fragmentShader: `uniform sampler2D frame; varying vec2 uvPosition;
+      float bayer(vec2 point) {
+        vec2 p = mod(floor(point), 4.0);
+        vec2 low = mod(p, 2.0), high = floor(p / 2.0);
+        float a = 2.0 * low.x + 3.0 * low.y - 4.0 * low.x * low.y;
+        float b = 2.0 * high.x + 3.0 * high.y - 4.0 * high.x * high.y;
+        return (4.0 * a + b + 0.5) / 16.0;
+      }
+      void main() {
+        gl_FragColor = texture2D(frame, uvPosition);
+        #include <colorspace_fragment>
+        float threshold = bayer(gl_FragCoord.xy);
+        gl_FragColor.rgb = clamp(floor(gl_FragColor.rgb * 23.0 + threshold) / 23.0, 0.0, 1.0);
+      }`,
+    depthTest: false, depthWrite: false,
+  });
+  pixelScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), pixelMaterial));
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-2.65, 2.65, 2.65, -2.65, 0.1, 30);
   camera.position.set(4, 5.5, 7);
@@ -57,11 +85,11 @@ async function start() {
   // Curved, tapered blades grow in small clumps, with a clear space for the fruit.
   const vertices = [], colors = [];
   const greens = [0x23852b, 0x3aa522, 0x65c431, 0x88d442, 0x1b702b];
-  for (let i = 0; i < 1800; i++) {
+  for (let i = 0; i < 1250; i++) {
     const angle = random() * Math.PI * 2, radius = Math.sqrt(random()) * 1.82;
     const x = Math.cos(angle) * radius, z = Math.sin(angle) * radius;
     if (radius < 0.7) continue;
-    const height = 0.09 + random() ** 2 * 0.30;
+    const height = 0.07 + random() ** 2 * 0.23;
     const width = 0.025 + random() * 0.032;
     const direction = random() * Math.PI * 2;
     const lean = 0.03 + random() * 0.12;
@@ -158,7 +186,10 @@ async function start() {
     tomato.rotation.z = Math.sin(elapsed * Math.PI * 2 / CONFIG.cycle) * 0.035;
     shadow.scale.setScalar(1 + height * 0.4);
     shadow.material.opacity = 0.65 - height * 0.35;
+    renderer.setRenderTarget(target);
     renderer.render(scene, camera);
+    renderer.setRenderTarget(null);
+    renderer.render(pixelScene, pixelCamera);
   }
   function syncControls() {
     pause.textContent = paused ? 'Play' : 'Pause';

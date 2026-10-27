@@ -9,3 +9,5 @@ The visual direction borrows the fixed oblique camera, fine pixels, scattered gr
 `CONFIG` in `scene.js` controls render resolution, loop duration, jump height and deterministic grass seed. The tomato anticipates, jumps and settles; Pause and Hop again also work with keyboard/touch. Reduced motion starts with a still frame, and background tabs stop rendering. Load failures show a readable message.
 
 Placement and final motion are pending review. This study does not modify the live portfolio pages.
+
+The shared render grid is 208×208 (roughly 150 pixels across the grass island, based on the reference frame). A final ordered-dither pass applies the same color stepping to fruit, grass and shadow. Grass detail is sized for that grid rather than adding subpixel blades.
