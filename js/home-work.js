@@ -153,7 +153,12 @@
     pill.setAttribute('aria-hidden', 'true');
     document.body.append(pill);
     let mouse = null;
-    const over = () => !!mouse && !!document.elementFromPoint(mouse.x, mouse.y)?.closest('.work-item > a');
+    // La etiqueta toma el color del proyecto sobre el que está
+    const over = () => {
+      const row = mouse && document.elementFromPoint(mouse.x, mouse.y)?.closest('.work-item');
+      if (row) { pill.style.setProperty('--pc', row.style.getPropertyValue('--pc')); pill.style.setProperty('--pc-ink', row.style.getPropertyValue('--pc-ink')); }
+      return !!row?.querySelector(':scope > a');
+    };
     // En la ventana entera (no solo en la sección): así, al entrar en una fila la etiqueta ya está donde está el ratón y no llega desde donde se quedó
     addEventListener('pointermove', (e) => {
       if (e.pointerType !== 'mouse') return;

@@ -217,3 +217,11 @@ A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scr
 - **Don't** use a serif, a third weight, shadows, gradients or borders to separate content.
 - **Don't** add third-party code, fonts, embeds or analytics without deciding it first (today none: three.js is self-hosted in `assets/vendor/three/`), and never put keys, passwords or personal data in the repository (see `CLAUDE.md`).
 - **Don't** animate sizes, margins or shadows.
+
+## Project colours (Work and project pages)
+
+Each project has two colours, `--pc` (the colour) and `--pc-ink` (the text that sits on it, 7:1 or better): Schweppes x The Gentlemen yellow `#ffc21a`, Lexus Electrified sky `#9fd0ff`, Soap & Glory pink `#ff9ec0`, Schweppes lime `#c8f05a`. They are set in the project's `<li>` in the Work list and on `<body>` of its page (the same two values), and they are the only place those colours exist; the pages stay white and the type stays black.
+
+- **Work.** A dot of the colour before the year; tags as outlined pills (the first fills with the colour when the row lights up); a highlighter under the name that draws left to right; a flat tray of the colour under the thumbnails, which also tilt a little (alternating -2.5 / 2.5 degrees); and the "View project" cursor button takes the colour. All of it lights up with the mouse over the row, keyboard focus, or the row at the centre of the screen on phones. With reduced motion nothing moves (colours still switch).
+- **Project page.** The gallery stands on a shelf of the colour (full width, from two thirds of the card height down); the tags are pills with the first one filled; "Go to film" is a filled pill; and at the end a tab in the colour of the next project (rounded top corners, like the loading curtain) with its name and an arrow links to it: Schweppes x The Gentlemen, Lexus, Soap & Glory, Schweppes and back.
+- **Adding a project:** pick its two colours, put them in its Work row and its page, and set the "next project" tab to the following project in the list.

@@ -58,7 +58,8 @@ Abre `project/<nombre>/index.html`. Los trozos editables están marcados con com
 2. Crea `assets/projects/<nombre-del-proyecto>/` y sube allí las imágenes (`.webp`, en dos tamaños: 800 y 1600 px de ancho) y los vídeos (`.mp4`).
 3. En el nuevo `index.html`, cambia `nombre-del-proyecto` por el nombre real (Ctrl+F, "reemplazar todo") y edita los textos marcados con `EDITA:`. La plantilla trae ejemplos de película, clip en bucle e imágenes: deja los que uses y borra el resto.
 4. Abre `templates/project-card.html`, copia el `<li>` y pégalo en la lista `work-list` de `index.html`, donde quieras que salga (el orden en el código = el orden en la página). Cada fila lleva siempre 8 miniaturas, sin huecos.
-5. Cuando esté listo, borra la línea `<meta name="robots" content="noindex">` de la página del proyecto y añade su dirección a `sitemap.xml`.
+5. Elige los dos colores del proyecto (`--pc` y el del texto encima, `--pc-ink`) y ponlos igual en su fila de la lista Work y en el `<body>` de su página; en la página, pon además la pestaña «Next project» (`case-next`) apuntando al siguiente de la lista.
+6. Cuando esté listo, borra la línea `<meta name="robots" content="noindex">` de la página del proyecto y añade su dirección a `sitemap.xml`.
 6. Si cambias un `.css` o un `.js`, sube el número `?v=` de sus enlaces en todas las páginas.
 
 ### Cambiar o añadir imágenes
