@@ -110,7 +110,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 
 ### Secondary
 - **Lincoln Green** (#125603): background of Privacy, FAQs and Machine, paired with Lime. On About it is the ink on cream paper (8.3:1) and the colour of one full-bleed block, again paired with Lime.
-- **About palette**: cream paper (#fff6ea), Lincoln Green ink (8.3:1), and, for the big shapes, blue (#3b7cc9), tomato orange (#f83d0c), pink (#ff8fb1) and yellow (#ffb81c). Text may use blue and a rose (#d93f73) only at large sizes (4:1); the pink, orange and yellow are never text.
+- **About palette**: cream paper (#fff6ea), Lincoln Green ink (8.3:1) and one blue (#3b7cc9, 4:1, large type only). The pixel tomatoes ripen through four tones: green (#6fae2f), yellow (#ffb81c), orange (#ff7a1a) and red (#f83d0c), each with its own highlight and shadow. They are images, never text.
 - **Lime** (#c3f380): all text and the cursor on green pages (6.98:1 on Lincoln Green). Secondary text on green runs at 80 % opacity (5.1:1).
 - **Night Green** (#0b2f04): the Room only, where the 3D scene sits in a darker green; its list is lime at 70 % (6.4:1).
 
@@ -219,10 +219,14 @@ A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scr
 - **Don't** add third-party code, fonts, embeds or analytics without deciding it first (today none: three.js is self-hosted in `assets/vendor/three/`), and never put keys, passwords or personal data in the repository (see `CLAUDE.md`).
 - **Don't** animate sizes, margins or shadows.
 
-## About: playful and maximalist, for grown-ups
+## About: maximalist, playful and ours
 
-About is the one page that breaks the one-family rule on purpose, after the reference the owner chose (angellotorres.com/about, structure only; no text, image or logo is copied). It uses three voices, only in big sentences: **Pixelify Sans** 600 in capitals (pixel type) for the first statement, the section titles and the email; **Playfair Display** 800 in capitals (serif) in rose for the second statement and the city; and Funnel for everything that is read. Both extra faces are SIL OFL and self-hosted (`assets/fonts/`), never loaded from Google.
+About is the loudest page, and it is built from the site's own things instead of borrowed ones. After a reference the owner liked (angellotorres.com/about) it keeps only the *ideas* (a huge name, a very large band of symbols that crops at the screen edges, a dark block, a 3D object in front of the text); nothing else is copied, and it stays in Funnel, our palette and our symbol: the tomato.
 
-The pixel shapes (checker, arrow, triangles, frame, dot, cross, diamond, block) are hand-drawn on a 12 x 12 grid as an inline SVG sprite and take the colour of the text (`.px`, `.c-*`). They are never faces, hearts or cute animals: the first version used cross-stitch ornaments (Yarndings) and read as childish. Each capability keeps the same shape in the legend and in the huge bands, which are cropped by the screen edges and drift sideways while scrolling, one band in each direction (still with reduced motion). Two shapes sit behind the portrait like stickers; the record and the film poster are tilted a few degrees.
-
-**The 3D tomato on About.** In the green block the tomato (`assets/models/tomato.glb`, loaded only when the block is about to show) turns in front of the values sentence and covers part of its letters, like an object put on top of a printed page. On phones it covers only the last line. The text stays in the page for screen readers; with reduced motion it is one still frame; the flat `tomato.webp` shows while it loads or without WebGL.
+- **The name is the hero.** "Mario Diz" is set as large as the width allows (up to 300 px, Funnel Display 600) and the "o" is a pixel tomato; the real "o" stays in the page for screen readers.
+- **Pixel tomatoes, hand-drawn** on a 16 x 16 grid as an inline SVG sprite (tomato and tomato slice; `.pix`, `.t-green`, `.t-yellow`, `.t-orange`, `.t-red`). One tomato per capability, ripening from green to red in the legend, and two huge bands of them (green to red and back, with slices) cropped by the screen edges, drifting sideways while scrolling, one band in each direction (still with reduced motion). Two more sit behind the portrait like stickers.
+- **The portrait** keeps its holographic tilt and has stepped (pixel) corners.
+- **Type stays in Funnel.** No pixel or serif typeface: the pixel look lives in the images. Large statements are Display 600; the first is green, the second blue.
+- **The green block** keeps the clients as thin table rows (hovering a cell fills it with lime and turns the logo green) and the values sentence, large and centred.
+- **The 3D tomato** (`assets/models/tomato.glb`, loaded only when the block is about to show) turns in front of the values sentence and covers part of its letters. It is drawn at very low resolution (one 3D pixel = 8 screen pixels) and enlarged without smoothing, so it reads as a pixel tomato too; its colours are boosted to match the drawn ones. On phones it covers only the last line. The text stays in the page for screen readers; with reduced motion it is one still frame; the flat pixel tomato shows while it loads or without WebGL.
+- **The record and the film poster** are tilted a few degrees, as if stuck on.

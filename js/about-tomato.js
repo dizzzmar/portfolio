@@ -1,11 +1,11 @@
 // TOMATE 3D EN ABOUT · el tomate gira delante de la frase de valores, tapando parte de las letras (el texto sigue ahí para los lectores de pantalla).
-// Es el modelo pequeño del logo (assets/models/tomato-nav.glb) y la biblioteca three.js alojada en el repositorio.
-// Se carga solo cuando el bloque está a punto de verse y se dibuja a 30 fotogramas por segundo solo mientras se ve; a 1,5 de resolución como máximo.
-// La imagen plana (tomato.webp) se ve mientras carga o si no hay WebGL. Con «reducir movimiento» se dibuja un solo fotograma, quieto.
+// Es el modelo completo del tomate (assets/models/tomato.glb) y la biblioteca three.js alojada en el repositorio.
+// Se carga solo cuando el bloque está a punto de verse y se dibuja a 30 fotogramas por segundo solo mientras se ve; 
+// Se dibuja en baja resolución (un píxel de 3D = 8 px de pantalla) y se amplía sin suavizar, así el tomate se ve de píxeles. El tomate de píxeles plano (.flat) se ve mientras carga o si no hay WebGL. Con «reducir movimiento» se dibuja un solo fotograma, quieto.
 
 const host = document.querySelector('[data-tomato3d]');
 if (host) {
-  const flat = host.querySelector('img');
+  const flat = host.querySelector('.flat');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let started = false, visible = false;
 
@@ -14,10 +14,10 @@ if (host) {
     const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
     const canvas = document.createElement('canvas');
     let renderer;
-    try { renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true }); } catch (e) { return; } // sin WebGL: se queda la imagen plana
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    try { renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false }); } catch (e) { return; } // sin WebGL: se queda la imagen plana
+    renderer.setPixelRatio(1); // resolución fija y baja: es lo que da el aspecto de píxeles (y gasta muy poco)
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    Object.assign(canvas.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', opacity: '0', transition: 'opacity .5s ease' });
+    Object.assign(canvas.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', opacity: '0', transition: 'opacity .5s ease', imageRendering: 'pixelated' });
     host.appendChild(canvas);
 
     const scene = new THREE.Scene();
@@ -26,7 +26,7 @@ if (host) {
     const VISIBLE = 2 * Math.tan(THREE.MathUtils.degToRad(35 / 2)) * 10; // altura que ve la cámara a 10 unidades
     const spinner = new THREE.Group();
     scene.add(spinner);
-    const resize = () => renderer.setSize(host.clientWidth, host.clientHeight, false);
+    const resize = () => { const n = Math.max(40, Math.round(host.clientWidth / 8)); renderer.setSize(n, n, false); };
     resize();
     addEventListener('resize', resize);
 

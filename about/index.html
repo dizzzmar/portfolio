@@ -22,10 +22,8 @@
 <script>document.documentElement.classList.add('js','has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
 <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/pixelify-sans-600.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/playfair-display-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261027b">
-<link rel="stylesheet" href="/css/about.css?v=20261027j">
+<link rel="stylesheet" href="/css/about.css?v=20261028c">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
@@ -45,8 +43,8 @@
   <link rel="stylesheet" href="/css/terminal.css?v=20261024b">
 </head>
 <body id="top">
-<!-- Formas de píxel (rejilla de 12×12), dibujadas a mano: se usan con <svg class="px"><use href="#px-..."/></svg> y toman el color del texto (ver css/about.css .px) -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="px-checker" viewBox="0 0 12 12"><path d="M0 0h3v1h-3zM6 0h3v1h-3zM0 1h3v1h-3zM6 1h3v1h-3zM0 2h3v1h-3zM6 2h3v1h-3zM3 3h3v1h-3zM9 3h3v1h-3zM3 4h3v1h-3zM9 4h3v1h-3zM3 5h3v1h-3zM9 5h3v1h-3zM0 6h3v1h-3zM6 6h3v1h-3zM0 7h3v1h-3zM6 7h3v1h-3zM0 8h3v1h-3zM6 8h3v1h-3zM3 9h3v1h-3zM9 9h3v1h-3zM3 10h3v1h-3zM9 10h3v1h-3zM3 11h3v1h-3zM9 11h3v1h-3z"/></symbol><symbol id="px-arrow" viewBox="0 0 12 12"><path d="M6 1h2v1h-2zM6 2h3v1h-3zM7 3h3v1h-3zM8 4h3v1h-3zM0 5h12v1h-12zM0 6h12v1h-12zM8 7h3v1h-3zM7 8h3v1h-3zM6 9h3v1h-3zM6 10h2v1h-2z"/></symbol><symbol id="px-tri_down" viewBox="0 0 12 12"><path d="M0 0h12v1h-12zM0 1h12v1h-12zM1 2h2v1h-2zM9 2h2v1h-2zM1 3h2v1h-2zM9 3h2v1h-2zM2 4h2v1h-2zM8 4h2v1h-2zM2 5h2v1h-2zM8 5h2v1h-2zM3 6h2v1h-2zM7 6h2v1h-2zM3 7h2v1h-2zM7 7h2v1h-2zM4 8h4v1h-4zM4 9h4v1h-4zM5 10h2v1h-2zM5 11h2v1h-2z"/></symbol><symbol id="px-tri_up" viewBox="0 0 12 12"><path d="M5 0h2v1h-2zM5 1h2v1h-2zM4 2h4v1h-4zM4 3h4v1h-4zM3 4h2v1h-2zM7 4h2v1h-2zM3 5h2v1h-2zM7 5h2v1h-2zM2 6h2v1h-2zM8 6h2v1h-2zM2 7h2v1h-2zM8 7h2v1h-2zM1 8h2v1h-2zM9 8h2v1h-2zM1 9h2v1h-2zM9 9h2v1h-2zM0 10h12v1h-12zM0 11h12v1h-12z"/></symbol><symbol id="px-frame" viewBox="0 0 12 12"><path d="M0 0h12v1h-12zM0 1h12v1h-12zM0 2h2v1h-2zM10 2h2v1h-2zM0 3h2v1h-2zM10 3h2v1h-2zM0 4h2v1h-2zM10 4h2v1h-2zM0 5h2v1h-2zM10 5h2v1h-2zM0 6h2v1h-2zM10 6h2v1h-2zM0 7h2v1h-2zM10 7h2v1h-2zM0 8h2v1h-2zM10 8h2v1h-2zM0 9h2v1h-2zM10 9h2v1h-2zM0 10h12v1h-12zM0 11h12v1h-12z"/></symbol><symbol id="px-dot" viewBox="0 0 12 12"><path d="M5 0h2v1h-2zM3 1h6v1h-6zM2 2h8v1h-8zM1 3h10v1h-10zM1 4h10v1h-10zM0 5h12v1h-12zM0 6h12v1h-12zM1 7h10v1h-10zM1 8h10v1h-10zM2 9h8v1h-8zM3 10h6v1h-6zM5 11h2v1h-2z"/></symbol><symbol id="px-cross" viewBox="0 0 12 12"><path d="M4 0h4v1h-4zM4 1h4v1h-4zM4 2h4v1h-4zM4 3h4v1h-4zM0 4h12v1h-12zM0 5h12v1h-12zM0 6h12v1h-12zM0 7h12v1h-12zM4 8h4v1h-4zM4 9h4v1h-4zM4 10h4v1h-4zM4 11h4v1h-4z"/></symbol><symbol id="px-diamond" viewBox="0 0 12 12"><path d="M5 0h2v1h-2zM4 1h4v1h-4zM3 2h2v1h-2zM7 2h2v1h-2zM2 3h2v1h-2zM8 3h2v1h-2zM1 4h2v1h-2zM9 4h2v1h-2zM0 5h2v1h-2zM10 5h2v1h-2zM0 6h2v1h-2zM10 6h2v1h-2zM1 7h2v1h-2zM9 7h2v1h-2zM2 8h2v1h-2zM8 8h2v1h-2zM3 9h2v1h-2zM7 9h2v1h-2zM4 10h4v1h-4zM5 11h2v1h-2z"/></symbol><symbol id="px-block" viewBox="0 0 12 12"><path d="M0 0h12v1h-12zM0 1h12v1h-12zM0 2h12v1h-12zM0 3h12v1h-12zM0 4h12v1h-12zM0 5h12v1h-12zM0 6h12v1h-12zM0 7h12v1h-12zM0 8h12v1h-12zM0 9h12v1h-12zM0 10h12v1h-12zM0 11h12v1h-12z"/></symbol></defs></svg>
+<!-- Dibujos de píxel (rejilla de 16×16), hechos a mano: <svg class="pix t-red"><use href="#px-tomato"/></svg>. El tomate cambia de color según su madurez con las clases t-green, t-yellow, t-orange y t-red (css/about.css) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="px-tomato" viewBox="0 0 16 16"><path style="fill:#125603" d="M6 0h2v1h-2zM7 1h2v1h-2zM7 2h2v1h-2z"/><path style="fill:#3f8a1f" d="M4 1h2v1h-2zM10 1h2v1h-2zM3 2h4v1h-4zM9 2h4v1h-4zM4 3h8v1h-8zM6 4h4v1h-4z"/><path style="fill:var(--tr,#f83d0c)" d="M2 4h4v1h-4zM10 4h4v1h-4zM1 5h14v1h-14zM0 6h2v1h-2zM4 6h11v1h-11zM0 7h2v1h-2zM4 7h10v1h-10zM0 8h2v1h-2zM3 8h11v1h-11zM0 9h14v1h-14zM0 10h13v1h-13zM1 11h11v1h-11zM1 12h9v1h-9zM2 13h6v1h-6zM3 14h2v1h-2z"/><path style="fill:var(--th,#ff9a7a)" d="M2 6h2v1h-2zM2 7h2v1h-2zM2 8h1v1h-1z"/><path style="fill:var(--ts,#b52a08)" d="M15 6h1v1h-1zM14 7h2v1h-2zM14 8h2v1h-2zM14 9h2v1h-2zM13 10h3v1h-3zM12 11h3v1h-3zM10 12h4v1h-4zM8 13h5v1h-5zM5 14h7v1h-7zM4 15h7v1h-7z"/></symbol><symbol id="px-slice" viewBox="0 0 16 16"><path style="fill:var(--tr,#f83d0c)" d="M4 1h8v1h-8zM2 2h12v1h-12zM1 3h2v1h-2zM7 3h2v1h-2zM13 3h2v1h-2zM1 4h1v1h-1zM14 4h1v1h-1zM0 5h2v1h-2zM14 5h2v1h-2zM0 6h2v1h-2zM7 6h2v1h-2zM14 6h2v1h-2zM0 7h2v1h-2zM7 7h2v1h-2zM14 7h2v1h-2zM0 8h2v1h-2zM7 8h2v1h-2zM14 8h2v1h-2zM0 9h2v1h-2zM7 9h2v1h-2zM14 9h2v1h-2zM0 10h2v1h-2zM14 10h2v1h-2zM1 11h1v1h-1zM14 11h1v1h-1zM1 12h2v1h-2zM7 12h2v1h-2zM13 12h2v1h-2zM2 13h12v1h-12zM4 14h8v1h-8z"/><path style="fill:#ff8a6e" d="M3 3h4v1h-4zM9 3h4v1h-4zM2 4h3v1h-3zM6 4h4v1h-4zM11 4h3v1h-3zM2 5h12v1h-12zM2 6h2v1h-2zM5 6h2v1h-2zM9 6h3v1h-3zM13 6h1v1h-1zM2 7h5v1h-5zM9 7h5v1h-5zM2 8h5v1h-5zM9 8h5v1h-5zM2 9h2v1h-2zM5 9h2v1h-2zM9 9h3v1h-3zM13 9h1v1h-1zM2 10h12v1h-12zM2 11h3v1h-3zM6 11h4v1h-4zM11 11h3v1h-3zM3 12h4v1h-4zM9 12h4v1h-4z"/><path style="fill:#ffe9a0" d="M5 4h1v1h-1zM10 4h1v1h-1zM4 6h1v1h-1zM12 6h1v1h-1zM4 9h1v1h-1zM12 9h1v1h-1zM5 11h1v1h-1zM10 11h1v1h-1z"/></symbol></defs></svg>
 
 
 <!-- Barra de navegación (igual que la del resto de la web) -->
@@ -64,48 +62,46 @@
 
 <main>
 
-  <!-- 1. Presentación: nombre, una tira de formas de píxel y dos frases enormes (la primera en píxeles verdes, la segunda en serif rosa). La foto holográfica va a la derecha,
-       con formas detrás, y se queda fija mientras se lee (en escritorio). -->
+  <!-- 1. Presentación: el nombre enorme, con un tomate de píxeles en lugar de la «o»; debajo, la presentación en grande y la foto holográfica con las esquinas escalonadas
+       (y dos tomates de píxeles detrás, como pegatinas), fija mientras se lee en escritorio. -->
   <header class="intro">
-    <h1 class="name" data-reveal>Mario Diz</h1>
-    <p class="strip" aria-hidden="true"><svg class="px c-yellow" aria-hidden="true" focusable="false"><use href="#px-checker"/></svg><svg class="px c-green" aria-hidden="true" focusable="false"><use href="#px-arrow"/></svg><svg class="px c-orange" aria-hidden="true" focusable="false"><use href="#px-tri_down"/></svg><svg class="px c-pink" aria-hidden="true" focusable="false"><use href="#px-block"/></svg><svg class="px c-blue" aria-hidden="true" focusable="false"><use href="#px-frame"/></svg></p>
-    <!-- Foto holográfica con dos formas de píxel detrás, como pegatinas; todo se queda fijo mientras se lee la presentación (en escritorio) -->
-    <div class="portrait-wrap">
-      <svg class="px c-blue deco deco-a" aria-hidden="true" focusable="false"><use href="#px-frame"/></svg>
-      <svg class="px c-yellow deco deco-b" aria-hidden="true" focusable="false"><use href="#px-checker"/></svg>
-      <div class="portrait holo" data-holo data-reveal>
-        <div class="holo-card">
-          <img src="/assets/images/mario-600.webp" srcset="/assets/images/mario-600.webp 600w, /assets/images/mario-956.webp 956w" sizes="(max-width: 760px) 55vw, 25vw" width="956" height="1280" alt="Portrait of Mario Diz, smiling, in a green knitted sweater against a blue-green painted backdrop">
-          <span class="holo-shine" aria-hidden="true"></span>
-          <span class="holo-glare" aria-hidden="true"></span>
-        </div>
-      </div>
-      </div>
-    <!-- EDITA: tu presentación. Tres párrafos: dos enormes (píxeles verdes y serif rosa) y el resto en texto normal -->
+    <h1 class="name" data-reveal>Mari<svg class="pix t-red name-tom" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><span class="sr-only">o</span> Diz</h1>
+    <!-- EDITA: tu presentación. Tres párrafos: dos grandes (verde y azul) y el resto en texto normal -->
     <div class="story">
       <p class="shout" data-reveal>Mario’s taste was formed in front of Almodóvar films.</p>
-      <p class="shout shout-serif" data-reveal>An art director with three years of experience, a background in art history and a love of maximalism, he follows every idea from the first spark to the final image.</p>
+      <p class="shout shout-blue" data-reveal>An art director with three years of experience, a background in art history and a love of maximalism, he follows every idea from the first spark to the final image.</p>
       <p class="lede" data-reveal>In the AI team at WPP Production Madrid he blends the leading image and video AI tools with traditional craft and high-quality retouching, and he is a self-taught 3D artist.</p>
+    </div>
+    <div class="portrait-wrap">
+      <svg class="pix t-green deco deco-a" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg>
+      <svg class="pix t-red deco deco-b" aria-hidden="true" focusable="false"><use href="#px-slice"/></svg>
+    <div class="portrait holo" data-holo data-reveal>
+      <div class="holo-card">
+        <img src="/assets/images/mario-600.webp" srcset="/assets/images/mario-600.webp 600w, /assets/images/mario-956.webp 956w" sizes="(max-width: 760px) 55vw, 25vw" width="956" height="1280" alt="Portrait of Mario Diz, smiling, in a green knitted sweater against a blue-green painted backdrop">
+        <span class="holo-shine" aria-hidden="true"></span>
+        <span class="holo-glare" aria-hidden="true"></span>
+      </div>
+    </div>
     </div>
   </header>
 
-  <!-- 2. Lo que hace: cada capacidad con su forma y su color; debajo, formas enormes de lado a lado, cortadas por los bordes (se desplazan al hacer scroll, js/about.js) -->
+  <!-- 2. Lo que hace: cada capacidad con un tomate más o menos maduro; debajo, tomates enormes de lado a lado, cortados por los bordes (se desplazan al hacer scroll, js/about.js) -->
   <section class="what" aria-labelledby="what-title">
     <h2 class="sr-only" id="what-title">Art direction &amp; visual design</h2>
-    <!-- EDITA: una <li> por capacidad (y su forma/color: ver el sprite de arriba y las clases c-* en css/about.css) -->
+    <!-- EDITA: una <li> por capacidad (y su madurez: t-green, t-yellow, t-orange o t-red) -->
     <ul class="legend" data-reveal>
-      <li><svg class="px c-blue" aria-hidden="true" focusable="false"><use href="#px-frame"/></svg>Key visuals</li>
-      <li><svg class="px c-green" aria-hidden="true" focusable="false"><use href="#px-cross"/></svg>AI creative</li>
-      <li><svg class="px c-orange" aria-hidden="true" focusable="false"><use href="#px-tri_up"/></svg>3D &amp; product imagery</li>
-      <li><svg class="px c-pink" aria-hidden="true" focusable="false"><use href="#px-arrow"/></svg>Audiovisual</li>
+      <li><svg class="pix t-green" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg>Key visuals</li>
+      <li><svg class="pix t-yellow" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg>AI creative</li>
+      <li><svg class="pix t-orange" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg>3D &amp; product imagery</li>
+      <li><svg class="pix t-red" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg>Audiovisual</li>
     </ul>
     <div class="band" aria-hidden="true" data-band>
-      <div class="band-track"><svg class="px c-yellow" aria-hidden="true" focusable="false"><use href="#px-checker"/></svg><svg class="px c-green" aria-hidden="true" focusable="false"><use href="#px-arrow"/></svg><svg class="px c-orange" aria-hidden="true" focusable="false"><use href="#px-tri_down"/></svg><svg class="px c-pink" aria-hidden="true" focusable="false"><use href="#px-block"/></svg><svg class="px c-blue" aria-hidden="true" focusable="false"><use href="#px-frame"/></svg><svg class="px c-green" aria-hidden="true" focusable="false"><use href="#px-tri_up"/></svg><svg class="px c-yellow" aria-hidden="true" focusable="false"><use href="#px-dot"/></svg><svg class="px c-orange" aria-hidden="true" focusable="false"><use href="#px-cross"/></svg><svg class="px c-blue" aria-hidden="true" focusable="false"><use href="#px-checker"/></svg></div>
+      <div class="band-track"><svg class="pix t-green" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-yellow" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-orange" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-red" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-red" aria-hidden="true" focusable="false"><use href="#px-slice"/></svg><svg class="pix t-red" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-orange" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-yellow" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-green" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg></div>
     </div>
   </section>
 
   <!-- 3. Bloque verde de lado a lado: clientes en filas (sus logos en /assets/brands se pintan todos del mismo color, ver .client-logo en css/about.css;
-       --ratio es ancho/alto del logo y --h su altura; las marcas que tienen proyecto enlazan a él) y los valores en grande con el tomate 3D delante -->
+       --ratio es ancho/alto del logo y --h su altura; las marcas que tienen proyecto enlazan a él) y los valores en grande con el tomate 3D (pixelado) delante -->
   <section class="deep" data-deep>
     <div class="deep-in">
       <h2 class="deep-title" id="clients-title" data-reveal>Selected clients</h2>
@@ -125,10 +121,11 @@
       <li><a href="/project/soap-and-glory-vanilla/"><span class="client-logo" role="img" aria-label="Soap &amp; Glory" style="--logo: url(/assets/brands/soap-and-glory.svg); --ratio: 4.67; --h: 23px"></span></a></li>
       </ul>
       <h2 class="sr-only">Values</h2>
-      <!-- El tomate 3D gira delante de la frase y tapa parte de las letras (js/about-tomato.js); la imagen plana se ve mientras carga -->
+      <!-- El tomate 3D gira delante de la frase y tapa parte de las letras (js/about-tomato.js); se dibuja en baja resolución para que se vea de píxeles.
+           Debajo va el tomate de píxeles plano: se ve mientras carga o si no hay WebGL -->
       <div class="deep-quote">
         <p class="shout shout-lime" data-reveal>For him, design and advertising should be a safe space that reflects inclusion and human rights. His work is pro-LGBTQ+, anti-racist, and feminist. No question.</p>
-        <div class="tomato3d" aria-hidden="true" data-tomato3d><img src="/assets/images/tomato.webp" width="595" height="640" alt="" loading="lazy"></div>
+        <div class="tomato3d" aria-hidden="true" data-tomato3d><svg class="pix t-red flat" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg></div>
       </div>
     </div>
   </section>
@@ -154,9 +151,9 @@
     </a>
   </section>
 
-  <!-- Segunda tira, otra vez al final: otras formas y se mueve en sentido contrario -->
+  <!-- Segunda tira, otra vez al final: otras combinaciones y se mueve en sentido contrario -->
   <div class="band band-end" aria-hidden="true" data-band data-dir="-1">
-    <div class="band-track"><svg class="px c-pink" aria-hidden="true" focusable="false"><use href="#px-cross"/></svg><svg class="px c-yellow" aria-hidden="true" focusable="false"><use href="#px-tri_up"/></svg><svg class="px c-green" aria-hidden="true" focusable="false"><use href="#px-checker"/></svg><svg class="px c-blue" aria-hidden="true" focusable="false"><use href="#px-dot"/></svg><svg class="px c-orange" aria-hidden="true" focusable="false"><use href="#px-arrow"/></svg><svg class="px c-green" aria-hidden="true" focusable="false"><use href="#px-diamond"/></svg><svg class="px c-yellow" aria-hidden="true" focusable="false"><use href="#px-block"/></svg><svg class="px c-blue" aria-hidden="true" focusable="false"><use href="#px-tri_down"/></svg><svg class="px c-pink" aria-hidden="true" focusable="false"><use href="#px-frame"/></svg></div>
+    <div class="band-track"><svg class="pix t-red" aria-hidden="true" focusable="false"><use href="#px-slice"/></svg><svg class="pix t-green" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-yellow" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-red" aria-hidden="true" focusable="false"><use href="#px-slice"/></svg><svg class="pix t-orange" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-red" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-red" aria-hidden="true" focusable="false"><use href="#px-slice"/></svg><svg class="pix t-green" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg><svg class="pix t-red" aria-hidden="true" focusable="false"><use href="#px-tomato"/></svg></div>
   </div>
 </main>
 

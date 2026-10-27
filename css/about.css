@@ -1,26 +1,17 @@
 /* ABOUT — estilos de about/index.html.
-   Maximalista y con humor, pero de adultos: papel crema, tinta verde Lincoln, un bloque verde de lado a lado con texto lima, frases enormes en píxeles y en serif,
-   formas de píxel dibujadas a mano (sprite al principio del HTML) que se cortan por los bordes y se mueven con el scroll, y el tomate 3D delante del texto.
-   Tres voces, solo en frases grandes: Pixelify Sans (píxeles), Playfair Display (serif) y Funnel (el resto). El texto corrido siempre es Funnel.
-   Orden: colores y base · formas · barra de navegación · presentación · capacidades y tira · bloque verde · cierre · móvil · movimiento. */
+   Maximalista, con humor y nuestro: papel crema, tinta verde Lincoln, un bloque verde de lado a lado con texto lima, el nombre enorme con un tomate de píxeles en lugar de la «o»,
+   tomates de píxeles dibujados a mano (sprite al principio del HTML) en todas sus madureces, tiras de tomates cortadas por los bordes que se mueven con el scroll,
+   y el tomate 3D delante del texto, dibujado en baja resolución para que se vea de píxeles. Una sola familia de texto (Funnel); el píxel vive en las imágenes.
+   Orden: colores y base · tomates de píxeles · barra de navegación · presentación · capacidades y tira · bloque verde · cierre · móvil · movimiento. */
 
 :root {
   --bg: var(--cream);
   --ink: var(--green);     /* el texto sobre crema: 8,3:1 */
-  --blue: #3b7cc9;         /* 4:1 sobre crema: solo para texto grande y formas */
-  --rose: #d93f73;         /* 4:1 sobre crema: la frase en serif */
-  --orange: #f83d0c;       /* rojo tomate: solo formas (no es texto) */
-  --pink: #ff8fb1;         /* solo formas */
-  --yellow: #ffb81c;       /* solo formas */
+  --blue: #3b7cc9;         /* 4:1 sobre crema: solo para texto grande */
   --rule: rgba(195, 243, 128, .3); /* líneas finas sobre el bloque verde */
-  --pixel: "Pixelify Sans", "Courier New", monospace;
-  --serif: "Playfair Display", Georgia, serif;
   --gutter: 20px;
   --margin: clamp(24px, 6vw, 96px); /* margen a los lados de la página */
 }
-
-@font-face { font-family: "Pixelify Sans"; src: url("/assets/fonts/pixelify-sans-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
-@font-face { font-family: "Playfair Display"; src: url("/assets/fonts/playfair-display-800.woff2") format("woff2"); font-weight: 800; font-display: swap; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -42,13 +33,13 @@ ul { list-style: none; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---------- Formas de píxel: <svg class="px c-…"><use href="#px-…"/></svg> (el sprite está al principio de about/index.html) ---------- */
-.px { display: block; flex: none; width: 1em; height: 1em; fill: currentColor; shape-rendering: crispEdges; }
-.c-blue { color: var(--blue); }
-.c-green { color: var(--ink); }
-.c-orange { color: var(--orange); }
-.c-pink { color: var(--pink); }
-.c-yellow { color: var(--yellow); }
+/* ---------- Tomates de píxeles: <svg class="pix t-…"><use href="#px-tomato"/></svg> (el sprite está al principio de about/index.html) ---------- */
+.pix { display: block; flex: none; width: 1em; height: 1em; shape-rendering: crispEdges; }
+/* Cada tomate tiene tres tonos (cuerpo, brillo y sombra); cambian con la madurez */
+.t-green  { --tr: #6fae2f; --th: #a8d764; --ts: #417a1a; }
+.t-yellow { --tr: #ffb81c; --th: #ffe08a; --ts: #c78400; }
+.t-orange { --tr: #ff7a1a; --th: #ffb36b; --ts: #c25400; }
+.t-red    { --tr: #f83d0c; --th: #ff9a7a; --ts: #b52a08; }
 
 /* ---------- Barra de navegación (como la de la home) ---------- */
 .nav {
@@ -84,51 +75,41 @@ body .nav-links a, body .site-foot.on-cream, body .site-foot.on-cream a { color:
 main { padding: 0 var(--margin); }
 
 /* ---------- 1. Presentación ---------- */
-/* Rejilla de 4 columnas para toda la página: nombre y formas arriba, la presentación en las tres primeras y la foto (con sus formas) en la cuarta, fija mientras se lee. */
+/* Rejilla de 4 columnas para toda la página: el nombre ocupa todo el ancho; debajo, la presentación en las tres primeras y la foto en la cuarta, fija mientras se lee. */
 .intro, .hello {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   column-gap: var(--gutter);
 }
 .intro {
-  grid-template-areas: "name strip . portrait" "story story story portrait";
-  grid-template-rows: auto 1fr;
+  grid-template-areas: "name name name name" "story story story portrait";
   align-items: start;
-  padding-top: calc(var(--nav-h) + clamp(16px, 4vh, 48px));
+  padding-top: calc(var(--nav-h) + clamp(8px, 3vh, 32px));
 }
 
 .name {
   grid-area: name;
-  font-family: var(--pixel);
-  font-size: clamp(17px, 1.5vw, 24px);
-  font-weight: 600;
-  letter-spacing: .02em;
-  line-height: 1;
-  text-transform: uppercase;
+  margin-left: -.04em; /* alinea la tinta de la M con el margen */
+  font-family: var(--font-display);
+  font-size: clamp(52px, 18vw, 300px);
+  font-weight: var(--fw-title);
+  letter-spacing: -.06em;
+  line-height: .9;
+  white-space: nowrap;
 }
-.strip { grid-area: strip; display: flex; align-items: center; gap: 10px; font-size: clamp(16px, 1.5vw, 22px); }
+/* El tomate de píxeles ocupa el sitio de la «o» (que sigue ahí para los lectores de pantalla) */
+.name .name-tom { display: inline-block; width: .8em; height: .8em; margin: 0 .03em 0 .02em; vertical-align: -.02em; }
 
-.story { grid-area: story; margin-top: clamp(40px, 9vh, 104px); }
-/* Frases enormes: la primera, en píxeles verdes; la segunda, en serif rosa. La primera línea entra con sangría, como en un libro. */
+.story { grid-area: story; margin-top: clamp(24px, 5vh, 64px); }
+/* Frases grandes: la primera en verde y la segunda en azul */
 .shout {
-  font-family: var(--pixel);
-  font-size: clamp(34px, 5.6vw, 88px);
-  font-weight: 600;
-  letter-spacing: -.01em;
-  line-height: 1;
-  text-indent: 22%;
-  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.8vw, 60px);
+  font-weight: var(--fw-title);
+  letter-spacing: -.035em;
+  line-height: 1.06;
 }
-.shout-serif {
-  margin-top: .45em;
-  color: var(--rose);
-  font-family: var(--serif);
-  font-size: clamp(28px, 4.3vw, 68px);
-  font-weight: 800;
-  letter-spacing: 0;
-  line-height: 1.02;
-  text-indent: 11%;
-}
+.shout-blue { margin-top: .5em; color: var(--blue); }
 .lede {
   max-width: 30em;
   margin: clamp(32px, 7vh, 80px) 0 0 calc((100% - 2 * var(--gutter)) / 3 + var(--gutter)); /* empieza en la segunda columna */
@@ -137,23 +118,24 @@ main { padding: 0 var(--margin); }
   letter-spacing: -.01em;
 }
 
-/* La foto ocupa la cuarta columna y se queda fija mientras se lee; detrás lleva dos formas de píxel, como pegatinas */
+/* La foto ocupa la cuarta columna y se queda fija mientras se lee; detrás lleva dos tomates de píxeles, como pegatinas */
 .portrait-wrap {
   grid-area: portrait;
   position: sticky;
   top: calc(var(--nav-h) + 24px);
   width: 100%;
+  margin-top: clamp(24px, 5vh, 64px);
 }
 .portrait { position: relative; z-index: 1; width: 100%; aspect-ratio: 4 / 5; }
 .deco { position: absolute; z-index: 0; height: auto; aspect-ratio: 1; }
-.deco-a { width: 56%; top: -7%; right: -9%; }
-.deco-b { width: 46%; bottom: -10%; left: -22%; }
+.deco-a { width: 34%; top: -9%; right: -10%; }
+.deco-b { width: 34%; bottom: -8%; left: -7%; }
 
 /* Foto holográfica, como una carta coleccionable: la carta se inclina en 3D (--rx, --ry), un brillo metalizado con los
    colores de la propia foto (aguamarina, azul y el verde del jersey) se desplaza con el ángulo (--mx, --my) y un reflejo de luz
    sigue al cursor (--gx, --gy). --o es la intensidad. El brillo solo va en el fondo: la máscara mario-bg-mask.png deja fuera
    a la persona (recortada de la foto); se encuadra igual que la foto (cover, 50% 25%).
-   Las variables las mueve js/about.js; sin él (o con "reducir movimiento") la foto se ve normal. */
+   Las esquinas van escalonadas, como un píxel gordo (clip-path). Las variables las mueve js/about.js; sin él (o con "reducir movimiento") la foto se ve normal. */
 .holo { perspective: 900px; }
 .holo-card {
   position: relative;
@@ -161,7 +143,7 @@ main { padding: 0 var(--margin); }
   height: 100%;
   overflow: hidden;
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  box-shadow: var(--sx, 0px) calc(18px + var(--sy, 0px)) 40px -18px rgba(0, 25, 0, .45); /* la sombra se mueve con la inclinación */
+  clip-path: polygon(0 28px, 14px 28px, 14px 14px, 28px 14px, 28px 0, calc(100% - 28px) 0, calc(100% - 28px) 14px, calc(100% - 14px) 14px, calc(100% - 14px) 28px, 100% 28px, 100% calc(100% - 28px), calc(100% - 14px) calc(100% - 28px), calc(100% - 14px) calc(100% - 14px), calc(100% - 28px) calc(100% - 14px), calc(100% - 28px) 100%, 28px 100%, 28px calc(100% - 14px), 14px calc(100% - 14px), 14px calc(100% - 28px), 0 calc(100% - 28px));
   will-change: transform;
 }
 .holo-card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; } /* la cara arriba */
@@ -186,12 +168,12 @@ main { padding: 0 var(--margin); }
   opacity: var(--o, 0);
 }
 
-/* ---------- 2. Capacidades y tira de formas ---------- */
+/* ---------- 2. Capacidades y tira de tomates ---------- */
 .what { margin-top: clamp(56px, 12vh, 140px); }
 .legend { display: grid; grid-template-columns: repeat(2, max-content); gap: 16px clamp(32px, 8vw, 128px); }
-.legend li { display: flex; align-items: center; gap: .7em; font-family: var(--pixel); font-size: clamp(16px, 1.4vw, 22px); font-weight: 600; letter-spacing: .02em; line-height: 1.1; text-transform: uppercase; }
-.legend .px { font-size: 1.5em; }
-/* La tira: formas enormes de lado a lado de la pantalla, cortadas por los bordes. js/about.js la desplaza al hacer scroll (--drift). */
+.legend li { display: flex; align-items: center; gap: .6em; font-size: var(--fs-lead); font-weight: var(--fw-bold); letter-spacing: -.01em; line-height: 1.1; }
+.legend .pix { font-size: 1.9em; }
+/* La tira: tomates enormes de lado a lado de la pantalla, cortados por los bordes. js/about.js la desplaza al hacer scroll (--drift). */
 .band {
   margin: clamp(24px, 5vh, 48px) calc(-1 * var(--margin)) 0;
   padding-top: clamp(24px, 5vh, 56px);
@@ -200,13 +182,12 @@ main { padding: 0 var(--margin); }
 }
 .band-track {
   display: flex;
-  gap: 2.4vw;
+  gap: 2.2vw;
   width: max-content;
   margin-left: -4vw;
-  font-size: clamp(110px, 16vw, 250px);
+  font-size: clamp(110px, 17vw, 260px);
   transform: translateX(var(--drift, 0px));
 }
-
 /* La segunda tira cierra la página, sin línea arriba y pegada al pie */
 .band-end { margin-top: clamp(32px, 8vh, 96px); padding-top: 0; border-top: 0; }
 
@@ -221,12 +202,11 @@ main { padding: 0 var(--margin); }
 .deep :focus-visible { outline-color: var(--lime); }
 .deep-title {
   margin-bottom: clamp(20px, 4vh, 40px);
-  font-family: var(--pixel);
-  font-size: clamp(28px, 3.6vw, 56px);
-  font-weight: 600;
-  letter-spacing: 0;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 76px);
+  font-weight: var(--fw-title);
+  letter-spacing: -.045em;
   line-height: 1;
-  text-transform: uppercase;
 }
 .client-list {
   display: grid;
@@ -250,31 +230,31 @@ main { padding: 0 var(--margin); }
 }
 .deep-quote { position: relative; display: grid; align-items: center; min-height: calc(clamp(220px, 32vw, 460px) + 48px); margin-top: clamp(64px, 14vh, 160px); } /* alto para que el tomate quepa dentro del bloque verde */
 .shout-lime {
-  max-width: 20em;
+  max-width: 19em;
   margin: 0 auto;
-  font-size: clamp(26px, 3.8vw, 58px);
+  font-size: clamp(30px, 4.6vw, 70px);
   text-align: center;
-  text-indent: 0;
 }
-/* El tomate 3D delante de la frase (js/about-tomato.js): tapa parte de las letras, como un objeto puesto encima del texto. Debajo va la imagen plana. */
-.tomato3d { position: absolute; z-index: 1; left: 62%; top: 54%; width: clamp(220px, 32vw, 460px); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; }
-.tomato3d img { width: 100%; height: 100%; object-fit: contain; }
+/* El tomate 3D delante de la frase (js/about-tomato.js): tapa parte de las letras, como un objeto puesto encima del texto. Se dibuja en baja resolución y se amplía sin suavizar
+   (image-rendering), así se ve de píxeles. Debajo va el tomate de píxeles plano. */
+.tomato3d { position: absolute; z-index: 1; left: 62%; top: 54%; width: clamp(220px, 30vw, 430px); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; }
+.tomato3d .flat { width: 100%; height: 100%; }
+.tomato3d canvas { image-rendering: pixelated; filter: saturate(1.7) contrast(1.12) brightness(1.08); } /* a esta resolución el modelo queda apagado: se avivan los colores para igualar a los tomates dibujados */
 /* En el bloque verde el punto del cursor pasa a lima (el rojo daría 2,4:1 sobre el verde); js/about.js pone la clase */
 body.on-deep .cursor-dot b { background: var(--lime) !important; }
 
 /* ---------- 4. Cierre: dónde está, correo y la estantería ---------- */
 .hello { padding: clamp(72px, 14vh, 160px) 0 clamp(32px, 6vh, 64px); align-items: start; }
 .hello-text { grid-column: 1 / 4; }
-.hello-place {
-  color: var(--rose);
-  font-family: var(--serif);
-  font-size: clamp(30px, 4.2vw, 68px);
-  font-weight: 800;
+.hello-place, .hello-mail {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 5vw, 76px);
+  font-weight: var(--fw-title);
+  letter-spacing: -.045em;
   line-height: 1.02;
-  text-transform: uppercase;
 }
-.hello-mail { margin-top: .15em; font-family: var(--pixel); font-size: clamp(24px, 3.7vw, 60px); font-weight: 600; line-height: 1.05; }
-.hello-mail a { text-decoration: underline; text-decoration-thickness: .08em; text-underline-offset: .14em; transition: opacity .2s; }
+.hello-place { color: var(--blue); }
+.hello-mail a { overflow-wrap: anywhere; text-decoration: underline; text-decoration-thickness: .06em; text-underline-offset: .1em; transition: opacity .2s; }
 .hello-mail a:hover { opacity: .7; }
 /* LinkedIn y FAQs: una fila; sus enlaces llevan la raya animada de toda la web (css/cursor.css) */
 .hello-more { display: flex; flex-wrap: wrap; gap: 8px 32px; margin-top: clamp(20px, 4vh, 40px); font-weight: var(--fw-bold); }
@@ -285,7 +265,7 @@ body.on-deep .cursor-dot b { background: var(--lime) !important; }
 }
 /* Now playing: el disco y la película de The room, un poco torcidos, como pegados */
 .now-playing { grid-column: 4; display: grid; grid-template-columns: 1fr 1fr; gap: 12px var(--gutter); text-decoration: none; }
-.now-playing h2 { grid-column: 1 / -1; font-family: var(--pixel); font-size: 17px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; }
+.now-playing h2 { grid-column: 1 / -1; font-size: inherit; font-weight: var(--fw-bold); }
 .np-row { display: block; }
 .np-row img { width: 100%; aspect-ratio: 1; object-fit: cover; rotate: -3deg; transition: rotate .4s var(--ease-out); }
 .np-row .np-film { aspect-ratio: 400 / 571; rotate: 2.5deg; }
@@ -295,28 +275,25 @@ body.on-deep .cursor-dot b { background: var(--lime) !important; }
 .np-more { text-decoration: underline; text-underline-offset: 3px; }
 .now-playing:hover .np-more { opacity: .7; }
 
-/* Tabletas: las formas de detrás de la foto, más pegadas para no tocar la frase */
-@media (min-width: 761px) and (max-width: 1100px) { .deco-b { width: 34%; left: -8%; } }
-
-/* ---------- Móvil ---------- */
+/* ---------- Tabletas y móvil ---------- */
+@media (min-width: 761px) and (max-width: 1100px) { .deco-b { width: 30%; left: -5%; } }
 @media (max-width: 760px) {
   :root { --gutter: 16px; }
   .nav-links a { padding: 0 10px; font-size: var(--fs-s); }
   .nav-links { margin-right: -10px; }
-  .intro { grid-template-columns: 1fr 1fr; grid-template-areas: "name strip" "story story" "portrait portrait"; }
-  .strip { justify-self: end; gap: 7px; font-size: 14px; }
-  .story { margin-top: 40px; }
-  .shout { text-indent: 12%; font-size: clamp(32px, 9.4vw, 56px); }
-  .shout-serif { text-indent: 8%; font-size: clamp(28px, 7.8vw, 46px); }
+  .intro { grid-template-columns: 1fr; grid-template-areas: "name" "story" "portrait"; }
+  .story { margin-top: 24px; }
+  .shout { font-size: clamp(28px, 8vw, 46px); }
   .lede { margin-left: 0; }
   .portrait-wrap { position: relative; width: 62%; margin: 48px 0 64px 8%; }
   .deco-a { right: -12%; }
-  .deco-b { bottom: -6%; left: -12%; width: 38%; }
+  .deco-b { bottom: -6%; left: -14%; width: 38%; }
   .legend { grid-template-columns: 1fr; gap: 16px; }
-  .band-track { margin-left: -8vw; font-size: 34vw; gap: 5vw; }
+  .band-track { margin-left: -8vw; font-size: 36vw; gap: 5vw; }
   .client-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .deep-quote { min-height: 0; padding-bottom: 30vw; }
   .tomato3d { left: 72%; top: calc(100% - 28vw); width: 46vw; } /* en móvil el tomate tapa solo las últimas líneas */
+  .hello-place, .hello-mail { font-size: clamp(26px, 8vw, 38px); } /* el correo (22 letras) cabe en una línea */
   .hello { grid-template-columns: 1fr; row-gap: 56px; }
   .hello-text, .now-playing { grid-column: 1; }
   .now-playing { max-width: 420px; }
