@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export function createRoomLighting({ scene, camera, renderer, canvas, hint, reduced, onChange }) {
+export function createRoomLighting({ scene, camera, renderer, canvas, reduced, onChange }) {
   const beam = new THREE.SpotLight(0xffc38a, 0, 0, Math.PI / 26, .8, 2);
   beam.name = 'Cursor flashlight';
   beam.castShadow = true;
@@ -37,7 +37,6 @@ export function createRoomLighting({ scene, camera, renderer, canvas, hint, redu
   function setDark(value) {
     if (dark === value) return;
     dark = value;
-    hint.hidden = !dark;
     document.body.classList.toggle('room-dark', dark);
     if (!dark) {
       for (const [light, visible] of lights) light.visible = visible;
@@ -54,7 +53,6 @@ export function createRoomLighting({ scene, camera, renderer, canvas, hint, redu
     renderer.shadowMap.needsUpdate = true;
     onChange(dark);
   }
-  hint.querySelector('button').addEventListener('click', () => setDark(false));
   addEventListener('keydown', event => {
     if (event.key === 'Escape' && dark) setDark(false);
   });

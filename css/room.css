@@ -3,32 +3,33 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { min-height: 100%; }
-body { background: #140d09; color: #f3f0df; font-family: var(--font-ui); }
+/* La sala va en el verde Lincoln «de noche» (--night, el mismo que el fondo de la escena en js/room.js) con texto lima, como About, FAQs y Machine */
+:root { --night: #0b2f04; }
+body { background: var(--night); color: var(--lime); font-family: var(--font-ui); }
 #room { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 
 /* ---------- Barra de navegación: igual que la de la home ---------- */
-:root { --nav-h: 64px; --panel: 380px; }
-.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 9; height: var(--nav-h); display: flex; align-items: center; gap: 16px; padding: 0 24px; pointer-events: none; }
+:root { --panel: clamp(380px, 34vw, 560px); } /* la columna de texto crece con la pantalla; la habitación ocupa el resto */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 9; height: var(--nav-h); display: flex; align-items: center; gap: 16px; padding: 0 var(--bar-gutter); pointer-events: none; }
 .nav > * { pointer-events: auto; }
 .nav-logo { flex: none; width: 44px; height: 44px; border-radius: 50%; }
 .nav-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.nav-logo:focus-visible, .nav-links a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.nav-logo:focus-visible, .nav-links a:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
 .nav-links { display: flex; gap: 32px; margin-left: auto; list-style: none; }
-.nav-links a { color: rgba(255, 255, 255, 0.78); font-size: var(--fs-s); text-decoration: none; text-shadow: 0 1px 8px rgba(0, 20, 40, 0.25); transition: color 0.2s, text-shadow 0.2s; }
-.nav-links a:hover, .nav-links a[aria-current="page"] { color: #fff; }
+.nav-links a { color: var(--lime); font-size: var(--fs-s); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--lime); }
 
 /* ---------- Columna izquierda: título y objetos; la habitación ocupa el resto ---------- */
-.intro { position: fixed; z-index: 2; top: calc(var(--nav-h) + 48px); left: 24px; width: calc(var(--panel) - 48px); pointer-events: none; }
-/* Etiqueta pequeña como el "Selected work" de la home; los objetos usan el estilo
-   de los títulos de proyecto: negrita, mayúsculas, apretado */
-.intro-head { display: flex; justify-content: space-between; gap: 16px; }
-.intro h1 { font-size: var(--fs-xs); font-weight: 400; line-height: 1.4; color: #e9efe4; }
-.object-nav { margin-top: 28px; display: flex; flex-direction: column; align-items: start; gap: 6px; pointer-events: auto; }
-.object-nav button { appearance: none; border: 0; background: transparent; padding: 0; cursor: pointer; text-align: left; color: rgba(243, 240, 223, 0.5); font: inherit; font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.055em; line-height: 0.95; text-transform: uppercase; transition: color 0.2s; }
-.object-nav button:hover, .object-nav button:focus-visible, .object-nav button.active { color: #f3f0df; }
-.object-nav button:focus-visible { outline: 2px solid #f3f0df; outline-offset: 4px; }
-.label { position: fixed; z-index: 3; left: calc(50% + var(--panel) / 2); bottom: 24px; transform: translateX(-50%); background: #f3f0df; color: #1a120c; box-shadow: 0 10px 30px #00000055, 0 0 24px #ffb27a44; padding: 10px 18px; font-size: var(--fs-s); border-radius: 999px; pointer-events: none; white-space: nowrap; }
-.label[hidden], .sticker-slot[hidden] { display: none; }
+.intro { position: fixed; z-index: 2; top: calc(var(--nav-h) + 24px); left: 24px; width: calc(var(--panel) - 48px); pointer-events: none; }
+/* Misma estructura que About, FAQs y Privacy: título de página grande en negrita (--fs-h1) y debajo, la lista en tamaño de lectura (negrita = lo que orienta) */
+.intro-head h1 { font-family: var(--font-display); font-size: var(--fs-h1); font-weight: var(--fw-title); letter-spacing: var(--tracking-display); line-height: var(--lh-tight); color: var(--lime); }
+.object-nav { margin-top: 40px; display: flex; flex-direction: column; align-items: start; gap: 10px; pointer-events: auto; }
+/* Cada objeto: negrita a tamaño de lectura, lima al 80 % (5,1:1); la sala o el objeto elegido, lima pleno y subrayado, como la página actual en el menú */
+.object-nav button { appearance: none; border: 0; background: transparent; padding: 0; cursor: pointer; text-align: left; color: rgba(195, 243, 128, 0.8); font: inherit; font-size: var(--fs-read); font-weight: var(--fw-bold); line-height: var(--lh-ui); text-underline-offset: .18em; text-decoration: underline transparent; transition: color 0.2s, text-decoration-color 0.2s; }
+.object-nav button:hover, .object-nav button:focus-visible, .object-nav button.active { color: var(--lime); }
+.object-nav button.active { text-decoration-color: currentColor; }
+.object-nav button:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
+.sticker-slot[hidden] { display: none; }
 
 /* ---------- Pegatina "Now playing" ---------- */
 .sticker-slot.floating { position: fixed; z-index: 3; left: calc(50% + var(--panel) / 2); bottom: 26px; transform: translateX(-50%); pointer-events: none; font-size: var(--fs-s); }
@@ -38,33 +39,30 @@ body { background: #140d09; color: #f3f0df; font-family: var(--font-ui); }
 /* La esquina que se dobla al despegar la pegatina: el dorso del papel, con sombra en el pliegue */
 .sticker-flap { position: absolute; right: 0; bottom: 0; width: 0; height: 0; background: linear-gradient(to bottom right, #fffaf0 0%, #ece3cc 38%, #c4b99f 49.5%, transparent 50%); pointer-events: none; }
 .status { position: fixed; z-index: 2; bottom: 72px; left: calc(50% + var(--panel) / 2); width: min(280px, calc(100vw - 40px)); transform: translateX(-50%); text-align: center; font-size: var(--fs-s); line-height: 1.4; transition: opacity .3s; }
-.status[hidden], .room-light-hint[hidden] { display: none; }
+.status[hidden] { display: none; }
 .status.is-ready { opacity: 0; }
-.room-loading-meter { display: block; width: min(240px, 60vw); height: 1px; margin: 14px auto 0; background: #92b88933; overflow: hidden; }
-.room-loading-meter i { display: block; height: 100%; background: #a9c99d; transform-origin: left; animation: room-loading 1.8s ease-in-out infinite; }
+.room-loading-meter { display: block; width: min(240px, 60vw); height: 1px; margin: 14px auto 0; background: rgba(195, 243, 128, .2); overflow: hidden; }
+.room-loading-meter i { display: block; height: 100%; background: var(--lime); transform-origin: left; animation: room-loading 1.8s ease-in-out infinite; }
 .has-progress .room-loading-meter i { animation: none; transform: scaleX(var(--room-progress, 0)); transition: transform .15s; }
-.status button, .room-light-hint button { font: inherit; color: inherit; background: transparent; border: 0; border-bottom: 1px solid currentColor; cursor: pointer; }
-.room-light-hint { position: fixed; z-index: 3; left: calc(50% + var(--panel) / 2); bottom: 28px; transform: translateX(-50%); display: flex; gap: 8px 18px; justify-content: center; flex-wrap: wrap; width: max-content; max-width: calc(100vw - 28px); font-size: var(--fs-s); color: #e8c8a6; }
-.room-light-hint button:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
-.room-dark .label, .room-dark .sticker-slot { display: none; }
+.status button { font: inherit; color: inherit; background: transparent; border: 0; border-bottom: 1px solid currentColor; cursor: pointer; }
+.room-dark .sticker-slot { display: none; }
 @keyframes room-loading { 0%, 100% { transform: translateX(-70%) scaleX(.3); } 50% { transform: translateX(70%) scaleX(.6); } }
 @media (max-width: 900px) {
   .status { bottom: 150px; }
-  .room-light-hint { bottom: 126px; width: calc(100vw - 28px); }
-}
+  }
 @media (prefers-reduced-motion: reduce) { .room-loading-meter i { animation: none; transform: scaleX(.3); } }
 /* Móviles y ventanas estrechas: la habitación ocupa la pantalla y la lista va abajo */
 @media (max-width: 900px) {
   :root { --panel: 0px; }
   .intro { top: calc(var(--nav-h) + 16px); left: 14px; right: 14px; width: auto; }
   .object-nav { position: fixed; left: 14px; right: 14px; bottom: 52px; margin: 0; flex-direction: row; flex-wrap: wrap; gap: 4px 16px; }
-  .object-nav button { font-size: var(--fs-l); }
-  .label, .sticker-slot.floating { bottom: 112px; }
+  .object-nav { gap: 0 16px; }
+  .object-nav button { display: inline-flex; align-items: center; min-height: 44px; } /* zona táctil de 44 px */
+  .sticker-slot.floating { bottom: 152px; } /* por encima de la lista de objetos, que ocupa dos filas */
   .sticker-slot.floating { font-size: var(--fs-xs); }
 }
 @media (max-width: 700px) {
-  :root { --nav-h: 56px; }
-  .nav { gap: 10px; padding: 0 14px; }
+  .nav { gap: 10px; }
   .nav-logo { width: 36px; height: 36px; }
   .nav-links { gap: 14px; }
   .nav-links a { font-size: var(--fs-s); }
@@ -72,7 +70,8 @@ body { background: #140d09; color: #f3f0df; font-family: var(--font-ui); }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
 
 /* Pie mínimo: en escritorio, abajo a la izquierda (la sala queda a la derecha); en móvil, justo encima de la lista de objetos */
-.room-foot { position: fixed; z-index: 2; left: 24px; bottom: 24px; margin: 0; font-family: var(--font-ui); font-size: var(--fs-s); line-height: 1.4; color: rgba(243, 240, 223, .6); }
+.room-foot { position: fixed; z-index: 2; left: var(--bar-gutter); bottom: 24px; margin: 0; font-family: var(--font-ui); font-size: var(--fs-s); line-height: 1.4; color: rgba(195, 243, 128, .8); } /* 5,1:1 sobre el verde */
 .room-foot a { color: inherit; text-underline-offset: 3px; }
-.room-foot a:hover { color: #f3f0df; }
+@media (pointer: coarse) { .room-foot a { display: inline-block; padding-block: 14px; margin-block: -14px; } }
+.room-foot a:hover { color: var(--lime); }
 @media (max-width: 900px) { .room-foot { left: 14px; bottom: 16px; } } /* el pie va debajo de la lista de objetos; va después del pie base para ganarle */

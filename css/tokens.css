@@ -1,9 +1,44 @@
+@font-face {
+  font-family: "Funnel Sans";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url("/assets/fonts/funnel-sans-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Funnel Display";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/assets/fonts/funnel-display-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* TOKENS · la tipografía de toda la web en un solo sitio (la guía completa está en DESIGN.md).
    Se carga la primera en todas las páginas (menos "machine", que es a propósito otro estilo). Para cambiar un tamaño de texto, cámbialo aquí:
    no pongas tamaños sueltos (14px, 15px…) en los demás css; usa estas variables. */
 :root {
-  /* Letra: una sola, la del sistema (Helvetica Neue en Apple, Arial en el resto). Sin serif. */
-  --font-ui: "Helvetica Neue", Arial, sans-serif;
+  /* Pesos: solo dos. 700 para lo que orienta (título, entrada, títulos de bloque) y 400 para lo que se lee. */
+  --fw-bold: 700;
+  --fw-regular: 400;
+  /* Los títulos grandes (Funnel Display, --font-display) un escalón por debajo de la negrita: 600 en vez de 700 */
+  --fw-title: 600;
+  /* Ancho de lectura: el mismo para todo el texto corrido (entrada, descripciones, privacidad) */
+  --measure: 34em;
+  /* Espaciado de los nombres grandes: el mismo en Work, proyectos y barra */
+  --tracking-display: -.05em;
+  /* Tamaño de lectura: el mismo para la entrada, los títulos de bloque y el texto (16 px, como kellauren.design: todo el texto a un tamaño, y la jerarquía con el peso) */
+  --fs-read: 16px;
+  /* Verde y lima (About, Privacy y Machine): 6,98:1 entre sí. Lo secundario va al 80 % sobre verde (5,1:1). */
+  --green: #125603;
+  --lime: #c3f380;
+  /* Letra: la familia Funnel (dos archivos variables, pesos 400–800), alojada en este mismo repositorio (assets/fonts): no se pide nada a terceros.
+     Funnel Sans para todo lo que se lee y los textos pequeños (--font-ui); Funnel Display solo para títulos grandes (--font-display), que tiene remates más decorativos.
+     Mientras cargan (o si no cargan) se ve Helvetica Neue / Arial. Sin serif. */
+  --font-ui: "Funnel Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Funnel Display", "Helvetica Neue", Arial, sans-serif;
 
   /* Tamaños fijos: 6 escalones */
   --fs-xs: 11px;   /* etiquetas en mayúsculas, créditos, pies pequeños */
@@ -18,9 +53,21 @@
   --fs-h3: clamp(24px, 2.8vw, 44px);      /* títulos de sección y de proyecto (barra) */
   --fs-h2: clamp(40px, 5vw, 76px);        /* títulos grandes */
   --fs-h1: clamp(56px, 9vw, 140px);       /* título de página y nombres de proyecto */
+  --fs-menu: clamp(52px, 16vw, 84px);     /* los cuatro enlaces grandes del menú (apilados en móvil, en fila desde 821 px: ver abajo) */
 
-  /* Movimiento: una sola curva de salida para todo (rápida al empezar, frena suave). Duraciones en DESIGN.md */
+  /* Movimiento: dos curvas para todo. De salida (rápida al empezar, frena suave) y de ida y vuelta (arranca y frena: moverse por la pantalla). Duraciones en DESIGN.md */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);
+
+  /* Acento (botón «View project», selección y foco en Work): negro. Cambiar de color es cambiar esta línea. Menú: --menu-red es el panel del menú (con --cream da 4,5:1) */
+  --accent: #0c0c0b;
+  --cursor: #f83d0c; /* el punto del cursor sigue siendo rojo tomate */
+  --menu-red: #d03a22;
+  --cream: #fff6ea;
+
+  /* La barra de arriba: 64 px de alto y 24 px de margen a los lados (56 px y 14 px en móvil, hasta 700 px de ancho). Barra, tomate, pie y menú comparten estos dos valores */
+  --nav-h: 64px;
+  --bar-gutter: 24px;
 
   /* Resto de la tipografía */
   --tracking-label: .06em;                /* etiquetas en mayúsculas */
@@ -28,3 +75,5 @@
   --lh-ui: 1.3;                           /* menús y textos cortos */
   --lh-body: 1.45;                        /* texto corrido */
 }
+@media (min-width: 821px) { :root { --fs-menu: clamp(44px, 6.8vw, 112px); } }
+@media (max-width: 700px) { :root { --nav-h: 56px; --bar-gutter: 14px; } }

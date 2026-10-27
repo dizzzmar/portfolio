@@ -24,11 +24,11 @@ Director de arte que integra la IA dentro de la dirección de arte: no la usa so
 
 ## Capabilities and Constraints
 - Sitio estático (HTML, CSS y JavaScript sin framework), alojado en GitHub Pages en www.dizmar.xyz.
-- Tres proyectos publicados; una página de sellos (Stamps) pendiente de formulario (Tally) y de sellos reales.
-- Sala 3D (The room) con three.js, que se carga desde jsDelivr.
+- Tres proyectos publicados.
+- Sala 3D (The room) con three.js, alojado en el propio repositorio (assets/vendor/three).
 - Sin cookies, sin analítica, sin servicios de terceros que reciban datos de visitantes (ver la página de privacidad).
 - Idioma: inglés.
-- Pendiente de decidir: la integración del álbum 3D en The room y el escalonado de los sellos.
+- Pendiente de decidir: la integración del álbum 3D en The room.
 
 ## Brand Commitments
 - El tomate es el símbolo: logo, tomate 3D y la identidad que ya tiene la web.

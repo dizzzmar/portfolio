@@ -15,11 +15,10 @@ import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
 import { createWiiPlayer } from './room/wii-player.js?v=20261021wii5';
 import { createRoomLoading } from './room/loading.js?v=20261022p';
-import { createRoomLighting } from './room/lighting.js?v=20261022p';
+import { createRoomLighting } from './room/lighting.js?v=20261023a';
 import { addRoomRug } from './room/rug.js?v=20261022a';
 
 const canvas = document.getElementById('room');
-const label = document.getElementById('label');
 const status = document.getElementById('status');
 const nav = document.getElementById('object-nav');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -41,7 +40,7 @@ const scene = new THREE.Scene();
 // spotlight raking across the wall from the left, a cool moonlight rim from behind for contrast
 // (warm/cool, like a film still), and the tomato lamp doing most of the work (added on load).
 // On top: a soft bloom, a vignette, a warm grade and a little film grain (see `grade` below).
-scene.background = new THREE.Color('#140d09');
+scene.background = new THREE.Color('#0b2f04'); // verde Lincoln «de noche» (css/room.css: --night)
 const reflections = new THREE.PMREMGenerator(renderer);
 scene.environment = reflections.fromScene(new RoomEnvironment(renderer)).texture;
 reflections.dispose();
@@ -168,10 +167,9 @@ const wiiPlayer = createWiiPlayer({
 });
 const lighting = createRoomLighting({
   scene, camera, renderer, canvas, reduced,
-  hint: document.getElementById('room-light-hint'),
   onChange(dark) {
     if (lampFlicker) { lampFlicker.start = false; setLamp(dark ? 0 : 1); }
-    scene.background.set(dark ? '#030201' : '#140d09');
+    scene.background.set(dark ? '#020c01' : '#0b2f04');
     grade.uniforms.grain.value = dark ? 0 : .035;
     outline.enabled = bloom.enabled = !dark;
     const button = nav.querySelector('[data-object="tomato-lamp"]');
@@ -276,10 +274,8 @@ function highlight(selection) {
     ? meshes.filter(mesh => destinationFor(mesh)?.key === selection.item.key)
     : [];
   const track = selection?.item.track;
-  label.hidden = !selection || !!track;
   if (track) showSticker(track); else hideSticker();
   for (const button of nav.querySelectorAll('button')) button.classList.toggle('active', !!selection && button.textContent === selection.item.label);
-  if (selection && !track) label.textContent = selection.item.poster ? selection.item.poster.title : selection.item.label + ' +';
   canvas.style.cursor = selection ? 'pointer' : 'default';
   document.documentElement.classList.toggle('dot-hot', !!selection); // el punto rojo (js/cursor.js) crece sobre un objeto
 }
@@ -518,7 +514,8 @@ function freeArea() {
   const width = innerWidth, height = innerHeight;
   if (wiiPlayer.active) return { left: 24, top: 100, right: 24, bottom: 100 };
   const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 64;
-  const panel = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--panel')) || 0;
+  // En escritorio la columna de texto (título y lista) ocupa la izquierda y la habitación el resto; en móvil la habitación queda entre el título y la lista
+  const panel = innerWidth > 900 ? document.querySelector('.intro').getBoundingClientRect().right + 24 : 0;
   if (panel) return { left: panel, top: navH, right: 0, bottom: 24 };
   const intro = document.querySelector('.intro-head').getBoundingClientRect();
   const list = document.getElementById('object-nav').getBoundingClientRect();
@@ -661,6 +658,24 @@ function updatePoster(now) {
   const step = reduced ? 1 : dt * speed;
   posterReveal.value = target > posterReveal.value ? Math.min(1, posterReveal.value + step) : Math.max(0, posterReveal.value - step);
 }
+
+// ---------- Terminal (js/terminal.js) ----------
+// La terminal de la web (enlace «Terminal» del pie, o la tecla `) puede mover la sala: encender y apagar la luz, acercar la cámara a un objeto, abrir la Wii…
+// Solo se expone esto, nada más; terminal.js lo usa con `look`, `inspect`, `lights`, `play`, `flicker`, `sunset` y `zoom out`.
+window.dizRoom = {
+  lights(on) { if (lighting.dark === on) lighting.setDark(!on); },
+  focus(key) {
+    const item = destinations.find((d) => d.key === key);
+    if (!item || lighting.dark || wiiPlayer.active) return false;
+    highlight({ item, object: meshes.find((m) => destinationFor(m) === item) });
+    focusOn(item);
+    return true;
+  },
+  reset() { if (!wiiPlayer.active) resetFocus(); },
+  wii() { if (!lighting.dark) wiiPlayer.open(nav.querySelector('[data-object="wii"]')); },
+  flicker() { if (lampFlicker && !lighting.dark && !reduced) lampFlicker.start = null; },
+  sunset(on) { sunset.visible = on === undefined ? !sunset.visible : on; renderer.shadowMap.needsUpdate = true; },
+};
 
 let lastFrame = performance.now();
 function frame() {

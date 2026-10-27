@@ -13,7 +13,7 @@
 -->
 <html lang="en">
 <head>
-  <script>document.documentElement.classList.add('js')</script>
+  <script>document.documentElement.classList.add('js','has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mario Diz — Art director &amp; visual designer in Madrid · dizmar</title>
@@ -34,26 +34,30 @@
   <link rel="icon" href="/favicon.ico" sizes="48x48">
   <link rel="icon" href="/assets/images/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/css/tokens.css?v=20261021g">
-  <link rel="stylesheet" href="/css/home.css?v=20261022h">
-<link rel="stylesheet" href="/css/footer.css?v=20261021r">
-  <link rel="stylesheet" href="/css/typography.css?v=20261021g">
-<link rel="stylesheet" href="/css/transitions.css?v=20261021g">
+  <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/tokens.css?v=20261027b">
+  <link rel="stylesheet" href="/css/home.css?v=20261027b">
+<link rel="stylesheet" href="/css/footer.css?v=20261025k">
+  <link rel="stylesheet" href="/css/typography.css?v=20261024b">
+<link rel="stylesheet" href="/css/transitions.css?v=20261025k">
   <!-- Al pasar el ratón por una card, Chrome prepara la página del proyecto por adelantado:
        se abre al instante y la animación de apertura siempre llega a tiempo -->
   <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        "three": "/assets/vendor/three/build/three.module.min.js",
+        "three/addons/": "/assets/vendor/three/examples/jsm/"
       }
     }
   </script>
 <script src="/js/transitions.js?v=20261020p"></script>
 <link rel="stylesheet" href="/css/home-loading.css?v=20261027b">
 <script src="/js/home-loading.js?v=20261027b"></script>
-<link rel="stylesheet" href="/css/cursor.css?v=20261021k">
-  <link rel="stylesheet" href="/css/contact-sachet.css?v=20261022a">
+<link rel="stylesheet" href="/css/cursor.css?v=20261027b">
+  <link rel="stylesheet" href="/css/contact-sachet.css?v=20261026e">
+  <link rel="stylesheet" href="/css/terminal.css?v=20261024b">
+  <link rel="stylesheet" href="/css/menu.css?v=20261026g">
 </head>
 <body class="intro-lock" data-intro="work"> <!-- El tomate gira en la landing; solo sube al pulsar Work. -->
   <div class="home-loader" role="status" aria-live="polite" aria-label="Loading portfolio">
@@ -77,6 +81,7 @@
       <li><a href="/about/">About</a></li>
       <li><a href="mailto:hey.mariodiz@gmail.com?subject=Hello%20from%20dizmar.xyz">Contact</a></li>
       <li><a href="/room.html">Room</a></li>
+    <li class="menu-li"><a class="menu-toggle" href="#menu" role="button" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false">Menu</a></li>
     </ul>
   </nav>
 
@@ -87,10 +92,8 @@
       <h1 class="sr-only" id="site-title">Mario Diz — art direction &amp; visual design, Madrid</h1>
       <!-- Tomate plano que se ve al instante mientras carga el 3D (luego se funde con él) -->
       <img class="tomato-placeholder" src="/assets/images/tomato.webp" width="595" height="640" alt="" aria-hidden="true" fetchpriority="high">
-      <div class="scroll-hint" id="hint" hidden>Scroll</div> <!-- oculto: el tomate sube solo -->
-      <!-- Cuando el tomate llega al menú aparece "Creative ___" y la segunda palabra cambia muy rápido.
-           EDITA la lista de palabras en js/home-intro.js -->
-      <p class="intro-line" aria-hidden="true"><span>Creative</span> <span class="intro-word">Designer</span></p>
+      <!-- La pista aparece si nadie mueve nada en unos segundos (js/home-intro.js); pulsarla hace el viaje entero -->
+      <button class="scroll-hint" id="hint" type="button">Scroll</button>
     </section>
 
     <!-- Work: lista de proyectos como 13322566869.com/works, con el estilo de esta web.
@@ -99,12 +102,30 @@
          EDITA: para un proyecto nuevo copia una fila y cambia su enlace, fecha, nombre, etiquetas y miniaturas. -->
     <section class="work-grid" id="work" aria-labelledby="work-title">
       <h2 class="sr-only" id="work-title">Selected work</h2>
-      <!-- Barra fija de arriba (se queda pegada al llegar). "Creative ___" en rojo: la palabra cambiante la mueve js/home-work.js -->
+      <!-- Barra fija de arriba (se queda pegada al llegar) -->
       <div class="work-top" aria-hidden="true">
-        <p class="wt-creative"><strong>Creative <span class="wb-word">Designer</span></strong><span>Selected work, 2025–26</span></p>
+        <p class="wt-creative"><strong>Creative <span class="wb-word">Designer</span></strong></p> <!-- la segunda palabra cambia sola (js/home-work.js) -->
         <p><strong>Based in Madrid</strong><span class="wt-time" data-madrid-time>&nbsp;</span></p> <!-- la hora de Madrid, al minuto (js/home-work.js) -->
       </div>
       <ol class="work-list">
+        <li class="work-item">
+          <a href="/project/schweppes-the-gentlemen/">
+            <span class="wi-date">2026</span>
+            <h3 class="wi-name is-long"><span>Schweppes x The&nbsp;Gentlemen</span></h3>
+            <ul class="wi-tags"><li>Key visual</li><li>TCCC</li></ul>
+            <div class="wi-strip" aria-hidden="true">
+              <!-- Una sola imagen cortada en trozos (is-slice): juntos se ven como una; el CSS reparte la imagen entre las miniaturas. No todas tienen que ser trozos (la sexta es otra imagen) -->
+              <span class="wi-slot is-slice" style="--i: 0"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
+              <span class="wi-slot is-slice" style="--i: 1"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
+              <span class="wi-slot is-slice" style="--i: 2"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
+              <span class="wi-slot is-slice" style="--i: 3"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
+              <span class="wi-slot is-slice" style="--i: 4"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
+              <span class="wi-slot"><img src="/assets/projects/schweppes-the-gentlemen/poster-yellow.webp" width="524" height="1080" loading="lazy" alt=""></span> <!-- la sexta no es un trozo: es el panel amarillo del póster cuadrado -->
+              <span class="wi-slot is-slice" style="--i: 6"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
+              <span class="wi-slot is-slice" style="--i: 7"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
+            </div>
+          </a>
+        </li>
         <li class="work-item">
           <a href="/project/lexus-electrified/">
             <span class="wi-date">2025</span>
@@ -164,11 +185,13 @@
   <footer class="site-foot"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
 
 
-  <!-- Scripts: texto "Creative ___" y vídeos · tomate 3D -->
-  <script src="/js/home-intro.js?v=20261022h" defer></script>
-  <script src="/js/home-work.js?v=20261020s" defer></script>
-  <script type="module" src="/js/home-tomato.js?v=20261022h"></script>
-<script src="/js/cursor.js?v=20261021c" defer></script>
-  <script type="module" src="/js/contact-sachet.js?v=20261022a"></script>
+  <!-- Scripts: recorrido del tomate y vídeos · tomate 3D -->
+  <script src="/js/home-intro.js?v=20261026p" defer></script>
+  <script src="/js/home-work.js?v=20261026l" defer></script>
+  <script type="module" src="/js/home-tomato.js?v=20261026k"></script>
+<script src="/js/cursor.js?v=20261027b" defer></script>
+  <script type="module" src="/js/contact-sachet.js?v=20261024n"></script>
+<script src="/js/menu.js?v=20261025d" defer></script>
+<script src="/js/terminal.js?v=20261026k" defer></script>
 </body>
 </html>

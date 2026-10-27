@@ -1,7 +1,6 @@
 // HOME · el tomate 3D (three.js): gira en el centro, lleva el anillo con el nombre "MARIO DIZ"
 // Con <body data-intro="work"> su posición la manda el viaje de js/home-intro.js (window.homeJourney.j, de 0 a 1), que sigue a la rueda y al dedo:
-//   el tomate sale del centro, rodea el texto "Creative ___", pasa por detrás de él y sube al logo de la barra; al volver, lo hace al revés.
-// Para que pase "por detrás" del texto, el lienzo cambia de capa (debajo del texto mientras lo cruza, encima del resto).
+//   el tomate sale del centro y sube en una curva al logo de la barra; al volver, lo hace al revés.
 // En la barra solo gira; para que pese poco, el lienzo se encoge a un recuadro alrededor del tomate
 // y se dibuja a 30 fotogramas por segundo.
 // Para cambiar el texto del anillo busca  fillText('MARIO DIZ' ...
@@ -10,13 +9,13 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const canvas = document.getElementById('scene');
-const hint = document.getElementById('hint');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Llegada desde el tomate de otra página (js/transitions.js pone land-fly): empieza en la barra y vuela al centro
 const FLY_FROM_NAV = document.documentElement.classList.contains('land-fly') && !reduced;
 
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+// En el móvil (3× de píxeles) un lienzo a pantalla completa con 2× cuesta el doble que con 1,5× y el tomate no gana nitidez que se vea
+renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
@@ -30,23 +29,37 @@ pivot.add(spinner);
 scene.add(pivot);
 
 // ---------- Name ring ----------
-// "MARIO DIZ", once, printed on an open cylinder that circles the tomato.
+// "Mario Diz", once, printed on an open cylinder that circles the tomato.
 // It spins the opposite way; its far side shows faintly through.
+// The size of the letters is the height of the band (RING_H, in tomato heights): raise it to make the name bigger.
+const RING_R = 0.6;   // radius: just outside the tomato, whose body reaches 0.47 from its axis
+const RING_H = 0.21;  // height of the band (was 0.15)
+const RING_PX = Math.round(3200 * RING_H / (2 * Math.PI * RING_R)); // canvas height with the same proportions as the band
+const FONT_PX = Math.round(RING_PX * 0.72);
 function nameTexture() {
   // The canvas is as wide (relative to its height) as the ring is around,
   // so the letters keep their proportions once wrapped.
   const c = document.createElement('canvas');
   c.width = 3200;
-  c.height = 128;
+  c.height = RING_PX; // la altura del lienzo sigue a la del anillo: así las letras no se deforman
   const g = c.getContext('2d');
-  g.fillStyle = '#fff';
-  g.font = '700 92px "Helvetica Neue", Arial, sans-serif';
-  g.textAlign = 'center';
-  g.textBaseline = 'middle';
-  g.fillText('MARIO DIZ', c.width / 2, c.height / 2 + 4);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  // The same letter as the rest of the site (Funnel Display, bold: css/tokens.css). A canvas can't wait for a web font by itself,
+  // so it is drawn once with the fallback and again as soon as the font is ready.
+  const paint = () => {
+    g.clearRect(0, 0, c.width, c.height);
+    g.fillStyle = '#fff';
+    g.font = `600 ${FONT_PX}px "Funnel Display", "Helvetica Neue", Arial, sans-serif`;
+    if ('letterSpacing' in g) g.letterSpacing = `${-Math.round(FONT_PX * 0.033)}px`; // a little tight, like the titles
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText('Mario Diz', c.width / 2, c.height / 2 + Math.round(FONT_PX * 0.043));
+    tex.needsUpdate = true;
+  };
+  paint();
+  document.fonts?.load(`600 ${FONT_PX}px "Funnel Display"`).then(paint).catch(() => {});
   return tex;
 }
 
@@ -65,8 +78,7 @@ function setTint(v) {
 }
 
 const ringTex = nameTexture();
-// Radius 0.6: just outside the tomato, whose body reaches 0.47 from its axis
-const ringGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.15, 128, 1, true);
+const ringGeo = new THREE.CylinderGeometry(RING_R, RING_R, RING_H, 128, 1, true);
 const ringBack = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
   map: ringTex, side: THREE.BackSide, transparent: true, opacity: 0.35, depthWrite: false,
 }));
@@ -77,7 +89,7 @@ ringBack.renderOrder = 0;
 ringFront.renderOrder = 2;
 ring.add(ringBack, ringFront);
 
-new GLTFLoader().load('/assets/models/tomato.glb', (gltf) => {
+new GLTFLoader().load('/assets/models/tomato.glb?v=20261025b', (gltf) => {
   const model = gltf.scene;
   // Center the model and normalize it to a height of 1 unit
   const box = new THREE.Box3().setFromObject(model);
@@ -116,7 +128,6 @@ function resize() {
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   if (cropped) setCrop(true); else renderer.setSize(width, height, false);
-  measureText();
 }
 addEventListener('resize', resize);
 
@@ -129,7 +140,7 @@ function unitsPerPixel() {
 // The stem puts the model's center above the body: the body sits 9% of the
 // tomato's size below it. Measured from renders on desktop and phone.
 const BODY_OFFSET = 0.09;
-const firstNavLink = document.querySelector('.nav-links a');
+const navBar = document.querySelector('.nav'); // el tomate se acopla a la altura central de la barra (los enlaces de la barra pueden estar ocultos tras el botón Menu)
 
 function layout(progress) {
   const upp = unitsPerPixel();
@@ -144,7 +155,7 @@ function layout(progress) {
   // Screen position of the tomato's center, in pixels from the top-left
   const xPx = THREE.MathUtils.lerp(width / 2, margin + dockPx / 2, progress);
   // Docked, the body's center lines up with the middle of the nav links
-  const r = firstNavLink.getBoundingClientRect();
+  const r = navBar.getBoundingClientRect();
   const dockY = (r.top + r.bottom) / 2 - dockPx * BODY_OFFSET;
   const yPx = THREE.MathUtils.lerp(h.top + h.height / 2, dockY, progress);
 
@@ -152,29 +163,12 @@ function layout(progress) {
   pivot.position.set((xPx - width / 2) * upp, (height / 2 - yPx) * upp, 0);
 }
 
-// ---------- El viaje: del centro, rodeando el texto "Creative ___", por detrás de él y hasta el logo de la barra ----------
+// ---------- El viaje: del centro de la portada al logo de la barra ----------
 // j = 0 portada · 1 en la barra. Es una función pura de j (sin estado): la rueda lo mueve hacia delante y hacia atrás y el tomate siempre
-// está donde toca. Tres tramos:
-//   A  sale del centro hacia el punto de abajo de una elipse que rodea el texto (el tomate pasa por delante),
-//   B  la recorre media vuelta: abajo → derecha → arriba. Al pasar por la derecha se mete detrás del texto y se hace más pequeño y oscuro,
-//   C  desde arriba, aún detrás, sigue hacia la izquierda, sale por el lado del texto, vuelve a ponerse delante y sube al logo.
-const lineEl = document.querySelector('.intro-line');
-const lineFirst = lineEl && lineEl.querySelector(':scope > span:first-child');
-let textW = 0, textH = 0; // tamaño estimado del bloque de texto (lo que el tomate debe rodear)
-function measureText() {
-  if (!lineFirst) return;
-  textW = lineFirst.offsetWidth * 1.3; // la palabra de abajo cambia de longitud: se deja holgura
-  textH = lineFirst.offsetHeight * 2;
-}
-document.fonts?.ready.then(measureText);
+// está donde toca. Sube en una curva suave (primero hacia arriba, luego hacia la izquierda) y se encoge hasta el tamaño del logo.
 const lerp = THREE.MathUtils.lerp;
 const smooth01 = (v) => { const t = THREE.MathUtils.clamp(v, 0, 1); return t * t * (3 - 2 * t); };
-let behindNow = false, lastPx = 0, leanNow = 0, spinBoost = 0;
-function setBehind(on) {
-  if (on === behindNow) return;
-  behindNow = on;
-  canvas.style.zIndex = on ? '0' : ''; // 0: debajo del texto (z-index 1), encima del cielo; vacío: el valor del CSS (encima de todo, también de la barra)
-}
+let lastPx = 0, leanNow = 0, spinBoost = 0;
 
 // ---------- Sorpresa: tres clics seguidos al tomate grande de la portada y cae un sobre de ketchup (js/home-sachet-egg.js) ----------
 const tomatoOnScreen = { x: 0, y: 0, r: 0, cx: 0, cy: 0, heroPx: 0 };
@@ -228,29 +222,7 @@ addEventListener('pointerup', (e) => {
   }).catch((err) => console.warn('Sachet surprise unavailable', err)).finally(() => { eggLoading = false; });
 });
 
-// Recorrido del viaje: puntos de paso y curva suave por ellos (se rehace solo si cambia la pantalla)
-let pathCache = null;
-const clamp01 = (v) => THREE.MathUtils.clamp(v, 0, 1);
-function buildPath(key, at, cx, cy, heroPx, dockX, dockY, dockPx) {
-  const phis = [0, Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 4, Math.PI];
-  const pts = [{ x: cx, y: cy, s: heroPx, tint: 1 }];
-  phis.forEach((phi) => { const o = at(phi); pts.push({ x: o.x, y: o.y, s: o.s, tint: 0.72 + 0.28 * (Math.cos(phi) + 1) / 2 }); });
-  const top = at(Math.PI), qx = cx - (cx - dockX) * 0.62, qy = top.y;
-  [0.34, 0.68, 1].forEach((t) => { // salida: Bézier desde arriba del texto, hacia la izquierda y sube al logo
-    const u = 1 - Math.pow(1 - t, 2.2);
-    pts.push({
-      x: (1 - u) * (1 - u) * top.x + 2 * (1 - u) * u * qx + u * u * dockX,
-      y: (1 - u) * (1 - u) * top.y + 2 * (1 - u) * u * qy + u * u * dockY,
-      s: lerp(top.s, dockPx, smooth01(t)), tint: lerp(0.72, 1, smooth01(t * 1.4)),
-    });
-  });
-  const DIV = 40, n = pts.length;
-  const curve = new THREE.CatmullRomCurve3(pts.map((p) => new THREE.Vector3(p.x, p.y, 0)), false, 'centripetal');
-  curve.arcLengthDivisions = DIV * (n - 1);
-  const L = curve.getLengths(), total = L[L.length - 1];
-  const f = pts.map((_, i) => L[i * DIV] / total); // dónde cae cada punto de paso en j
-  return { key, curve, f, size: pts.map((p) => p.s), tint: pts.map((p) => p.tint), swap: f[3], top: f[5] };
-}
+// Recorrido del viaje: una curva (Bézier) del centro al logo. Con «reducir movimiento» y en el vuelo directo desde otra página, línea recta.
 function journeyLayout(j, J) {
   const upp = unitsPerPixel();
   const h = hero.getBoundingClientRect();
@@ -258,46 +230,17 @@ function journeyLayout(j, J) {
   const heroPx = Math.min(width, h.height) * 0.5;
   const dockPx = width < 700 ? 36 : 44;
   const margin = width < 700 ? 14 : 24;
-  const r = firstNavLink.getBoundingClientRect();
+  const r = navBar.getBoundingClientRect();
   const dockX = margin + dockPx / 2;
   const dockY = (r.top + r.bottom) / 2 - dockPx * BODY_OFFSET;
-  let x, y, size, tint = 1, behind = false;
-  if (reduced || J.simple) { // sin órbita: vuelo directo del centro a la barra
-    const e = ease(j);
-    x = lerp(cx, dockX, e); y = lerp(cy, dockY, e); size = lerp(heroPx, dockPx, e);
-  } else {
-    if (!textW) measureText();
-    // Tamaño y radios de la órbita: el tomate cabe a los lados del texto y la pasada de atrás cruza su parte de arriba
-    let orbitPx = Math.min(width, h.height) * 0.3;
-    orbitPx = Math.min(orbitPx, Math.max(70, 2 * (width / 2 - textW / 2 - 10)));
-    let rx = textW / 2 + orbitPx * 0.5 + 14;
-    rx = Math.max(Math.min(rx, width / 2 - orbitPx * 0.55 - 4), width * 0.18);
-    const ry = Math.max(textH * 0.3, orbitPx * 0.4); // poco alto: la pasada de atrás cruza por detrás de las letras, no por encima
-    // La elipse va ligeramente inclinada (como una órbita vista en perspectiva): por la derecha sube y por la izquierda baja
-    const tilt = -0.2, ct = Math.cos(tilt), st = Math.sin(tilt);
-    const at = (phi) => {
-      const ox = rx * Math.sin(phi), oy = ry * Math.cos(phi);
-      return { x: cx + ox * ct - oy * st, y: cy + ox * st + oy * ct, s: orbitPx * (0.84 + 0.22 * Math.cos(phi)) };
-    };
-    // Todo el recorrido es una sola curva suave (spline) que pasa por unos puntos: centro → delante abajo → órbita por la derecha → arriba por detrás
-    // → hacia la izquierda y arriba hasta el logo. Se recorre a velocidad constante (j = fracción de la longitud), así no hay cambios bruscos de ritmo.
-    const key = [width, h.top, h.height, textW, textH, dockX, dockY, rx, ry, orbitPx].map((v) => Math.round(v)).join();
-    if (!pathCache || pathCache.key !== key) pathCache = buildPath(key, at, cx, cy, heroPx, dockX, dockY, dockPx);
-    const P = pathCache;
-    const pt = P.curve.getPointAt(clamp01(j));
-    x = pt.x; y = pt.y;
-    // Tamaño y tono: se interpolan suavemente entre los puntos de paso (sin saltos)
-    const k = P.f; let seg = 0;
-    while (seg < k.length - 2 && j > k[seg + 1]) seg++;
-    const e = smooth01((j - k[seg]) / Math.max(1e-6, k[seg + 1] - k[seg]));
-    size = lerp(P.size[seg], P.size[seg + 1], e);
-    tint = lerp(P.tint[seg], P.tint[seg + 1], e);
-    // Delante hasta pasar el lado derecho de la órbita; desde ahí detrás, y en cuanto deja de cruzar el texto, delante otra vez
-    if (j >= P.swap) behind = j < P.top ? true : Math.abs(x - cx) < textW / 2 + size / 2 && Math.abs(y - cy) < textH / 2 + size / 2;
-    J.dx = THREE.MathUtils.clamp((x - cx) / Math.max(1, rx), -1, 1); // para el paralaje del texto
-  }
-  setBehind(behind);
-  setTint(tint);
+  const e = ease(j), u = 1 - e;
+  // Punto de control: casi a la altura del logo y a medio camino en horizontal → la curva sube primero y gira a la izquierda al llegar
+  const straight = reduced || J.simple;
+  const px = straight ? (cx + dockX) / 2 : dockX + (cx - dockX) * 0.55;
+  const py = straight ? (cy + dockY) / 2 : dockY + (cy - dockY) * 0.05;
+  const x = u * u * cx + 2 * u * e * px + e * e * dockX;
+  const y = u * u * cy + 2 * u * e * py + e * e * dockY;
+  const size = lerp(heroPx, dockPx, e);
   tomatoOnScreen.x = x; tomatoOnScreen.y = y; tomatoOnScreen.r = size * 0.45; tomatoOnScreen.cx = cx; tomatoOnScreen.cy = cy; tomatoOnScreen.heroPx = heroPx;
   pivot.scale.setScalar(size * upp);
   pivot.position.set((x - width / 2) * upp, (height / 2 - y) * upp, 0);
@@ -312,7 +255,7 @@ function setCrop(on) {
   if (on) {
     const dockPx = width < 700 ? 36 : 44;
     const margin = width < 700 ? 14 : 24;
-    const r = firstNavLink.getBoundingClientRect();
+    const r = navBar.getBoundingClientRect();
     const box = Math.ceil(dockPx * 2);
     const left = Math.round(margin + dockPx / 2 - box / 2);
     const top = Math.round((r.top + r.bottom) / 2 - dockPx * BODY_OFFSET - box / 2);
@@ -366,6 +309,7 @@ let lastDraw = 0;
 
 function frame(now) {
   requestAnimationFrame(frame);
+  if (document.hidden) return; // pestaña en segundo plano: no se dibuja
   if (cropped && now - lastDraw < 1000 / DOCKED_FPS - 2) return;
   lastDraw = now;
   const dt = Math.min(clock.getDelta(), 0.05);
@@ -422,8 +366,6 @@ function frame(now) {
     spinner.position.y = Math.sin(t * 1.4) * 0.06 * calm;
   }
 
-  const hintOpacity = shown > 0.05 ? '0' : '0.85';
-  if (hint.style.opacity !== hintOpacity) hint.style.opacity = hintOpacity;
   renderer.render(scene, camera);
 }
 requestAnimationFrame(frame);

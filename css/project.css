@@ -19,8 +19,8 @@ figure { margin: 0; }
 .project-image { display: block; width: 100%; height: auto; border-radius: 18px; background: #eee9df; }
 .project-intro { padding: 28px 24px 64px; }
 .project-intro { display: grid; gap: 4px; }
-.project-brand { margin: 0; font-family: var(--font-ui); font-weight: 500; font-size: var(--fs-lead); letter-spacing: -.035em; line-height: 1.1; }
-.project-intro h1 { margin: 0 0 0 -.045em; font-size: var(--fs-h2); font-weight: 500; letter-spacing: -.055em; line-height: 1; }
+.project-brand { margin: 0; font-family: var(--font-ui); font-weight: var(--fw-bold); font-size: var(--fs-lead); letter-spacing: -.035em; line-height: 1.1; }
+.project-intro h1 { font-family: var(--font-display); margin: 0 0 0 -.045em; font-size: var(--fs-h2); font-weight: var(--fw-title); letter-spacing: -.055em; line-height: 1; }
 .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
 .project-tags li { padding: 5px 11px 4px; border: 1px solid #171717; border-radius: 999px; font-size: var(--fs-xs); font-weight: 400; letter-spacing: .06em; line-height: 1.2; text-transform: uppercase; }
 .project-tags .project-year { margin-left: auto; padding: 0; border: 0; font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 400; letter-spacing: 0; font-variant-numeric: lining-nums; transform: translateY(2.5px); }
@@ -35,7 +35,7 @@ figure { margin: 0; }
 .project-embed .instagram-media { width: 100% !important; max-width: 100% !important; min-width: 0 !important; margin: 0 !important; border-radius: 18px !important; overflow: hidden; }
 .project-embed blockquote.instagram-media { padding: 24px; background: #eee9df; text-align: center; font-size: var(--fs-s); }
 .image-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
-.project-credit { max-width: 60ch; padding: 0 24px; font-size: var(--fs-xs); line-height: 1.5; opacity: .6; }
+.project-credit { max-width: 60ch; padding: 0 24px; font-size: var(--fs-xs); line-height: 1.5; opacity: .78; } /* con .6 daba 3,5:1 sobre blanco; así pasa de 4,5:1 */
 .project-end { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 60px 24px; font-size: var(--fs-s); }
 .site-footer { display: flex; justify-content: center; padding: 56px 24px; background: #91bce0 url('/assets/images/sky.webp') center 65% / cover; color: #173a31; font-size: var(--fs-s); }
 /* ---------- Carrusel de imágenes (pila) ----------

@@ -5,7 +5,7 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 ## Cómo está organizado
 
 ```
-index.html                 La home (el tomate gira; al pulsar Work sube al menú, aparece "Creative ___" y se entra en la lista de proyectos)
+index.html                 La home (el tomate gira con su nombre; al pulsar Work o deslizar hacia abajo sube en una curva a la barra y la página baja sola a la lista de proyectos)
 room.html                  La página "The room" (habitación 3D)
 about/index.html           About (nombre grande, presentación, foto, gustos, clientes, preguntas). Estilos: css/about.css. Textos de ejemplo marcados con EDITA
 404.html                   Página de "no encontrada"
@@ -23,9 +23,10 @@ templates/                 Plantillas para copiar (no son páginas de la web)
   project-card.html             La fila de la lista Work de la home para un proyecto nuevo (8 miniaturas)
 
 css/                       Diseño (colores, tipografías, tamaños)
-  home.css · room.css · not-found.css · stamps.css
+  home.css · room.css · not-found.css
   footer.css               El pie de página, igual en todas las páginas (ver la clase del color en cada <footer>)
   nav-logo.css · nav-links.css   El tomate y los enlaces de la barra, iguales en todas las páginas
+  menu.css · js/menu.js          El botón «Menu» de arriba a la derecha: panel a pantalla completa con Work, About, Room, Contact y, abajo, Machine, FAQs, Terminal, Privacy. Los enlaces salen de la barra de cada página (la página nueva necesita el botón `li.menu-li` y `has-menu` en el script del `<head>`)
   case.css                 Común a TODAS las páginas de proyecto
 
 js/                        Comportamiento (animaciones, tomate 3D, carrusel…)
@@ -77,7 +78,7 @@ Los tres juegos de Recently played están en `assets/room/discs/games.json`. Las
 ### Buscadores (Google): qué tiene que llevar cada página
 Cada página pública lleva en su `<head>`: `<title>`, `<meta name="description">`, `<link rel="canonical">` (con la dirección completa y la barra final, por ejemplo `https://www.dizmar.xyz/about/`), las etiquetas `og:` y `twitter:card` (lo que se ve al compartir el enlace) y, en las páginas de proyecto, los datos estructurados (`application/ld+json`). Además:
 - Toda página nueva se añade a `sitemap.xml` (y se resume en `llms.txt`).
-- Una página en borrador lleva `<meta name="robots" content="noindex">` y NO está en el sitemap (hoy: Stamps y `machine/`; las plantillas están además bloqueadas en `robots.txt`). Al publicarla, se borra esa línea y se añade al sitemap.
+- Una página en borrador lleva `<meta name="robots" content="noindex">` y NO está en el sitemap (hoy: `machine/`; las plantillas están además bloqueadas en `robots.txt`). Al publicarla, se borra esa línea y se añade al sitemap.
 - Los enlaces del menú llevan la barra final (`/about/`) para no pasar por una redirección.
 - Google no se entera solo: hay que dar de alta la web en Google Search Console y enviar `https://www.dizmar.xyz/sitemap.xml` (con tu cuenta de Google, en search.google.com/search-console).
 
@@ -92,4 +93,4 @@ Cada página pública lleva en su `<head>`: `<title>`, `<meta name="description"
 - Si cambias el nombre de la carpeta de un proyecto, cambia también el enlace en la card de la home y la flecha "← Back" del proyecto.
 - El diseño de las páginas de proyecto es común (`css/case.css`): un cambio ahí afecta a todos los proyectos.
 - Para ver cómo queda en tu ordenador, abre una terminal en esta carpeta y ejecuta `python3 -m http.server 8000`; después entra en <http://localhost:8000>. (No vale abrir el `.html` con doble clic: las rutas con `/` necesitan un servidor.)
-- Los tomates 3D usan la librería [three.js](https://threejs.org), que se carga desde internet (jsDelivr).
+- Los tomates 3D usan la librería [three.js](https://threejs.org) (licencia MIT), alojada en `assets/vendor/three/` (no se pide a ningún tercero). Para actualizarla: copiar la misma versión desde npm (`three@x.y.z`) a esa carpeta, con los archivos de `examples/jsm` que se importan, y cambiar los `importmap` de las páginas.

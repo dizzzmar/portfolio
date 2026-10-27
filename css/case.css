@@ -11,7 +11,6 @@
   --line: rgba(20, 20, 20, .16);
   --panel: #f1f1ee;                  /* hueco de las imágenes mientras cargan */
   --edge: clamp(16px, 1.2vw, 24px);
-  --nav-h: 64px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,25 +26,25 @@ img, video { display: block; }
 .case-logo { position: fixed; z-index: 21; top: calc((var(--nav-h) - 43px) / 2); left: var(--edge); width: 40px; height: 43px; transition: transform .3s var(--ease-out); }
 .case-logo:hover { transform: rotate(-8deg) scale(1.06); }
 .case-logo img { width: 100%; height: 100%; object-fit: contain; }
-.case-head { position: absolute; z-index: 5; inset: 0 0 auto; height: var(--nav-h); }
+/* Fija y sin fondo, como el tomate y el menú: nombre, año y cliente se quedan arriba al hacer scroll y el contenido pasa por debajo. Con «difference» el texto se ve oscuro sobre blanco y claro sobre una foto. */
+.case-head { position: fixed; z-index: 5; inset: 0 0 auto; height: var(--nav-h); color: #fff; mix-blend-mode: difference; pointer-events: none; }
+.case-head a { pointer-events: auto; }
 .case-head > * { position: absolute; top: 50%; transform: translateY(-50%); }
-.case-name { left: calc(var(--edge) + 56px); font-size: var(--fs-h3); font-weight: 700; letter-spacing: -.045em; line-height: 1; white-space: nowrap; }
-.case-meta { font-size: var(--fs-s); font-weight: 500; line-height: 1.25; }
+.case-name { font-family: var(--font-display); left: calc(var(--bar-gutter) + 44px + 12px); /* a la derecha del tomate (css/nav-logo.css) */ font-size: var(--fs-xl); font-weight: var(--fw-title); letter-spacing: var(--tracking-display); line-height: 1; white-space: nowrap; }
+.case-name { margin-top: -4.7px; } /* sube el nombre (24 px) para que su línea de base sea la del año, el cliente y Menu (14 px) */
+.case-meta { font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.25; }
 .case-meta.date { left: 41%; }
 .case-meta.client { left: 58%; }
 /* Enlaces: fijos arriba a la derecha; en blanco con "difference" se ven oscuros sobre blanco y claros sobre una foto */
 .case-nav { position: fixed; inset: 0 0 auto; z-index: 20; height: var(--nav-h); display: flex; align-items: center; justify-content: flex-end; padding: 0 var(--edge); color: #fff; mix-blend-mode: difference; pointer-events: none; }
 .case-nav ul { display: flex; gap: clamp(16px, 2.2vw, 32px); list-style: none; pointer-events: auto; }
-.case-nav a { font-size: var(--fs-s); font-weight: 500; text-decoration: none; }
+.case-nav a { font-size: var(--fs-s); font-weight: var(--fw-regular); text-decoration: none; }
 .case-nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
 /* El nombre del proyecto es el botón de volver: al pasar el ratón se mezcla y pasa a "Back to projects" (js/case.js) */
 .case-back { color: inherit; text-decoration: none; cursor: pointer; }
 .case-name .case-back { font: inherit; letter-spacing: inherit; text-transform: none; } /* si no, typography.css lo deja en 14px como los demás enlaces */
 .case-name .case-back:focus-visible { outline-offset: 6px; }
 .cb-text { display: inline-block; font-variant-ligatures: none; }
-/* En pantallas táctiles no hay "pasar por encima": se ve siempre un enlace pequeño bajo el nombre */
-.case-back-touch { display: none; font-size: var(--fs-s); font-weight: 500; }
-@media (hover: none) { .case-back-touch { display: inline-block; position: absolute; left: calc(var(--edge) + 56px); top: calc(100% + 2px); transform: none; } }
 
 /* ---------- Primera pantalla: cabecera, galería horizontal y datos ---------- */
 .case-first { min-height: 100vh; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr auto; padding: var(--nav-h) 0 0; }
@@ -73,17 +72,30 @@ img, video { display: block; }
 .p-progress i { position: absolute; inset: -.5px auto -.5px 0; width: 100%; background: var(--ink); transform-origin: left; transform: scaleX(0); }
 
 /* Datos (izquierda) y descripción (derecha), abajo, como en la referencia */
-.case-info { display: grid; grid-template-columns: 41% minmax(0, 1fr) auto; padding: clamp(20px, 3vh, 36px) var(--edge) clamp(24px, 4vh, 40px); font-size: var(--fs-s); font-weight: 500; line-height: 1.3; }
+.case-info { display: grid; grid-template-columns: 41% minmax(0, 1fr) auto; padding: clamp(20px, 3vh, 36px) var(--edge) clamp(24px, 4vh, 40px); font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.3; }
 .case-tags { list-style: none; }
-.case-text { max-width: 52ch; }
+/* La descripción: el mismo tamaño y los mismos pesos que About y Privacy (primer párrafo en negrita, el resto normal) */
+.case-text { max-width: var(--measure); font-size: var(--fs-read); line-height: var(--lh-body); letter-spacing: -.01em; }
+.case-text p:first-child { font-weight: var(--fw-bold); }
 .case-text p + p { margin-top: .9em; }
 .case-film-link { grid-column: 3; justify-self: end; align-self: start; white-space: nowrap; text-underline-offset: 3px; transition: opacity .2s; } /* "Go to film": lleva la galería hasta la película (js/case.js) */
 .case-film-link:hover { opacity: .6; }
 .case-lead { font-size: var(--fs-lead); letter-spacing: -.02em; line-height: 1.25; }
 
+/* ---------- Proyecto con un solo asset (class="is-single" en .p-gallery) ----------
+   Sin tira que recorrer: no hay línea de progreso ni «Go to film». El asset empieza donde empiezan las tarjetas de los demás proyectos (25 % del ancho),
+   se ve entero (16:9, o su proporción) y nunca más alto que lo que deja la pantalla para que el texto de abajo se vea sin hacer scroll. En móvil, a todo el ancho. */
+.p-gallery.is-single .p-progress, .case-first:has(.p-gallery.is-single) .case-film-link { display: none; }
+.p-gallery.is-single .p-track { overflow: visible; cursor: default; }
+.p-gallery.is-single .p-card { flex: none; height: auto; width: min(100%, calc((100svh - var(--nav-h) - 230px) * var(--r, 1.7778))); }
+@media (max-width: 760px) {
+  .p-gallery.is-single .p-track { padding: 0 var(--edge); }
+  .p-gallery.is-single .p-card, .p-gallery.is-single .p-card.player { width: 100%; }
+}
+
 /* ---------- Instagram (Lexus) ---------- */
-.case-embed { display: grid; grid-template-columns: 41% minmax(0, 1fr); padding: clamp(60px, 9vw, 120px) var(--edge) 0; border-top: 1px solid var(--line); margin-top: 2vh; }
-.case-embed h2 { font-size: var(--fs-s); font-weight: 500; }
+.case-embed { display: grid; grid-template-columns: 41% minmax(0, 1fr); padding: clamp(60px, 9vw, 120px) var(--edge) 0; margin-top: 2vh; }
+.case-embed h2 { font-size: var(--fs-read); font-weight: var(--fw-bold); line-height: 1.3; letter-spacing: -.01em; }
 .case-embed .instagram-media { width: min(540px, 100%) !important; min-width: 0 !important; margin: 0 !important; }
 .case-embed blockquote.instagram-media { padding: 24px; background: var(--panel); font-size: var(--fs-s); }
 
@@ -103,15 +115,15 @@ img, video { display: block; }
   color: #fff;
   font-family: var(--font-ui);
   font-size: var(--fs-s);
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0;
+  text-transform: none;
   mix-blend-mode: difference;
   text-shadow: none;
   opacity: 0;
   transition: opacity .25s;
 }
-.player-time { font-family: var(--font-ui); font-size: var(--fs-s); font-weight: 700; letter-spacing: .06em; }
+.player-time { font-family: var(--font-ui); font-size: var(--fs-s); font-weight: var(--fw-bold); letter-spacing: 0; }
 .player-bar {
   position: absolute;
   inset: auto 0 0;
@@ -120,14 +132,14 @@ img, video { display: block; }
   gap: 18px;
   padding: 0 14px 12px;
   color: #fff;
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  font-size: var(--fs-s);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0;
+  text-transform: none;
   mix-blend-mode: difference;
   text-shadow: none;
 }
-.player-bar button { padding: 6px 0; font-size: var(--fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.player-bar button { padding: 6px 0; font-size: var(--fs-s); font-weight: var(--fw-bold); letter-spacing: 0; text-transform: none; }
 .player-bar button:hover { text-decoration: underline; text-underline-offset: 4px; }
 /* La línea: blanca (negra sobre vídeo claro, por el "difference"), más gruesa; lo ya visto, más marcado */
 .player-track { position: relative; flex: 1; height: 16px; cursor: pointer; }
@@ -150,22 +162,39 @@ img, video { display: block; }
 
 /* ---------- Aviso de propiedad (en todos los proyectos): en la columna de la descripción ---------- */
 .case-credit { display: grid; grid-template-columns: 41% minmax(0, 1fr); padding: clamp(40px, 5vw, 72px) var(--edge) 0; }
-.case-credit p { grid-column: 2; max-width: 56ch; color: var(--soft); font-size: var(--fs-xs); line-height: 1.5; }
+.case-credit p { grid-column: 2; max-width: var(--measure); color: rgba(20, 20, 20, .72); font-size: var(--fs-s); line-height: 1.4; } /* 14 px y al 72 %: 6:1 sobre blanco (antes 11 px y 3,5:1) */
 
 /* ---------- Pie ---------- */
 
-/* ---------- Móvil: el nombre pasa a su propia línea y las tarjetas se recorren con el dedo ---------- */
+/* Nombre largo (class="case-name is-long") en tabletas: más pequeño y los datos (año y cliente) se desplazan a la derecha, para no pisarse */
+@media (min-width: 761px) and (max-width: 1000px) {
+  .case-name.is-long { font-size: 19px; margin-top: -2.2px; } /* con 19 px la diferencia de línea de base es menor */
+  .case-name.is-long ~ .case-meta.date { left: 52%; }
+  .case-name.is-long ~ .case-meta.client { left: 70%; }
+}
+
+/* ---------- Móvil: el nombre sigue en la barra, junto al tomate; los datos pasan a una fila y las tarjetas se recorren con el dedo ---------- */
 @media (max-width: 760px) {
-  :root { --nav-h: 56px; }
-  .case-head { height: auto; position: relative; inset: auto; padding: calc(var(--nav-h) + 8px) var(--edge) 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+  .case-head { height: auto; position: relative; inset: auto; padding: calc(var(--nav-h) + 4px) var(--edge) 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
   .case-head > * { position: static; transform: none; }
-  .case-name { grid-column: 1 / -1; font-size: var(--fs-h2); white-space: normal; }
-  .case-back-touch { position: static; grid-column: 1 / -1; order: 2; margin-bottom: 8px; }
-  .case-meta { order: 3; }
+  .case-name { position: fixed; z-index: 21; top: calc(var(--nav-h) / 2); left: calc(var(--bar-gutter) + 44px + 12px); transform: translateY(-50%); } /* igual que en escritorio: fijo en la barra (el nombre es el botón de volver) */
+  @media (max-width: 700px) { .case-name { left: calc(var(--bar-gutter) + 36px + 12px); } } /* el tomate mide 36 px de ancho */
+  /* Nombre largo (class="case-name is-long"): en móvil baja a dos líneas y un poco más pequeño, para no pisar el botón Menu (a la derecha, ~64 px) */
+  @media (max-width: 700px) { .case-name.is-long { right: calc(var(--bar-gutter) + 64px); white-space: normal; font-size: 19px; line-height: 1.05; margin-top: -1.7px; } }
   .case-first { padding-top: 0; grid-template-rows: auto auto; align-content: start; } /* la galería sube bajo el título; el texto va justo debajo */
   .p-gallery { align-self: start; padding: 4vh 0 0; }
   .case-nav { display: none; } /* en el móvil hay solo la X y el tomate: Work, About, Contact y Room están en la portada */
-  .p-track { --h: min(52vh, 460px); padding-left: var(--edge); align-items: center; }
+  /* Alineadas arriba; la altura de la tira la fija js/case.js según la tarjeta que se ve (con una transición corta, salvo con «reducir movimiento»).
+     overflow-y: clip recorta lo que sobra de la tarjeta vecina que asoma, sin crear un scroll vertical dentro de la tira */
+  .p-track { --h: min(52vh, 460px); padding-left: var(--edge); align-items: flex-start; overflow-y: clip; transition: height .3s var(--ease-out); }
+  /* El reproductor: la barra y el estado van debajo del vídeo, no encima (en un vídeo de 190 px de alto tapaban media imagen) */
+  .p-card.player { aspect-ratio: auto; overflow: visible; background: none; }
+  .p-card.player video { height: auto; aspect-ratio: var(--ar); background: #000; }
+  .player .player-toggle, .player-bar { position: static; mix-blend-mode: normal; color: var(--ink); opacity: 1; }
+  .player .player-toggle { display: flex; align-items: center; gap: 14px; padding: 6px 0 0; }
+  .player-bar { padding: 0 0 8px; gap: 16px; }
+  .player-track::before { background: var(--ink); opacity: .25; } /* ya no va sobre el vídeo con «difference»: la línea es tinta sobre el blanco de la página */
+  .player-track i { background: var(--ink); }
   /* Cada tarjeta mide como mucho el 88% del ancho de la pantalla: se ve la foto casi entera y asoma un trozo de la siguiente (--r = ancho / alto) */
   .p-card { height: auto; width: min(calc(var(--h) * var(--r, 1)), 88vw); }
   .p-progress { margin-left: var(--edge); }
@@ -176,7 +205,7 @@ img, video { display: block; }
 
 /* ---------- Movimiento: las tarjetas se destapan una a una al abrir; Instagram sube un poco al aparecer ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .js .p-card { animation: card-in 1.2s cubic-bezier(.77, 0, .18, 1) both; animation-delay: calc(.15s + var(--i, 0) * 110ms); }
+  .js .p-card { animation: card-in 1.2s var(--ease-in-out) both; animation-delay: calc(.15s + var(--i, 0) * 110ms); }
   .js .p-card img, .js .p-card video { animation: card-zoom 1.6s var(--ease-out) both; animation-delay: calc(.15s + var(--i, 0) * 110ms); }
   .js .case-name, .js .case-meta, .js .case-info { animation: fade-up .9s var(--ease-out) both .1s; }
   .js [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .85s var(--ease-out); }
@@ -185,7 +214,7 @@ img, video { display: block; }
 @keyframes card-in { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
 @keyframes card-zoom { from { scale: 1.3; } to { scale: 1; } }
 @keyframes fade-up { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0; } }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .p-track { transition: none; } }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------- Salida: al volver a la lista, la galería se va hacia la derecha, el nombre sube y el resto se apaga (js/case.js) ---------- */
@@ -195,3 +224,13 @@ img, video { display: block; }
 @keyframes leave-track { to { transform: translateX(8vw); opacity: 0; } }
 @keyframes leave-up { to { transform: translateY(-14px); opacity: 0; } }
 @keyframes leave-fade { to { opacity: 0; } }
+
+/* Con dedo: los controles sueltos miden al menos 44 px de alto (sin mover nada de sitio: el padding se compensa con margen negativo) */
+@media (pointer: coarse) {
+  .case-name .case-back { display: inline-block; padding-block: 14px; margin-block: -14px; }
+  .case-film-link { padding-block: 14px; margin-block: -14px; }
+  .case-film-link { display: inline-block; }
+  .player-bar button { padding-block: 15px; }
+  .player .player-toggle { min-height: 44px; }
+  .player-track { height: 32px; }
+}

@@ -28,24 +28,28 @@
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/assets/images/favicon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="stylesheet" href="/css/tokens.css?v=20261021g">
-<link rel="stylesheet" href="/css/case.css?v=20261021v">
-<link rel="stylesheet" href="/css/nav-logo.css?v=20261021g">
-<link rel="stylesheet" href="/css/nav-links.css?v=20261021g">
-<link rel="stylesheet" href="/css/footer.css?v=20261021r">
-<link rel="stylesheet" href="/css/typography.css?v=20261021g">
-<link rel="stylesheet" href="/css/transitions.css?v=20261021g">
-<script>document.documentElement.classList.add('js')</script>
+<link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/tokens.css?v=20261027b">
+<link rel="stylesheet" href="/css/case.css?v=20261028b">
+<link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
+<link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
+<link rel="stylesheet" href="/css/menu.css?v=20261026g">
+<link rel="stylesheet" href="/css/footer.css?v=20261025k">
+<link rel="stylesheet" href="/css/typography.css?v=20261024b">
+<link rel="stylesheet" href="/css/transitions.css?v=20261025k">
+<script>document.documentElement.classList.add('js','has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
 <script type="importmap">
   {
     "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      "three": "/assets/vendor/three/build/three.module.min.js",
+      "three/addons/": "/assets/vendor/three/examples/jsm/"
     }
   }
 </script>
 <script src="/js/transitions.js?v=20261020p"></script>
-  <link rel="stylesheet" href="/css/contact-sachet.css?v=20261022a">
+  <link rel="stylesheet" href="/css/contact-sachet.css?v=20261026e">
+  <link rel="stylesheet" href="/css/terminal.css?v=20261024b">
 </head>
 <body id="top">
 <!-- Barra: el tomate vuelve a la portada; los enlaces, como en el resto de la web (no hace falta tocar nada) -->
@@ -56,15 +60,15 @@
     <li><a href="/about/">About</a></li>
     <li><a href="mailto:hey.mariodiz@gmail.com?subject=Hello%20from%20dizmar.xyz">Contact</a></li>
     <li><a href="/room.html">Room</a></li>
+    <li class="menu-li"><a class="menu-toggle" href="#menu" role="button" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false">Menu</a></li>
   </ul>
 </nav>
 
 <div class="case-head">
   <!-- EDITA: el nombre del proyecto (dos veces: el texto que se ve y el que leen los lectores de pantalla).
-       Es el botón de volver: al pasar el ratón se mezcla y pasa a "Back to projects" (js/case.js) -->
+       Es el botón de volver: al pasar el ratón se mezcla y pasa a "Back to projects" (js/case.js)
+       Si el nombre es largo (más de ~20 letras), pon class="case-name is-long": en móvil baja a dos líneas y no pisa el botón Menu. -->
   <h1 class="case-name"><a class="case-back" href="/#work"><span class="cb-text" aria-hidden="true">Nombre del proyecto</span><span class="sr-only">Nombre del proyecto — back to projects</span></a></h1>
-  <!-- En pantallas táctiles no hay "pasar por encima": se ve siempre un enlace pequeño (no hace falta tocarlo) -->
-  <a class="case-back case-back-touch" href="/#work">← Back to projects</a>
   <p class="case-meta date">2026</p>                 <!-- EDITA: año -->
   <p class="case-meta client">Cliente</p>            <!-- EDITA: cliente o marca -->
 </div>
@@ -75,6 +79,7 @@
           Cada tarjeta fija su forma con  --ar  (ancho / alto): 16 / 9 (horizontal), 1 / 1 (cuadrada), 9 / 16 (vertical); y con  --r  el mismo número ya dividido (1.7778, 1, 0.5625), que usa el móvil
           o las medidas reales de la imagen (p. ej. 1600 / 1131). -->
   <div class="case-first">
+    <!-- ¿UN SOLO ASSET (una imagen o una película)? Pon class="p-gallery is-single" y borra el enlace «Go to film» de más abajo: el asset se ve entero y alineado con los demás proyectos, sin tira ni línea de progreso. -->
     <section class="p-gallery" aria-label="Project gallery">
       <div class="p-track" tabindex="0" role="region" aria-label="Project gallery, scroll sideways">
 
@@ -100,7 +105,7 @@
 
     <!-- 2. Datos y texto del proyecto -->
     <section class="case-info" aria-label="About the project">
-      <ul class="case-tags"><li>Tipo de proyecto</li><li>Cliente</li><li>2026</li></ul>   <!-- EDITA: etiquetas (copia o borra <li>) -->
+      <ul class="case-tags"><li>Tipo de proyecto</li><li>Cliente</li></ul>   <!-- EDITA: etiquetas (copia o borra <li>). El año y el cliente ya salen arriba, en la barra: no se repiten aquí. -->
       <div class="case-text">
         <p>EDITA: el texto del proyecto. Si hay más de un párrafo, copia la línea.</p>
       </div>
@@ -126,8 +131,10 @@
 <footer class="site-foot on-light"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
 
 <!-- Script de Instagram (solo si usas el bloque 3): <script async src="https://www.instagram.com/embed.js"></script> -->
-<script src="/js/case.js?v=20261020n" defer></script>
-<script type="module" src="/js/nav-tomato.js?v=20261020b"></script>
-  <script type="module" src="/js/contact-sachet.js?v=20261022a"></script>
+<script src="/js/case.js?v=20261026k" defer></script>
+<script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
+  <script type="module" src="/js/contact-sachet.js?v=20261024n"></script>
+<script src="/js/menu.js?v=20261025d" defer></script>
+<script src="/js/terminal.js?v=20261026k" defer></script>
 </body>
 </html>
