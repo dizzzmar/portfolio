@@ -1,6 +1,6 @@
 # Tomato in the grass
 
-Standalone motion study at `/experiments/tomato-grass/`. It reuses the portfolio’s tomato model and existing Three.js CDN/version; it is not connected to the landing or navigation.
+Standalone motion study at `/experiments/tomato-grass/`. It uses a smooth procedural tomato and the existing Three.js CDN/version; it is not connected to the landing or navigation.
 
 Serve the repository with `python3 -m http.server 8000` and open that path. No build step.
 
