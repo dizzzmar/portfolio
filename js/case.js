@@ -220,8 +220,11 @@
   const from = document.referrer.startsWith(location.origin + '/') ? new URL(document.referrer).pathname : '';
   if (history.length < 2 || from !== '/') return;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let leaving = false;
   document.querySelectorAll('.case-back').forEach((back) => back.addEventListener('click', (e) => {
     e.preventDefault();
+    if (leaving) return; // un doble clic no debe retroceder dos veces
+    leaving = true;
     // La portada sabe de qué proyecto llegamos (js/home-work.js) para encender su fila al volver
     try { sessionStorage.setItem('dizmar-from', location.pathname); } catch (err) { /* storage blocked */ }
     // Con View Transitions (css/transitions.css) la vuelta se anima sola: la primera tarjeta se encoge hasta su miniatura. Sin ellas, se despide aquí
