@@ -1,4 +1,4 @@
-/* CURSOR — un punto rojo que sustituye al cursor del sistema (solo con ratón). Lo mueve js/cursor.js.
+/* CURSOR — un punto rojo que SIGUE al cursor normal del sistema (solo con ratón), un poco por detrás de él. Lo mueve js/cursor.js.
    Tres capas para que las animaciones no se pisen: .cursor-dot (posición) › i (crecer al pasar por un enlace, ocultarse) › b (el color y el "encoger" al pasar por algo rojo).
    Referencia de movimiento: el cursor de danielgamble.com.au (círculo de 1.5rem, ×2.5 con rebote sobre enlaces, encoge y cambia de color sobre lo rojo). */
 .cursor-dot {
@@ -15,9 +15,9 @@
 .cursor-dot.is-on { opacity: 1; }
 .cursor-dot i {
   display: block;
-  width: 24px;
-  height: 24px;
-  margin: -12px 0 0 -12px;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
   opacity: .92;
   transition: transform .45s cubic-bezier(.85, 0, .15, 1), opacity .3s ease; /* al volver: ease-in-out circ */
 }
@@ -26,14 +26,14 @@
 .theme-green .cursor-dot b { background: var(--lime) !important; }
 
 /* Sobre enlaces y botones: crece ×2.5 con un pequeño rebote y se vuelve algo transparente */
-.cursor-dot.is-hot i { transform: scale(2.5); opacity: .7; transition: transform .5s cubic-bezier(.34, 1.56, .64, 1), opacity .3s ease; }
+.cursor-dot.is-hot i { transform: scale(2.2); opacity: .7; transition: transform .5s cubic-bezier(.34, 1.56, .64, 1), opacity .3s ease; }
 .cursor-dot.is-down i { transform: scale(.8); transition-duration: .12s; }
-.cursor-dot.is-hot.is-down i { transform: scale(2.1); }
-/* Sobre enlaces de texto: no crece ni se esconde; sigue al ratón algo más pequeño (la raya de abajo marca el enlace) */
+.cursor-dot.is-hot.is-down i { transform: scale(1.8); }
+/* Sobre enlaces de texto: no crece ni se esconde (la raya de abajo marca el enlace) */
 .cursor-dot.is-link i,
 .cursor-dot.is-link.is-hot i,
 .cursor-dot.is-link.is-down i,
-.cursor-dot.is-link.is-hot.is-down i { transform: scale(.65); opacity: .92; transition: transform .25s cubic-bezier(.23, 1, .32, 1), opacity .2s ease; }
+.cursor-dot.is-link.is-hot.is-down i { transform: none; opacity: .92; transition: transform .25s cubic-bezier(.23, 1, .32, 1), opacity .2s ease; }
 /* Donde el cursor ya es otra cosa (fila de proyecto con "View project", vídeo con PLAY/PAUSE, formulario): se aparta */
 .cursor-dot.is-hide i,
 .cursor-dot.is-hide.is-hot i,
@@ -56,13 +56,9 @@
   100% { scale: 1;  background: var(--cursor); }
 }
 
-/* Solo con ratón: se esconde el cursor del sistema desde el primer fotograma de cada página (sin esperar al JavaScript), también en las
-   transiciones entre páginas y detrás de las ventanas. */
-@media (hover: hover) and (pointer: fine) {
-  html, html *, html ::backdrop, ::view-transition, ::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { cursor: none !important; }
 }
 
-/* TODOS LOS ENLACES DE TEXTO, UN SOLO ESTILO: con ratón el punto sigue al ratón, más pequeño, y el enlace se subraya con una raya de 1 px.
+/* TODOS LOS ENLACES DE TEXTO, UN SOLO ESTILO: con ratón el punto no crece y el enlace se subraya con una raya de 1 px.
    La raya sale por el lado por el que entra el ratón y se retira por el lado por el que sale (referencia: yzavoku.com).
    js/cursor.js pone mouse-left en <html> cuando el ratón va hacia la izquierda. Con táctil se queda como estaba (subrayado normal).
    Los enlaces dentro de un párrafo (privacidad) llevan además una raya tenue fija, para que se reconozcan sin pasar el ratón.
@@ -91,7 +87,7 @@
 @media (prefers-reduced-motion: reduce) {
   :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .case-film-link, .pv-back a, .pv-row p a, .contact-row a, .ct-link, .np-more) { transition: color .2s; }
   .cursor-dot i, .cursor-dot.is-hot i, .cursor-dot.is-hide i { transition: opacity .15s ease; }
-  .cursor-dot.is-hot i { transform: scale(2.5); }
+  .cursor-dot.is-hot i { transform: scale(2.2); }
   .cursor-dot.to-white b, .cursor-dot.to-red b { animation: none; }
   .cursor-dot.to-white b { background: #fff; }
 }
