@@ -106,7 +106,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 
 ### Primary
 - **Accent** (#0c0c0b, `--accent`): near-black. The "View project" button, text selection and focus rings in Work. There is no coloured accent on text or buttons.
-- **Cursor** (#f83d0c, `--cursor`): tomato red, used only for the small dot that replaces the system cursor and chases the mouse smoothly (and the tomato itself). Over a project card it opens into a red "View" pill.
+- **Cursor** (#f83d0c, `--cursor`): tomato red, used for the tomato itself. The cursor dot follows donut-studio.com instead: 16 px of #fff70d in `mix-blend-mode: difference` (blue on white, yellow on black), glued to the mouse with no lag, shrinking on press and opening into a "View" / "View project" pill over projects.
 - **Menu Red** (#d03a22): the full-screen menu panel. A deeper tomato chosen so cream text on it reaches 4.55:1 (the brand red gives only 3.6:1).
 
 ### Secondary
@@ -191,7 +191,7 @@ No fixed underline. On hover a 1 px line draws in from the side the pointer ente
 ### Buttons
 - **Shape:** a full pill (999 px).
 - **Primary:** white fill, ink text, 14 px; on the sky pages, a white outline instead.
-- **Hover / Focus:** a quick scale on press; the cursor dot grows ×2.2 with a small bounce.
+- **Hover / Focus:** a quick scale on press; the cursor dot shrinks on press.
 - **More works:** every project page ends on page black with a huge "More works" title running sideways without stopping and two cards for the next projects in the Work order (01, 02). Hovering a card zooms its image slowly and dims the other; the cursor reads "View". With reduced motion the title stands still.
 
 ### Cursor (mouse only)

@@ -11,7 +11,7 @@
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-  const EASE = 7;          // más alto = llega antes (≈ 0,1 por fotograma a 60 fps, como Lenis)
+  const EASE = 9;          // más alto = llega antes (≈ 0,1 por fotograma a 60 fps, como Lenis)
   const root = document.documentElement;
   let target = scrollY, current = scrollY, raf = 0, last = 0, written = -1;
 
