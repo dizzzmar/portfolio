@@ -227,24 +227,19 @@ main { padding: 0 var(--margin); }
 }
 
 /* ---------- Tarjeta (como la ficha «Information» de jacoblindblad.dk) ----------
-   La foto queda quieta a la izquierda, con su efecto holográfico, y el texto va en una tarjeta lima que entra por la derecha.
+   La foto queda quieta a la izquierda, con su efecto holográfico, y el texto va en una tarjeta que entra por la derecha. Todo del mismo color (verde con texto lima), como en la referencia.
    En escritorio la tarjeta está fija y se recorre por dentro; el pie queda abajo a la izquierda. En móvil la foto se queda arriba
-   y la tarjeta pasa por encima al bajar. Dentro de la tarjeta el texto va en verde Lincoln sobre lima (6,98:1). */
+   y la tarjeta pasa por encima al bajar. */
 .about { padding: 0; }
 .about-photo { display: grid; place-items: center; }
 .about-photo .portrait { width: min(30vw, 420px); margin: 0; }
 .about-card {
-  --ink: var(--green);
-  --bg: var(--lime);
-  --bg-deep: rgba(18, 86, 3, .12);
   position: relative;
-  background: var(--lime);
-  color: var(--green);
+  background: var(--green); /* del mismo color que la página: solo se nota que es una tarjeta por cómo entra */
+  color: var(--lime);
   padding: clamp(28px, 4vw, 64px);
 }
 .about-card:focus { outline: none; }
-.about-card ::selection { background: var(--green); color: var(--lime); }
-.about-card :focus-visible { outline-color: var(--green); }
 .about-card .intro { display: block; padding-top: 0; }
 .about-card .name { margin-left: -.04em; }
 .about-card .statement { margin-top: clamp(20px, 3vw, 40px); max-width: 52ch; }
@@ -268,7 +263,7 @@ main { padding: 0 var(--margin); }
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
-    scrollbar-color: var(--green) transparent;
+    scrollbar-color: var(--lime) transparent;
   }
   .site-foot.on-green { position: fixed; left: 0; bottom: 0; width: 42vw; z-index: 6; padding-top: 0; }
 }
