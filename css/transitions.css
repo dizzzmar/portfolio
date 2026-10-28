@@ -21,12 +21,12 @@
 /* Hacia About: la página nueva (foto y texto) se desliza desde la derecha sobre la anterior, que se desenfoca y se apaga, como la ficha «Information» de
    jacoblindblad.dk. Al salir de About, al revés: About se va hacia la derecha y la página de debajo recupera el foco. */
 :root:active-view-transition-type(to-about) {
-  &::view-transition-old(root) { animation: 700ms var(--vt-ease-out) both vt-blur-back; }
-  &::view-transition-new(root) { animation: 700ms var(--vt-ease-out) both vt-from-right; }
+  &::view-transition-old(root) { animation: 700ms cubic-bezier(.32, .72, 0, 1) both vt-blur-back; }
+  &::view-transition-new(root) { animation: 700ms cubic-bezier(.32, .72, 0, 1) both vt-from-right; background: var(--green, #125603); } /* el verde va con la página que se desliza: sin esto, la foto y los textos llegaban sobre la página anterior y el verde aparecía de golpe al terminar */
 }
 :root:active-view-transition-type(from-about) {
-  &::view-transition-old(root) { animation: 500ms var(--vt-ease-out) both vt-to-right; z-index: 2; }
-  &::view-transition-new(root) { animation: 600ms var(--vt-ease-out) both vt-focus-in; }
+  &::view-transition-old(root) { animation: 550ms cubic-bezier(.32, .72, 0, 1) both vt-to-right; z-index: 2; background: var(--green, #125603); }
+  &::view-transition-new(root) { animation: 600ms cubic-bezier(.32, .72, 0, 1) both vt-focus-in; }
 }
 @keyframes vt-from-right { from { transform: translateX(100%); } }
 @keyframes vt-to-right { to { transform: translateX(100%); } }
