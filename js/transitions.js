@@ -25,7 +25,19 @@
 
   // ---- View Transitions ----
   if (!('onpagereveal' in window)) return;
+  // Hacia About (o desde About) la transición es otra: la página nueva se desliza desde la derecha sobre la anterior, que se desenfoca
+  // y se apaga (css/transitions.css). Se marca con un «tipo» de transición antes de salir y al llegar.
+  const isAbout = (p) => /^\/about\/?$/.test(p);
+  addEventListener('pageswap', (e) => {
+    if (!e.viewTransition || !e.activation) return;
+    const to = new URL(e.activation.entry.url).pathname;
+    if (isAbout(to)) e.viewTransition.types.add('to-about');
+    else if (isAbout(location.pathname)) e.viewTransition.types.add('from-about');
+  });
   addEventListener('pagereveal', (e) => {
-    if (e.viewTransition) root.classList.add('is-vt'); // se queda puesta mientras dure esta página (quitarla reiniciaría animaciones)
+    if (!e.viewTransition) return;
+    root.classList.add('is-vt'); // se queda puesta mientras dure esta página (quitarla reiniciaría animaciones)
+    if (isAbout(location.pathname)) { e.viewTransition.types.add('to-about'); root.classList.add('vt-about'); }
+    else if (document.referrer && isAbout(new URL(document.referrer).pathname)) e.viewTransition.types.add('from-about');
   });
 })();

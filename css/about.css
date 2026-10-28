@@ -232,7 +232,8 @@ main { padding: 0 var(--margin); }
    y la tarjeta pasa por encima al bajar. */
 .about { padding: 0; }
 .about-photo { display: grid; place-items: center; }
-.about-photo .portrait { width: min(30vw, 420px); margin: 0; }
+/* Foto grande, como en la referencia: llena el alto de la pantalla (4:5) sin pasar del 40 % del ancho */
+.about-photo .portrait { width: min(40vw, calc((100vh - var(--nav-h) - 120px) * .8)); margin: 0; }
 .about-card {
   position: relative;
   background: var(--green); /* del mismo color que la página: solo se nota que es una tarjeta por cómo entra */
@@ -253,19 +254,19 @@ main { padding: 0 var(--margin); }
 
 @media (min-width: 761px) {
   html:has(.about) { overflow: hidden; }                       /* la página no se desplaza: la tarjeta lo hace por dentro */
-  .about-photo { position: fixed; inset: var(--nav-h) 58vw 0 0; }
+  .about-photo { position: fixed; inset: var(--nav-h) 54vw 56px 0; }
   .about-card {
     position: fixed;
     top: var(--nav-h);
     right: 16px;
     bottom: 16px;
-    left: 42vw;
+    left: 46vw;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
     scrollbar-color: var(--lime) transparent;
   }
-  .site-foot.on-green { position: fixed; left: 0; bottom: 0; width: 42vw; z-index: 6; padding-top: 0; }
+  .site-foot.on-green { position: fixed; left: 0; bottom: 0; width: 46vw; z-index: 6; padding-top: 0; }
 }
 
 @media (max-width: 760px) {
@@ -279,9 +280,10 @@ main { padding: 0 var(--margin); }
 
 /* La tarjeta entra por la derecha (0,7 s, frenando al final); su contenido aparece al terminar */
 @media (prefers-reduced-motion: no-preference) {
-  .about-card { animation: card-from-right .8s var(--ease-out) both; }
-  .about-card > * { animation: card-content .5s var(--ease-out) .35s both; }
-  .about-photo .portrait { animation: photo-in .8s var(--ease-out) .1s both; }
+  /* Si se llega desde otra página con transición, es la transición (css/transitions.css) la que desliza la página; aquí solo en la carga directa */
+  html:not(.vt-about) .about-card { animation: card-from-right .8s var(--ease-out) both; }
+  html:not(.vt-about) .about-card > * { animation: card-content .5s var(--ease-out) .35s both; }
+  html:not(.vt-about) .about-photo .portrait { animation: photo-in .8s var(--ease-out) .1s both; }
 }
 @keyframes card-from-right { from { transform: translateX(110%); } }
 @keyframes card-content { from { opacity: 0; } }
