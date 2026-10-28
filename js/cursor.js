@@ -1,5 +1,5 @@
-/* CURSOR — el punto rojo que sustituye al cursor del sistema (estilos en css/cursor.css). Solo con ratón.
-   Sigue al ratón sin retraso (se escribe en cada movimiento); el resto son clases que cambian lo que ve el visitante:
+/* CURSOR — un punto rojo que sigue al cursor normal del sistema (estilos en css/cursor.css). Solo con ratón.
+   Se mueve hacia el cursor con un pequeño retraso suave (en cada fotograma); el resto son clases que cambian lo que ve el visitante:
    is-hot (enlace o botón: crece), is-hide (otro cursor ocupa su sitio), to-white / to-red (sobre lo rojo: encoge, cambia de color y vuelve a crecer). */
 (() => {
   if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
@@ -19,7 +19,20 @@
   let white = false, shown = false, swapTimer = 0;
 
   const set = (cls, on) => dot.classList.toggle(cls, on);
-  const move = (x, y) => { dot.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
+  // El punto sigue al cursor del sistema con un pequeño retraso suave; con «reducir movimiento» va pegado a él
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let tx = 0, ty = 0, cx = 0, cy = 0, follow = 0, started = false;
+  const paintDot = () => { dot.style.transform = `translate3d(${cx}px, ${cy}px, 0)`; };
+  const chase = () => {
+    cx += (tx - cx) * .22; cy += (ty - cy) * .22;
+    if (Math.abs(tx - cx) < .1 && Math.abs(ty - cy) < .1) { cx = tx; cy = ty; follow = 0; } else follow = requestAnimationFrame(chase);
+    paintDot();
+  };
+  const move = (x, y) => {
+    tx = x; ty = y;
+    if (!started || calm) { cx = x; cy = y; started = true; paintDot(); return; } // la primera vez aparece ya en su sitio
+    if (!follow) follow = requestAnimationFrame(chase);
+  };
 
   // El tomate de la portada es 3D (un lienzo a pantalla completa): se detecta por la zona que ocupa
   const placeholder = document.querySelector('.tomato-placeholder');

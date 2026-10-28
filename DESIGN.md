@@ -105,7 +105,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 
 ### Primary
 - **Accent** (#0c0c0b, `--accent`): near-black. The "View project" button, text selection and focus rings in Work. There is no coloured accent on text or buttons.
-- **Cursor** (#f83d0c, `--cursor`): tomato red, used only for the cursor dot (and the tomato itself).
+- **Cursor** (#f83d0c, `--cursor`): tomato red, used only for the dot that follows the normal cursor (and the tomato itself).
 - **Menu Red** (#d03a22): the full-screen menu panel. A deeper tomato chosen so cream text on it reaches 4.55:1 (the brand red gives only 3.6:1).
 
 ### Secondary
@@ -190,7 +190,7 @@ No fixed underline. On hover a 1 px line draws in from the side the pointer ente
 ### Buttons
 - **Shape:** a full pill (999 px).
 - **Primary:** white fill, ink text, 14 px; on the sky pages, a white outline instead.
-- **Hover / Focus:** a quick scale on press; the cursor grows ×2.5 with a small bounce.
+- **Hover / Focus:** a quick scale on press; the cursor dot grows ×2.2 with a small bounce.
 
 ### Cursor (mouse only)
 A 24 px tomato dot. It grows over buttons, cards and objects; disappears over text links, "View project" and videos (the line, the label or PLAY/PAUSE act as the indicator); shrinks and turns white over red; stretches like a drop while scrolling. Lime on green pages.
