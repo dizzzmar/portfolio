@@ -11,7 +11,7 @@ body, button, input, select, textarea { font-family: var(--font-ui); }
 }
 
 .work-heading h2, .work-preview-toggle, .work-info > p, .work-type,
-.case-kicker, .case-label, .case-link, .work-cursor,
+.case-kicker, .case-label, .case-link,
 .player .player-toggle, .player-bar, .player-bar button {
   font-family: var(--font-ui);
   font-size: var(--fs-s);

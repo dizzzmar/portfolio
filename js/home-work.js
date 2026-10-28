@@ -144,26 +144,6 @@
     wake();
   }
 
-  // ---- "View project": es el propio cursor sobre una fila (sin retraso: se escribe en cada movimiento del ratón) ----
-  if (fine && !reduced) {
-    document.documentElement.classList.add('has-pill');
-    const pill = document.createElement('div');
-    pill.className = 'work-cursor';
-    pill.textContent = 'View project';
-    pill.setAttribute('aria-hidden', 'true');
-    document.body.append(pill);
-    let mouse = null;
-    const over = () => !!mouse && !!document.elementFromPoint(mouse.x, mouse.y)?.closest('.work-item > a');
-    // En la ventana entera (no solo en la sección): así, al entrar en una fila la etiqueta ya está donde está el ratón y no llega desde donde se quedó
-    addEventListener('pointermove', (e) => {
-      if (e.pointerType !== 'mouse') return;
-      mouse = { x: e.clientX, y: e.clientY };
-      // Posición con la propiedad "translate" (no "transform"): así el crecimiento de "scale" se hace desde el centro de la etiqueta y no desde la esquina de la pantalla
-      pill.style.translate = `calc(${e.clientX}px - 50%) calc(${e.clientY}px - 50%)`;
-      pill.classList.toggle('is-on', over());
-    }, { passive: true });
-    document.documentElement.addEventListener('pointerleave', () => { mouse = null; pill.classList.remove('is-on'); });
-    addEventListener('scroll', () => { if (mouse) pill.classList.toggle('is-on', over()); }, { passive: true });
-  }
+  // «View project» sobre una fila lo dibuja el propio cursor (js/cursor.js)
   arrive();
 })();
