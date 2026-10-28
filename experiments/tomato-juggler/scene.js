@@ -1,0 +1,332 @@
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const CONFIG = { resolution: 192, period: 2.4, seed: 421 };
+const canvas = document.querySelector('canvas');
+const pause = document.querySelector('#pause');
+const status = document.querySelector('#status');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+let paused = reduced.matches;
+let elapsed = 0;
+let seed = CONFIG.seed;
+const random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+const vec = (x, y, z = 0) => new THREE.Vector3(x, y, z);
+
+function groundTexture() {
+  const surface = document.createElement('canvas');
+  surface.width = surface.height = 256;
+  const ctx = surface.getContext('2d');
+  const greens = ['#8f9f4c', '#a6b660', '#b2bf6c', '#819746'];
+  const stones = ['#a9a99c', '#b9b7aa', '#969b8f', '#c6c2b4', '#aaac9f'];
+  // Concentric, staggered stone courses form a small circular paving, not a grid.
+  for (let y = 0; y < 256; y++) for (let x = 0; x < 256; x++) {
+    const dx = x - 128, dy = y - 128, radius = Math.hypot(dx, dy);
+    if (radius > 119 + random() * 7 || (radius > 114 && ((x + y) % 2 || random() < 0.3))) continue;
+    const meadow = Math.sin(x * 0.055) * Math.cos(y * 0.045);
+    ctx.fillStyle = greens[meadow > 0.35 ? 2 : meadow < -0.35 ? 0 : 1];
+    if (random() < 0.055) ctx.fillStyle = greens[3];
+    if (radius < 96) {
+      const ring = Math.floor(radius / 12);
+      const count = Math.max(6, ring * 7);
+      const a = (Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI) * count + (ring % 2) * 0.5;
+      const seam = radius % 12 < 1.65 || a % 1 < 0.075;
+      ctx.fillStyle = seam ? '#6e746a' : stones[(Math.floor(a) * 3 + ring * 7) % stones.length];
+      if (!seam && random() < 0.035) ctx.fillStyle = '#9d9e89';
+    }
+    ctx.fillRect(x, y, 1, 1);
+  }
+  const texture = new THREE.CanvasTexture(surface);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = texture.magFilter = THREE.NearestFilter;
+  return texture;
+}
+
+async function start() {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
+  renderer.setPixelRatio(1);
+  renderer.setSize(CONFIG.resolution, CONFIG.resolution, false);
+  renderer.setClearColor(0xffffff);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.BasicShadowMap;
+  const scene = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-2.7, 2.7, 2.7, -2.7, 0.1, 30);
+  camera.position.set(3.4, 6.2, 8);
+  camera.lookAt(0, 1.15, 0);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x707768, 1.25));
+  const sun = new THREE.DirectionalLight(0xffffff, 2.1);
+  sun.position.set(-3, 7, 5);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(512, 512);
+  Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 4, bottom: -3 });
+  sun.shadow.bias = -0.002;
+  scene.add(sun);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(4.5, 4.5), new THREE.MeshStandardMaterial({ map: groundTexture(), transparent: true, alphaTest: 0.5, roughness: 1 }));
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+  const grassVertices = [];
+  for (let i = 0; i < 170; i++) {
+    const a = random() * Math.PI * 2, r = 1.72 + random() * 0.31;
+    const x = Math.cos(a) * r, z = Math.sin(a) * r;
+    const h = 0.015 + random() * 0.035;
+    grassVertices.push(x - 0.015, 0, z, x + 0.015, 0, z, x + 0.02, h, z);
+  }
+  const grassGeometry = new THREE.BufferGeometry();
+  grassGeometry.setAttribute('position', new THREE.Float32BufferAttribute(grassVertices, 3));
+  scene.add(new THREE.Mesh(grassGeometry, new THREE.MeshBasicMaterial({ color: 0x94a957, side: THREE.DoubleSide })));
+
+  const material = color => new THREE.MeshStandardMaterial({ color, roughness: 0.95, flatShading: true });
+  const skin = material(0xd59d7e), hair = material(0x30251f), trousers = material(0x39414b);
+  const shoes = material(0xf2f1ec), sole = material(0xd8dadd), cream = material(0xeee9ce);
+  // Broad green and charcoal shapes echo Mario's knitted sweater in About.
+  const shirt = material(0x728044);
+  shirt.onBeforeCompile = shader => {
+    shader.vertexShader = 'varying vec3 shirtPosition;\n' + shader.vertexShader;
+    shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nshirtPosition = position;');
+    shader.fragmentShader = 'varying vec3 shirtPosition;\n' + shader.fragmentShader;
+    shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+      float sweaterPattern = sin(shirtPosition.x * 17.0 + shirtPosition.y * 12.0 + sin(shirtPosition.y * 19.0));
+      diffuseColor.rgb *= mix(vec3(1.0), vec3(0.30, 0.39, 0.43), step(0.15, sweaterPattern));`);
+  };
+  shirt.customProgramCacheKey = () => 'mario-sweater-v1';
+  function mesh(geometry, mat, parent, position = vec(0, 0, 0), scale = vec(1, 1, 1)) {
+    const object = new THREE.Mesh(geometry, mat);
+    object.position.copy(position);
+    object.scale.copy(scale);
+    object.castShadow = true;
+    object.receiveShadow = true;
+    parent.add(object);
+    return object;
+  }
+  const sphere = new THREE.SphereGeometry(1, 8, 6);
+  function oval(parent, mat, position, scale) { return mesh(sphere, mat, parent, position, scale); }
+  function limb(parent, mat, a, b, top, bottom = top) {
+    const object = mesh(new THREE.CylinderGeometry(top, bottom, 1, 8), mat, parent);
+    object.userData.length = true;
+    placeLimb(object, a, b);
+    return object;
+  }
+  const up = vec(0, 1, 0);
+  function placeLimb(object, a, b) {
+    object.position.copy(a).add(b).multiplyScalar(0.5);
+    const direction = b.clone().sub(a);
+    object.scale.y = direction.length();
+    object.quaternion.setFromUnitVectors(up, direction.normalize());
+  }
+  const person = new THREE.Group();
+  person.rotation.y = -0.32;
+  person.scale.set(0.92, 1.04, 0.96);
+  scene.add(person);
+  for (const side of [-1, 1]) {
+    const foot = oval(person, shoes, vec(side * 0.145, 0.085, 0.06), vec(0.088, 0.06, 0.17));
+    foot.rotation.y = side * -0.12;
+    oval(person, sole, vec(side * 0.145, 0.034, 0.065), vec(0.088, 0.022, 0.17));
+    limb(person, trousers, vec(side * 0.13, 0.93), vec(side * 0.15, 0.53, side * 0.035), 0.105, 0.085);
+    limb(person, trousers, vec(side * 0.15, 0.53, side * 0.035), vec(side * 0.145, 0.13, 0), 0.085, 0.067);
+  }
+  oval(person, trousers, vec(0, 0.94), vec(0.255, 0.16, 0.14));
+  const upperBody = new THREE.Group();
+  person.add(upperBody);
+  const torso = mesh(new THREE.CylinderGeometry(0.245, 0.215, 1, 10), shirt, upperBody, vec(0, 1.29), vec(1, 0.61, 0.59));
+  oval(upperBody, shirt, vec(0, 0.992), vec(0.224, 0.025, 0.135));
+  limb(upperBody, skin, vec(0, 1.57), vec(0, 1.74), 0.064);
+  const head = new THREE.Group();
+  head.position.set(0, 1.87, 0);
+  head.scale.setScalar(1);
+  upperBody.add(head);
+  oval(head, skin, vec(0, 0, 0.01), vec(0.133, 0.18, 0.133));
+  const hairCap = oval(head, hair, vec(-0.012, 0.105, -0.025), vec(0.151, 0.105, 0.14));
+  hairCap.rotation.z = -0.15;
+  const quiff = oval(head, hair, vec(-0.04, 0.16, 0.045), vec(0.12, 0.035, 0.10));
+  quiff.rotation.z = -0.25;
+  // Minimal facial marks keep the portrait readable as a tiny abstract figure.
+  mesh(new THREE.BoxGeometry(0.075, 0.009, 0.009), material(0x955747), head, vec(0, -0.08, 0.123));
+  oval(head, hair, vec(-0.115, 0.01, -0.04), vec(0.032, 0.095, 0.095));
+  oval(head, skin, vec(0, -0.015, 0.146), vec(0.032, 0.045, 0.045));
+  for (const side of [-1, 1]) {
+    oval(head, skin, vec(side * 0.132, -0.01), vec(0.025, 0.045, 0.025));
+    oval(head, hair, vec(side * 0.05, 0.025, 0.126), vec(0.014, 0.012, 0.012));
+  }
+  const arms = [-1, 1].map(side => {
+    const shoulder = vec(side * 0.23, 1.53, 0);
+    const elbow = vec(side * 0.40, 1.22, 0.02);
+    const upper = limb(upperBody, shirt, shoulder, elbow, 0.095, 0.076);
+    const forearm = limb(upperBody, shirt, elbow, vec(side * 0.43, 1.19, 0.35), 0.060, 0.045);
+    const hand = oval(upperBody, skin, vec(side * 0.43, 1.19, 0.35), vec(0.068, 0.036, 0.085));
+    return { side, shoulder, upper, forearm, hand };
+  });
+
+  const laptop = new THREE.Group();
+  laptop.position.set(-0.90, 0.02, 0.42);
+  laptop.rotation.y = -0.30;
+  laptop.scale.setScalar(0.90);
+  scene.add(laptop);
+  const aluminium = new THREE.MeshStandardMaterial({ color: 0xb8bcc1, roughness: 0.38, metalness: 0.55 });
+  const bezel = material(0x202428);
+  mesh(new THREE.BoxGeometry(0.67, 0.025, 0.46), aluminium, laptop, vec(0, 0.015));
+  mesh(new THREE.BoxGeometry(0.53, 0.006, 0.20), bezel, laptop, vec(0, 0.032, -0.045));
+  for (let row = 0; row < 4; row++) for (let col = 0; col < 10; col++) {
+    mesh(new THREE.BoxGeometry(0.037, 0.007, 0.027), material(0x565c62), laptop,
+      vec((col - 4.5) * 0.049, 0.037, -0.115 + row * 0.045));
+  }
+  mesh(new THREE.BoxGeometry(0.23, 0.004, 0.10), material(0x92999f), laptop, vec(0, 0.032, 0.145));
+  const lid = new THREE.Group();
+  lid.position.set(0, 0.03, -0.22);
+  lid.rotation.x = -0.22;
+  laptop.add(lid);
+  mesh(new THREE.BoxGeometry(0.67, 0.43, 0.02), aluminium, lid, vec(0, 0.215));
+  mesh(new THREE.PlaneGeometry(0.62, 0.38), bezel, lid, vec(0, 0.215, 0.011));
+  const desktop = document.createElement('canvas');
+  desktop.width = 144;
+  desktop.height = 84;
+  const desktopContext = desktop.getContext('2d');
+  const desktopTexture = new THREE.CanvasTexture(desktop);
+  desktopTexture.colorSpace = THREE.SRGBColorSpace;
+  desktopTexture.minFilter = desktopTexture.magFilter = THREE.NearestFilter;
+  mesh(new THREE.PlaneGeometry(0.58, 0.335), new THREE.MeshBasicMaterial({ map: desktopTexture }), lid, vec(0, 0.217, 0.012));
+  const ease = value => { const p = THREE.MathUtils.clamp(value, 0, 1); return p * p * (3 - 2 * p); };
+  function paintWindow(x, y, width, height, titleColor, scale, artwork) {
+    if (scale <= 0) return;
+    const ctx = desktopContext;
+    ctx.save();
+    ctx.translate(Math.round(x + width / 2), Math.round(y + height / 2));
+    ctx.scale(scale, scale);
+    ctx.translate(-width / 2, -height / 2);
+    ctx.fillStyle = '#243953'; ctx.fillRect(2, 3, width, height);
+    ctx.fillStyle = '#f0eee0'; ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = titleColor; ctx.fillRect(0, 0, width, 10);
+    ctx.fillStyle = '#ee5a48'; ctx.fillRect(4, 3, 5, 5);
+    ctx.fillStyle = '#eedb65'; ctx.fillRect(12, 3, 5, 5);
+    ctx.fillStyle = '#73ba87'; ctx.fillRect(20, 3, 5, 5);
+    if (artwork) {
+      ctx.fillStyle = '#dc392b'; ctx.beginPath(); ctx.ellipse(width / 2, 30, 13, 11, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#527e39'; ctx.fillRect(width / 2 - 5, 16, 10, 5);
+    } else {
+      ctx.fillStyle = '#7191ad';
+      for (let row = 0; row < 3; row++) ctx.fillRect(8, 17 + row * 8, width - 20 - row * 7, 3);
+    }
+    ctx.restore();
+  }
+  function drawDesktop(time) {
+    const t = time % (CONFIG.period * 3);
+    const ctx = desktopContext;
+    ctx.fillStyle = '#438db0'; ctx.fillRect(0, 0, 144, 84);
+    ctx.fillStyle = '#b5dbe4'; ctx.fillRect(0, 0, 144, 5);
+    ctx.fillStyle = '#b6c7ca'; ctx.fillRect(44, 76, 56, 8);
+    for (let i = 0; i < 5; i++) { ctx.fillStyle = ['#e65a42', '#e6bb55', '#f0eee0', '#83b189', '#677cbb'][i]; ctx.fillRect(48 + i * 10, 77, 7, 6); }
+    const backScale = ease(t / 0.4) * (1 - ease((t - 6.0) / 0.4));
+    paintWindow(12, 14, 78, 48, '#54758c', backScale, false);
+    const move = ease((t - 2.5) / 1.1);
+    const x = 46 - move * 23, y = 28 - move * 15;
+    const frontScale = ease((t - 1.0) / 0.4) * (1 - ease((t - 4.7) / 0.35));
+    paintWindow(x, y, 84, 46, '#879aaf', frontScale, true);
+    let cursorX = x + 42, cursorY = y + 6;
+    if (t > 3.8) {
+      const close = ease((t - 3.8) / 0.7);
+      cursorX = THREE.MathUtils.lerp(x + 42, x + 6, close);
+    }
+    if (t > 5.1) {
+      const closeBack = ease((t - 5.1) / 0.7);
+      cursorX = THREE.MathUtils.lerp(x + 6, 18, closeBack);
+      cursorY = THREE.MathUtils.lerp(y + 6, 20, closeBack);
+    }
+    if (t > 6.4) { const p = ease((t - 6.4) / 0.8); cursorX = THREE.MathUtils.lerp(18, 88, p); cursorY = THREE.MathUtils.lerp(20, 34, p); }
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#263747'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cursorX, cursorY); ctx.lineTo(cursorX + 2, cursorY + 9); ctx.lineTo(cursorX + 5, cursorY + 6); ctx.lineTo(cursorX + 8, cursorY + 6); ctx.closePath(); ctx.fill(); ctx.stroke();
+    desktopTexture.needsUpdate = true;
+  }
+  const { scene: tomatoSource } = await new GLTFLoader().loadAsync('../../assets/models/tomato.glb');
+  const bounds = new THREE.Box3().setFromObject(tomatoSource);
+  const center = bounds.getCenter(vec(0, 0, 0));
+  const tomatoSize = Math.max(...bounds.getSize(vec(0, 0, 0)).toArray());
+  tomatoSource.position.sub(center);
+  const tomatoTemplate = new THREE.Group();
+  tomatoTemplate.add(tomatoSource);
+  tomatoTemplate.scale.setScalar(0.18 / tomatoSize);
+  tomatoSource.traverse(object => { if (object.isMesh) { object.castShadow = true; } });
+  const tomatoes = Array.from({ length: 3 }, () => {
+    const fruit = tomatoTemplate.clone(true);
+    person.add(fruit);
+    return fruit;
+  });
+  const target = new THREE.WebGLRenderTarget(CONFIG.resolution, CONFIG.resolution, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter });
+  const screen = new THREE.Scene();
+  const screenCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  screen.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+    uniforms: { frame: { value: target.texture } }, depthTest: false, depthWrite: false,
+    vertexShader: 'varying vec2 v; void main(){v=uv;gl_Position=vec4(position.xy,0.,1.);}',
+    fragmentShader: `uniform sampler2D frame; varying vec2 v;
+      void main(){gl_FragColor=texture2D(frame,v);
+        #include <colorspace_fragment>
+        // A small shared color boost keeps the scene cohesive and the white intact.
+        float luminance = dot(gl_FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+        gl_FragColor.rgb = clamp(mix(vec3(luminance), gl_FragColor.rgb, 1.14), 0.0, 1.0);
+        gl_FragColor.rgb = clamp((gl_FragColor.rgb - 0.5) * 1.025 + 0.5, 0.0, 1.0);
+        vec2 p=mod(floor(gl_FragCoord.xy),2.0);
+        float threshold=(2.0*p.x+3.0*p.y-4.0*p.x*p.y+0.5)/4.0;
+        gl_FragColor.rgb=clamp(floor(gl_FragColor.rgb*31.0+0.5+(threshold-0.5)*0.55)/31.0,0.0,1.0);
+      }`,
+  })));
+  function draw() {
+    const t = elapsed;
+    drawDesktop(t);
+    upperBody.rotation.z = Math.sin(t * Math.PI / 0.4) * 0.012;
+    head.rotation.x = -0.20 + Math.sin(t * Math.PI / 0.4) * 0.025;
+    head.rotation.z = Math.sin(t * Math.PI / 0.4) * 0.045;
+    for (const arm of arms) {
+      // A hand catches outside, scoops inward, then throws across the body.
+      // The 0.18-second scoop matches each tomato's carried segment exactly.
+      const phase = ((t - (arm.side > 0 ? 0.4 : 0)) % 0.8 + 0.8) % 0.8;
+      const carrying = phase >= 0.62;
+      const p = carrying ? (phase - 0.62) / 0.18 : phase / 0.62;
+      const reach = carrying ? THREE.MathUtils.lerp(0.53, 0.33, p) : THREE.MathUtils.lerp(0.33, 0.53, p * p * (3 - 2 * p));
+      const handPosition = vec(arm.side * reach, 1.22 - (carrying ? 0.045 : 0.018) * Math.sin(p * Math.PI), 0.34);
+      const elbow = vec(arm.side * 0.40, 1.21 - 0.02 * Math.sin(p * Math.PI), 0.025);
+      placeLimb(arm.upper, arm.shoulder, elbow);
+      placeLimb(arm.forearm, elbow, handPosition);
+      arm.hand.position.copy(handPosition);
+    }
+    // Three phase-offset parabolas create a repeating alternating cascade.
+    tomatoes.forEach((fruit, i) => {
+      const clock = (t + i * 0.8) % CONFIG.period;
+      const side = clock < 1.2 ? -1 : 1;
+      const phase = clock % 1.2;
+      if (phase < 1.02) {
+        const p = phase / 1.02;
+        fruit.position.set(THREE.MathUtils.lerp(side * 0.33, -side * 0.53, p), 1.28 + 1.55 * 4 * p * (1 - p), 0.34);
+      } else {
+        const p = (phase - 1.02) / 0.18;
+        fruit.position.set(-side * THREE.MathUtils.lerp(0.53, 0.33, p), 1.28 - 0.045 * Math.sin(p * Math.PI), 0.34);
+      }
+      fruit.rotation.set(0.2, clock * Math.PI * 4 / CONFIG.period + i, Math.sin(clock * Math.PI * 2 / CONFIG.period) * 0.2);
+    });
+    renderer.setRenderTarget(target);
+    renderer.render(scene, camera);
+    renderer.setRenderTarget(null);
+    renderer.render(screen, screenCamera);
+  }
+  function controls() { pause.textContent = paused ? 'Play' : 'Pause'; pause.setAttribute('aria-pressed', String(paused)); }
+  pause.addEventListener('click', () => { paused = !paused; controls(); });
+  reduced.addEventListener('change', () => { paused = reduced.matches; controls(); });
+  controls();
+  draw();
+  status.hidden = true;
+  document.body.dataset.ready = 'true';
+  let previous = performance.now(), lastDraw = previous;
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const delta = Math.min((now - previous) / 1000, 0.1);
+    previous = now;
+    if (document.hidden || paused) return;
+    elapsed = (elapsed + delta) % (CONFIG.period * 3);
+    if (now - lastDraw < 1000 / 24) return;
+    lastDraw = now;
+    draw();
+  }
+  requestAnimationFrame(frame);
+}
+start().catch(error => {
+  console.error('Juggler scene could not load:', error);
+  status.textContent = 'The scene could not load. Please reload to try again.';
+  pause.disabled = true;
+});
