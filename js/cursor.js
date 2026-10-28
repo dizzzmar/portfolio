@@ -1,14 +1,15 @@
-/* CURSOR — un punto rojo que sigue al cursor normal del sistema (estilos en css/cursor.css). Solo con ratón.
-   Se mueve hacia el cursor con un pequeño retraso suave (en cada fotograma); el resto son clases que cambian lo que ve el visitante:
-   is-hot (enlace o botón: crece), is-hide (otro cursor ocupa su sitio), to-white / to-red (sobre lo rojo: encoge, cambia de color y vuelve a crecer). */
+/* CURSOR — un punto rojo que sustituye al cursor del sistema (estilos en css/cursor.css). Solo con ratón.
+   Persigue al ratón con una suavidad constante (en cada fotograma, igual a 60 o 120 Hz); el resto son clases que cambian lo que ve el visitante:
+   is-hot (enlace o botón: crece), is-view (tarjeta de proyecto: píldora «View»), is-hide (otro cursor ocupa su sitio), to-white / to-red (sobre lo rojo: encoge, cambia de color y vuelve a crecer). */
 (() => {
   if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   const root = document.documentElement;
   const dot = document.createElement('div');
   dot.className = 'cursor-dot';
   dot.setAttribute('aria-hidden', 'true');
-  dot.innerHTML = '<i><b></b></i>';
+  dot.innerHTML = '<i><b></b></i><span class="cursor-label"></span>';
   document.body.appendChild(dot);
+  const label = dot.querySelector('.cursor-label');
 
   const HOT = 'a, button, summary, label, select, [role="button"], [data-cursor="hot"]';
   // Enlaces de texto: el punto sigue al ratón, algo más pequeño, mientras la raya se dibuja bajo el texto (css/cursor.css)
@@ -23,9 +24,11 @@
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let tx = 0, ty = 0, cx = 0, cy = 0, follow = 0, started = false;
   const paintDot = () => { dot.style.transform = `translate3d(${cx}px, ${cy}px, 0)`; };
-  const chase = () => {
-    cx += (tx - cx) * .09; cy += (ty - cy) * .09;
-    if (Math.abs(tx - cx) < .1 && Math.abs(ty - cy) < .1) { cx = tx; cy = ty; follow = 0; } else follow = requestAnimationFrame(chase);
+  let lastT = 0;
+  const chase = (now) => {
+    const k = 1 - Math.exp(-22 * Math.min(.05, (now - (lastT || now - 16)) / 1000)); lastT = now; // misma suavidad a 60 o 120 Hz
+    cx += (tx - cx) * k; cy += (ty - cy) * k;
+    if (Math.abs(tx - cx) < .1 && Math.abs(ty - cy) < .1) { cx = tx; cy = ty; follow = 0; lastT = 0; } else follow = requestAnimationFrame(chase);
     paintDot();
   };
   const move = (x, y) => {
@@ -66,6 +69,10 @@
     const t = e.target instanceof Element ? e.target : null;
     set('is-hide', !!(t && t.closest(HIDE)));
     set('is-link', !!(t && t.closest(LINK)) && !(t && t.closest(HIDE)));
+    // Tarjetas con data-cursor="view" (More works): el punto se abre en una píldora con su texto
+    const view = t && t.closest('[data-cursor="view"]');
+    if (view) label.textContent = view.dataset.cursorLabel || 'View';
+    set('is-view', !!view);
     set('is-hot', root.classList.contains('dot-hot') || !!(t && t.closest(HOT)));
     const nowWhite = !!(t && (t.closest(RED) || onRedBackground(t))) || overHomeTomato(e.clientX, e.clientY);
     // El cambio de color espera 90 ms a confirmarse: al cruzar el borde blanco de un sello el punto no se reinicia a cada paso
