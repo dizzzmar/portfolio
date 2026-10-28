@@ -45,6 +45,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
   const SCROLL_AT = 0.3;
   let wantWork = false, scrolling = false;
   const workEl = document.getElementById('work');
+  const footEl = document.querySelector('.site-foot');
   let scrollToken = 0;
   // Baja o sube la página con una curva suave (650 ms) mientras el viaje del tomate sigue; si el visitante da marcha atrás (keep() falso), se para
   function animateScroll(y1, keep) {
@@ -63,10 +64,13 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     };
     requestAnimationFrame(step);
   }
+  // «Work» desde un enlace de la misma página (#work) estando en la portada: sube el tomate como con la rueda
+  addEventListener('hashchange', () => { if (location.hash === '#work' && J.target < 1) go(1); });
   const scrollToWork = () => { if (workEl) animateScroll(workEl.offsetTop, () => J.target >= 1); };
   // Volver a la portada desde Work: el tomate vuela de vuelta y la página sube a la vez (un solo gesto, sin tener que subir toda la página)
   function backToLanding() {
     wantWork = false;
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search); // la portada no debe seguir marcada como #work
     go(0);
     animateScroll(0, () => J.target <= 0);
   }
@@ -125,7 +129,14 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     if (J.simple && J.j <= 0.001 && J.target <= 0.001) J.simple = false; // el tomate ya llegó al centro: el próximo viaje es el completo
     // La página solo baja cuando el viaje está completo; hasta entonces la portada queda quieta
     // Bloqueada hasta que el viaje termina; salvo si la página ya está bajando (o ya bajó) a Work con el tomate todavía volando: bloquearla ahí la devolvería arriba del todo
-    body.classList.toggle('intro-lock', !(J.j >= 0.999 && J.target >= 1) && !scrolling && !(J.target >= 1 && scrollY > 4));
+    const locked = !(J.j >= 0.999 && J.target >= 1) && !scrolling && !(J.target >= 1 && scrollY > 4);
+    body.classList.toggle('intro-lock', locked);
+    // En la portada, el tabulador no entra en la lista ni en el pie, que aún no se ven (si no, desplazaba la página bloqueada)
+    const hidden = locked && J.target <= 0;
+    if (workEl) workEl.inert = hidden;
+    if (footEl) footEl.inert = hidden;
+    // Al volver a la portada con la rueda o el dedo, #work deja de estar en la dirección
+    if (J.target <= 0 && J.j <= 0.001 && location.hash === '#work') history.replaceState(null, '', location.pathname + location.search);
     body.classList.toggle('work-engaged', J.j > 0.001 || J.target > 0);
     if (J.j > 0.02 || J.target > 0) hintDone = true; // quien ya ha empezado el viaje no necesita la pista
     hint?.classList.toggle('is-on', hintReady && !hintDone && !J.hold);

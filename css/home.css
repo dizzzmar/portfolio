@@ -5,7 +5,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* Mientras el tomate sube al menú no se puede hacer scroll (js/home-intro.js quita la clase) */
-html:has(body.intro-lock), body.intro-lock { height: 100%; overflow: hidden; overscroll-behavior: none; }
+html.js:has(body.intro-lock), .js body.intro-lock { height: 100%; overflow: hidden; overscroll-behavior: none; }
 /* Con la portada desbloqueada, deslizar hacia abajo arriba del todo deshace el viaje del tomate: que el móvil no recargue la página */
 html { overscroll-behavior-y: contain; }
 
@@ -500,6 +500,11 @@ body.white-on { background-color: #fff; }
 .wb-word { display: inline; font-variant-ligatures: none; }
 @media (max-width: 1000px) {
   .work-top { grid-template-columns: 1fr 1fr; }
+}
+/* Móvil en horizontal: queda poco ancho entre el tomate y los enlaces; solo «Creative ___», como en vertical */
+@media (max-width: 1000px) and (max-height: 500px) {
+  .work-top { grid-template-columns: 1fr; }
+  .work-top p:not(.wt-creative) { display: none; }
 }
 
 .work-list { margin-top: clamp(24px, 4vw, 64px); list-style: none; border-bottom: 1px solid rgba(255, 255, 255, .18); }

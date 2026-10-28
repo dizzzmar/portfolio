@@ -104,6 +104,10 @@ html.menu-open { overflow: hidden; scrollbar-gutter: stable; background: var(--m
   .menu-items { flex-direction: column; justify-content: flex-start; left: 14px; right: 14px; top: auto; bottom: calc(max(24px, env(safe-area-inset-bottom)) + 72px); translate: none; gap: 4px; }
   .menu-small { left: 14px; right: 14px; }
 }
+/* Móvil en horizontal: no cabe una columna de enlaces grandes (Work quedaba fuera de pantalla); vuelven a la fila, más pequeños y en el centro */
+@media (max-height: 500px) and (max-width: 1000px) {
+  .menu-items { flex-direction: row; flex-wrap: wrap; justify-content: space-between; top: 50%; bottom: auto; translate: 0 -50%; font-size: clamp(2rem, 7vw, 3.5rem); }
+}
 
 /* Al elegir una opción de otra página: los textos salen hacia arriba (el elegido, el último) y la fila pequeña se apaga; el rojo se queda */
 .menu[data-leaving="true"] .menu-item a > span { transform: translateY(-112%); transition: transform .4s var(--menu-ease) calc(var(--i) * 40ms + var(--leave, 0) * 120ms); }
