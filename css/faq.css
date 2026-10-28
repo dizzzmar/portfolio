@@ -5,7 +5,8 @@
 :root { interpolate-size: allow-keywords; } /* permite animar de altura 0 a «auto» (Chrome y Edge; en el resto se abre sin animar) */
 
 .faq { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: clamp(24px, 4vw, 72px); align-items: start; padding-bottom: clamp(40px, 6vw, 96px); }
-.faq h1 { position: sticky; top: calc(var(--nav-h) + clamp(24px, 4vw, 56px)); padding-top: clamp(40px, 7vw, 110px); font-family: var(--font-display); font-size: var(--fs-h1); font-weight: var(--fw-title); letter-spacing: -.055em; line-height: .95; }
+.faq-side { position: sticky; top: calc(var(--nav-h) + clamp(24px, 4vw, 56px)); padding-top: clamp(40px, 7vw, 110px); }
+.faq h1 { font-family: var(--font-display); font-size: var(--fs-h1); font-weight: var(--fw-title); letter-spacing: -.055em; line-height: .95; }
 
 .faq-list { padding-top: calc(var(--nav-h) + clamp(40px, 7vw, 110px)); }
 .faq-item { border-top: 1px solid var(--ink); }
@@ -26,20 +27,21 @@
 .faq-a ul { list-style: none; }
 .faq-a a { text-decoration-thickness: 1px; }
 .faq-a a:hover { text-decoration-thickness: 2px; }
-.faq .pv-back { padding-left: calc(clamp(40px, 8vw, 120px) + 16px); }
+.faq-ask { max-width: 22ch; text-wrap: balance; margin-top: clamp(32px, 6vw, 88px); font-size: clamp(24px, 2.6vw, 40px); font-weight: var(--fw-regular); letter-spacing: -.03em; line-height: 1.1; }
+.faq-ask a { font-weight: var(--fw-bold); text-underline-offset: 6px; text-decoration-thickness: 2px; }
 
 @media (prefers-reduced-motion: no-preference) {
   .faq-item::details-content { block-size: 0; overflow: clip; transition: block-size .35s var(--ease-out), content-visibility .35s allow-discrete; }
   .faq-item[open]::details-content { block-size: auto; }
-  .faq h1, .faq-item { animation: pv-in .9s var(--ease-out) both; }
+  .faq h1, .faq-ask, .faq-item { animation: pv-in .9s var(--ease-out) both; }
   .faq-item:nth-of-type(n) { animation-delay: calc(.15s + var(--i, 0) * 60ms); }
 }
 
 @media (max-width: 760px) {
   .faq { grid-template-columns: 1fr; }
-  .faq h1 { position: static; padding-top: calc(var(--nav-h) + clamp(24px, 6vw, 48px)); }
+  .faq-side { position: static; padding-top: calc(var(--nav-h) + clamp(24px, 6vw, 48px)); }
+  .faq-ask { max-width: none; margin-top: 20px; font-size: 22px; }
   .faq-list { padding-top: clamp(32px, 8vw, 56px); }
   .faq-item summary { grid-template-columns: 32px minmax(0, 1fr) 20px; column-gap: 12px; }
   .faq-a { padding: 0 0 24px 44px; }
-  .faq .pv-back { padding-left: 0; }
 }
