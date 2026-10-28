@@ -132,14 +132,10 @@ async function start() {
   head.scale.setScalar(1.18);
   upperBody.add(head);
   oval(head, skin, vec(0, 0, 0.01), vec(0.133, 0.18, 0.133));
-  const hairCap = oval(head, hair, vec(-0.012, 0.085, -0.025), vec(0.151, 0.135, 0.14));
+  const hairCap = oval(head, hair, vec(-0.012, 0.105, -0.025), vec(0.151, 0.105, 0.14));
   hairCap.rotation.z = -0.15;
-  const quiff = oval(head, hair, vec(-0.04, 0.17, 0.045), vec(0.12, 0.065, 0.10));
+  const quiff = oval(head, hair, vec(-0.04, 0.16, 0.045), vec(0.12, 0.035, 0.10));
   quiff.rotation.z = -0.25;
-  const silver = new THREE.MeshStandardMaterial({ color: 0xc2c5c7, roughness: 0.4, metalness: 0.6 });
-  for (const side of [-1, 1]) {
-    mesh(new THREE.TorusGeometry(0.025, 0.006, 4, 8), silver, head, vec(side * 0.146, -0.062, 0.015));
-  }
   // Minimal facial marks keep the portrait readable as a tiny abstract figure.
   mesh(new THREE.BoxGeometry(0.075, 0.009, 0.009), material(0x955747), head, vec(0, -0.08, 0.123));
   oval(head, hair, vec(-0.115, 0.01, -0.04), vec(0.032, 0.095, 0.095));
@@ -159,7 +155,8 @@ async function start() {
 
   const laptop = new THREE.Group();
   laptop.position.set(-0.90, 0.02, 0.42);
-  laptop.rotation.y = 0.35;
+  laptop.rotation.y = -0.55;
+  laptop.scale.setScalar(0.72);
   scene.add(laptop);
   const aluminium = new THREE.MeshStandardMaterial({ color: 0xb8bcc1, roughness: 0.38, metalness: 0.55 });
   const bezel = material(0x202428);

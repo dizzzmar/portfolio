@@ -8,4 +8,6 @@ The 2.4-second cascade uses staggered parabolas, alternating throws and a 0.18-s
 
 `CONFIG` in `scene.js` controls pixel resolution, loop period and procedural seed. Three.js is served from the repository's existing local vendor directory. No build step or new visitor service is needed.
 
-The character receives cast shadows as well as casting them, with lower ambient illumination to keep the trouser legs readable. Hair volume, small hoop earrings and broad sweater patches reference the About portrait.
+The character receives cast shadows as well as casting them, with lower ambient illumination to keep the trouser legs readable. Low swept hair and broad sweater patches reference the About portrait.
+
+The laptop is scaled to 72% and angled sideways to keep the character as the focus.
