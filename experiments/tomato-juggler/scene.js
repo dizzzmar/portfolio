@@ -158,8 +158,8 @@ async function start() {
 
   const laptop = new THREE.Group();
   laptop.position.set(-0.90, 0.02, 0.42);
-  laptop.rotation.y = -0.55;
-  laptop.scale.setScalar(0.72);
+  laptop.rotation.y = -0.30;
+  laptop.scale.setScalar(0.90);
   scene.add(laptop);
   const aluminium = new THREE.MeshStandardMaterial({ color: 0xb8bcc1, roughness: 0.38, metalness: 0.55 });
   const bezel = material(0x202428);
@@ -176,8 +176,65 @@ async function start() {
   laptop.add(lid);
   mesh(new THREE.BoxGeometry(0.67, 0.43, 0.02), aluminium, lid, vec(0, 0.215));
   mesh(new THREE.PlaneGeometry(0.62, 0.38), bezel, lid, vec(0, 0.215, 0.011));
-  mesh(new THREE.PlaneGeometry(0.58, 0.335), new THREE.MeshBasicMaterial({ color: 0x6995ac }), lid, vec(0, 0.217, 0.012));
-  mesh(new THREE.PlaneGeometry(0.36, 0.22), new THREE.MeshBasicMaterial({ color: 0xd6ddcf }), lid, vec(-0.03, 0.23, 0.013));
+  const desktop = document.createElement('canvas');
+  desktop.width = 144;
+  desktop.height = 84;
+  const desktopContext = desktop.getContext('2d');
+  const desktopTexture = new THREE.CanvasTexture(desktop);
+  desktopTexture.colorSpace = THREE.SRGBColorSpace;
+  desktopTexture.minFilter = desktopTexture.magFilter = THREE.NearestFilter;
+  mesh(new THREE.PlaneGeometry(0.58, 0.335), new THREE.MeshBasicMaterial({ map: desktopTexture }), lid, vec(0, 0.217, 0.012));
+  const ease = value => { const p = THREE.MathUtils.clamp(value, 0, 1); return p * p * (3 - 2 * p); };
+  function paintWindow(x, y, width, height, titleColor, scale, artwork) {
+    if (scale <= 0) return;
+    const ctx = desktopContext;
+    ctx.save();
+    ctx.translate(Math.round(x + width / 2), Math.round(y + height / 2));
+    ctx.scale(scale, scale);
+    ctx.translate(-width / 2, -height / 2);
+    ctx.fillStyle = '#243953'; ctx.fillRect(2, 3, width, height);
+    ctx.fillStyle = '#f0eee0'; ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = titleColor; ctx.fillRect(0, 0, width, 10);
+    ctx.fillStyle = '#ee5a48'; ctx.fillRect(4, 3, 5, 5);
+    ctx.fillStyle = '#eedb65'; ctx.fillRect(12, 3, 5, 5);
+    ctx.fillStyle = '#73ba87'; ctx.fillRect(20, 3, 5, 5);
+    if (artwork) {
+      ctx.fillStyle = '#dc392b'; ctx.beginPath(); ctx.ellipse(width / 2, 30, 13, 11, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#527e39'; ctx.fillRect(width / 2 - 5, 16, 10, 5);
+    } else {
+      ctx.fillStyle = '#7191ad';
+      for (let row = 0; row < 3; row++) ctx.fillRect(8, 17 + row * 8, width - 20 - row * 7, 3);
+    }
+    ctx.restore();
+  }
+  function drawDesktop(time) {
+    const t = time % (CONFIG.period * 3);
+    const ctx = desktopContext;
+    ctx.fillStyle = '#438db0'; ctx.fillRect(0, 0, 144, 84);
+    ctx.fillStyle = '#b5dbe4'; ctx.fillRect(0, 0, 144, 5);
+    ctx.fillStyle = '#b6c7ca'; ctx.fillRect(44, 76, 56, 8);
+    for (let i = 0; i < 5; i++) { ctx.fillStyle = ['#e65a42', '#e6bb55', '#f0eee0', '#83b189', '#677cbb'][i]; ctx.fillRect(48 + i * 10, 77, 7, 6); }
+    const backScale = ease(t / 0.4) * (1 - ease((t - 6.0) / 0.4));
+    paintWindow(12, 14, 78, 48, '#54758c', backScale, false);
+    const move = ease((t - 2.5) / 1.1);
+    const x = 46 - move * 23, y = 28 - move * 15;
+    const frontScale = ease((t - 1.0) / 0.4) * (1 - ease((t - 4.7) / 0.35));
+    paintWindow(x, y, 84, 46, '#879aaf', frontScale, true);
+    let cursorX = x + 42, cursorY = y + 6;
+    if (t > 3.8) {
+      const close = ease((t - 3.8) / 0.7);
+      cursorX = THREE.MathUtils.lerp(x + 42, x + 6, close);
+    }
+    if (t > 5.1) {
+      const closeBack = ease((t - 5.1) / 0.7);
+      cursorX = THREE.MathUtils.lerp(x + 6, 18, closeBack);
+      cursorY = THREE.MathUtils.lerp(y + 6, 20, closeBack);
+    }
+    if (t > 6.4) { const p = ease((t - 6.4) / 0.8); cursorX = THREE.MathUtils.lerp(18, 88, p); cursorY = THREE.MathUtils.lerp(20, 34, p); }
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#263747'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cursorX, cursorY); ctx.lineTo(cursorX + 2, cursorY + 9); ctx.lineTo(cursorX + 5, cursorY + 6); ctx.lineTo(cursorX + 8, cursorY + 6); ctx.closePath(); ctx.fill(); ctx.stroke();
+    desktopTexture.needsUpdate = true;
+  }
   const { scene: tomatoSource } = await new GLTFLoader().loadAsync('../../assets/models/tomato.glb');
   const bounds = new THREE.Box3().setFromObject(tomatoSource);
   const center = bounds.getCenter(vec(0, 0, 0));
@@ -212,6 +269,7 @@ async function start() {
   })));
   function draw() {
     const t = elapsed;
+    drawDesktop(t);
     upperBody.rotation.z = Math.sin(t * Math.PI / 0.4) * 0.012;
     head.rotation.x = -0.20 + Math.sin(t * Math.PI / 0.4) * 0.025;
     head.rotation.z = Math.sin(t * Math.PI / 0.4) * 0.045;
@@ -260,7 +318,7 @@ async function start() {
     const delta = Math.min((now - previous) / 1000, 0.1);
     previous = now;
     if (document.hidden || paused) return;
-    elapsed = (elapsed + delta) % CONFIG.period;
+    elapsed = (elapsed + delta) % (CONFIG.period * 3);
     if (now - lastDraw < 1000 / 24) return;
     lastDraw = now;
     draw();

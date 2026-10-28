@@ -10,6 +10,6 @@ The 2.4-second cascade uses staggered parabolas, alternating throws and a 0.18-s
 
 The character receives cast shadows as well as casting them, with lower ambient illumination to keep the trouser legs readable. Low swept hair and broad sweater patches reference the About portrait.
 
-The laptop is scaled to 72% and angled sideways to keep the character as the focus.
+The laptop is scaled to 90% and angled slightly toward the viewer so the animated screen remains legible. A local Canvas texture draws two windows opening, moving and closing with a cursor over a 7.2-second loop. It shares the scene pause, reduced-motion and hidden-tab behavior.
 
 The reference-focused art pass uses a higher oblique camera, a slimmer figure, muted meadow greens, grey paving with clear joints, sparse short grass and a shared 192-pixel grid with restrained ordered dithering.
