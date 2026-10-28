@@ -27,9 +27,11 @@
   if (!('onpagereveal' in window)) return;
   // Hacia About (o desde About) la transición es otra: la página nueva se desliza desde la derecha sobre la anterior, que se desenfoca
   // y se apaga (css/transitions.css). Se marca con un «tipo» de transición antes de salir y al llegar.
+  // Desde el menú la llegada ya tiene su propia cortina roja (js/menu.js): ahí no se añade el deslizamiento, o se pisarían los dos.
   const isAbout = (p) => /^\/about\/?$/.test(p);
+  const viaMenu = () => { try { return Date.now() - sessionStorage.getItem('dizmar-menu-arrive') < 4000; } catch (e) { return false; } };
   addEventListener('pageswap', (e) => {
-    if (!e.viewTransition || !e.activation) return;
+    if (!e.viewTransition || !e.activation || viaMenu()) return;
     const to = new URL(e.activation.entry.url).pathname;
     if (isAbout(to)) e.viewTransition.types.add('to-about');
     else if (isAbout(location.pathname)) e.viewTransition.types.add('from-about');
@@ -37,6 +39,7 @@
   addEventListener('pagereveal', (e) => {
     if (!e.viewTransition) return;
     root.classList.add('is-vt'); // se queda puesta mientras dure esta página (quitarla reiniciaría animaciones)
+    if (root.classList.contains('menu-arriving')) return;
     if (isAbout(location.pathname)) { e.viewTransition.types.add('to-about'); root.classList.add('vt-about'); }
     else if (document.referrer && isAbout(new URL(document.referrer).pathname)) e.viewTransition.types.add('from-about');
   });
