@@ -1,4 +1,4 @@
-// A pre-rendered loop stays independent of WebGL and adds only 55 KB to loading.
+// A pre-rendered loop stays independent of WebGL and adds only 155 KB to loading.
 (() => {
   const root = document.documentElement;
   if (location.hash || root.classList.contains('land-fly')) return;
