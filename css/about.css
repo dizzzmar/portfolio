@@ -13,6 +13,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { background: var(--bg); } /* el fondo también en <html>: la captura de la transición de página lo necesita para llevar el verde consigo */
 body {
   overflow-x: clip;
   color: var(--ink);
