@@ -192,6 +192,7 @@ No fixed underline. On hover a 1 px line draws in from the side the pointer ente
 - **Shape:** a full pill (999 px).
 - **Primary:** white fill, ink text, 14 px; on the sky pages, a white outline instead.
 - **Hover / Focus:** a quick scale on press; the cursor dot shrinks on press. Over links and buttons it grows ×2.4 and turns 70 % opaque, and the real cursor (the hand) shows on top of it; nowhere else.
+- **About card:** the page does not scroll. The holographic portrait stays still on the left (it keeps tilting with the mouse) and a card with the text, the same green as the page and in lime, slides in from the right in 0.8 s; the card scrolls inside itself, and the wheel moves it even with the mouse over the photo. On a phone the photo stays at the top and the card passes over it.
 - **More works:** every project page ends on page black with a huge "More works" title running sideways without stopping and two cards for the next projects in the Work order (01, 02). Hovering a card zooms its image slowly and dims the other; the cursor reads "View". With reduced motion the title stands still.
 
 ### Cursor (mouse only)
