@@ -225,3 +225,69 @@ main { padding: 0 var(--margin); }
   }
   .js [data-reveal].is-in { opacity: 1; transform: none; }
 }
+
+/* ---------- Tarjeta (como la ficha «Information» de jacoblindblad.dk) ----------
+   La foto queda quieta a la izquierda, con su efecto holográfico, y el texto va en una tarjeta lima que entra por la derecha.
+   En escritorio la tarjeta está fija y se recorre por dentro; el pie queda abajo a la izquierda. En móvil la foto se queda arriba
+   y la tarjeta pasa por encima al bajar. Dentro de la tarjeta el texto va en verde Lincoln sobre lima (6,98:1). */
+.about { padding: 0; }
+.about-photo { display: grid; place-items: center; }
+.about-photo .portrait { width: min(30vw, 420px); margin: 0; }
+.about-card {
+  --ink: var(--green);
+  --bg: var(--lime);
+  --bg-deep: rgba(18, 86, 3, .12);
+  position: relative;
+  background: var(--lime);
+  color: var(--green);
+  padding: clamp(28px, 4vw, 64px);
+}
+.about-card:focus { outline: none; }
+.about-card ::selection { background: var(--green); color: var(--lime); }
+.about-card :focus-visible { outline-color: var(--green); }
+.about-card .intro { display: block; padding-top: 0; }
+.about-card .name { margin-left: -.04em; }
+.about-card .statement { margin-top: clamp(20px, 3vw, 40px); max-width: 52ch; }
+.about-card .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.about-card .fact-values { grid-column: 2; }
+.about-card .now-playing { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gutter); }
+.about-card .now-playing h2 { grid-column: 1 / -1; }
+.about-card .np-row + .np-row { margin-top: 0; }
+.about-card .clients { max-width: none; }
+.about-card .client-list { max-width: none; }
+
+@media (min-width: 761px) {
+  html:has(.about) { overflow: hidden; }                       /* la página no se desplaza: la tarjeta lo hace por dentro */
+  .about-photo { position: fixed; inset: var(--nav-h) 58vw 0 0; }
+  .about-card {
+    position: fixed;
+    top: var(--nav-h);
+    right: 16px;
+    bottom: 16px;
+    left: 42vw;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--green) transparent;
+  }
+  .site-foot.on-green { position: fixed; left: 0; bottom: 0; width: 42vw; z-index: 6; padding-top: 0; }
+}
+
+@media (max-width: 760px) {
+  .about-photo { position: sticky; top: 0; height: calc(var(--nav-h) + 46vh); padding: var(--nav-h) 0 24px; box-sizing: border-box; z-index: 0; }
+  .about-photo .portrait { width: auto; height: 100%; }
+  .about-card { z-index: 2; margin: 8px 8px 0; }
+  .about-card .facts { grid-template-columns: 1fr; }
+  .about-card .fact-values, .about-card .now-playing { grid-column: auto; }
+  .about-card .now-playing { grid-template-columns: 1fr; }
+}
+
+/* La tarjeta entra por la derecha (0,7 s, frenando al final); su contenido aparece al terminar */
+@media (prefers-reduced-motion: no-preference) {
+  .about-card { animation: card-from-right .8s var(--ease-out) both; }
+  .about-card > * { animation: card-content .5s var(--ease-out) .35s both; }
+  .about-photo .portrait { animation: photo-in .8s var(--ease-out) .1s both; }
+}
+@keyframes card-from-right { from { transform: translateX(110%); } }
+@keyframes card-content { from { opacity: 0; } }
+@keyframes photo-in { from { opacity: 0; transform: scale(.97); } }
