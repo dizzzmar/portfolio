@@ -244,7 +244,7 @@ main { padding: 0 var(--margin); }
 .about-card:focus { outline: none; }
 .about-card .intro { display: block; padding-top: 0; }
 .about-card .name { margin-left: -.04em; }
-.about-card .statement { margin-top: clamp(20px, 3vw, 40px); max-width: 52ch; }
+.about-card .statement { margin-top: clamp(20px, 3vw, 40px); max-width: none; } /* ocupa las dos columnas de debajo */
 .about-card .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .about-card .fact-values { grid-column: 2; }
 .about-card .now-playing { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gutter); }
