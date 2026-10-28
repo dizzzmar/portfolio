@@ -507,7 +507,7 @@ body.white-on { background-color: #fff; }
   .work-top p:not(.wt-creative) { display: none; }
 }
 
-.work-list { margin-top: clamp(24px, 4vw, 64px); list-style: none; border-bottom: 1px solid rgba(255, 255, 255, .18); }
+.work-list { margin-top: 0; list-style: none; border-bottom: 1px solid rgba(255, 255, 255, .18); }
 .work-item { position: relative; overflow-x: clip; } /* la tira de miniaturas se mueve de lado con el scroll y ensanchaba la página unos 54 px */
 .work-item::before { content: ""; position: absolute; inset: 0 0 auto; height: 1px; background: rgba(255, 255, 255, .18); transform-origin: left; }
 .work-item > a, .work-link {
@@ -521,6 +521,9 @@ body.white-on { background-color: #fff; }
   text-decoration: none;
 }
 .work-item > a:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+/* El primer proyecto empieza justo bajo la cabecera: sin raya ni hueco arriba (el resto de filas, con su aire de siempre) */
+.work-item:first-child::before { display: none; }
+.work-item:first-child > a { padding-top: clamp(8px, 1.2vw, 18px); }
 
 .wi-date, .wi-tags { margin-top: clamp(4px, .9vw, 14px); font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.32; color: rgba(255, 255, 255, .62); transition: color .5s ease; }
 .wi-date { grid-area: date; justify-self: start; font-variant-numeric: lining-nums; }
