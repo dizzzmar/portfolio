@@ -11,7 +11,10 @@
   document.body.appendChild(dot);
 
   const HOT = 'a, button, summary, label, select, [role="button"], [data-cursor="hot"]';
-  const HIDE = '.work-item, .player, .nav-links a, .case-nav a, .crumbs a, .site-foot a, .case-back, .case-film-link, .pv-back a, .pv-row p a, .contact-row a, .ct-link, .np-more, .now-playing, .ct-slider'; // sitios con otro aviso del enlace: la fila, el vídeo, la raya del subrayado
+  // Enlaces de texto: el punto sigue al ratón, algo más pequeño, mientras la raya se dibuja bajo el texto (css/cursor.css)
+  const LINK = '.nav-links a, .case-nav a, .crumbs a, .site-foot a, .case-back, .case-film-link, .pv-back a, .pv-row p a, .contact-row a, .ct-link, .np-more';
+  // Donde el cursor ya es otra cosa (fila de proyecto con «View project», vídeo con PLAY/PAUSE, deslizador): el punto se aparta
+  const HIDE = '.work-item, .player, .now-playing, .ct-slider';
   const RED = '.nav-logo, [data-cursor="red"]';
   let white = false, shown = false, swapTimer = 0;
 
@@ -49,6 +52,7 @@
     if (!shown) { shown = true; set('is-on', true); }
     const t = e.target instanceof Element ? e.target : null;
     set('is-hide', !!(t && t.closest(HIDE)));
+    set('is-link', !!(t && t.closest(LINK)) && !(t && t.closest(HIDE)));
     set('is-hot', root.classList.contains('dot-hot') || !!(t && t.closest(HOT)));
     const nowWhite = !!(t && (t.closest(RED) || onRedBackground(t))) || overHomeTomato(e.clientX, e.clientY);
     // El cambio de color espera 90 ms a confirmarse: al cruzar el borde blanco de un sello el punto no se reinicia a cada paso

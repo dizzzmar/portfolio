@@ -29,7 +29,7 @@
   const topBar = document.querySelector('.work-top');
   if (wordEl && topBar && !reduced) {
     const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?';
-    const SCRAMBLE = 480, SPEED = 950, BURST = 6000, HOLD = 3200; // ms: descifrado · entre palabras · cada ronda · descanso en «Designer»
+    const SCRAMBLE = 700, SPEED = 1700, BURST = 6000, HOLD = 3200; // ms: descifrado · entre palabras · cada ronda · descanso en «Designer»
     let timer = 0, raf = 0, shown = false;
     const setWord = (text, ms = SCRAMBLE) => {
       cancelAnimationFrame(raf);

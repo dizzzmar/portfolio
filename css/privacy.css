@@ -17,7 +17,7 @@ img { display: block; max-width: 100%; height: auto; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 /* ---------- Barra de navegación (como la del resto de la web) ---------- */
-.nav { position: fixed; inset: 0 0 auto; z-index: 9; height: var(--nav-h); display: flex; align-items: center; padding: 0 var(--bar-gutter); background: var(--bg); } /* el texto pasa por debajo al hacer scroll sin pisar el menú */
+.nav { position: fixed; inset: 0 0 auto; z-index: 9; height: var(--nav-h); display: flex; align-items: center; padding: 0 var(--bar-gutter); } /* sin fondo: el texto pasa por debajo al hacer scroll*/
 .nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s var(--ease-out); }
 .nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
 .nav-links { display: flex; align-self: stretch; margin: 0 -16px 0 auto; list-style: none; }

@@ -3,6 +3,8 @@
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const machine = location.pathname.startsWith('/machine');
+  // Solo claves propias: «constructor», «toString»… no son comandos ni páginas
+  const own = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
   const PAGES = {
     home: '/', work: '/#work', about: '/about/', faq: '/faq/', room: '/room.html', machine: '/machine/',
     lexus: '/project/lexus-electrified/', schweppes: '/project/schweppes/', soap: '/project/soap-and-glory-vanilla/',
@@ -49,6 +51,7 @@
   panel.className = 'term';
   panel.hidden = true;
   panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-modal', 'true');
   panel.setAttribute('aria-label', 'Terminal');
   const bar = document.createElement('div');
   bar.className = 'term-bar';
@@ -207,7 +210,7 @@
       const target = (args[0] || '').replace(/^\.?\//, '').replace(/\/$/, '');
       if (!target || target === '~' || target === '..') return go(PAGES.home);
       if (target === 'contact') { write(SECTIONS.contact); return []; }
-      if (PAGES[target]) return go(PAGES[target]);
+      if (own(PAGES, target)) return go(PAGES[target]);
       return ['cd: no such page: ' + target + '  (try: ls)'];
     },
     view: (args) => {
@@ -277,7 +280,7 @@
     paint: (args) => {
       const name = (args[0] || '').toLowerCase();
       if (!name) return ['usage: paint <color>   (' + Object.keys(PAINTS).join(', ') + ')'];
-      const set = PAINTS[name === 'tomato' ? 'red' : name];
+      const set = own(PAINTS, name === 'tomato' ? 'red' : name) ? PAINTS[name === 'tomato' ? 'red' : name] : null;
       if (!set) return ['paint: no such color: ' + name + '  (' + Object.keys(PAINTS).join(', ') + ')'];
       set.forEach((c, i) => panel.style.setProperty('--art-' + i, c));
       return ['the tomato is ' + name + ' now.' + (name === 'blue' ? ' (a blue tomato. bold.)' : '')];
@@ -370,7 +373,8 @@
     ] : noRoom()),
     inspect: (args) => {
       if (!window.dizRoom) return noRoom();
-      const key = ROOM_THINGS[(args[0] || '').toLowerCase()];
+      const thing = (args[0] || '').toLowerCase();
+      const key = own(ROOM_THINGS, thing) ? ROOM_THINGS[thing] : null;
       if (!key) return ['inspect what? vinyl, poster, mimikyu, lamp, plant or wii.'];
       window.dizRoom.focus(key);
       return [ROOM_TEXT[key]];
@@ -416,7 +420,7 @@
     past.push(text);
     histIndex = past.length;
     const [name, ...args] = text.split(/\s+/);
-    const fn = COMMANDS[name.toLowerCase()];
+    const fn = own(COMMANDS, name.toLowerCase()) ? COMMANDS[name.toLowerCase()] : null;
     const result = fn ? fn(args) : ['command not found: ' + name + '  (type help)'];
     if (result && result.length) write(result);
     requestAnimationFrame(() => { if (!atWelcome) out.scrollTop = out.scrollHeight; }); // las sugerencias cambian la altura: vuelve al final
@@ -635,7 +639,8 @@
     const cmd = text.slice(0, space).toLowerCase();
     const rest = text.slice(space).replace(/^\s+/, '');
     const word = rest.toLowerCase();
-    const list = ARGS()[cmd] || [];
+    const all = ARGS();
+    const list = own(all, cmd) ? all[cmd] : [];
     return { head: text.slice(0, space) + ' ', word, candidates: list.filter((c) => c.startsWith(word) && c !== word) };
   }
   // Sugerencias para los botones: comandos completos (o la palabra que falta si hay que escribir un argumento)
@@ -718,6 +723,15 @@
   document.addEventListener('terminal:open', () => { if (panel.hidden) openTerm(); }); // la fila pequeña del menú (js/menu.js)
   close.addEventListener('click', closeTerm);
   row.addEventListener('submit', (e) => { e.preventDefault(); run(input.value); input.value = ''; });
+  // El tabulador se queda dentro de la terminal mientras está abierta (Escape la cierra y devuelve el foco)
+  panel.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    const items = [...panel.querySelectorAll('button, input, a[href]')].filter((el) => !el.disabled && el.offsetParent !== null);
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
   input.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowUp') {
       e.preventDefault();
@@ -738,7 +752,7 @@
   addEventListener('keydown', (e) => {
     if (e.key !== '`' || e.altKey || e.ctrlKey || e.metaKey) return;
     const t = e.target;
-    if (t instanceof Element && t.closest('input, textarea, [contenteditable]') && t !== input) return;
+    if (t instanceof Element && t.closest('input, textarea, [contenteditable]')) return; // escribiendo (también en la propia terminal): el ` es una letra más
     e.preventDefault();
     panel.hidden ? openTerm() : closeTerm();
   });
