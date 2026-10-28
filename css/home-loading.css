@@ -9,16 +9,31 @@
   position: fixed;
   inset: 0;
   z-index: 2147483647;
-  background: #fff;
-  color: #333;
+  background: var(--green);
+  color: var(--lime);
   cursor: default;
 }
-.home-loader picture { opacity: 0; display: block; width: min(92vw, 680px); aspect-ratio: 1; }
+.home-loader picture { opacity: 0; display: block; width: min(70vw, 420px); aspect-ratio: 1; }
 .home-loader img { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
-.home-loader p { opacity: 0; margin: -120px 0 0; padding: 0 0 24px; font: 500 14px/1 var(--font-ui, Arial, sans-serif); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
-.home-loader .hl-pct { display: inline-block; min-width: 2ch; text-align: right; }
+
+/* Status column, counter and typed note around the tomato (small caps in the UI face, lime on green: 6.98:1) */
+.hl-ui { position: absolute; inset: 0; opacity: 0; font: 500 12px/1 var(--font-ui, Arial, sans-serif); letter-spacing: .08em; text-transform: uppercase; pointer-events: none; }
+.hl-steps { position: absolute; left: clamp(20px, 4vw, 64px); top: 50%; translate: 0 -50%; list-style: none; display: grid; gap: 6px; }
+.hl-steps li { padding: 4px 6px; margin-left: -6px; white-space: nowrap; transition: background-color .15s, color .15s; }
+.hl-steps li.is-on { background: var(--lime); color: var(--green); }
+.hl-count { position: absolute; left: 50%; bottom: clamp(28px, 9vh, 88px); translate: -50% 0; font-size: 14px; font-variant-numeric: tabular-nums; }
+.hl-pct { display: inline-block; min-width: 2ch; text-align: right; }
+.hl-note { position: absolute; right: clamp(20px, 4vw, 64px); top: 50%; translate: 0 -50%; width: min(26ch, 24vw); text-align: right; line-height: 1.5; }
+.hl-caret { display: inline-block; width: .55em; height: 1em; margin-left: 2px; vertical-align: -.12em; background: currentColor; animation: hl-blink 1s steps(1) infinite; }
+@keyframes hl-blink { 50% { opacity: 0; } }
+@media (max-width: 760px) {
+  .hl-steps { top: clamp(24px, 8vh, 64px); translate: none; gap: 2px; font-size: 11px; }
+  .hl-steps li:not(.is-on) { opacity: .6; }
+  .hl-note { display: none; }
+}
 .home-loading.is-revealing body > :not(.home-loader):not(script) { visibility: visible; }
 .home-loading.is-revealing .home-loader { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
-  .home-loader picture, .home-loader p { opacity: 1; }
+  .home-loader picture, .hl-ui { opacity: 1; }
+  .hl-caret { animation: none; }
 }
