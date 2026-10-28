@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const CONFIG = { resolution: 192, period: 2.4, seed: 421 };
-const GROUND = { size: 4.5, grassRadius: 2.12, pavingRadius: 1.69 };
 const canvas = document.querySelector('canvas');
 const pause = document.querySelector('#pause');
 const status = document.querySelector('#status');
@@ -21,14 +20,8 @@ function groundTexture() {
   const stones = ['#a9a99c', '#b9b7aa', '#969b8f', '#c6c2b4', '#aaac9f'];
   // Concentric, staggered stone courses form a small circular paving, not a grid.
   for (let y = 0; y < 256; y++) for (let x = 0; x < 256; x++) {
-    // Pixel centres and all radii use the same world-space origin.
-    const dx = (x + 0.5 - 128) * GROUND.size / 256;
-    const dy = (y + 0.5 - 128) * GROUND.size / 256;
-    const distance = Math.hypot(dx, dy);
-    const edgeCoverage = Math.max(0, Math.min(1, (GROUND.grassRadius - distance) / 0.12));
-    const threshold = ((x % 2) * 2 + (y % 2) * 3 - (x % 2) * (y % 2) * 4 + 0.5) / 4;
-    if (edgeCoverage <= threshold) continue;
-    const radius = distance / GROUND.pavingRadius * 96;
+    const dx = x - 128, dy = y - 128, radius = Math.hypot(dx, dy);
+    if (radius > 119 + random() * 7 || (radius > 114 && ((x + y) % 2 || random() < 0.3))) continue;
     const meadow = Math.sin(x * 0.055) * Math.cos(y * 0.045);
     ctx.fillStyle = greens[meadow > 0.35 ? 2 : meadow < -0.35 ? 0 : 1];
     if (random() < 0.055) ctx.fillStyle = greens[3];
@@ -36,7 +29,7 @@ function groundTexture() {
       const ring = Math.floor(radius / 12);
       const count = Math.max(6, ring * 7);
       const a = (Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI) * count + (ring % 2) * 0.5;
-      const seam = radius > 94.5 || radius % 12 < 1.65 || a % 1 < 0.075;
+      const seam = radius % 12 < 1.65 || a % 1 < 0.075;
       ctx.fillStyle = seam ? '#6e746a' : stones[(Math.floor(a) * 3 + ring * 7) % stones.length];
       if (!seam && random() < 0.035) ctx.fillStyle = '#9d9e89';
     }
@@ -67,15 +60,15 @@ async function start() {
   Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 4, bottom: -3 });
   sun.shadow.bias = -0.002;
   scene.add(sun);
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(GROUND.size, GROUND.size), new THREE.MeshStandardMaterial({ map: groundTexture(), transparent: true, alphaTest: 0.5, roughness: 1 }));
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(4.5, 4.5), new THREE.MeshStandardMaterial({ map: groundTexture(), transparent: true, alphaTest: 0.5, roughness: 1 }));
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
   scene.add(ground);
   const grassVertices = [];
-  for (let i = 0; i < 260; i++) {
-    const a = random() * Math.PI * 2, r = GROUND.pavingRadius + 0.04 + random() * 0.29;
+  for (let i = 0; i < 170; i++) {
+    const a = random() * Math.PI * 2, r = 1.72 + random() * 0.31;
     const x = Math.cos(a) * r, z = Math.sin(a) * r;
-    const h = 0.035 + random() * 0.07;
+    const h = 0.015 + random() * 0.035;
     grassVertices.push(x - 0.015, 0, z, x + 0.015, 0, z, x + 0.02, h, z);
   }
   const grassGeometry = new THREE.BufferGeometry();
@@ -208,6 +201,10 @@ async function start() {
     fragmentShader: `uniform sampler2D frame; varying vec2 v;
       void main(){gl_FragColor=texture2D(frame,v);
         #include <colorspace_fragment>
+        // A small shared color boost keeps the scene cohesive and the white intact.
+        float luminance = dot(gl_FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+        gl_FragColor.rgb = clamp(mix(vec3(luminance), gl_FragColor.rgb, 1.14), 0.0, 1.0);
+        gl_FragColor.rgb = clamp((gl_FragColor.rgb - 0.5) * 1.025 + 0.5, 0.0, 1.0);
         vec2 p=mod(floor(gl_FragCoord.xy),2.0);
         float threshold=(2.0*p.x+3.0*p.y-4.0*p.x*p.y+0.5)/4.0;
         gl_FragColor.rgb=clamp(floor(gl_FragColor.rgb*31.0+0.5+(threshold-0.5)*0.55)/31.0,0.0,1.0);
