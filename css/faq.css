@@ -1,0 +1,45 @@
+/* FAQS — estilos de faq/index.html (se carga después de privacy.css, que pone el verde, la barra y el pie).
+   Dos columnas: el título a la izquierda (fijo al hacer scroll) y a la derecha una lista numerada de preguntas que se abren con +.
+   Cada pregunta es un <details>: funciona sin JavaScript y con teclado (Enter o espacio). */
+
+:root { interpolate-size: allow-keywords; } /* permite animar de altura 0 a «auto» (Chrome y Edge; en el resto se abre sin animar) */
+
+.faq { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: clamp(24px, 4vw, 72px); align-items: start; padding-bottom: clamp(40px, 6vw, 96px); }
+.faq h1 { position: sticky; top: calc(var(--nav-h) + clamp(24px, 4vw, 56px)); padding-top: clamp(40px, 7vw, 110px); font-family: var(--font-display); font-size: var(--fs-h1); font-weight: var(--fw-title); letter-spacing: -.055em; line-height: .95; }
+
+.faq-list { padding-top: calc(var(--nav-h) + clamp(40px, 7vw, 110px)); }
+.faq-item { border-top: 1px solid var(--ink); }
+.faq-item:nth-last-of-type(1) { border-bottom: 1px solid var(--ink); }
+.faq-item summary { display: grid; grid-template-columns: clamp(40px, 8vw, 120px) minmax(0, 1fr) 24px; align-items: center; column-gap: 16px; padding: clamp(24px, 3vw, 44px) 0; list-style: none; cursor: pointer; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-n { font-size: var(--fs-s); font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.faq-item h2 { font-size: inherit; font-weight: var(--fw-bold); line-height: 1.3; }
+
+/* El +: dos rayas; al abrir, la vertical gira y se pliega con la horizontal (queda un −) */
+.faq-plus { position: relative; width: 16px; height: 16px; justify-self: end; }
+.faq-plus::before, .faq-plus::after { content: ""; position: absolute; left: 0; top: 50%; width: 100%; height: 1.5px; margin-top: -.75px; background: currentColor; transition: transform .3s var(--ease-out); }
+.faq-plus::after { transform: rotate(90deg); }
+.faq-item[open] .faq-plus::after { transform: rotate(0deg); }
+
+.faq-a { padding: 0 40px clamp(24px, 3vw, 44px) calc(clamp(40px, 8vw, 120px) + 16px); }
+.faq-a p, .faq-a ul { max-width: var(--measure); }
+.faq-a ul { list-style: none; }
+.faq-a a { text-decoration-thickness: 1px; }
+.faq-a a:hover { text-decoration-thickness: 2px; }
+.faq .pv-back { padding-left: calc(clamp(40px, 8vw, 120px) + 16px); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .faq-item::details-content { block-size: 0; overflow: clip; transition: block-size .35s var(--ease-out), content-visibility .35s allow-discrete; }
+  .faq-item[open]::details-content { block-size: auto; }
+  .faq h1, .faq-item { animation: pv-in .9s var(--ease-out) both; }
+  .faq-item:nth-of-type(n) { animation-delay: calc(.15s + var(--i, 0) * 60ms); }
+}
+
+@media (max-width: 760px) {
+  .faq { grid-template-columns: 1fr; }
+  .faq h1 { position: static; padding-top: calc(var(--nav-h) + clamp(24px, 6vw, 48px)); }
+  .faq-list { padding-top: clamp(32px, 8vw, 56px); }
+  .faq-item summary { grid-template-columns: 32px minmax(0, 1fr) 20px; column-gap: 12px; }
+  .faq-a { padding: 0 0 24px 44px; }
+  .faq .pv-back { padding-left: 0; }
+}
