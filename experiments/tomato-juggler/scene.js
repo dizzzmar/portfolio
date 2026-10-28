@@ -50,7 +50,7 @@ async function start() {
   const camera = new THREE.OrthographicCamera(-2.7, 2.7, 2.7, -2.7, 0.1, 30);
   camera.position.set(3.4, 5.2, 8);
   camera.lookAt(0, 1.15, 0);
-  scene.add(new THREE.HemisphereLight(0xfff5e4, 0x69784c, 2.2));
+  scene.add(new THREE.HemisphereLight(0xfff5e4, 0x69784c, 1.35));
   const sun = new THREE.DirectionalLight(0xfff0d6, 3);
   sun.position.set(-3, 7, 5);
   sun.castShadow = true;
@@ -74,27 +74,29 @@ async function start() {
   scene.add(new THREE.Mesh(grassGeometry, new THREE.MeshBasicMaterial({ color: 0x70a840, side: THREE.DoubleSide })));
 
   const material = color => new THREE.MeshStandardMaterial({ color, roughness: 0.95, flatShading: true });
-  const skin = material(0xc98d66), hair = material(0x30251f), trousers = material(0x242b2d);
+  const skin = material(0xd59d7e), hair = material(0x30251f), trousers = material(0x39414b);
   const shoes = material(0x633a24), sole = material(0x302a23), cream = material(0xeee9ce);
-  const shirt = material(0xf0ead6);
+  // Broad green and charcoal shapes echo Mario's knitted sweater in About.
+  const shirt = material(0x728044);
   shirt.onBeforeCompile = shader => {
     shader.vertexShader = 'varying vec3 shirtPosition;\n' + shader.vertexShader;
     shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nshirtPosition = position;');
     shader.fragmentShader = 'varying vec3 shirtPosition;\n' + shader.fragmentShader;
     shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
-      float stripe = step(0.46, fract((shirtPosition.y + 0.5) * 8.0));
-      diffuseColor.rgb *= mix(vec3(1.0), vec3(0.035, 0.06, 0.105), stripe);`);
+      float sweaterPattern = sin(shirtPosition.x * 17.0 + shirtPosition.y * 12.0 + sin(shirtPosition.y * 19.0));
+      diffuseColor.rgb *= mix(vec3(1.0), vec3(0.30, 0.39, 0.43), step(0.15, sweaterPattern));`);
   };
-  shirt.customProgramCacheKey = () => 'breton-stripes-v1';
+  shirt.customProgramCacheKey = () => 'mario-sweater-v1';
   function mesh(geometry, mat, parent, position = vec(0, 0, 0), scale = vec(1, 1, 1)) {
     const object = new THREE.Mesh(geometry, mat);
     object.position.copy(position);
     object.scale.copy(scale);
     object.castShadow = true;
+    object.receiveShadow = true;
     parent.add(object);
     return object;
   }
-  const sphere = new THREE.SphereGeometry(1, 10, 8);
+  const sphere = new THREE.SphereGeometry(1, 8, 6);
   function oval(parent, mat, position, scale) { return mesh(sphere, mat, parent, position, scale); }
   function limb(parent, mat, a, b, top, bottom = top) {
     const object = mesh(new THREE.CylinderGeometry(top, bottom, 1, 8), mat, parent);
@@ -123,14 +125,23 @@ async function start() {
   const upperBody = new THREE.Group();
   person.add(upperBody);
   const torso = mesh(new THREE.CylinderGeometry(0.245, 0.215, 1, 10), shirt, upperBody, vec(0, 1.29), vec(1, 0.61, 0.59));
-  oval(upperBody, cream, vec(0, 0.992), vec(0.224, 0.025, 0.135));
+  oval(upperBody, shirt, vec(0, 0.992), vec(0.224, 0.025, 0.135));
   limb(upperBody, skin, vec(0, 1.57), vec(0, 1.74), 0.064);
   const head = new THREE.Group();
   head.position.set(0, 1.87, 0);
+  head.scale.setScalar(1.18);
   upperBody.add(head);
   oval(head, skin, vec(0, 0, 0.01), vec(0.133, 0.18, 0.133));
-  const hairCap = oval(head, hair, vec(-0.012, 0.085, -0.025), vec(0.139, 0.12, 0.134));
+  const hairCap = oval(head, hair, vec(-0.012, 0.085, -0.025), vec(0.151, 0.135, 0.14));
   hairCap.rotation.z = -0.15;
+  const quiff = oval(head, hair, vec(-0.04, 0.17, 0.045), vec(0.12, 0.065, 0.10));
+  quiff.rotation.z = -0.25;
+  const silver = new THREE.MeshStandardMaterial({ color: 0xc2c5c7, roughness: 0.4, metalness: 0.6 });
+  for (const side of [-1, 1]) {
+    mesh(new THREE.TorusGeometry(0.025, 0.006, 4, 8), silver, head, vec(side * 0.146, -0.062, 0.015));
+  }
+  // Minimal facial marks keep the portrait readable as a tiny abstract figure.
+  mesh(new THREE.BoxGeometry(0.075, 0.009, 0.009), material(0x955747), head, vec(0, -0.08, 0.123));
   oval(head, hair, vec(-0.115, 0.01, -0.04), vec(0.032, 0.095, 0.095));
   oval(head, skin, vec(0, -0.015, 0.146), vec(0.032, 0.045, 0.045));
   for (const side of [-1, 1]) {
@@ -141,24 +152,32 @@ async function start() {
     const shoulder = vec(side * 0.23, 1.53, 0);
     const elbow = vec(side * 0.40, 1.22, 0.02);
     const upper = limb(upperBody, shirt, shoulder, elbow, 0.095, 0.076);
-    const forearm = limb(upperBody, skin, elbow, vec(side * 0.43, 1.19, 0.35), 0.060, 0.045);
+    const forearm = limb(upperBody, shirt, elbow, vec(side * 0.43, 1.19, 0.35), 0.060, 0.045);
     const hand = oval(upperBody, skin, vec(side * 0.43, 1.19, 0.35), vec(0.068, 0.036, 0.085));
     return { side, shoulder, upper, forearm, hand };
   });
 
-  // A small wicker crate gives the act a prop and a few spare tomatoes.
-  const crate = new THREE.Group();
-  crate.position.set(-0.98, 0, 0.20);
-  crate.rotation.y = -0.2;
-  scene.add(crate);
-  const wicker = material(0xa7703d), wickerLight = material(0xc3945c);
-  mesh(new THREE.BoxGeometry(0.50, 0.29, 0.39), wicker, crate, vec(0, 0.16));
-  for (let row = 0; row < 5; row++) {
-    for (const side of [-1, 1]) {
-      mesh(new THREE.BoxGeometry(0.52, 0.018, 0.02), wickerLight, crate, vec(0, 0.04 + row * 0.06, side * 0.20));
-      mesh(new THREE.BoxGeometry(0.02, 0.018, 0.42), wickerLight, crate, vec(side * 0.26, 0.04 + row * 0.06));
-    }
+  const laptop = new THREE.Group();
+  laptop.position.set(-0.90, 0.02, 0.42);
+  laptop.rotation.y = 0.35;
+  scene.add(laptop);
+  const aluminium = new THREE.MeshStandardMaterial({ color: 0xb8bcc1, roughness: 0.38, metalness: 0.55 });
+  const bezel = material(0x202428);
+  mesh(new THREE.BoxGeometry(0.67, 0.025, 0.46), aluminium, laptop, vec(0, 0.015));
+  mesh(new THREE.BoxGeometry(0.53, 0.006, 0.20), bezel, laptop, vec(0, 0.032, -0.045));
+  for (let row = 0; row < 4; row++) for (let col = 0; col < 10; col++) {
+    mesh(new THREE.BoxGeometry(0.037, 0.007, 0.027), material(0x565c62), laptop,
+      vec((col - 4.5) * 0.049, 0.037, -0.115 + row * 0.045));
   }
+  mesh(new THREE.BoxGeometry(0.23, 0.004, 0.10), material(0x92999f), laptop, vec(0, 0.032, 0.145));
+  const lid = new THREE.Group();
+  lid.position.set(0, 0.03, -0.22);
+  lid.rotation.x = -0.22;
+  laptop.add(lid);
+  mesh(new THREE.BoxGeometry(0.67, 0.43, 0.02), aluminium, lid, vec(0, 0.215));
+  mesh(new THREE.PlaneGeometry(0.62, 0.38), bezel, lid, vec(0, 0.215, 0.011));
+  mesh(new THREE.PlaneGeometry(0.58, 0.335), new THREE.MeshBasicMaterial({ color: 0x6995ac }), lid, vec(0, 0.217, 0.012));
+  mesh(new THREE.PlaneGeometry(0.36, 0.22), new THREE.MeshBasicMaterial({ color: 0xd6ddcf }), lid, vec(-0.03, 0.23, 0.013));
   const { scene: tomatoSource } = await new GLTFLoader().loadAsync('../../assets/models/tomato.glb');
   const bounds = new THREE.Box3().setFromObject(tomatoSource);
   const center = bounds.getCenter(vec(0, 0, 0));
@@ -173,13 +192,6 @@ async function start() {
     person.add(fruit);
     return fruit;
   });
-  for (let i = 0; i < 4; i++) {
-    const spare = tomatoTemplate.clone(true);
-    spare.position.set((i % 2 - 0.5) * 0.20, 0.30, (Math.floor(i / 2) - 0.5) * 0.15);
-    spare.rotation.y = i;
-    crate.add(spare);
-  }
-
   const target = new THREE.WebGLRenderTarget(CONFIG.resolution, CONFIG.resolution, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter });
   const screen = new THREE.Scene();
   const screenCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
