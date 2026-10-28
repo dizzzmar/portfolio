@@ -220,7 +220,7 @@ main { padding: 0 var(--margin); }
   .js [data-reveal] {
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity .7s var(--ease-out), transform .7s var(--ease-out);
+    transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
     transition-delay: var(--d, 0ms);
   }
   .js [data-reveal].is-in { opacity: 1; transform: none; }
