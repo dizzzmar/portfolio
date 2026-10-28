@@ -24,7 +24,7 @@
   let tx = 0, ty = 0, cx = 0, cy = 0, follow = 0, started = false;
   const paintDot = () => { dot.style.transform = `translate3d(${cx}px, ${cy}px, 0)`; };
   const chase = () => {
-    cx += (tx - cx) * .22; cy += (ty - cy) * .22;
+    cx += (tx - cx) * .09; cy += (ty - cy) * .09;
     if (Math.abs(tx - cx) < .1 && Math.abs(ty - cy) < .1) { cx = tx; cy = ty; follow = 0; } else follow = requestAnimationFrame(chase);
     paintDot();
   };
