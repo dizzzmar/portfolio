@@ -26,7 +26,9 @@
   transition: transform .25s cubic-bezier(.23, 1, .32, 1), opacity .2s ease;
 }
 .cursor-dot.is-down i { transform: scale(.65); transition-duration: .12s; }
-.cursor-dot.is-hot i { transform: scale(1.8); }            /* la sala 3D, sobre un objeto */
+/* Sobre enlaces y botones (y objetos de la sala 3D): el punto crece y se vuelve algo transparente; el cursor real va encima */
+.cursor-dot.is-hot i { transform: scale(2.4); opacity: .7; transition: transform .4s cubic-bezier(.23, 1, .32, 1), opacity .25s ease; }
+.cursor-dot.is-hot.is-down i { transform: scale(1.8); transition-duration: .12s; }
 .cursor-dot.is-hide i { transform: scale(.2); opacity: 0; } /* vídeo con PLAY/PAUSE, deslizador */
 
 /* Sobre un proyecto: el punto se abre en una píldora con el texto («View project» en Work, «View» en More works) */
@@ -47,6 +49,10 @@
 @media (hover: hover) and (pointer: fine) {
   html, html *, html ::backdrop, ::view-transition, ::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { cursor: none !important; }
   html input[type="text"], html input:not([type]), html textarea { cursor: text !important; }
+  /* Solo en enlaces y botones se ve el cursor real (la mano), por encima del punto; en las tarjetas de proyecto manda la píldora «View» */
+  html :is(a[href], button, summary, label, select, [role="button"]):not([data-cursor="view"], .work-item > a, .player *, .ct-slider) { cursor: pointer !important; }
+  html :is(a[href], button, summary, label, select, [role="button"]) * { cursor: pointer !important; }
+  html a[data-cursor="view"][href], html a[data-cursor="view"][href] *, html .work-item > a, html .work-item > a *, html .player, html .player *, html .player button, html .player a { cursor: none !important; }
 }
 
 /* TODOS LOS ENLACES DE TEXTO, UN SOLO ESTILO: con ratón el punto no crece y el enlace se subraya con una raya de 1 px.
