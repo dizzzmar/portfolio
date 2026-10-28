@@ -16,8 +16,12 @@
   const VIEW = [['[data-cursor="view"]', null], ['.work-item > a', 'View project']];
   // Donde el cursor ya es otra cosa (vídeo con PLAY/PAUSE, deslizador del sobre): el punto se aparta
   const HIDE = '.player, .ct-slider';
+  // Enlaces y botones: el punto crece y se vuelve algo transparente, y encima se ve el cursor real (la mano), solo aquí (css/cursor.css)
+  const HOT = 'a[href], button, summary, label, select, [role="button"], [data-cursor="hot"]';
 
   const set = (cls, on) => dot.classList.toggle(cls, on);
+  let hot = false;
+  const paintHot = () => set('is-hot', hot || root.classList.contains('dot-hot'));
   let x = -100, y = -100, raf = 0, lastTarget = null, lastX = -1;
   const paint = () => { raf = 0; dot.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
 
@@ -28,7 +32,10 @@
     for (const [sel, fixed] of VIEW) { const el = t && t.closest(sel); if (el) { view = el; text = fixed || el.dataset.cursorLabel || 'View'; break; } }
     if (view) label.textContent = text;
     set('is-view', !!view);
-    set('is-hide', !view && !!(t && t.closest(HIDE)));
+    const hide = !view && !!(t && t.closest(HIDE));
+    set('is-hide', hide);
+    hot = !view && !hide && !!(t && t.closest(HOT));
+    paintHot();
   }
 
   function onMove(e) {
@@ -53,7 +60,7 @@
   root.addEventListener('pointerleave', () => { set('is-on', false); set('is-down', false); });
 
   // La sala 3D marca dot-hot sobre un objeto (js/room.js): el punto crece un poco
-  new MutationObserver(() => set('is-hot', root.classList.contains('dot-hot'))).observe(root, { attributes: true, attributeFilter: ['class'] });
+  new MutationObserver(paintHot).observe(root, { attributes: true, attributeFilter: ['class'] });
   // Las ventanas (dialog) viven en la capa superior del navegador: mientras hay una abierta el punto se mete dentro
   const home = () => { const d = document.querySelector('dialog[open]'); (d || document.body).appendChild(dot); };
   new MutationObserver(home).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'] });
