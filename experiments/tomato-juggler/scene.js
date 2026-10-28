@@ -77,7 +77,7 @@ async function start() {
 
   const material = color => new THREE.MeshStandardMaterial({ color, roughness: 0.95, flatShading: true });
   const skin = material(0xd59d7e), hair = material(0x30251f), trousers = material(0x39414b);
-  const shoes = material(0x633a24), sole = material(0x302a23), cream = material(0xeee9ce);
+  const shoes = material(0xf2f1ec), sole = material(0xd8dadd), cream = material(0xeee9ce);
   // Broad green and charcoal shapes echo Mario's knitted sweater in About.
   const shirt = material(0x728044);
   shirt.onBeforeCompile = shader => {
