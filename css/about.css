@@ -272,7 +272,8 @@ main { padding: 0 var(--margin); }
 
 @media (max-width: 760px) {
   .about-photo { position: sticky; top: 0; height: calc(var(--nav-h) + 46vh); padding: var(--nav-h) 0 24px; box-sizing: border-box; z-index: 0; }
-  .about-photo .portrait { width: auto; height: 100%; }
+  .about-photo { display: flex; justify-content: center; } /* foto centrada: con grid la pista se ensanchaba y la empujaba a la derecha */
+  .about-photo .portrait { flex: none; width: auto; height: 100%; aspect-ratio: 4 / 5; margin: 0; }
   .about-card { z-index: 2; margin: 8px 8px 0; }
   .about-card .facts { grid-template-columns: 1fr; }
   .about-card .fact-values, .about-card .now-playing { grid-column: auto; }
