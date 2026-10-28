@@ -18,6 +18,21 @@
 @keyframes vt-in { from { opacity: 0; transform: translateY(12px); } }
 @keyframes vt-recede { to { transform: scale(.985); opacity: .6; } } /* opacidad en vez de filter: brightness, que obligaba a repintar la pantalla entera en cada fotograma */
 
+/* Hacia About: la página nueva (foto y texto) se desliza desde la derecha sobre la anterior, que se desenfoca y se apaga, como la ficha «Information» de
+   jacoblindblad.dk. Al salir de About, al revés: About se va hacia la derecha y la página de debajo recupera el foco. */
+:root:active-view-transition-type(to-about) {
+  &::view-transition-old(root) { animation: 700ms var(--vt-ease-out) both vt-blur-back; }
+  &::view-transition-new(root) { animation: 700ms var(--vt-ease-out) both vt-from-right; }
+}
+:root:active-view-transition-type(from-about) {
+  &::view-transition-old(root) { animation: 500ms var(--vt-ease-out) both vt-to-right; z-index: 2; }
+  &::view-transition-new(root) { animation: 600ms var(--vt-ease-out) both vt-focus-in; }
+}
+@keyframes vt-from-right { from { transform: translateX(100%); } }
+@keyframes vt-to-right { to { transform: translateX(100%); } }
+@keyframes vt-blur-back { to { filter: blur(14px); opacity: .5; transform: scale(1.02); } }
+@keyframes vt-focus-in { from { filter: blur(14px); opacity: .5; transform: scale(1.02); } }
+
 /* El tomate del menú no se mueve entre páginas (mismo tamaño y sitio: css/nav-logo.css) */
 .nav-logo, .case-logo { view-transition-name: site-logo; }
 ::view-transition-group(site-logo) { animation-duration: 0s; }
@@ -28,5 +43,7 @@
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root) { animation: none; }
   ::view-transition-new(root) { animation: 150ms linear both vt-fade; }
+  :root:active-view-transition-type(to-about)::view-transition-old(root), :root:active-view-transition-type(from-about)::view-transition-old(root) { animation: none; }
+  :root:active-view-transition-type(to-about)::view-transition-new(root), :root:active-view-transition-type(from-about)::view-transition-new(root) { animation: 150ms linear both vt-fade; }
   @keyframes vt-fade { from { opacity: 0; } }
 }
