@@ -33,8 +33,8 @@
 @media (prefers-reduced-motion: no-preference) {
   .faq-item::details-content { block-size: 0; overflow: clip; transition: block-size .35s var(--ease-out), content-visibility .35s allow-discrete; }
   .faq-item[open]::details-content { block-size: auto; }
-  .faq h1, .faq-ask, .faq-item { animation: pv-in .9s var(--ease-out) both; }
-  .faq-item:nth-of-type(n) { animation-delay: calc(.15s + var(--i, 0) * 60ms); }
+  .faq h1, .faq-ask, .faq-item { animation: pv-in .6s var(--ease-out) both; }
+  .faq-item:nth-of-type(n) { animation-delay: calc(.06s + var(--i, 0) * 50ms); }
 }
 
 @media (max-width: 760px) {

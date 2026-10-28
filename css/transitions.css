@@ -11,12 +11,12 @@
   --vt-ease-in-out: var(--ease-in-out);    /* moverse por la pantalla: arranca y frena */
 }
 
-/* La página nueva sube y aparece (12 px, 0,42 s, con frenada suave) sobre la que se va; esta se queda debajo, se aleja un poco (0,985) y se oscurece,
+/* La página nueva sube y aparece (12 px, 0,3 s, con frenada suave) sobre la que se va; esta se queda debajo, se aleja un poco (0,985) y se oscurece,
    como si la nueva pasara por delante. Nunca se cruzan dos páginas a medias: la nueva llega opaca antes de que la vieja se note vacía. */
-::view-transition-old(root) { animation: 420ms var(--vt-ease-out) both vt-recede; mix-blend-mode: normal; }
-::view-transition-new(root) { animation: 420ms var(--vt-ease-out) both vt-in; mix-blend-mode: normal; }
+::view-transition-old(root) { animation: 300ms var(--vt-ease-out) both vt-recede; mix-blend-mode: normal; }
+::view-transition-new(root) { animation: 300ms var(--vt-ease-out) both vt-in; mix-blend-mode: normal; }
 @keyframes vt-in { from { opacity: 0; transform: translateY(12px); } }
-@keyframes vt-recede { to { transform: scale(.985); filter: brightness(.82); } }
+@keyframes vt-recede { to { transform: scale(.985); opacity: .6; } } /* opacidad en vez de filter: brightness, que obligaba a repintar la pantalla entera en cada fotograma */
 
 /* El tomate del menú no se mueve entre páginas (mismo tamaño y sitio: css/nav-logo.css) */
 .nav-logo, .case-logo { view-transition-name: site-logo; }

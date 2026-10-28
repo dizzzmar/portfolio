@@ -231,7 +231,7 @@
     if (reduced || 'onpageswap' in window) { history.back(); return; }
     // Antes de volver, el proyecto se despide (css/case.css, clase is-leaving) y después se vuelve atrás
     document.body.classList.add('is-leaving');
-    setTimeout(() => history.back(), 300);
+    setTimeout(() => history.back(), 220);
   }));
 })();
 

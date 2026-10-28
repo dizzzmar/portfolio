@@ -78,7 +78,7 @@
 @media (prefers-reduced-motion: no-preference) {
   .sachet[open] { animation: sachet-in .3s var(--ease-out) both; }
   .sachet[open] .sachet-canvas { animation: sachet-rise .6s var(--ease-out) both; }
-  .sachet.is-closing { animation: sachet-out .18s ease-in both; }
+  .sachet.is-closing { animation: sachet-out .18s var(--ease-out) both; }
 }
 @keyframes sachet-in { from { opacity: 0; } }
 @keyframes sachet-rise { from { translate: 0 20px; } }

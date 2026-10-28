@@ -203,13 +203,18 @@ img, video { display: block; }
   .case-credit p { grid-column: 1; }
 }
 
-/* ---------- Movimiento: las tarjetas se destapan una a una al abrir; Instagram sube un poco al aparecer ---------- */
+/* ---------- Movimiento: las tarjetas se destapan una a una al abrir; lo de más abajo sube un poco al aparecer ----------
+   Como donut-studio.com: la página está ahí desde el primer momento. Cada tarjeta se destapa rápido (curva que arranca fuerte y frena)
+   mientras su imagen se aleja de 1,3 a 1; el escalonado es corto para que nada espere. */
 @media (prefers-reduced-motion: no-preference) {
-  .js .p-card { animation: card-in 1.2s var(--ease-in-out) both; animation-delay: calc(.15s + var(--i, 0) * 110ms); }
-  .js .p-card img, .js .p-card video { animation: card-zoom 1.6s var(--ease-out) both; animation-delay: calc(.15s + var(--i, 0) * 110ms); }
-  .js .case-name, .js .case-meta, .js .case-info { animation: fade-up .9s var(--ease-out) both .1s; }
-  .js [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .85s var(--ease-out); }
+  .js .p-card { animation: card-in .7s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 60ms); }
+  .js .p-card img, .js .p-card video { animation: card-zoom 1.2s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 60ms); }
+  .js .case-name, .js .case-meta, .js .case-info { animation: fade-up .5s var(--ease-out) both; }
+  .js [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .6s var(--ease-out), transform .6s var(--ease-out); }
   .js [data-reveal].is-in { opacity: 1; transform: none; }
+  /* More works: al aparecer, la imagen se aleja de 1,2 a 1 dentro de su marco (el zoom del ratón va aparte, con transform) */
+  .js .mw-list [data-reveal] .mw-img img { scale: 1.2; transition: transform 1.1s var(--ease-out), scale 1.2s var(--ease-out); }
+  .js .mw-list [data-reveal].is-in .mw-img img { scale: 1; }
 }
 @keyframes card-in { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
 @keyframes card-zoom { from { scale: 1.3; } to { scale: 1; } }
@@ -218,9 +223,9 @@ img, video { display: block; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------- Salida: al volver a la lista, la galería se va hacia la derecha, el nombre sube y el resto se apaga (js/case.js) ---------- */
-.is-leaving .p-track { animation: leave-track .3s cubic-bezier(.4, 0, 1, 1) both; }
-.is-leaving .case-head { animation: leave-up .3s cubic-bezier(.4, 0, 1, 1) both; }
-.is-leaving .case-info, .is-leaving .case-embed, .is-leaving .case-credit, .is-leaving .site-foot { animation: leave-fade .25s ease-in both; }
+.is-leaving .p-track { animation: leave-track .25s var(--ease-out) both; }
+.is-leaving .case-head { animation: leave-up .25s var(--ease-out) both; }
+.is-leaving .case-info, .is-leaving .case-embed, .is-leaving .case-credit, .is-leaving .site-foot { animation: leave-fade .2s var(--ease-out) both; }
 @keyframes leave-track { to { transform: translateX(8vw); opacity: 0; } }
 @keyframes leave-up { to { transform: translateY(-14px); opacity: 0; } }
 @keyframes leave-fade { to { opacity: 0; } }
