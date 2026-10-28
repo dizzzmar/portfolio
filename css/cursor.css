@@ -29,6 +29,11 @@
 .cursor-dot.is-hot i { transform: scale(2.5); opacity: .7; transition: transform .5s cubic-bezier(.34, 1.56, .64, 1), opacity .3s ease; }
 .cursor-dot.is-down i { transform: scale(.8); transition-duration: .12s; }
 .cursor-dot.is-hot.is-down i { transform: scale(2.1); }
+/* Sobre enlaces de texto: no crece ni se esconde; sigue al ratón algo más pequeño (la raya de abajo marca el enlace) */
+.cursor-dot.is-link i,
+.cursor-dot.is-link.is-hot i,
+.cursor-dot.is-link.is-down i,
+.cursor-dot.is-link.is-hot.is-down i { transform: scale(.65); opacity: .92; transition: transform .25s cubic-bezier(.23, 1, .32, 1), opacity .2s ease; }
 /* Donde el cursor ya es otra cosa (fila de proyecto con "View project", vídeo con PLAY/PAUSE, formulario): se aparta */
 .cursor-dot.is-hide i,
 .cursor-dot.is-hide.is-hot i,
@@ -57,11 +62,11 @@
   html, html *, html ::backdrop, ::view-transition, ::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { cursor: none !important; }
 }
 
-/* TODOS LOS ENLACES DE TEXTO, UN SOLO ESTILO: con ratón no crece el punto (se esconde) y el enlace se subraya con una raya de 1 px.
+/* TODOS LOS ENLACES DE TEXTO, UN SOLO ESTILO: con ratón el punto sigue al ratón, más pequeño, y el enlace se subraya con una raya de 1 px.
    La raya sale por el lado por el que entra el ratón y se retira por el lado por el que sale (referencia: yzavoku.com).
    js/cursor.js pone mouse-left en <html> cuando el ratón va hacia la izquierda. Con táctil se queda como estaba (subrayado normal).
    Los enlaces dentro de un párrafo (privacidad) llevan además una raya tenue fija, para que se reconozcan sin pasar el ratón.
-   Si añades un enlace de texto nuevo, añade su selector aquí y en HIDE de js/cursor.js. */
+   Si añades un enlace de texto nuevo, añade su selector aquí y en LINK de js/cursor.js. */
 @media (hover: hover) and (pointer: fine) {
   :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .case-film-link, .pv-back a, .pv-row p a, .contact-row a, .ct-link, .np-more) {
     --o: 100%; --y: calc(100% - .1em);
