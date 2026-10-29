@@ -1,4 +1,4 @@
-import { createInfiniteCardGrid } from './infinite-card-grid.js?v=20261029album2';
+import { createInfiniteCardGrid } from './infinite-card-grid.js?v=20261029motion1';
 
 // A finite DOM pool and CSS perspective keep the Room's WebGL renderer asleep.
 export function createPokemonAlbum({ onOpen, onClose }) {
@@ -10,7 +10,6 @@ export function createPokemonAlbum({ onOpen, onClose }) {
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   let returnFocus = null;
   let request = null, data = null, grid = null, closing = false, closeRequest = 0;
-  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
   function localImage(path) {
     if (typeof path !== 'string' || !path.trim()) throw new Error('Missing card image');
@@ -43,20 +42,6 @@ export function createPokemonAlbum({ onOpen, onClose }) {
       face.append(image(src)); turn.append(face);
     }
     cardElement.append(turn);
-    cardElement.addEventListener('pointermove', event => {
-      if (event.pointerType !== 'mouse' || motion.matches || event.buttons) return;
-      const rect = cardElement.getBoundingClientRect();
-      const x = clamp((event.clientX - rect.left) / rect.width * 2 - 1, -1, 1);
-      const y = clamp((event.clientY - rect.top) / rect.height * 2 - 1, -1, 1);
-      // The hit area stays flat: the outer edges reveal the common reverse without chasing a moving card.
-      turn.style.transform = `rotateX(${-y * 14}deg) rotateY(${x * 145}deg)`;
-    });
-    const reset = () => { turn.style.transform = ''; };
-    cardElement.addEventListener('pointerleave', reset);
-    cardElement.addEventListener('focus', () => {
-      if (!motion.matches) turn.style.transform = 'rotateY(120deg)';
-    });
-    cardElement.addEventListener('blur', reset);
     return cardElement;
   }
 
@@ -70,7 +55,7 @@ export function createPokemonAlbum({ onOpen, onClose }) {
     const controller = new AbortController(); request = controller;
     retry.hidden = true; status.hidden = false; status.textContent = 'Loading cards…';
     try {
-      const response = await fetch('/assets/room/cards/cards.json?v=20261029album2', { signal: controller.signal });
+      const response = await fetch('/assets/room/cards/cards.json?v=20261029motion1', { signal: controller.signal });
       if (!response.ok) throw new Error('Card list unavailable');
       const raw = await response.json();
       if (!Array.isArray(raw.cards)) throw new Error('Invalid card list');
