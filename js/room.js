@@ -13,7 +13,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
-import { createPokemonAlbum } from './room/pokemon-album.js?v=20261029motion1';
+import { createPokemonAlbum } from './room/pokemon-album.js?v=20261030collage1';
 import { createWiiPlayer } from './room/wii-player.js?v=20261029wii1';
 import { createRoomLoading } from './room/loading.js?v=20261022p';
 import { createRoomLighting } from './room/lighting.js?v=20261023a';
