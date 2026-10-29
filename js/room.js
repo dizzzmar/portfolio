@@ -13,7 +13,8 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
-import { createWiiPlayer } from './room/wii-player.js?v=20261021wii5';
+import { createPokemonAlbum } from './room/pokemon-album.js?v=20261029album2';
+import { createWiiPlayer } from './room/wii-player.js?v=20261029wii1';
 import { createRoomLoading } from './room/loading.js?v=20261022p';
 import { createRoomLighting } from './room/lighting.js?v=20261023a';
 import { addRoomRug } from './room/rug.js?v=20261022a';
@@ -140,7 +141,7 @@ const lastWatched = {
 const destinations = [
   // Both are outlined, but the camera looks at the collection on the lower shelf
   { label: 'Now playing', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, track: nowPlaying, href: null },
-  { label: 'Pokemon', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
+  { label: 'Pokémon', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
   { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, poster: lastWatched, href: null },
   // The camera frames just the tomato, not the cord that runs down to the floor
   { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, focus: /^lamp (tomato diffuser|green calyx)\b/, href: null },
@@ -159,11 +160,16 @@ const wiiPlayer = createWiiPlayer({
     resize();
     focusOn(wiiDestination);
   },
-  onClose() {
+  onClose({ completed }) {
     resize();
     highlight(null);
     focusOn(null);
+    returnRate = completed ? 3.5 : 16;
   },
+});
+const pokemonAlbum = createPokemonAlbum({
+  onOpen() { highlight(null); hoverEvent = null; },
+  onClose() { focusOn(null); },
 });
 const lighting = createRoomLighting({
   scene, camera, renderer, canvas, reduced,
@@ -334,6 +340,7 @@ canvas.addEventListener('pointercancel', () => { down = null; });
 
 // Clicking an object only keeps the camera zoomed on it. Only items with a page (href) navigate.
 function openItem(item) {
+  if (item.key === 'mimikyu') { pokemonAlbum.open(nav.querySelector('[data-object="mimikyu"]')); return; }
   if (item.key === 'tomato-lamp') { lighting.setDark(!lighting.dark); return; }
   if (item.key === 'wii') {
     wiiPlayer.open(nav.querySelector('[data-object="wii"]'));
@@ -480,7 +487,7 @@ roomLoader.load('/assets/room/shelf-web.glb?v=20261022a', gltf => {
     button.type = 'button';
     button.dataset.object = item.key;
     button.textContent = item.label;
-    if (item.key === 'wii') button.setAttribute('aria-haspopup', 'dialog');
+    if (['wii', 'mimikyu'].includes(item.key)) button.setAttribute('aria-haspopup', 'dialog');
     if (item.key === 'tomato-lamp') {
       button.setAttribute('aria-pressed', 'true');
       button.setAttribute('aria-label', 'Tomato lamp — turn lights off');
@@ -547,6 +554,7 @@ function fitDistance(center, half, share) {
 
 let overview = null;
 let focused = null;
+let returnRate = 16;
 let returning = false;  // true al alejarse: la vuelta es más rápida que el acercamiento
 const focusViews = new Map();
 function frameRoom() {
@@ -569,8 +577,10 @@ function resetFocus() {
 }
 
 function focusOn(item) {
+  if (pokemonAlbum.active) return;
   if (lighting.dark && item && !(item === wiiDestination && wiiPlayer.active)) return;
   if (wiiPlayer.active && item !== wiiDestination) return;
+  returnRate = 16;
   focused = item;
   returning = !item;
   if (!overview) return;
@@ -685,6 +695,8 @@ function frame() {
   const dt = Math.min((now - lastFrame) / 1000, 0.05);
   const cameraStep = wiiPlayer.active ? Math.min((now - lastFrame) / 1000, 0.25) : dt;
   lastFrame = now;
+  // The opaque album covers the whole scene. Keep the clock current, but do no GPU work.
+  if (pokemonAlbum.active || document.hidden) { requestAnimationFrame(frame); return; }
   if (lampFlicker && !lighting.dark && !reduced && lampFlicker.start !== false && !loading.busy) {
     lampFlicker.t = lampFlicker.start === null ? 0 : lampFlicker.t + dt;
     lampFlicker.start = true;
@@ -699,7 +711,7 @@ function frame() {
   updatePoster(now);
   // Ease the camera towards its goal (overview or a focused object)
   // Rate per second of the ease: the camera reaches 90% of the way in ln(10)/rate seconds (acercarse ≈0.3 s, alejarse ≈0.14 s)
-  const ease = reduced ? 1 : 1 - Math.exp(-cameraStep * (returning ? 16 : 8));
+  const ease = reduced ? 1 : 1 - Math.exp(-cameraStep * (returning ? returnRate : 8));
   view.pos.lerp(goal.pos, ease);
   view.target.lerp(goal.target, ease);
   camera.position.copy(view.pos);

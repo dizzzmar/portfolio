@@ -14,7 +14,7 @@ const INK = '#171917';
 let shared = null;
 
 // Planar UVs across the whole disc, so a ring samples the right part of a square texture
-function ring(inner, outer, segments = 160) {
+function ring(inner, outer, segments = 96) {
   const geometry = new THREE.RingGeometry(inner, outer, segments, 1);
   const position = geometry.attributes.position;
   const uv = geometry.attributes.uv;
@@ -57,7 +57,7 @@ function sharedTextures() {
   });
   // Back: a real CD throws rainbow fans that turn with the light. The thickness map sweeps round the disc (two fans),
   // with a faint ripple along the radius; fine concentric grooves in the roughness catch the light.
-  const tracks = canvasTexture(1024, (context, size) => {
+  const tracks = canvasTexture(512, (context, size) => {
     const center = size / 2;
     const fan = context.createConicGradient(0, center, center);
     for (let stop = 0; stop <= 8; stop++) {
@@ -75,7 +75,7 @@ function sharedTextures() {
       context.stroke();
     }
   });
-  const grooves = canvasTexture(1024, (context, size) => {
+  const grooves = canvasTexture(512, (context, size) => {
     const center = size / 2;
     context.fillStyle = 'rgb(150 150 150)';
     context.fillRect(0, 0, size, size);
@@ -214,9 +214,9 @@ export function createDisc(game, index, environment) {
   const texture = labelTexture(game, index);
 
   // Every material stays transparent from the start, so fading never recompiles a shader
-  const label = new THREE.MeshPhysicalMaterial({
+  const label = new THREE.MeshStandardMaterial({
     map: texture, roughness: 0.4, roughnessMap: grain, metalness: 0.08, envMap: environment,
-    clearcoat: 0.85, clearcoatRoughness: 0.05, envMapIntensity: 0.75, transparent: true,
+    envMapIntensity: 0.75, transparent: true,
   });
   const back = new THREE.MeshPhysicalMaterial({
     color: '#c4c9d1', metalness: 1, roughness: 0.18, roughnessMap: grooves, envMap: environment, envMapIntensity: 1.3,
@@ -259,7 +259,7 @@ export function createDisc(game, index, environment) {
   lip.position.z = half;
   const hole = new THREE.Mesh(new THREE.CylinderGeometry(HOLE_RADIUS, HOLE_RADIUS, THICKNESS, 96, 1, true), frost);
   hole.rotation.x = Math.PI / 2;
-  const rim = new THREE.Mesh(new THREE.CylinderGeometry(DISC_RADIUS, DISC_RADIUS, THICKNESS, 160, 1, true), edge);
+  const rim = new THREE.Mesh(new THREE.CylinderGeometry(DISC_RADIUS, DISC_RADIUS, THICKNESS, 96, 1, true), edge);
   rim.rotation.x = Math.PI / 2;
   // See-through parts draw after the solid ones
   for (const mesh of [hubFront, hubBack, lip, hole]) mesh.renderOrder = 1;

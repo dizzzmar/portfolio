@@ -209,6 +209,9 @@ A sky background and one phrase, "Tear top open". Tearing the top opens the mail
 ### The Terminal
 A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scramble on its title and hidden commands. It is the clearest place for humour in the site.
 
+### Room / Pokémon album
+- A full-screen black dialog within Room uses the existing Funnel fonts and white text. An infinite two-axis grid recycles a fixed viewport-sized pool of portrait cards; mouse/touch dragging, wheel/trackpad and arrow keys move it without loading more DOM nodes. Cursor position turns each card, with the common reverse appearing toward its edges; keyboard focus also previews the reverse. Cards never open or enlarge on click. The local manifest currently contains real example cards, explicitly labelled as examples rather than Mario's collection. Reduced motion removes inertia and decorative turns; Escape or Back to room closes the album and restores focus. The covered Room does no WebGL rendering.
+
 ## Do's and Don'ts
 
 ### Do:

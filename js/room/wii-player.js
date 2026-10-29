@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createDisc, createStudioEnvironment } from './disc.js?v=20261021wii2';
+import { createDisc, createStudioEnvironment } from './disc.js?v=20261029wii1';
 
 const clamp = THREE.MathUtils.clamp;
 const easeOut = value => 1 - Math.pow(1 - clamp(value, 0, 1), 4);
@@ -103,7 +103,7 @@ export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
   async function loadGames() {
     if (games) return games;
     if (!loading) {
-      loading = fetch('/assets/room/discs/games.json?v=20261021wii1')
+      loading = fetch('/assets/room/discs/games.json?v=20261029wii1')
         .then(response => {
           if (!response.ok) throw new Error('Game list unavailable');
           return response.json();
@@ -187,7 +187,7 @@ export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
     }
   }
 
-  function close() {
+  function close({ completed = false } = {}) {
     if (!active) return;
     active = false;
     requestId++;
@@ -198,7 +198,7 @@ export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
     document.body.classList.remove('wii-open');
     if (dialog.open) dialog.close();
     if (returnFocus?.isConnected && returnFocus !== document.body) returnFocus.focus({ preventScroll: true });
-    onClose();
+    onClose({ completed });
   }
 
   function selectDisc(index) {
@@ -387,10 +387,8 @@ export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
     clearDiscs();
     setPower(true);
     status.textContent = loadedGame.title + ' · Now playing';
-    change.textContent = 'Change disc';
-    change.hidden = false;
-    setPhase('playing');
-    change.focus({ preventScroll: true });
+    change.hidden = true;
+    setPhase('returning');
   }
 
   dialog.querySelector('[data-wii-close]').addEventListener('click', close);
@@ -462,6 +460,7 @@ export function createWiiPlayer({ scene, camera, renderer, onOpen, onClose }) {
         blur = reduced ? 9 : 9 * easeOut((now - since) / 800);
         poseChoices(now, dt);
       } else if (phase === 'inserting') insertDisc(now);
+      else if (phase === 'returning' && now - since > (reduced ? 0 : 650)) close({ completed: true });
     },
     render() {
       if (!active || !discs.length) return;
