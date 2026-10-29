@@ -1,0 +1,77 @@
+/* POSTERS · collage de trabajos personales (pósters, merch, portadas). Se carga después de case.css y case-layout.css, que ponen
+   la cabecera, la barra y el título que avanza. Aquí: el aviso, el collage de piezas, el cambio de color de las que tienen varias
+   versiones y el visor (un <dialog>) con todas las imágenes de cada mini-proyecto (js/posters.js).
+   Orden: aviso · collage · pieza · visor · móvil · movimiento. */
+
+.pz { padding-bottom: clamp(64px, 9vw, 140px); }
+
+/* ---------- Aviso ---------- */
+.pz-note { max-width: 52ch; padding: clamp(24px, 3.5vh, 40px) var(--edge) 0; font-size: var(--fs-read); line-height: var(--lh-body); letter-spacing: -.01em; }
+
+/* ---------- Collage: columnas que se llenan de arriba abajo; las piezas recortadas (merch, mockups) flotan sobre el fondo ---------- */
+.pz-grid { list-style: none; columns: 4; column-gap: clamp(16px, 2.4vw, 40px); padding: clamp(32px, 5vw, 72px) var(--edge) 0; }
+.pz-item { break-inside: avoid; margin-bottom: clamp(28px, 3.6vw, 56px); }
+.pz-item:nth-child(3n + 2) { padding-inline: clamp(0px, 2vw, 32px); }   /* algunas piezas más estrechas: rompe la retícula */
+.pz-tile { display: block; color: inherit; text-decoration: none; }
+.pz-tile:focus-visible { outline-offset: 6px; }
+
+/* ---------- Pieza ---------- */
+.pz-frame { position: relative; display: block; overflow: hidden; background: var(--panel); aspect-ratio: var(--ar); }
+.pz-tile.is-cut .pz-frame { background: none; overflow: visible; }
+.pz-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pz-tile.is-cut .pz-frame img { object-fit: contain; }
+/* Las que tienen varias versiones de color van apiladas y se enciende una cada vez (js/posters.js pone is-on) */
+.pz-tile.is-cycle .pz-frame img { position: absolute; inset: 0; opacity: 0; transition: opacity .7s ease; }
+.pz-tile.is-cycle .pz-frame img.is-on { opacity: 1; }
+.pz-cap { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; font-size: var(--fs-s); line-height: 1.3; }
+.pz-n { color: var(--pl-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (hover: hover) and (pointer: fine) {
+  .pz-frame img { transition: scale .9s var(--ease-out), opacity .7s ease; }
+  .pz-tile:hover .pz-frame img { scale: 1.035; }
+}
+
+/* ---------- Visor ---------- */
+html.pz-open { overflow: hidden; }
+.pz-viewer { position: fixed; inset: 0; width: 100%; height: 100%; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: var(--bg); color: var(--ink); overflow: hidden; }
+.pz-viewer[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; }
+.pz-viewer:focus { outline: none; }
+.pz-viewer::backdrop { background: var(--bg); }
+.pzv-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: var(--nav-h); padding: 0 var(--edge); }
+.pzv-title { font-family: var(--font-display); font-size: var(--fs-l); font-weight: var(--fw-title); letter-spacing: var(--tracking-display, -.03em); line-height: 1.1; }
+.pzv-nav { display: flex; align-items: center; gap: clamp(12px, 2vw, 24px); font-size: var(--fs-s); }
+.pzv-count { min-width: 4.5ch; text-align: center; font-variant-numeric: tabular-nums; }
+.pzv-nav button { padding: 8px 4px; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.pzv-nav button:hover { text-decoration: underline; text-underline-offset: 4px; }
+.pzv-nav button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.pz-viewer.is-single .pzv-prev, .pz-viewer.is-single .pzv-next, .pz-viewer.is-single .pzv-count, .pz-viewer.is-single .pzv-thumbs { display: none; }
+.pzv-stage { min-height: 0; margin: 0; padding: 0 var(--edge); display: flex; align-items: center; justify-content: center; }
+.pzv-img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; cursor: pointer; user-select: none; -webkit-user-drag: none; }
+.pz-viewer.is-single .pzv-img { cursor: default; }
+.pzv-thumbs { display: flex; justify-content: center; gap: 10px; padding: 14px var(--edge) 8px; overflow-x: auto; scrollbar-width: none; }
+.pzv-thumbs::-webkit-scrollbar { display: none; }
+.pzv-th { flex: none; padding: 0 0 4px; border: 0; border-bottom: 2px solid transparent; background: none; cursor: pointer; opacity: .5; transition: opacity .2s; }
+.pzv-th img { display: block; height: 56px; width: auto; }
+.pzv-th[aria-current="true"] { opacity: 1; border-bottom-color: var(--ink); }
+.pzv-th:hover { opacity: 1; }
+.pzv-th:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.pzv-note { padding: 0 var(--edge) 14px; font-size: var(--fs-s); color: var(--pl-soft); }
+
+/* ---------- Móvil y táctil ---------- */
+@media (max-width: 1100px) { .pz-grid { columns: 3; } }
+@media (max-width: 760px) {
+  .pz-grid { columns: 2; column-gap: 14px; }
+  .pz-item:nth-child(3n + 2) { padding-inline: 0; }
+  .pzv-top { flex-wrap: wrap; row-gap: 4px; padding-top: 10px; padding-bottom: 6px; }
+  .pzv-title { font-size: 18px; }
+  .pzv-th img { height: 44px; }
+}
+@media (pointer: coarse) { .pzv-nav button { padding: 14px 8px; } .pzv-th { padding-bottom: 6px; } }
+
+/* ---------- Movimiento: las piezas suben un poco al aparecer; el visor se enciende en 0,2 s; con «reducir movimiento», nada de esto ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .pz-ready .pz-item { transition: opacity .7s var(--ease-out), translate .7s var(--ease-out); }
+  .pz-ready .pz-item:not(.is-in) { opacity: 0; translate: 0 22px; }
+  .pz-viewer[open] { animation: pzv-in .2s var(--ease-out) both; }
+  @keyframes pzv-in { from { opacity: 0; } }
+}
+@media (prefers-reduced-motion: reduce) { .pz-tile.is-cycle .pz-frame img { transition: none; } }

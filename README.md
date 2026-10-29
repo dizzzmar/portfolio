@@ -9,6 +9,7 @@ index.html                 La home (el tomate gira con su nombre; al pulsar Work
 room.html                  La página "The room" (habitación 3D)
 about/index.html           About (foto holográfica fija a la izquierda y tarjeta del mismo color que entra por la derecha con nombre, presentación, gustos y clientes; la tarjeta se recorre por dentro). Estilos: css/about.css. Textos de ejemplo marcados con EDITA
 project/enmad/            ENMAD, proyecto de Studies (universidad): rosa y rojo del propio proyecto. Estilos: css/case.css + css/case-layout.css (estructura de todas las fichas) + css/palettes.css (paletas de colores de cada proyecto); índice de la izquierda: js/case-index.js. Imágenes: assets/projects/enmad (páginas de los dossieres).
+posters/index.html        Posters: collage de trabajos personales y ficticios (pósters, merch, portadas). Cada pieza abre un visor con todo su mini-proyecto (js/posters.js); las que tienen varias versiones de color cambian solas. Estilos: css/posters.css. Imágenes: assets/posters/<proyecto>/ (miniatura de 720 px y vista grande de 2000 px, en WebP; las de merch y mockups, recortadas sin fondo). La página se generó a partir de las carpetas de imágenes; para añadir un proyecto, copia un <li class="pz-item"> y cambia nombre, imágenes y textos alternativos.
 404.html                   Página de "no encontrada"
 machine/index.html         Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 robots.txt · sitemap.xml · llms.txt   Para buscadores y agentes de IA
