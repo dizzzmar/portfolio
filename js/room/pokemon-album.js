@@ -55,7 +55,7 @@ export function createPokemonAlbum({ onOpen, onClose }) {
     const controller = new AbortController(); request = controller;
     retry.hidden = true; status.hidden = false; status.textContent = 'Loading cards…';
     try {
-      const response = await fetch('/assets/room/cards/cards.json?v=20261030collage1', { signal: controller.signal });
+      const response = await fetch('/assets/room/cards/cards.json?v=20261030cards1', { signal: controller.signal });
       if (!response.ok) throw new Error('Card list unavailable');
       const raw = await response.json();
       if (!Array.isArray(raw.cards)) throw new Error('Invalid card list');

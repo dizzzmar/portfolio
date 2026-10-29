@@ -1,24 +1,22 @@
-# Pokémon example cards
+# Pokémon cards
 
-These eight real cards demonstrate the gallery. They are **examples**, not a claim about Mario's own collection. The UI marks them “Example cards”.
+The 35 cards of Mario's collection that make the best gallery: full arts, ex and VMAX, holos and the prettiest illustrations. Each is the **official scan of that card**, not a photo of Mario's own copy, so every card looks clean and the same. The collection itself is larger; these were chosen by eye.
 
 ## Sources
 
-- Fronts: TCGdex asset archive, individual original URLs recorded in `cards.json`. Base Set (Charizard, Blastoise, Venusaur, Pikachu), Evolving Skies (Umbreon VMAX, Rayquaza VMAX), Fusion Strike (Gengar VMAX, Mew V).
-- Shared international reverse: https://tcg.pokemon.com/assets/img/global/tcg-card-back-2x.jpg
-- Card artwork and marks belong to their respective rights holders (Pokémon / Nintendo / Creatures / GAME FREAK and credited illustrators).
-- Downloaded 2026-10-29, converted to local WebP at up to 660 px wide. The gallery makes no visitor requests to these sources.
-- Original geometric `*-placeholder.svg` assets remain available for use while curating the real collection.
+- Japanese-era cards (Scarlet & Violet and Mega series): official card images from https://scrydex.com (`images.scrydex.com/pokemon/<set>_ja-<number>/large`). The exact address of each is recorded as `source` in `cards.json`.
+- Cards from 2021–22 (Sword & Shield): the English card with the same illustration, from the TCGdex asset archive (`assets.tcgdex.net`). Korean, Chinese and Spanish copies show the same artwork as these, only the text language differs.
+- Card artwork and marks belong to their respective rights holders (Pokémon / Nintendo / Creatures / GAME FREAK and credited illustrators). Converted to local WebP at 520 px wide. The gallery makes no visitor requests to any of these sources.
+- `set` is the English name of the expansion the scan comes from. For the 2021–22 cards that is the English expansion, which can differ from the one printed on the Japanese or Korean copy (for example Fusion Strike for a Fusion Arts card).
+- The original geometric `*-placeholder.svg` assets remain available for use while curating the collection.
 
-## Replacing the examples
+## Adding or replacing cards
 
 Edit `cards.json`:
 
-- `back`: shared reverse image, relative to this directory.
-- `cards`: ordered entries `{ "id": "unique-id", "name": "Card name", "set": "Expansion", "front": "scan.webp" }` (`set` is the caption's second line; optional).
-- Remove `example: true` when replacing an entry with a card Mario owns. `source` is provenance only, never fetched by the gallery.
-
-Use a complete portrait crop, approximately 63:88, ideally at least 630 × 880 px. Images must be local to the same origin. An empty list shows an empty state; loading failures offer a retry.
+- `cards`: ordered entries `{ "id": "unique-id", "name": "Card name", "set": "Expansion", "front": "scan.webp", "source": "where the scan came from" }`. `set` is the caption's second line (optional); `source` is provenance only, never fetched by the gallery.
+- Use a complete portrait crop, approximately 63:88, at least 520 px wide. Images must be local to the same origin. An empty list shows an empty state; loading failures offer a retry.
+- Change the `?v=` of `cards.json` in `js/room/pokemon-album.js` and of the files that import it, so browsers fetch the new list.
 
 ## Interaction
 
