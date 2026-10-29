@@ -1,18 +1,17 @@
-/* STUDIES · proyectos de la universidad (project/enmad). Mismo esqueleto que las páginas de proyecto (css/case.css), con los colores
-   del propio proyecto para que se separen de los trabajos de cliente: fondo rosa y texto rojo, sacados de los dossieres de ENMAD.
-   El rojo de los dossieres (#ff2711) sobre el rosa (#ffa2d4) solo da 2:1, así que aquí el rojo se oscurece lo justo:
-   títulos grandes en #c41a08 (3,3:1, vale para texto grande) y el texto que se lee en #8f1003 (5,1:1).
-   Orden: colores · cabecera · partes (Gráfica, Espacios, Gestión) · más proyectos y pie · móvil · movimiento. */
+/* STUDIES · proyectos de la universidad (project/enmad). La estructura es la de todas las páginas de proyecto (css/case-layout.css);
+   aquí solo cambian los colores, los del propio proyecto, para que se separen de los trabajos de cliente: fondo rosa y texto rojo.
+   El rojo de los dossieres (#ff2711) sobre el rosa (#ffa2d4) solo da 2:1, así que el rojo se oscurece lo justo:
+   títulos grandes en #c41a08 (3,3:1, vale para texto grande) y el texto que se lee en #8f1003 (5,1:1). */
 
 :root {
   --st-pink: #ffa2d4;
   --st-red: #ff2711;      /* el rojo de la marca: solo en formas y bloques, nunca en texto */
-  --st-title: #c41a08;
   --bg: var(--st-pink);
   --ink: #8f1003;
-  --soft: rgba(143, 16, 3, .72);
   --line: rgba(143, 16, 3, .28);
-  --panel: #ffb8de;      /* hueco de las imágenes mientras cargan, un rosa algo más claro */
+  --panel: #ffb8de;       /* hueco de las imágenes mientras cargan, un rosa algo más claro */
+  --pl-title: #c41a08;
+  --pl-soft: var(--ink);  /* sobre el rosa, el rojo oscuro con transparencia baja de 4,5:1: las etiquetas van enteras */
 }
 html { background: var(--bg); }
 .is-studies ::selection { background: var(--ink); color: var(--st-pink); }
@@ -20,68 +19,15 @@ html { background: var(--bg); }
 
 /* La cabecera y el menú no se mezclan con «difference» (sobre rosa saldrían verdes): el nombre en el rojo de los títulos, el resto en el oscuro */
 .is-studies .case-head, .is-studies .case-nav { mix-blend-mode: normal; color: var(--ink); }
-.is-studies .case-name { color: var(--st-title); }
-.is-studies .case-nav a, .is-studies .case-nav a:hover, .is-studies .case-nav a[aria-current="page"] { color: var(--ink); } /* 14 px: el rojo oscuro, que llega a 5:1 */
+.is-studies .case-name { color: var(--pl-title); }
+.is-studies .case-nav a, .is-studies .case-nav a:hover, .is-studies .case-nav a[aria-current="page"] { color: var(--ink); }
 .is-studies .case-meta { color: var(--ink); }
-.is-studies .p-progress i { background: var(--st-title); }
 
-/* ---------- Título que avanza: «ENMAD / Es un placer romper contigo / …» a todo lo ancho, en el rojo de los títulos ---------- */
-.st-marquee { overflow: hidden; padding: calc(var(--nav-h) + clamp(8px, 2vw, 24px)) 0 clamp(12px, 2vw, 28px); border-bottom: 1px solid var(--line); }
-.st-run { display: inline-flex; white-space: nowrap; font-family: var(--font-display); font-size: clamp(72px, 13vw, 220px); font-weight: var(--fw-title); letter-spacing: -.05em; line-height: .9; color: var(--st-title); animation: mw-run 40s linear infinite; will-change: transform; }
-.st-run > span { padding-right: .25em; }
-.st-sep { padding: 0 .1em; font-weight: 400; }
-
-/* ---------- Dos columnas: datos e índice fijos a la izquierda, imágenes a la derecha (como donut-studio.com) ---------- */
-.st-layout { display: grid; grid-template-columns: minmax(260px, 30%) minmax(0, 1fr); column-gap: clamp(20px, 3vw, 48px); padding: 0 var(--edge); }
-.st-side { position: sticky; top: var(--nav-h); align-self: start; display: flex; flex-direction: column; gap: clamp(24px, 3.5vh, 40px); max-height: calc(100vh - var(--nav-h)); overflow-y: auto; padding: clamp(24px, 3.5vh, 40px) 0; scrollbar-width: none; }
-.st-intro p { font-size: var(--fs-read); line-height: var(--lh-body); letter-spacing: -.01em; }
-.st-intro p:first-child { font-weight: var(--fw-bold); }
-.st-intro p + p { margin-top: .9em; }
-.st-facts div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: var(--fs-s); }
-.st-facts dd { text-align: right; }
-.st-index ol { list-style: none; border-top: 1px solid var(--line); }
-.st-index a { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); font-family: var(--font-display); font-size: var(--fs-xl); font-weight: var(--fw-title); letter-spacing: -.02em; color: var(--st-title); text-decoration: none; transition: padding-left .3s var(--ease-out); }
-.st-index a span { font-family: var(--font-ui); font-size: var(--fs-s); font-weight: var(--fw-regular); letter-spacing: 0; color: var(--ink); align-self: center; font-variant-numeric: tabular-nums; }
-.st-index a[aria-current] { padding-left: 14px; box-shadow: inset 4px 0 0 var(--st-red); } /* la parte que se ve: se mete un poco y lleva una barra del rojo de la marca */
-@media (hover: hover) and (pointer: fine) { .st-index a:hover { padding-left: 14px; } }
-
-.st-content { padding: clamp(24px, 3.5vh, 40px) 0 0; min-width: 0; }
-.st-part + .st-part { margin-top: clamp(72px, 10vw, 160px); }
-.st-part { scroll-margin-top: calc(var(--nav-h) + 16px); }
-.st-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 24px; align-items: end; padding-bottom: clamp(20px, 3vw, 36px); }
-.st-head h2 { grid-column: 1; font-family: var(--font-display); font-size: var(--fs-h2); font-weight: var(--fw-title); letter-spacing: -.04em; line-height: .95; color: var(--st-title); text-wrap: balance; }
-.st-head p { grid-column: 1; max-width: var(--measure); margin-top: 16px; font-size: var(--fs-read); line-height: var(--lh-body); letter-spacing: -.01em; }
-.st-video { grid-column: 2; grid-row: 1 / span 2; margin: 0; overflow: hidden; background: var(--panel); }
-.st-video video { display: block; width: 100%; height: 100%; object-fit: cover; }
-.st-video.is-square { width: clamp(140px, 14vw, 220px); aspect-ratio: 1; }
-.st-video.is-tall { width: clamp(110px, 9vw, 160px); aspect-ratio: 9 / 16; }
-
-/* Las páginas de los dossieres, una debajo de otra */
-.st-stack { display: grid; gap: clamp(8px, 1vw, 16px); }
-.st-item { margin: 0; overflow: hidden; background: var(--panel); }
-.st-item img { display: block; width: 100%; height: auto; }
-
-/* ---------- Más proyectos y pie: More works en el mismo rosa (el menú fijo de arriba sigue leyéndose), separado por una raya ---------- */
+/* More works en el mismo rosa (el menú fijo de arriba sigue leyéndose), separado por una raya */
 .is-studies .more-works { background: var(--bg); color: var(--ink); border-top: 1px solid var(--line); }
-.is-studies .mw-title { color: var(--st-title); }
+.is-studies .mw-title { color: var(--pl-title); }
 .is-studies .mw-list { border-top-color: var(--line); }
 .is-studies .mw-img { background: var(--panel); }
 .is-studies .mw-card:focus-visible { outline-color: var(--ink); }
 .is-studies .case-credit p { color: var(--ink); }
 .is-studies .site-foot.on-light, .is-studies .site-foot.on-light a:hover { color: var(--ink); }
-
-@media (max-width: 760px) {
-  .st-layout { grid-template-columns: 1fr; }
-  .st-side { position: static; max-height: none; overflow: visible; }
-  .st-head { grid-template-columns: 1fr; }
-  .st-video { grid-column: 1; grid-row: auto; margin-top: 16px; }
-  .st-video.is-square { width: 46vw; }
-  .st-video.is-tall { width: 34vw; }
-}
-@media (prefers-reduced-motion: reduce) { .st-run { animation: none; } .st-index a { transition: none; } }
-
-/* Al aparecer, cada página se aleja de 1,06 a 1 dentro de su marco (como More works); con «reducir movimiento» ya está quieta */
-@media (prefers-reduced-motion: no-preference) {
-  .js .st-item[data-reveal] img { scale: 1.06; transition: scale 1.2s var(--ease-out); }
-  .js .st-item[data-reveal].is-in img { scale: 1; }
-}

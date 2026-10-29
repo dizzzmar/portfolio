@@ -22,6 +22,7 @@
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261027b">
 <link rel="stylesheet" href="/css/case.css?v=20261029a">
+<link rel="stylesheet" href="/css/case-layout.css?v=20261030d">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
 <link rel="stylesheet" href="/css/menu.css?v=20261027r">
@@ -60,27 +61,34 @@
   <p class="case-meta client">TCCC</p>
 </div>
 
-<main>
-  <div class="case-first">
-    <section class="p-gallery" aria-label="Project gallery">
-      <div class="p-track" tabindex="0" role="region" aria-label="Project gallery, scroll sideways">
+<main class="st">
+  <!-- Título enorme que avanza sin parar; el nombre de verdad está en la cabecera (h1). Estructura en css/case-layout.css -->
+  <div class="st-marquee" aria-hidden="true"><div class="st-run"><span>Schweppes x The Gentlemen <span class="st-sep">/</span> Schweppes x The Gentlemen <span class="st-sep">/</span> Schweppes x The Gentlemen <span class="st-sep">/</span> Schweppes x The Gentlemen <span class="st-sep">/</span> </span><span>Schweppes x The Gentlemen <span class="st-sep">/</span> Schweppes x The Gentlemen <span class="st-sep">/</span> Schweppes x The Gentlemen <span class="st-sep">/</span> Schweppes x The Gentlemen <span class="st-sep">/</span> </span></div></div>
 
-        <figure class="p-card" style="--ar: 3508 / 2480; --r: 1.4145"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-800.webp" srcset="/assets/projects/schweppes-the-gentlemen/poster-a3-800.webp 800w, /assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp 1600w" sizes="(max-width: 760px) 52vh, 580px" width="1600" height="1131" alt="The Gentlemen key visual: a tattooed hand rests on a glass of tonic over ice, next to a Schweppes can on a wooden table. Text: The Gentlemen, only on Netflix, out now" loading="lazy" decoding="async"></figure>
-
-        <figure class="p-card" style="--ar: 1 / 1; --r: 1.0"><img src="/assets/projects/schweppes-the-gentlemen/poster-square-800.webp" srcset="/assets/projects/schweppes-the-gentlemen/poster-square-800.webp 800w, /assets/projects/schweppes-the-gentlemen/poster-square-1080.webp 1080w" sizes="(max-width: 760px) 52vh, 580px" width="1080" height="1080" alt="Square version: the same scene on the left and, on the right, a yellow panel that reads Try the Gentlemen's cocktail, criminally good taste" loading="lazy" decoding="async"></figure>
-
+  <!-- Dos columnas: a la izquierda la ficha (datos y texto, fija al bajar); a la derecha, las imágenes por partes.
+       EDITA: los datos, el texto y, en cada parte, sus imágenes (una <figure class="st-item"> por imagen o vídeo) -->
+  <div class="st-layout">
+    <aside class="st-side">
+      <dl class="st-facts">
+        <div><dt>Year</dt><dd>2026</dd></div>
+        <div><dt>Client</dt><dd>TCCC</dd></div>
+        <div><dt>Discipline</dt><dd>Art direction, Key visual, Retouching</dd></div>
+      </dl>
+      <div class="st-intro">
+        <p>Schweppes and Netflix joined forces for The Gentlemen Season 2, and this key visual is the result. It’s 100% AI-generated, then retouched by hand until it turned out criminally good.</p>
+        <p>I worked on the image generation, the product integration and the final retouch.</p>
       </div>
-      <div class="p-progress" aria-hidden="true"><i></i></div>
-    </section>
+    </aside>
 
-    <section class="case-info" aria-label="About the project">
-      <ul class="case-tags"><li>Art direction</li><li>Key visual</li><li>Retouching</li></ul>
-      <div class="case-text">
-        <p>Schweppes and Netflix joined forces for The Gentlemen Season 2, and this key visual is the result. It’s 100% AI-generated, then retouched by hand until it turned out criminally good.
-
-I worked on the image generation, the product integration and the final retouch.</p>
-      </div>
-    </section>
+    <div class="st-content">
+      <section class="st-part" id="st-visuals" aria-labelledby="st-visuals-t">
+        <header class="st-head"><h2 id="st-visuals-t">Key visuals</h2></header>
+        <div class="st-stack">
+          <figure class="st-item" style="--ar: 3508 / 2480" data-reveal><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-800.webp" srcset="/assets/projects/schweppes-the-gentlemen/poster-a3-800.webp 800w, /assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 64vw" width="1600" height="1131" alt="The Gentlemen key visual: a tattooed hand rests on a glass of tonic over ice, next to a Schweppes can on a wooden table. Text: The Gentlemen, only on Netflix, out now" loading="lazy" decoding="async"></figure>
+          <figure class="st-item" style="--ar: 1 / 1" data-reveal><img src="/assets/projects/schweppes-the-gentlemen/poster-square-800.webp" srcset="/assets/projects/schweppes-the-gentlemen/poster-square-800.webp 800w, /assets/projects/schweppes-the-gentlemen/poster-square-1080.webp 1080w" sizes="(max-width: 760px) 100vw, 64vw" width="1080" height="1080" alt="Square version: the same scene on the left and, on the right, a yellow panel that reads Try the Gentlemen's cocktail, criminally good taste" loading="lazy" decoding="async"></figure>
+        </div>
+      </section>
+    </div>
   </div>
 </main>
 

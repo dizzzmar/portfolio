@@ -32,6 +32,7 @@
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261027b">
 <link rel="stylesheet" href="/css/case.css?v=20261029a">
+<link rel="stylesheet" href="/css/case-layout.css?v=20261030d">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
 <link rel="stylesheet" href="/css/menu.css?v=20261027r">
@@ -74,57 +75,49 @@
   <p class="case-meta client">Cliente</p>            <!-- EDITA: cliente o marca -->
 </div>
 
-<main>
-  <!-- 1. Primera pantalla: galería horizontal (esquinas rectas) y, debajo, los datos y la descripción.
-          Las tarjetas se recorren con la rueda, arrastrando o con las flechas. El orden aquí = el orden en la galería.
-          Cada tarjeta fija su forma con  --ar  (ancho / alto): 16 / 9 (horizontal), 1 / 1 (cuadrada), 9 / 16 (vertical); y con  --r  el mismo número ya dividido (1.7778, 1, 0.5625), que usa el móvil
-          o las medidas reales de la imagen (p. ej. 1600 / 1131). -->
-  <div class="case-first">
-    <!-- ¿UN SOLO ASSET (una imagen o una película)? Pon class="p-gallery is-single" y borra el enlace «Go to film» de más abajo: el asset se ve entero y alineado con los demás proyectos, sin tira ni línea de progreso. -->
-    <section class="p-gallery" aria-label="Project gallery">
-      <div class="p-track" tabindex="0" role="region" aria-label="Project gallery, scroll sideways">
+<main class="st">
+  <!-- Título enorme que avanza sin parar; el nombre de verdad está en la cabecera (h1). Estructura en css/case-layout.css -->
+  <div class="st-marquee" aria-hidden="true"><div class="st-run"><span>Nombre del proyecto <span class="st-sep">/</span> Nombre del proyecto <span class="st-sep">/</span> Nombre del proyecto <span class="st-sep">/</span> Nombre del proyecto <span class="st-sep">/</span> </span><span>Nombre del proyecto <span class="st-sep">/</span> Nombre del proyecto <span class="st-sep">/</span> Nombre del proyecto <span class="st-sep">/</span> Nombre del proyecto <span class="st-sep">/</span> </span></div></div>
 
-        <!-- EJEMPLO A · película completa con la barra de reproducción propia (data-player). No arranca sola: se pulsa Play (con sonido).
-             El  id="film"  hace que funcione el enlace "Go to film" de más abajo. Pon la película SIEMPRE la primera.
-             Archivos: video.mp4 (mejor 1080p, que pese poco) y su imagen de portada video-poster.webp.
-             Si es un vídeo vertical, cambia  --ar  a  9 / 16  y las medidas width/height. -->
-        <figure class="p-card" style="--ar: 16 / 9; --r: 1.7778" id="film"><video src="/assets/projects/nombre-del-proyecto/video.mp4" poster="/assets/projects/nombre-del-proyecto/video-poster.webp" width="1920" height="1080" controls data-player playsinline preload="metadata" aria-label="EDITA: Nombre del proyecto — film"></video></figure>
-
-        <!-- EJEMPLO B · clip corto en bucle, sin sonido y que arranca solo (autoplay muted loop) -->
-        <figure class="p-card" style="--ar: 16 / 9; --r: 1.7778"><video src="/assets/projects/nombre-del-proyecto/clip.mp4" poster="/assets/projects/nombre-del-proyecto/clip.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="EDITA: descripción del clip"></video></figure>
-
-        <!-- EJEMPLO C · imagen: sube dos tamaños (800 y 1600 px de ancho) y la web elige la que necesita.
-             "alt" = descripción de la imagen para quien no la ve (obligatorio). loading="lazy" en todas menos la primera visible. -->
-        <figure class="p-card" style="--ar: 1 / 1; --r: 1.0"><img src="/assets/projects/nombre-del-proyecto/imagen-1-800.webp" srcset="/assets/projects/nombre-del-proyecto/imagen-1-800.webp 800w, /assets/projects/nombre-del-proyecto/imagen-1-1600.webp 1600w" sizes="(max-width: 760px) 52vh, 580px" width="1600" height="1600" alt="EDITA: descripción de la imagen" loading="lazy" decoding="async"></figure>
-
-        <!-- EJEMPLO D · imagen vertical (9 / 16) -->
-        <figure class="p-card" style="--ar: 9 / 16; --r: 0.5625"><img src="/assets/projects/nombre-del-proyecto/imagen-2-640.webp" srcset="/assets/projects/nombre-del-proyecto/imagen-2-640.webp 640w, /assets/projects/nombre-del-proyecto/imagen-2-1080.webp 1080w" sizes="(max-width: 760px) 52vw, 360px" width="1080" height="1920" alt="EDITA: descripción de la imagen" loading="lazy" decoding="async"></figure>
-
-      </div>
-      <div class="p-progress" aria-hidden="true"><i></i></div>
-    </section>
-
-    <!-- 2. Datos y texto del proyecto -->
-    <section class="case-info" aria-label="About the project">
-      <ul class="case-tags"><li>Tipo de proyecto</li><li>Cliente</li></ul>   <!-- EDITA: etiquetas (copia o borra <li>). El año y el cliente ya salen arriba, en la barra: no se repiten aquí. -->
-      <div class="case-text">
+  <!-- Dos columnas: a la izquierda la ficha (datos y texto, fija al bajar); a la derecha, las imágenes por partes.
+       EDITA: los datos, el texto y, en cada parte, sus imágenes (una <figure class="st-item"> por imagen o vídeo) -->
+  <div class="st-layout">
+    <aside class="st-side">
+      <dl class="st-facts">
+        <div><dt>Year</dt><dd>2026</dd></div>
+        <div><dt>Client</dt><dd>Cliente</dd></div>
+        <div><dt>Discipline</dt><dd>Tipo de proyecto, Cliente</dd></div>
+      </dl>
+      <div class="st-intro">
         <p>EDITA: el texto del proyecto. Si hay más de un párrafo, copia la línea.</p>
       </div>
-      <!-- "Go to film": desliza la galería hasta la película (la tarjeta con id="film"). Borra esta línea si no hay película -->
-      <a class="case-film-link" href="#film" data-go-film>Go to film →</a>
-    </section>
-  </div>
+    </aside>
 
-  <!-- 3. (Opcional) La película en Instagram. Ojo: el post incrustado hace que el navegador del visitante se conecte a Instagram
-          (le llegan datos del visitante, como su IP). Si lo usas, quita los comentarios de este bloque Y del script de Instagram
-          del final, y revisa la página de privacidad. Si no, déjalo como está.
-  <section class="case-embed" id="instagram" aria-label="Nombre del proyecto on Instagram" data-reveal>
-    <h2>Film on Instagram</h2>
-    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/CODIGO-DEL-POST/" data-instgrm-version="14">
+    <div class="st-content">
+      <section class="st-part" id="st-film" aria-labelledby="st-film-t">
+        <header class="st-head"><h2 id="st-film-t">Film</h2></header>
+        <div class="st-stack">
+          <figure class="st-item" style="--ar: 16 / 9" id="film" data-reveal><video src="/assets/projects/nombre-del-proyecto/video.mp4" poster="/assets/projects/nombre-del-proyecto/video-poster.webp" width="1920" height="1080" controls data-player playsinline preload="metadata" aria-label="EDITA: Nombre del proyecto — film"></video></figure>
+          <figure class="st-item" style="--ar: 16 / 9" data-reveal><video src="/assets/projects/nombre-del-proyecto/clip.mp4" poster="/assets/projects/nombre-del-proyecto/clip.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="EDITA: descripción del clip"></video></figure>
+        </div>
+      </section>
+      <section class="st-part" id="st-visuals" aria-labelledby="st-visuals-t">
+        <header class="st-head"><h2 id="st-visuals-t">Images</h2></header>
+        <div class="st-stack">
+          <figure class="st-item" style="--ar: 1 / 1" data-reveal><img src="/assets/projects/nombre-del-proyecto/imagen-1-800.webp" srcset="/assets/projects/nombre-del-proyecto/imagen-1-800.webp 800w, /assets/projects/nombre-del-proyecto/imagen-1-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 64vw" width="1600" height="1600" alt="EDITA: descripción de la imagen" loading="lazy" decoding="async"></figure>
+          <figure class="st-item is-portrait" style="--ar: 9 / 16" data-reveal><img src="/assets/projects/nombre-del-proyecto/imagen-2-640.webp" srcset="/assets/projects/nombre-del-proyecto/imagen-2-640.webp 640w, /assets/projects/nombre-del-proyecto/imagen-2-1080.webp 1080w" sizes="(max-width: 760px) 100vw, 64vw" width="1080" height="1920" alt="EDITA: descripción de la imagen" loading="lazy" decoding="async"></figure>
+        </div>
+      </section>
+      <section class="st-part" id="st-instagram" aria-labelledby="st-instagram-t">
+        <header class="st-head"><h2 id="st-instagram-t">Film on Instagram</h2></header>
+        <div class="case-embed-body" data-reveal>
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/CODIGO-DEL-POST/" data-instgrm-version="14">
       <a href="https://www.instagram.com/p/CODIGO-DEL-POST/">Watch Nombre del proyecto on Instagram</a>
     </blockquote>
-  </section>
-  -->
+        </div>
+      </section>
+    </div>
+  </div>
 </main>
 
 <!-- Aviso de propiedad: va en todos los proyectos hechos en WPP (borra o cambia el texto si el proyecto es personal) -->

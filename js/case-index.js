@@ -1,4 +1,4 @@
-// STUDIES · el índice de la izquierda (project/enmad): marca la parte que se está viendo (aria-current) y, al pulsar, baja hasta ella.
+// PÁGINAS DE PROYECTO · el índice de la columna izquierda (css/case-layout.css): marca la parte que se está viendo (aria-current) y, al pulsar, baja hasta ella.
 // Sin este script el índice sigue funcionando como enlaces normales a cada parte.
 (() => {
   const links = [...document.querySelectorAll('.st-index a[href^="#"]')];

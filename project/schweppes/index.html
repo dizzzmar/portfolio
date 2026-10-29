@@ -32,6 +32,7 @@
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261027b">
 <link rel="stylesheet" href="/css/case.css?v=20261029a">
+<link rel="stylesheet" href="/css/case-layout.css?v=20261030d">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
 <link rel="stylesheet" href="/css/menu.css?v=20261027r">
@@ -72,30 +73,40 @@
   <p class="case-meta client">Schweppes</p>
 </div>
 
-<main>
-  <!-- Primera pantalla: galería horizontal (esquinas rectas) y, debajo, los datos y la descripción -->
-  <div class="case-first">
-    <section class="p-gallery" aria-label="Project gallery">
-      <div class="p-track" tabindex="0" role="region" aria-label="Project gallery, scroll sideways">
-        <!-- La película completa, con la barra de reproducción propia (js/case.js). No arranca sola: se pulsa Play (con sonido).
-             Archivo: assets/projects/schweppes/film.mp4 (20 s, 1080p) y su imagen film-poster.webp -->
-        <figure class="p-card" style="--ar: 16 / 9; --r: 1.7778" id="film"><video src="/assets/projects/schweppes/film.mp4" poster="/assets/projects/schweppes/film-poster.webp" width="1920" height="1080" controls data-player playsinline preload="metadata" aria-label="Schweppes — film"></video></figure>
-        <!-- Avance en bucle, sin sonido -->
-        <figure class="p-card" style="--ar: 16 / 9; --r: 1.7778"><video src="/assets/projects/schweppes/thumb.mp4" poster="/assets/projects/schweppes/thumb.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Schweppes film preview"></video></figure>
-        <figure class="p-card" style="--ar: 16 / 9; --r: 1.7778"><img src="/assets/projects/schweppes/frame-1-800.webp" srcset="/assets/projects/schweppes/frame-1-800.webp 800w, /assets/projects/schweppes/frame-1-1600.webp 1600w" sizes="(max-width: 760px) 90vw, 1000px" width="1600" height="900" alt="Close-up of a leopard paw dressed as a gentleman holding a Schweppes tonic water bottle" loading="lazy" decoding="async"></figure>
-        <figure class="p-card" style="--ar: 16 / 9; --r: 1.7778"><img src="/assets/projects/schweppes/frame-2-800.webp" srcset="/assets/projects/schweppes/frame-2-800.webp 800w, /assets/projects/schweppes/frame-2-1600.webp 1600w" sizes="(max-width: 760px) 90vw, 1000px" width="1600" height="900" alt="A leopard in a tweed three-piece suit holding a Schweppes bottle at a black-tie party" loading="lazy" decoding="async"></figure>
-      </div>
-      <div class="p-progress" aria-hidden="true"><i></i></div>
-    </section>
+<main class="st">
+  <!-- Título enorme que avanza sin parar; el nombre de verdad está en la cabecera (h1). Estructura en css/case-layout.css -->
+  <div class="st-marquee" aria-hidden="true"><div class="st-run"><span>Schweppes <span class="st-sep">/</span> Schweppes <span class="st-sep">/</span> Schweppes <span class="st-sep">/</span> Schweppes <span class="st-sep">/</span> </span><span>Schweppes <span class="st-sep">/</span> Schweppes <span class="st-sep">/</span> Schweppes <span class="st-sep">/</span> Schweppes <span class="st-sep">/</span> </span></div></div>
 
-    <!-- Datos y texto del proyecto -->
-    <section class="case-info" aria-label="About the project">
-      <ul class="case-tags"><li>Audiovisual</li><li>AI film</li></ul>
-      <div class="case-text">
+  <!-- Dos columnas: a la izquierda la ficha (datos y texto, fija al bajar); a la derecha, las imágenes por partes.
+       EDITA: los datos, el texto y, en cada parte, sus imágenes (una <figure class="st-item"> por imagen o vídeo) -->
+  <div class="st-layout">
+    <aside class="st-side">
+      <dl class="st-facts">
+        <div><dt>Year</dt><dd>2026</dd></div>
+        <div><dt>Client</dt><dd>Schweppes</dd></div>
+        <div><dt>Discipline</dt><dd>Audiovisual, AI film</dd></div>
+      </dl>
+      <div class="st-intro">
         <p>A film made 100% with AI, where every frame was finished with professional retouching before being animated. I helped lead the image side: keeping the look consistent from shot to shot, fixing textures that AI tends to get wrong, and polishing each frame by hand. We also integrated the product into the scenes so it looks shot, not pasted in.</p>
       </div>
-      <a class="case-film-link" href="#film" data-go-film>Go to film →</a>
-    </section>
+    </aside>
+
+    <div class="st-content">
+      <section class="st-part" id="st-film" aria-labelledby="st-film-t">
+        <header class="st-head"><h2 id="st-film-t">Film</h2></header>
+        <div class="st-stack">
+          <figure class="st-item" style="--ar: 16 / 9" id="film" data-reveal><video src="/assets/projects/schweppes/film.mp4" poster="/assets/projects/schweppes/film-poster.webp" width="1920" height="1080" controls data-player playsinline preload="metadata" aria-label="Schweppes — film"></video></figure>
+          <figure class="st-item" style="--ar: 16 / 9" data-reveal><video src="/assets/projects/schweppes/thumb.mp4" poster="/assets/projects/schweppes/thumb.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Schweppes film preview"></video></figure>
+        </div>
+      </section>
+      <section class="st-part" id="st-frames" aria-labelledby="st-frames-t">
+        <header class="st-head"><h2 id="st-frames-t">Frames</h2></header>
+        <div class="st-stack">
+          <figure class="st-item" style="--ar: 16 / 9" data-reveal><img src="/assets/projects/schweppes/frame-1-800.webp" srcset="/assets/projects/schweppes/frame-1-800.webp 800w, /assets/projects/schweppes/frame-1-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 64vw" width="1600" height="900" alt="Close-up of a leopard paw dressed as a gentleman holding a Schweppes tonic water bottle" loading="lazy" decoding="async"></figure>
+          <figure class="st-item" style="--ar: 16 / 9" data-reveal><img src="/assets/projects/schweppes/frame-2-800.webp" srcset="/assets/projects/schweppes/frame-2-800.webp 800w, /assets/projects/schweppes/frame-2-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 64vw" width="1600" height="900" alt="A leopard in a tweed three-piece suit holding a Schweppes bottle at a black-tie party" loading="lazy" decoding="async"></figure>
+        </div>
+      </section>
+    </div>
   </div>
 </main>
 
