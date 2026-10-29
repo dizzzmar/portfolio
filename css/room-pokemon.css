@@ -1,6 +1,6 @@
 /* POKÉMON ALBUM (Room) · an infinite collage of cards on black (js/room/infinite-card-grid.js).
    Columns are staggered like the Posters collage and every card carries its caption. The field moves in 2D only;
-   the card under the mouse lifts and leans. Clicking a card opens nothing. Order: dialog · bar · collage · card · states · motion. */
+   local card perspective responds to the cursor and finger. Clicking a card opens nothing. Order: dialog · bar · collage · card · states · motion. */
 .pokemon-album {
   box-sizing: border-box; position: fixed; inset: 0; width: 100%; height: 100%;
   max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
@@ -28,13 +28,12 @@
 
 /* ---------- Card: the scan and, below, its name and expansion ---------- */
 .pokemon-card { display: block; margin: 0; perspective: 800px; outline: none; -webkit-tap-highlight-color: transparent; }
-.pokemon-turn { display: block; aspect-ratio: 63 / 88; border-radius: 4.6% / 3.3%; overflow: hidden; background: #1c1c1a; transition: transform .5s var(--ease-out); }
+.pokemon-turn { display: block; aspect-ratio: 63 / 88; border-radius: 4.6% / 3.3%; overflow: hidden; background: #1c1c1a; }
 .pokemon-turn img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
 .pokemon-card:focus-visible .pokemon-turn { outline: 2px solid #fff; outline-offset: 5px; }
 .pokemon-cap { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; font-size: var(--fs-s); line-height: 1.3; white-space: nowrap; }
 .pokemon-cap span:first-child { overflow: hidden; text-overflow: ellipsis; }
 .pokemon-cap span + span { color: #ffffff9e; }   /* 7:1 on the black */
-.is-dragging .pokemon-turn { transition-duration: .25s; }
 
 /* ---------- States ---------- */
 .pokemon-status { position: absolute; left: var(--bar-gutter); top: calc(var(--nav-h) + 40px); font-size: var(--fs-read); line-height: var(--lh-body); }
