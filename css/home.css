@@ -1,6 +1,6 @@
 /* HOME — estilos de index.html.
    Orden: base y cielo · barra de navegación · hero · sección de trabajos · cards de proyecto · footer · móvil.
-   Los colores y tamaños importantes están aquí; busca la clase que ves en el HTML (por ejemplo .project-brand). */
+   Los colores y tamaños importantes están aquí; busca la clase que ves en el HTML (por ejemplo .wi-name). */
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -8,10 +8,6 @@
 html.js:has(body.intro-lock), .js body.intro-lock { height: 100%; overflow: hidden; overscroll-behavior: none; }
 /* Con la portada desbloqueada, deslizar hacia abajo arriba del todo deshace el viaje del tomate: que el móvil no recargue la página */
 html { overscroll-behavior-y: contain; }
-
-/* El desplazamiento suave lo activa js/home-nav.js después de cargar: así, al volver de un
-   proyecto, la home aparece directamente en su card en vez de deslizarse hasta ella. */
-html.smooth-scroll { scroll-behavior: smooth; }
 
 body {
   overflow-x: clip; /* que nada ensanche la página más allá de la pantalla */
@@ -177,22 +173,6 @@ body.white-on { background-color: #fff; }
   50% { transform: translate(-50%, calc(-50% - 10px)) rotate(-3deg); }
 }
 
-/* Cards: un bloque con brillo que pasa (skeleton) hasta que llega su imagen o vídeo */
-.js .project-media img, .js .project-media video { opacity: 0; transition: opacity .5s ease; }
-.js .project-media.is-loaded img, .js .project-media.is-loaded video { opacity: 1; }
-.js .project-media:not(.is-loaded)::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .75) 50%, transparent 70%) #ecebe6;
-  background-size: 250% 100%;
-  animation: skeleton 1.3s linear infinite;
-}
-@keyframes skeleton {
-  from { background-position: 120% 0; }
-  to { background-position: -120% 0; }
-}
-
 /* Texto solo para buscadores y lectores de pantalla (no se ve) */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 
@@ -253,180 +233,6 @@ body.white-on { background-color: #fff; }
   padding: 120px 10px 120px;
 }
 
-.work-inner { max-width: 1800px; margin: 0 auto; }
-
-/* Tira blanca con las capacidades pasando en bucle, de borde a borde del papel */
-.work-intro { margin: 0 calc(50% - 50vw) 24px; } /* sale del ancho del contenido y ocupa toda la pantalla */
-
-.ticker {
-  overflow: hidden;
-  background: #fff;
-  color: #111;
-}
-
-.ticker-track {
-  display: flex;
-  width: max-content;
-  animation: ticker 32s linear infinite;
-}
-
-.ticker-list {
-  display: flex;
-  flex: none;
-  list-style: none;
-}
-
-.ticker-list li {
-  display: flex;
-  align-items: center;
-  padding: 9px 0 8px;
-  font-size: var(--fs-s);
-  font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1;
-  text-transform: none;
-  white-space: nowrap;
-}
-
-/* Separador entre capacidades: un circulito */
-.ticker-list li::after {
-  content: "";
-  width: 5px;
-  height: 5px;
-  margin: 0 18px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-/* Las dos copias de la lista miden lo mismo: al llegar a la mitad vuelve al principio sin que se note */
-@keyframes ticker {
-  to { transform: translateX(-50%); }
-}
-
-.project-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.project {
-  min-width: 0;
-  padding: 12px;
-  background: #fff;
-  border-radius: 24px;
-  overflow: hidden;
-}
-
-.project-link { display: block; color: #171717; text-decoration: none; }
-.project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
-.project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
-
-/* ---------- Cards de proyecto ---------- */
-/* Texto de la card: la marca en serif pequeño encima del nombre del proyecto en sans grande,
-   y debajo las etiquetas del tipo de proyecto.
-   El texto tiene su propio margen dentro de la card (más aire que la imagen), y los
-   ajustes de la marca y el título compensan los huecos de las letras (alineación óptica). */
-.project-caption { display: grid; gap: 6px; padding: 20px 12px 30px; } /* aire alrededor del texto: arriba, a los lados y antes de la imagen */
-
-.project-brand {
-  font-family: var(--font-ui);
-  font-size: var(--fs-lead);
-  letter-spacing: -0.035em;
-  line-height: 1;
-  margin-top: -0.18em; /* la caja de texto deja un hueco sobre las mayúsculas; lo recortamos para que la tinta quede a la distancia correcta */
-  text-transform: uppercase;
-}
-
-.project-caption h2 {
-  font-family: var(--font-display);
-  font-size: var(--fs-h2);
-  font-weight: var(--fw-title);
-  letter-spacing: -0.06em;
-  line-height: 0.88;
-  margin-left: -0.045em; /* compensa el hueco lateral de la letra para que la tinta se alinee con la marca y las etiquetas */
-  text-transform: uppercase;
-}
-
-.project-tags {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  margin-top: 2px;
-  list-style: none;
-}
-
-.project-tags li {
-  padding: 5px 11px 4px;
-  border: 1px solid #171717;
-  border-radius: 999px;
-  font-size: var(--fs-s);
-  font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1.2;
-  text-transform: none;
-  white-space: nowrap;
-}
-
-/* El año, si lo hay, va al final de la fila */
-.project-tags .project-year {
-  margin-left: auto;
-  padding: 0;
-  border: 0;
-  font-family: var(--font-ui);
-  font-size: var(--fs-s);
-  font-weight: 400;
-  transform: translateY(2.5px); /* centra el año con el texto de las etiquetas */
-  font-variant-numeric: lining-nums tabular-nums; /* números alineados a la línea base */
-  letter-spacing: -0.02em;
-}
-
-.project-media {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  background: #f2f2ef;
-  border-radius: 18px;
-}
-
-/* La imagen o el vídeo llenan el hueco 16:9 y se recortan; para elegir qué parte se ve,
-   añade al <img> style="object-position: 50% 70%" (horizontal, vertical) */
-.project-media img,
-.project-media video {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.image-placeholder {
-  color: #8b8b83;
-  font-size: var(--fs-xs);
-  letter-spacing: 0.05em;
-}
-
-.room-entry {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  min-height: 270px;
-  margin: 80px 10px 0;
-  padding: 28px;
-  border: 1px solid rgba(233, 239, 228, 0.7);
-  color: #e9efe4;
-  text-decoration: none;
-  transition: background 0.2s, box-shadow 0.2s;
-}
-.room-entry span { font-size: var(--fs-s); }
-.room-entry strong { font-family: var(--font-display); display: block; margin-top: 12px; font-size: var(--fs-h1); line-height: .85; font-weight: var(--fw-title); letter-spacing: var(--tracking-display); }
-.room-entry .room-arrow { font-size: var(--fs-h2); line-height: 1; }
-.room-entry:hover, .room-entry:focus-visible { background: rgba(233, 239, 228, .08); box-shadow: 0 0 0 3px #91c9ff, 0 0 25px #62b9ff77; outline: none; }
-
 /* ---------- Footer: acaba el papel y vuelve a verse el cielo ---------- */
 .footer {
   position: relative;
@@ -445,26 +251,11 @@ body.white-on { background-color: #fff; }
   .nav-links { margin-right: -7px; }
   .nav-links a { padding: 0 7px; }
   .nav-links a { font-size: var(--fs-s); }
-  .work-intro { margin-bottom: 20px; }
-  .ticker-list li { padding: 8px 0 7px; font-size: var(--fs-s); }
-  .ticker-list li::after { width: 4px; height: 4px; margin: 0 14px; }
-  .project-grid { grid-template-columns: 1fr; gap: 8px; }
-  .project { border-radius: 20px; }
-  .project-caption { padding: 14px 8px 22px; }
-  .project-link { display: block; color: #171717; text-decoration: none; }
-.project-link:focus-visible { outline: 3px solid #175cff; outline-offset: -3px; border-radius: 18px; }
-.project-link:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
-
-  .project-caption h2 { font-size: var(--fs-h2); }
-  .project-brand { font-size: var(--fs-m); }
-  .project-media { border-radius: 14px; }
-  .room-entry { min-height: 210px; margin: 64px 8px 0; padding: 20px; }
   .footer { padding: 96px 20px 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html.smooth-scroll { scroll-behavior: auto; }
-  .scroll-hint::after, .sky, .ticker-track, .tomato-placeholder, .project-media::after { animation: none; }
+  .scroll-hint::after, .sky, .tomato-placeholder { animation: none; }
 }
 
 /* ---------- Work: lista de proyectos ----------
@@ -510,7 +301,7 @@ body.white-on { background-color: #fff; }
 .work-list { margin-top: 0; list-style: none; border-bottom: 1px solid rgba(255, 255, 255, .18); }
 .work-item { position: relative; overflow-x: clip; } /* la tira de miniaturas se mueve de lado con el scroll y ensanchaba la página unos 54 px */
 .work-item::before { content: ""; position: absolute; inset: 0 0 auto; height: 1px; background: rgba(255, 255, 255, .18); transform-origin: left; }
-.work-item > a, .work-link {
+.work-item > a {
   display: grid;
   grid-template-columns: minmax(70px, 1fr) auto minmax(70px, 1fr);
   grid-template-areas: "date name tags" "strip strip strip";
@@ -557,7 +348,6 @@ body.white-on { background-color: #fff; }
 .wi-slot.is-slice img { position: absolute; top: 0; left: calc(var(--i, 0) * (-100% - 4px)); width: calc(800% + 28px); max-width: none; }
 .wi-strip { translate: 0 0; } /* js/home-work.js lo mueve directamente (la variable se heredaría a todas las miniaturas) */
 
-
 /* Al volver de un proyecto (js/home-work.js): la lista llega con un fundido corto y la fila de ese proyecto se enciende un momento */
 .work-grid.arriving { animation: work-arrive .6s ease both; }
 @keyframes work-arrive { from { opacity: 0; } }
@@ -569,7 +359,6 @@ body.white-on { background-color: #fff; }
 .work-item > a:hover .wi-date, .work-item > a:hover .wi-tags,
 .work-item > a:focus-visible .wi-date, .work-item > a:focus-visible .wi-tags,
 .work-item.is-hot .wi-date, .work-item.is-hot .wi-tags { color: rgba(255, 255, 255, .95); }
-
 
 /* ---------- Work: movimiento (solo con JavaScript y sin "reducir movimiento") ---------- */
 @media (prefers-reduced-motion: no-preference) {
@@ -599,7 +388,7 @@ body.white-on { background-color: #fff; }
   .work-top { grid-template-columns: 1fr; height: auto; padding: var(--nav-h) clamp(16px, 1.2vw, 24px) 12px; font-size: var(--fs-s); }
   .work-top p:not(.wt-creative) { display: none; } /* en móvil la barra solo lleva «Creative ___» */
   .work-top p { grid-column: 1; }
-  .work-item > a, .work-link { grid-template-columns: 1fr auto; grid-template-areas: "date tags" "name name" "strip strip"; row-gap: 12px; padding: 26px 0 30px; }
+  .work-item > a { grid-template-columns: 1fr auto; grid-template-areas: "date tags" "name name" "strip strip"; row-gap: 12px; padding: 26px 0 30px; }
   .wi-date, .wi-tags { margin-top: 0; font-size: var(--fs-s); }
   .wi-name { text-align: left; font-size: var(--fs-h1); letter-spacing: -.04em; } /* a 56 px, −5 % hace que las letras se toquen */
   .wi-name.is-long { font-size: min(var(--fs-h1), 13vw); } /* nombre largo (class="wi-name is-long"): se encoge con la pantalla para que «The Gentlemen» quepa en una línea */

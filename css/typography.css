@@ -2,7 +2,9 @@
 body, button, input, select, textarea { font-family: var(--font-ui); }
 
 /* La navegación mantiene el mismo tamaño y caja dentro y fuera de los proyectos. */
-.nav-links a, .case-nav a, .case-back, .back-link {
+.nav-links a,
+.case-nav a,
+.case-back {
   font-family: var(--font-ui);
   font-size: var(--fs-s);
   font-weight: 400;
@@ -10,14 +12,14 @@ body, button, input, select, textarea { font-family: var(--font-ui); }
   text-transform: none;
 }
 
-.work-heading h2, .work-preview-toggle, .work-info > p, .work-type,
-.case-kicker, .case-label, .case-link,
-.player .player-toggle, .player-bar, .player-bar button {
+.player .player-toggle,
+.player-bar,
+.player-bar button {
   font-family: var(--font-ui);
   font-size: var(--fs-s);
   font-weight: 400;
   letter-spacing: 0;
   text-transform: none;
 }
-.case-facts { font-size: var(--fs-s); letter-spacing: 0; }
+
 .player-time { font-family: var(--font-ui); font-size: var(--fs-s); font-weight: 400; letter-spacing: 0; }
