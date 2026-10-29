@@ -1,14 +1,16 @@
-// DOM cards keep the album independent of the Room's WebGL renderer.
+import { createInfiniteCardGrid } from './infinite-card-grid.js?v=20261029album2';
+
+// A finite DOM pool and CSS perspective keep the Room's WebGL renderer asleep.
 export function createPokemonAlbum({ onOpen, onClose }) {
   const dialog = document.getElementById('pokemon-album');
-  const grid = dialog.querySelector('.pokemon-cards');
+  const surface = dialog.querySelector('.pokemon-surface');
+  const list = dialog.querySelector('.pokemon-cards');
   const status = dialog.querySelector('[data-album-status]');
   const retry = dialog.querySelector('[data-album-retry]');
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   let returnFocus = null;
-  let request = null;
-  let populated = false;
-  let closing = false;
+  let request = null, data = null, grid = null, closing = false, closeRequest = 0;
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
   function localImage(path) {
     if (typeof path !== 'string' || !path.trim()) throw new Error('Missing card image');
@@ -17,122 +19,98 @@ export function createPokemonAlbum({ onOpen, onClose }) {
     return url.href;
   }
 
-  function makeCard(card, back, index) {
-    const item = document.createElement('li');
-    item.className = 'pokemon-item';
-    item.style.setProperty('--rest', `${[-5, 4, -3, 5, -4, 3][index % 6]}deg`);
-    item.style.setProperty('--delay', `${index % 6 * 0.06}s`);
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'pokemon-card';
-    button.dataset.card = card.id;
-    button.setAttribute('aria-label', `Turn over ${card.name}${card.placeholder ? ' (placeholder)' : ''}`);
-    button.setAttribute('aria-pressed', 'false');
-    const tilt = document.createElement('span');
-    tilt.className = 'pokemon-tilt';
-    const turn = document.createElement('span');
-    turn.className = 'pokemon-turn';
-    for (const [side, src] of [['front', card.front], ['back', back]]) {
+  function image(src) {
+    const img = document.createElement('img');
+    img.src = src; img.alt = ''; img.width = 630; img.height = 880;
+    img.draggable = false; img.decoding = 'async';
+    img.addEventListener('error', () => {
+      const message = document.createElement('span');
+      message.className = 'pokemon-image-error'; message.textContent = 'Image unavailable';
+      img.replaceWith(message);
+    }, { once: true });
+    return img;
+  }
+
+  function makeCard(card) {
+    const cardElement = document.createElement('div');
+    cardElement.className = 'pokemon-card'; cardElement.dataset.card = card.id;
+    cardElement.setAttribute('role', 'img');
+    cardElement.setAttribute('aria-label', `${card.name}${card.example ? ' (example card)' : ''}`);
+    const turn = document.createElement('span'); turn.className = 'pokemon-turn';
+    for (const [side, src] of [['front', card.front], ['back', data.back]]) {
       const face = document.createElement('span');
-      face.className = `pokemon-face pokemon-${side}`;
-      face.setAttribute('aria-hidden', 'true');
-      const image = document.createElement('img');
-      image.src = src;
-      image.alt = '';
-      image.width = 630;
-      image.height = 880;
-      image.loading = index < 3 ? 'eager' : 'lazy';
-      image.draggable = false;
-      image.addEventListener('error', () => {
-        face.replaceChildren();
-        face.textContent = `${side === 'front' ? card.name : 'Reverse'} — image unavailable`;
-      }, { once: true });
-      face.append(image);
-      if (side === 'front' && card.placeholder) {
-        const label = document.createElement('span');
-        label.className = 'pokemon-placeholder';
-        label.textContent = `${card.name} · Placeholder`;
-        face.append(label);
-      }
-      turn.append(face);
+      face.className = `pokemon-face pokemon-${side}`; face.setAttribute('aria-hidden', 'true');
+      face.append(image(src)); turn.append(face);
     }
-    tilt.append(turn);
-    button.append(tilt);
-    button.addEventListener('pointermove', event => {
-      if (event.pointerType !== 'mouse' || motion.matches) return;
-      const rect = button.getBoundingClientRect();
-      const x = Math.max(-1, Math.min(1, (event.clientX - rect.left) / rect.width * 2 - 1));
-      const y = Math.max(-1, Math.min(1, (event.clientY - rect.top) / rect.height * 2 - 1));
-      tilt.style.transform = `rotateX(${-y * 10}deg) rotateY(${x * 14}deg)`;
+    cardElement.append(turn);
+    cardElement.addEventListener('pointermove', event => {
+      if (event.pointerType !== 'mouse' || motion.matches || event.buttons) return;
+      const rect = cardElement.getBoundingClientRect();
+      const x = clamp((event.clientX - rect.left) / rect.width * 2 - 1, -1, 1);
+      const y = clamp((event.clientY - rect.top) / rect.height * 2 - 1, -1, 1);
+      // The hit area stays flat: the outer edges reveal the common reverse without chasing a moving card.
+      turn.style.transform = `rotateX(${-y * 14}deg) rotateY(${x * 145}deg)`;
     });
-    const reset = () => { tilt.style.transform = ''; };
-    button.addEventListener('pointerleave', reset);
-    button.addEventListener('blur', reset);
-    button.addEventListener('click', () => {
-      const flipped = button.getAttribute('aria-pressed') !== 'true';
-      button.setAttribute('aria-pressed', String(flipped));
+    const reset = () => { turn.style.transform = ''; };
+    cardElement.addEventListener('pointerleave', reset);
+    cardElement.addEventListener('focus', () => {
+      if (!motion.matches) turn.style.transform = 'rotateY(120deg)';
     });
-    item.append(button);
-    return item;
+    cardElement.addEventListener('blur', reset);
+    return cardElement;
+  }
+
+  function mountGrid() {
+    grid?.destroy();
+    grid = data.cards.length ? createInfiniteCardGrid({ surface, list, cards: data.cards, makeCard, reduced: motion }) : null;
   }
 
   async function load() {
     request?.abort();
-    const controller = new AbortController();
-    request = controller;
-    retry.hidden = true;
-    status.hidden = false;
-    status.textContent = 'Loading cards…';
+    const controller = new AbortController(); request = controller;
+    retry.hidden = true; status.hidden = false; status.textContent = 'Loading cards…';
     try {
-      const response = await fetch('/assets/room/cards/cards.json?v=20261029album1', { signal: controller.signal });
+      const response = await fetch('/assets/room/cards/cards.json?v=20261029album2', { signal: controller.signal });
       if (!response.ok) throw new Error('Card list unavailable');
-      const data = await response.json();
-      if (!Array.isArray(data.cards)) throw new Error('Invalid card list');
+      const raw = await response.json();
+      if (!Array.isArray(raw.cards)) throw new Error('Invalid card list');
       const ids = new Set();
-      const back = data.cards.length ? localImage(data.back) : null;
-      const cards = data.cards.map(card => {
+      const cards = raw.cards.map(card => {
         if (!card.id || !card.name || ids.has(card.id)) throw new Error('Invalid card');
-        ids.add(card.id);
-        return { ...card, front: localImage(card.front) };
+        ids.add(card.id); return { ...card, front: localImage(card.front) };
       });
+      const next = { back: cards.length ? localImage(raw.back) : null, cards };
       if (!dialog.open || controller.signal.aborted) return;
-      grid.replaceChildren(...cards.map((card, index) => makeCard(card, back, index)));
-      populated = true;
-      status.textContent = cards.length ? '' : 'No cards added yet.';
-      status.hidden = Boolean(cards.length);
+      data = next; mountGrid();
+      dialog.querySelector('[data-example-label]').hidden = !cards.some(card => card.example);
+      status.textContent = cards.length ? '' : 'No cards added yet.'; status.hidden = Boolean(cards.length);
     } catch (error) {
       if (controller.signal.aborted) return;
-      status.textContent = 'The cards could not load. Please try again.';
-      retry.hidden = false;
-    } finally {
-      if (request === controller) request = null;
-    }
+      status.textContent = 'The cards could not load. Please try again.'; retry.hidden = false;
+    } finally { if (request === controller) request = null; }
   }
 
   function finishClose() {
-    closing = false;
-    request?.abort();
+    closeRequest++; closing = false; request?.abort();
+    grid?.destroy(); grid = null;
     document.body.classList.remove('pokemon-open');
     if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
     onClose();
   }
-
   async function close() {
     if (!dialog.open || closing) return;
     closing = true;
-    if (!motion.matches) {
-      await dialog.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: 'ease-out' }).finished;
-    }
-    dialog.close();
+    const token = ++closeRequest;
+    if (!motion.matches) await dialog.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: 'ease-out' }).finished;
+    if (token === closeRequest && closing && dialog.open) dialog.close();
   }
-
   dialog.querySelector('[data-album-close]').addEventListener('click', close);
   retry.addEventListener('click', load);
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
   dialog.addEventListener('close', finishClose);
   dialog.addEventListener('keydown', event => {
     if (event.key !== 'Tab') return;
-    const buttons = [...dialog.querySelectorAll('button:not(:disabled)')].filter(button => button.offsetWidth > 0);
+    const buttons = [...dialog.querySelectorAll('button:not(:disabled), [tabindex="0"]')].filter(button => button.offsetWidth && !button.closest('[hidden], [inert]'));
     const first = buttons[0], last = buttons[buttons.length - 1];
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
@@ -143,12 +121,9 @@ export function createPokemonAlbum({ onOpen, onClose }) {
     open(trigger) {
       if (dialog.open || closing) return;
       returnFocus = trigger instanceof HTMLElement ? trigger : document.activeElement;
-      dialog.showModal();
-      dialog.scrollTop = 0;
-      document.body.classList.add('pokemon-open');
-      onOpen();
-      if (!motion.matches) dialog.animate([{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 320, easing: 'cubic-bezier(.23,1,.32,1)' });
-      if (!populated) load();
+      dialog.showModal(); document.body.classList.add('pokemon-open'); onOpen();
+      if (!motion.matches) dialog.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220 });
+      if (data) mountGrid(); else load();
     },
   };
 }

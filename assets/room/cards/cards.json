@@ -1,11 +1,61 @@
 {
-  "back": "back-placeholder.svg",
+  "back": "card-back.webp",
   "cards": [
-    { "id": "card-01", "name": "Card 01", "front": "front-placeholder.svg", "placeholder": true },
-    { "id": "card-02", "name": "Card 02", "front": "front-placeholder.svg", "placeholder": true },
-    { "id": "card-03", "name": "Card 03", "front": "front-placeholder.svg", "placeholder": true },
-    { "id": "card-04", "name": "Card 04", "front": "front-placeholder.svg", "placeholder": true },
-    { "id": "card-05", "name": "Card 05", "front": "front-placeholder.svg", "placeholder": true },
-    { "id": "card-06", "name": "Card 06", "front": "front-placeholder.svg", "placeholder": true }
+    {
+      "id": "charizard",
+      "name": "Charizard",
+      "front": "charizard.webp",
+      "example": true,
+      "source": "https://assets.tcgdex.net/en/base/base1/4/high.webp"
+    },
+    {
+      "id": "blastoise",
+      "name": "Blastoise",
+      "front": "blastoise.webp",
+      "example": true,
+      "source": "https://assets.tcgdex.net/en/base/base1/2/high.webp"
+    },
+    {
+      "id": "venusaur",
+      "name": "Venusaur",
+      "front": "venusaur.webp",
+      "example": true,
+      "source": "https://assets.tcgdex.net/en/base/base1/15/high.webp"
+    },
+    {
+      "id": "pikachu",
+      "name": "Pikachu",
+      "front": "pikachu.webp",
+      "example": true,
+      "source": "https://assets.tcgdex.net/en/base/base1/58/high.webp"
+    },
+    {
+      "id": "umbreon-vmax",
+      "name": "Umbreon VMAX",
+      "front": "umbreon-vmax.webp",
+      "example": true,
+      "source": "https://assets.tcgdex.net/en/swsh/swsh7/215/high.webp"
+    },
+    {
+      "id": "rayquaza-vmax",
+      "name": "Rayquaza VMAX",
+      "front": "rayquaza-vmax.webp",
+      "example": true,
+      "source": "https://assets.tcgdex.net/en/swsh/swsh7/218/high.webp"
+    },
+    {
+      "id": "gengar-vmax",
+      "name": "Gengar VMAX",
+      "front": "gengar-vmax.webp",
+      "example": true,
+      "source": "https://assets.tcgdex.net/en/swsh/swsh8/271/high.webp"
+    },
+    {
+      "id": "mew-v",
+      "name": "Mew V",
+      "front": "mew-v.webp",
+      "example": true,
+      "source": "https://assets.tcgdex.net/en/swsh/swsh8/251/high.webp"
+    }
   ]
 }
