@@ -1,0 +1,58 @@
+/* PALETAS DE PROYECTO · cada ficha puede tener sus colores (como donut-studio.com): una franja de cabecera y de «More works» en un par de
+   colores y el cuerpo de la página en otro. Se activa con data-palette="nombre" en <html> (sin él, la ficha es blanca con tinta, como siempre).
+   La estructura es la de css/case-layout.css; aquí solo cambian los colores. Se carga después de case.css y case-layout.css.
+
+   Variables de cada paleta:
+     --hero-bg / --hero-ink   franja del título que avanza, barra de arriba, «More works» y pie (el ink es para texto grande: 3:1 como mínimo)
+     --bar-ink                texto pequeño sobre esa franja (cabecera, enlaces, pie): 4,5:1 como mínimo. Si se omite, es --hero-ink
+     --bg / --ink             cuerpo de la página: datos, texto e imágenes (4,5:1 como mínimo)
+     --label                  etiquetas de los datos (Year, Client…): 4,5:1 sobre --bg
+   Para un proyecto nuevo: copia un bloque, cambia el nombre y los colores, comprueba los contrastes y pon data-palette en <html>. */
+
+/* ---------- Reglas comunes (todas las paletas) ---------- */
+html[data-palette] {
+  background: var(--bg);
+  --bar-ink: var(--hero-ink);
+  --pl-title: var(--hero-ink);
+  --pl-soft: var(--label);
+  --line: color-mix(in srgb, var(--ink) 28%, transparent);
+  --panel: color-mix(in srgb, var(--bg) 88%, var(--ink)); /* hueco de las imágenes mientras cargan */
+}
+[data-palette] ::selection { background: var(--ink); color: var(--bg); }
+[data-palette] :focus-visible { outline-color: var(--ink); }
+
+/* La barra de arriba es fija y del color de la franja: el texto se lee siempre, también cuando una imagen pasa por debajo.
+   Va en html::before (body::before ya lo usa la cortina del menú) y, sin «difference», que sobre colores sale de otro color. */
+html[data-palette]::before { content: ""; position: fixed; inset: 0 0 auto; height: var(--nav-h); z-index: 4; background: var(--hero-bg); }
+[data-palette] .case-head, [data-palette] .case-nav { mix-blend-mode: normal; color: var(--bar-ink); }
+[data-palette] .case-nav a, [data-palette] .case-nav a:hover, [data-palette] .case-nav a[aria-current="page"] { color: var(--bar-ink); }
+[data-palette] .case-name, [data-palette] .case-meta { color: var(--bar-ink); }
+
+/* Franja del título */
+[data-palette] .st-marquee { background: var(--hero-bg); }
+
+/* More works y pie, en la misma franja que la cabecera: abre y cierra la página con el mismo par de colores */
+[data-palette] .more-works { background: var(--hero-bg); color: var(--bar-ink); }
+[data-palette] .mw-title { color: var(--hero-ink); }
+[data-palette] .mw-list { border-top-color: color-mix(in srgb, var(--bar-ink) 35%, transparent); }
+[data-palette] .mw-img { background: var(--panel); }
+[data-palette] .mw-card:focus-visible { outline-color: var(--bar-ink); }
+html[data-palette] .site-foot, html[data-palette] .site-foot a, html[data-palette] .site-foot a:hover { color: var(--bar-ink); } /* con «html» delante gana a .site-foot.on-light de footer.css */
+html[data-palette] .site-foot { background: var(--hero-bg); }
+[data-palette] .case-credit p { color: var(--ink); }
+
+/* ---------- Paletas ---------- */
+/* ENMAD (Studies): rosa y rojo del propio proyecto. El rojo de los dossieres (#ff2711) sobre el rosa solo da 2:1: títulos en #c41a08 (3,3:1, texto grande) y texto en #8f1003 (5,1:1) */
+html[data-palette="enmad"] { --hero-bg: #ffa2d4; --hero-ink: #c41a08; --bar-ink: #8f1003; --bg: #ffa2d4; --ink: #8f1003; --label: #8f1003; }
+
+/* Lexus Electrified: el cobre del coche sobre el verde oscuro de las montañas */
+html[data-palette="lexus"] { --hero-bg: #ff7a3d; --hero-ink: #0f2a22; --bg: #0f2a22; --ink: #ffe9d2; --label: #ff9d66; }
+
+/* Schweppes (film): el dorado de la marca sobre el marrón del salón del leopardo */
+html[data-palette="schweppes"] { --hero-bg: #ffc61a; --hero-ink: #2a1406; --bg: #2a1406; --ink: #fff0d2; --label: #ffc61a; }
+
+/* Schweppes x The Gentlemen: la misma pareja del cartel, al revés (el cartel es dorado y marrón) */
+html[data-palette="gentlemen"] { --hero-bg: #2a1406; --hero-ink: #ffc61a; --bg: #ffc61a; --ink: #2a1406; --label: #6b3300; }
+
+/* Soap & Glory Vanilla: el rosa de la marca y la crema de la vainilla */
+html[data-palette="soap"] { --hero-bg: #ff5c93; --hero-ink: #3a0f1c; --bg: #ffe8d2; --ink: #3a0f1c; --label: #b8174f; }

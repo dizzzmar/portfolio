@@ -8,7 +8,7 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 index.html                 La home (el tomate gira con su nombre; al pulsar Work o deslizar hacia abajo sube en una curva a la barra y la página baja sola a la lista de proyectos)
 room.html                  La página "The room" (habitación 3D)
 about/index.html           About (foto holográfica fija a la izquierda y tarjeta del mismo color que entra por la derecha con nombre, presentación, gustos y clientes; la tarjeta se recorre por dentro). Estilos: css/about.css. Textos de ejemplo marcados con EDITA
-project/enmad/            ENMAD, proyecto de Studies (universidad): rosa y rojo del propio proyecto. Estilos: css/case.css + css/case-layout.css (estructura de todas las fichas) + css/studies.css (colores); índice de la izquierda: js/case-index.js. Imágenes: assets/projects/enmad (páginas de los dossieres).
+project/enmad/            ENMAD, proyecto de Studies (universidad): rosa y rojo del propio proyecto. Estilos: css/case.css + css/case-layout.css (estructura de todas las fichas) + css/palettes.css (paletas de colores de cada proyecto); índice de la izquierda: js/case-index.js. Imágenes: assets/projects/enmad (páginas de los dossieres).
 404.html                   Página de "no encontrada"
 machine/index.html         Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 robots.txt · sitemap.xml · llms.txt   Para buscadores y agentes de IA
@@ -58,6 +58,7 @@ Abre `project/<nombre>/index.html`. Los trozos editables están marcados con com
 1. Duplica `templates/project-template` y muévela a `project/<nombre-del-proyecto>/` (sin espacios ni acentos, con guiones).
 2. Crea `assets/projects/<nombre-del-proyecto>/` y sube allí las imágenes (`.webp`, en dos tamaños: 800 y 1600 px de ancho) y los vídeos (`.mp4`).
 3. En el nuevo `index.html`, cambia `nombre-del-proyecto` por el nombre real (Ctrl+F, "reemplazar todo") y edita los textos marcados con `EDITA:`. La plantilla trae ejemplos de película, clip en bucle e imágenes: deja los que uses y borra el resto.
+   Colores propios (opcional): añade `data-palette="nombre"` a `<html>` y define esa paleta en `css/palettes.css` (hay cinco de ejemplo; comprueba el contraste). Sin él, la ficha es blanca.
 4. Abre `templates/project-card.html`, copia el `<li>` y pégalo en la lista `work-list` de `index.html`, donde quieras que salga (el orden en el código = el orden en la página). Cada fila lleva siempre 8 miniaturas, sin huecos.
 5. Cuando esté listo, borra la línea `<meta name="robots" content="noindex">` de la página del proyecto y añade su dirección a `sitemap.xml`.
 6. Si cambias un `.css` o un `.js`, sube el número `?v=` de sus enlaces en todas las páginas.
