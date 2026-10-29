@@ -13,7 +13,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
-import { createWiiPlayer } from './room/wii-player.js?v=20261021wii5';
+import { createWiiPlayer } from './room/wii-player.js?v=20261029wii1';
 import { createRoomLoading } from './room/loading.js?v=20261022p';
 import { createRoomLighting } from './room/lighting.js?v=20261023a';
 import { addRoomRug } from './room/rug.js?v=20261022a';
@@ -159,10 +159,11 @@ const wiiPlayer = createWiiPlayer({
     resize();
     focusOn(wiiDestination);
   },
-  onClose() {
+  onClose({ completed }) {
     resize();
     highlight(null);
     focusOn(null);
+    returnRate = completed ? 3.5 : 16;
   },
 });
 const lighting = createRoomLighting({
@@ -547,6 +548,7 @@ function fitDistance(center, half, share) {
 
 let overview = null;
 let focused = null;
+let returnRate = 16;
 let returning = false;  // true al alejarse: la vuelta es más rápida que el acercamiento
 const focusViews = new Map();
 function frameRoom() {
@@ -571,6 +573,7 @@ function resetFocus() {
 function focusOn(item) {
   if (lighting.dark && item && !(item === wiiDestination && wiiPlayer.active)) return;
   if (wiiPlayer.active && item !== wiiDestination) return;
+  returnRate = 16;
   focused = item;
   returning = !item;
   if (!overview) return;
@@ -699,7 +702,7 @@ function frame() {
   updatePoster(now);
   // Ease the camera towards its goal (overview or a focused object)
   // Rate per second of the ease: the camera reaches 90% of the way in ln(10)/rate seconds (acercarse ≈0.3 s, alejarse ≈0.14 s)
-  const ease = reduced ? 1 : 1 - Math.exp(-cameraStep * (returning ? 16 : 8));
+  const ease = reduced ? 1 : 1 - Math.exp(-cameraStep * (returning ? returnRate : 8));
   view.pos.lerp(goal.pos, ease);
   view.target.lerp(goal.target, ease);
   camera.position.copy(view.pos);
