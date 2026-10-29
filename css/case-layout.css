@@ -3,7 +3,7 @@
    proyecto (datos, un índice de sus partes y el texto); a la derecha, las imágenes y vídeos uno debajo de otro, por partes.
    La columna izquierda usa el mismo sistema que el resto de la web: datos a 14 px (etiqueta suave, valor a 500, como «Based in Madrid»
    en Work), el texto a 16 px en regular y el índice como los enlaces de la barra: la parte que se ve, subrayada.
-   Los colores salen de variables: blanco y tinta en los proyectos de cliente; rosa y rojo en Studies (css/studies.css).
+   Los colores salen de variables: blanco y tinta por defecto; cada proyecto puede tener su paleta (css/palettes.css, data-palette en <html>).
    Orden: variables · título que avanza · dos columnas · columna izquierda (datos, índice, texto) · partes · móvil · movimiento. */
 
 :root {
@@ -12,7 +12,7 @@
 }
 
 /* ---------- Título que avanza ---------- */
-.st-marquee { overflow: hidden; padding: calc(var(--nav-h) + clamp(8px, 2vw, 24px)) 0 clamp(12px, 2vw, 28px); border-bottom: 1px solid var(--line); }
+.st-marquee { overflow: hidden; padding: calc(var(--nav-h) + clamp(8px, 2vw, 24px)) 0 clamp(12px, 2vw, 28px); } /* sin raya debajo: el palo de la «p» o la «g» la tocaba; el cambio de franja a cuerpo lo marca el color */
 .st-run { display: inline-flex; white-space: nowrap; font-family: var(--font-display); font-size: clamp(72px, 13vw, 220px); font-weight: var(--fw-title); letter-spacing: -.05em; line-height: .9; color: var(--pl-title); animation: mw-run 40s linear infinite; will-change: transform; }
 .st-run > span { padding-right: .25em; }
 .st-sep { padding: 0 .1em; font-weight: 400; }
