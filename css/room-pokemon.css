@@ -1,35 +1,56 @@
-/* A finite card pool wraps indefinitely. Movement is driven only by visitor input. */
+/* POKÉMON ALBUM (Room) · an infinite collage of cards on black (js/room/infinite-card-grid.js).
+   Columns are staggered like the Posters collage and every card carries its caption. The field moves in 2D only;
+   the card under the mouse lifts and leans. Clicking a card opens nothing. Order: dialog · bar · collage · card · states · motion. */
 .pokemon-album {
   box-sizing: border-box; position: fixed; inset: 0; width: 100%; height: 100%;
   max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
   background: var(--accent); color: #fff; font-family: var(--font-ui);
   overflow: hidden; overscroll-behavior: none;
 }
+.pokemon-album:focus { outline: none; }
 .pokemon-album::backdrop { background: var(--accent); }
+.pokemon-album ::selection { background: #fff; color: var(--accent); }
 .pokemon-open { overflow: hidden; }
-.pokemon-heading { position: absolute; inset: 0 0 auto; z-index: 2; height: var(--nav-h); padding: 16px var(--bar-gutter); display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--accent); }
-.pokemon-heading h2 { display: flex; align-items: baseline; gap: 16px; font-family: var(--font-display); font-size: var(--fs-xl); font-weight: var(--fw-title); letter-spacing: -.03em; line-height: 1; }
-.pokemon-heading h2 span { font: 400 var(--fs-s) var(--font-ui); color: #ffffffb3; letter-spacing: 0; }
+
+/* ---------- Bar: the same height and type as the Posters viewer ---------- */
+.pokemon-heading { position: absolute; inset: 0 0 auto; z-index: 2; height: var(--nav-h); padding: 0 var(--bar-gutter); display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--accent); }
+.pokemon-heading h2 { display: flex; align-items: baseline; gap: 16px; font-family: var(--font-display); font-size: var(--fs-l); font-weight: var(--fw-title); letter-spacing: -.03em; line-height: 1.1; }
+.pokemon-heading h2 span { font: 400 var(--fs-s) var(--font-ui); color: #ffffff9e; letter-spacing: 0; }
 .pokemon-album button { color: inherit; font-family: inherit; cursor: pointer; }
-.pokemon-album button:focus-visible, .pokemon-card:focus-visible { outline: 2px solid #fff; outline-offset: 6px; }
-.pokemon-close { min-height: 44px; padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); }
+.pokemon-album button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.pokemon-close { min-height: 44px; padding: 8px 4px; border: 0; background: none; font-size: var(--fs-s); }
 .pokemon-close:hover { text-decoration: underline; text-underline-offset: 4px; }
-.pokemon-surface { position: absolute; inset: var(--nav-h) 0 0; overflow: hidden; touch-action: none; cursor: grab; perspective: 1400px; }
+
+/* ---------- Collage ---------- */
+.pokemon-surface { position: absolute; inset: var(--nav-h) 0 0; overflow: hidden; touch-action: none; cursor: grab; }
 .pokemon-surface.is-dragging { cursor: grabbing; }
-.pokemon-cards { position: absolute; inset: 0; list-style: none; margin: 0; padding: 0; transform-style: preserve-3d; }
-.pokemon-item { position: absolute; left: 0; top: 0; width: var(--card-width); aspect-ratio: 63 / 88; }
-.pokemon-card { display: block; width: 100%; height: 100%; perspective: 900px; -webkit-tap-highlight-color: transparent; }
-.pokemon-turn { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; }
-.pokemon-face { position: absolute; inset: 0; display: block; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 4.6% / 3.3%; background: var(--accent); }
-.pokemon-front { transform: translateZ(.5px); }
-.pokemon-back { transform: rotateY(180deg) translateZ(.5px); }
-.pokemon-face img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; user-select: none; }
-.pokemon-status { position: absolute; left: var(--bar-gutter); top: 112px; font-size: var(--fs-read); line-height: var(--lh-body); }
-.pokemon-retry { position: absolute; top: 160px; left: var(--bar-gutter); min-height: 44px; border: 0; background: none; font-size: var(--fs-read); }
+.pokemon-cards { position: absolute; inset: 0; list-style: none; margin: 0; padding: 0; }
+.pokemon-item { position: absolute; left: 0; top: 0; width: var(--card-width); will-change: transform; }
+
+/* ---------- Card: the scan and, below, its name and expansion ---------- */
+.pokemon-card { display: block; margin: 0; perspective: 800px; outline: none; -webkit-tap-highlight-color: transparent; }
+.pokemon-turn { display: block; aspect-ratio: 63 / 88; border-radius: 4.6% / 3.3%; overflow: hidden; background: #1c1c1a; transition: transform .5s var(--ease-out); }
+.pokemon-turn img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+.pokemon-card:focus-visible .pokemon-turn { outline: 2px solid #fff; outline-offset: 5px; }
+.pokemon-cap { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; font-size: var(--fs-s); line-height: 1.3; white-space: nowrap; }
+.pokemon-cap span:first-child { overflow: hidden; text-overflow: ellipsis; }
+.pokemon-cap span + span { color: #ffffff9e; }   /* 7:1 on the black */
+.is-dragging .pokemon-turn { transition-duration: .25s; }
+
+/* ---------- States ---------- */
+.pokemon-status { position: absolute; left: var(--bar-gutter); top: calc(var(--nav-h) + 40px); font-size: var(--fs-read); line-height: var(--lh-body); }
+.pokemon-retry { position: absolute; top: calc(var(--nav-h) + 88px); left: var(--bar-gutter); min-height: 44px; padding: 0; border: 0; background: none; font-size: var(--fs-read); text-decoration: underline; text-underline-offset: 4px; }
 .pokemon-status[hidden], .pokemon-retry[hidden], .pokemon-heading span[hidden] { display: none; }
-.pokemon-image-error { display: grid; place-items: center; width: 100%; height: 100%; font-size: var(--fs-s); color: #fff; }
+.pokemon-image-error { display: grid; place-items: center; width: 100%; height: 100%; font-size: var(--fs-s); color: #ffffff9e; }
 @media (max-width: 700px) {
-  .pokemon-heading h2 { display: block; font-size: var(--fs-xl); }
-  .pokemon-heading h2 span { display: block; margin-top: 4px; }
+  .pokemon-heading h2 { gap: 10px; font-size: 18px; }
+  .pokemon-cap { flex-direction: column; gap: 2px; margin-top: 8px; }   /* name and expansion on two lines: whole names at phone width */
 }
-@media (prefers-reduced-motion: reduce) { .pokemon-turn { transition: none; } }
+
+/* ---------- Motion: on opening the cards rise into place from the centre outward ---------- */
+.pokemon-card { opacity: 0; translate: 0 28px; transition: opacity .6s var(--ease-out), translate .8s var(--ease-out); }
+.pokemon-card.is-in { opacity: 1; translate: 0 0; }
+@media (prefers-reduced-motion: reduce) {
+  .pokemon-card { translate: none; transition: opacity .3s ease; }
+  .pokemon-turn { transition: none; }
+}

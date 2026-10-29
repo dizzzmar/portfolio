@@ -4,6 +4,7 @@
     {
       "id": "charizard",
       "name": "Charizard",
+      "set": "Base Set",
       "front": "charizard.webp",
       "example": true,
       "source": "https://assets.tcgdex.net/en/base/base1/4/high.webp"
@@ -11,6 +12,7 @@
     {
       "id": "blastoise",
       "name": "Blastoise",
+      "set": "Base Set",
       "front": "blastoise.webp",
       "example": true,
       "source": "https://assets.tcgdex.net/en/base/base1/2/high.webp"
@@ -18,6 +20,7 @@
     {
       "id": "venusaur",
       "name": "Venusaur",
+      "set": "Base Set",
       "front": "venusaur.webp",
       "example": true,
       "source": "https://assets.tcgdex.net/en/base/base1/15/high.webp"
@@ -25,6 +28,7 @@
     {
       "id": "pikachu",
       "name": "Pikachu",
+      "set": "Base Set",
       "front": "pikachu.webp",
       "example": true,
       "source": "https://assets.tcgdex.net/en/base/base1/58/high.webp"
@@ -32,6 +36,7 @@
     {
       "id": "umbreon-vmax",
       "name": "Umbreon VMAX",
+      "set": "Evolving Skies",
       "front": "umbreon-vmax.webp",
       "example": true,
       "source": "https://assets.tcgdex.net/en/swsh/swsh7/215/high.webp"
@@ -39,6 +44,7 @@
     {
       "id": "rayquaza-vmax",
       "name": "Rayquaza VMAX",
+      "set": "Evolving Skies",
       "front": "rayquaza-vmax.webp",
       "example": true,
       "source": "https://assets.tcgdex.net/en/swsh/swsh7/218/high.webp"
@@ -46,6 +52,7 @@
     {
       "id": "gengar-vmax",
       "name": "Gengar VMAX",
+      "set": "Fusion Strike",
       "front": "gengar-vmax.webp",
       "example": true,
       "source": "https://assets.tcgdex.net/en/swsh/swsh8/271/high.webp"
@@ -53,6 +60,7 @@
     {
       "id": "mew-v",
       "name": "Mew V",
+      "set": "Fusion Strike",
       "front": "mew-v.webp",
       "example": true,
       "source": "https://assets.tcgdex.net/en/swsh/swsh8/251/high.webp"

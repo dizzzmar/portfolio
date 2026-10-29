@@ -15,11 +15,11 @@ These eight real cards demonstrate the gallery. They are **examples**, not a cla
 Edit `cards.json`:
 
 - `back`: shared reverse image, relative to this directory.
-- `cards`: ordered entries `{ "id": "unique-id", "name": "Card name", "front": "scan.webp" }`.
+- `cards`: ordered entries `{ "id": "unique-id", "name": "Card name", "set": "Expansion", "front": "scan.webp" }` (`set` is the caption's second line; optional).
 - Remove `example: true` when replacing an entry with a card Mario owns. `source` is provenance only, never fetched by the gallery.
 
 Use a complete portrait crop, approximately 63:88, ideally at least 630 × 880 px. Images must be local to the same origin. An empty list shows an empty state; loading failures offer a retry.
 
 ## Interaction
 
-The infinite gallery recycles a viewport-sized pool of DOM cards; it does not append content while scrolling. Mouse/touch dragging, trackpad/wheel and arrow keys move it in both directions. Movement is eased on one animation clock; release velocity decays gradually rather than adding a fixed final jump. Touch contact subtly changes the grid perspective and lifts/tilts nearby cards, then returns them to rest. Hover turns the card according to the cursor position, revealing the common reverse toward its edges. Keyboard focus offers a reverse preview too. Clicking/tapping a card never opens an enlarged viewer or zoom. Escape returns to the Room. Reduced motion removes inertia, contact perspective and the decorative hover/focus turn. Rendering stops at rest and while the tab is hidden.
+The infinite gallery is a collage on black: staggered columns, each card with its caption (name and expansion, from `name` and `set` in `cards.json`). A viewport-sized pool of DOM cards is recycled; it does not append content while scrolling, and the arrangement keeps the same card from sitting next to itself. Mouse/touch dragging, trackpad/wheel and arrow keys move it in both directions with the site's scroll feel; release velocity decays gradually. Cards move only in 2D; the card under the mouse lifts and leans toward the cursor. Clicking/tapping a card never opens an enlarged viewer or zoom. Escape or «Close» returns to the Room. Reduced motion removes inertia, the lean and the entrance rise. Rendering stops at rest and while the tab is hidden.
