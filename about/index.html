@@ -23,7 +23,7 @@
 <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261027b">
-<link rel="stylesheet" href="/css/about.css?v=20261030d">
+<link rel="stylesheet" href="/css/about.css?v=20261030q">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
@@ -59,29 +59,34 @@
 <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">About</li></ol></nav>
 
 <main class="about">
-  <!-- La foto se queda quieta a la izquierda (con su efecto holográfico, js/about.js) y la tarjeta con el texto entra por la derecha y se recorre por dentro (css/about.css) -->
+  <h1 class="sr-only">Mario Diz</h1>
+  <div class="about-marquee" aria-hidden="true"><div class="about-run"><span>Mario Diz / Mario Diz / </span><span>Mario Diz / Mario Diz / </span></div></div>
+  <div class="about-layout">
+    <aside class="about-bio" aria-label="About Mario">
+<header class="intro">
+    <!-- EDITA: tu presentación (resumen de la biografía en un párrafo) -->
+    <p class="statement" data-reveal>Mario’s taste was formed in front of Almodóvar films. An art director with three years of experience, a background in art history and a love of maximalism, he follows every idea from the first spark to the final image. In the AI team at WPP Production Madrid he blends the leading image and video AI tools with traditional craft and high-quality retouching, and he is a self-taught 3D artist.</p>
+  </header>
+<section class="facts contact-row" aria-label="Contact details">
+    <p class="fact" data-reveal><a href="https://es.linkedin.com/in/mario-diaz-aguado" target="_blank" rel="noopener">LinkedIn</a></p>
+    <p class="fact fact-values" data-reveal><a href="mailto:hey.mariodiz@gmail.com">hey.mariodiz@gmail.com</a></p>
+  </section>
+<p class="faq-link" data-reveal><a href="/faq/">FAQs →</a></p>
+    </aside>
+    <div class="about-content">
   <div class="about-photo">
     <!-- Foto holográfica: se inclina en 3D siguiendo el ratón y un brillo con los colores de la foto recorre el fondo, como una carta coleccionable (js/about.js) -->
     <div class="portrait holo" data-holo>
       <div class="holo-card">
-        <img src="/assets/images/mario-600.webp" srcset="/assets/images/mario-600.webp 600w, /assets/images/mario-956.webp 956w" sizes="(max-width: 760px) 55vw, 25vw" width="956" height="1280" alt="Portrait of Mario Diz, smiling, in a green knitted sweater against a blue-green painted backdrop">
+        <img src="/assets/images/mario-600.webp" srcset="/assets/images/mario-600.webp 600w, /assets/images/mario-956.webp 956w" sizes="(max-width: 760px) calc(100vw - 32px), 55vw" width="956" height="1280" alt="Portrait of Mario Diz, smiling, in a green knitted sweater against a blue-green painted backdrop">
         <span class="holo-shine" aria-hidden="true"></span>
         <span class="holo-glare" aria-hidden="true"></span>
       </div>
     </div>
   </div>
 
-  <div class="about-card" id="about-card" tabindex="-1" role="region" aria-label="About Mario">
 
-  <!-- 1. Nombre y presentación; debajo, columnas, contacto y clientes -->
-  <header class="intro">
-    <h1 class="name" data-reveal>Mario Diz</h1>
-    <!-- EDITA: tu presentación (resumen de la biografía en un párrafo) -->
-    <p class="statement" data-reveal>Mario’s taste was formed in front of Almodóvar films. An art director with three years of experience, a background in art history and a love of maximalism, he follows every idea from the first spark to the final image. In the AI team at WPP Production Madrid he blends the leading image and video AI tools with traditional craft and high-quality retouching, and he is a self-taught 3D artist.</p>
-  </header>
-
-  <!-- Columnas en texto pequeño, como en la referencia: lo que hace y el resto de la biografía -->
-  <section class="facts" aria-label="About Mario">
+<section class="facts" aria-label="About Mario">
     <div class="fact" data-reveal>
       <!-- EDITA: una <li> por capacidad -->
       <h2>Art direction &amp; visual design</h2>
@@ -110,17 +115,7 @@
       </div>
     </a>
   </section>
-
-  <!-- Dónde encontrarlo: LinkedIn bajo la primera columna y el correo bajo la segunda (misma rejilla que las columnas de arriba).
-       EDITA: si cambias el correo, cámbialo también en js/contact.js y en Privacy (ver README). -->
-  <section class="facts contact-row" aria-label="Contact details">
-    <p class="fact" data-reveal><a href="https://es.linkedin.com/in/mario-diaz-aguado" target="_blank" rel="noopener">LinkedIn</a></p>
-    <p class="fact fact-values" data-reveal><a href="mailto:hey.mariodiz@gmail.com">hey.mariodiz@gmail.com</a></p>
-  </section>
-
-  <!-- 2. Marcas con las que ha trabajado: sus logos (en /assets/brands) se pintan todos del mismo color (ver .client-logo en css/about.css).
-       --ratio es ancho/alto del logo y --h su altura, para que todos se vean de un tamaño parecido. Las que tienen proyecto enlazan a él -->
-  <section class="clients" aria-labelledby="clients-title">
+<section class="clients" aria-labelledby="clients-title">
     <h2 id="clients-title" data-reveal>Selected clients</h2>
     <ul class="client-list" data-reveal>
       <li><span class="client-logo" role="img" aria-label="The Coca-Cola Company" style="--logo: url(/assets/brands/coca-cola-company.svg); --ratio: 6.2; --h: 24px"></span></li>
@@ -138,14 +133,13 @@
       <li><a href="/project/soap-and-glory-vanilla/"><span class="client-logo" role="img" aria-label="Soap &amp; Glory" style="--logo: url(/assets/brands/soap-and-glory.svg); --ratio: 4.67; --h: 23px"></span></a></li>
     </ul>
   </section>
-
-  <p class="faq-link" data-reveal><a href="/faq/">FAQs →</a></p>
+    </div>
   </div>
 </main>
 
 <footer class="site-foot on-green"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
 
-<script src="/js/about.js?v=20261029c" defer></script>
+<script src="/js/about.js?v=20261030q" defer></script>
 <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
 <script src="/js/cursor.js?v=20261029b" defer></script>
 <script src="/js/smooth-scroll.js?v=20261028n" defer></script>
