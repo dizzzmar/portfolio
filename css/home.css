@@ -524,6 +524,9 @@ body.white-on { background-color: #fff; }
 /* El primer proyecto empieza justo bajo la cabecera: sin raya ni hueco arriba (el resto de filas, con su aire de siempre) */
 .work-item:first-child::before { display: none; }
 .work-item:first-child > a { padding-top: clamp(8px, 1.2vw, 18px); }
+/* Studies: proyectos de la universidad, debajo de los de cliente. Un título pequeño y el nombre en el rojo del proyecto (5,9:1 sobre blanco) */
+.work-section { padding: clamp(56px, 7vw, 112px) 0 clamp(8px, 1vw, 14px); font: 500 var(--fs-s)/1.3 var(--font-ui); letter-spacing: -.005em; border-bottom: 1px solid currentColor; }
+.work-list--studies .wi-name { color: #c41a08; }
 
 .wi-date, .wi-tags { margin-top: clamp(4px, .9vw, 14px); font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.32; color: rgba(255, 255, 255, .62); transition: color .5s ease; }
 .wi-date { grid-area: date; justify-self: start; font-variant-numeric: lining-nums; }
