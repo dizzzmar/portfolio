@@ -1,4 +1,4 @@
-// Only the animation: a pre-rendered loop of the tomato on the grass, on green. It stays independent of WebGL and adds only 155 KB to loading.
+// Only the animation: a pre-rendered loop of the tomato on the grass, on pink. It stays independent of WebGL and adds only 155 KB to loading.
 (() => {
   const root = document.documentElement;
   if (location.hash || root.classList.contains('land-fly')) return;
@@ -27,7 +27,7 @@
       { opacity: 1, transform: 'translateY(-10vh) scale(1.06)', offset: 0.5 },
       { opacity: 0, transform: 'translateY(-34vh) scale(1.06)' },
     ], { duration: 700, delay: 140, easing: ease, fill: 'forwards' });
-    // The green surface lifts like a curtain, uncovering the landing from the bottom up.
+    // The pink surface lifts like a curtain, uncovering the landing from the bottom up.
     const exit = loader.animate([{ clipPath: 'inset(0 0 0 0)' }, { clipPath: 'inset(0 0 100% 0)' }],
       { duration: 700, delay: 140, easing: 'cubic-bezier(0.77, 0, 0.175, 1)', fill: 'forwards' });
     await exit.finished.catch(() => {});
