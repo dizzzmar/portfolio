@@ -5,42 +5,44 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 ## Cómo está organizado
 
 ```
-index.html                 La home (el tomate gira con su nombre; al pulsar Work o deslizar hacia abajo sube en una curva a la barra y la página baja sola a la lista de proyectos)
-room.html                  La página "The room" (habitación 3D)
-about/index.html           About (foto holográfica fija a la izquierda y tarjeta del mismo color que entra por la derecha con nombre, presentación, gustos y clientes; la tarjeta se recorre por dentro). Estilos: css/about.css. Textos de ejemplo marcados con EDITA
-project/enmad/            ENMAD, proyecto de Studies (universidad): rosa y rojo del propio proyecto. Estilos: css/case.css + css/case-layout.css (estructura de todas las fichas) + css/palettes.css (paletas de colores de cada proyecto); índice de la izquierda: js/case-index.js. Imágenes: assets/projects/enmad (páginas de los dossieres).
-posters/index.html        Posters: collage de trabajos personales y ficticios (pósters, merch, portadas). Cada pieza abre un visor con todo su mini-proyecto (js/posters.js); las que tienen varias versiones de color cambian solas. Estilos: css/posters.css. Imágenes: assets/posters/<proyecto>/ (miniatura de 720 px y vista grande de 2000 px, en WebP; las de merch y mockups, recortadas sin fondo). La página se generó a partir de las carpetas de imágenes; para añadir un proyecto, copia un <li class="pz-item"> y cambia nombre, imágenes y textos alternativos.
-404.html                   Página de "no encontrada"
-machine/index.html         Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
-robots.txt · sitemap.xml · llms.txt   Para buscadores y agentes de IA
-CLAUDE.md                  Reglas para Claude (seguridad: nunca publicar claves; avisar antes de acciones con riesgo)
-.github/workflows/secret-scan.yml  Comprueba en cada cambio que no se suba ninguna clave (gitleaks)
+index.html · room.html · 404.html      Home (el tomate gira con su nombre y baja a la lista Work), The room (habitación 3D) y «no encontrada»
+about/ · faq/ · privacy/               About, FAQs y Privacidad (cada una, un index.html)
+posters/index.html                     Collage de trabajos personales y ficticios; cada pieza abre un visor con todo su mini-proyecto (js/posters.js)
+machine/index.html                     Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
+project/<nombre>/index.html            Una ficha por proyecto → www.dizmar.xyz/project/<nombre>/
+                                       (lexus-electrified · schweppes · schweppes-the-gentlemen · soap-and-glory-vanilla · enmad)
+templates/                             Plantillas para copiar (no son páginas de la web)
+  project-template/index.html          Ficha de proyecto nueva, con todo explicado
+  project-card.html                    La fila de la lista Work de la home para un proyecto nuevo (8 miniaturas)
+experiments/                           Estudios sueltos (tomato-grass, tomato-juggler); no forman parte de la web
+scripts/                               Utilidades de Blender para generar archivos de la habitación
+robots.txt · sitemap.xml · llms.txt    Para buscadores y agentes de IA
+CNAME · favicon.ico · apple-touch-icon.png
+CLAUDE.md · PRODUCT.md · DESIGN.md     Reglas para Claude, contexto del producto y sistema de diseño
+.github/workflows/secret-scan.yml      Comprueba en cada cambio que no se suba ninguna clave (gitleaks)
 
-project/                   Una carpeta por proyecto  →  www.dizmar.xyz/project/<nombre>/  (estilos: css/case.css, como cipher.tv)
-  lexus-electrified/index.html
-  soap-and-glory-vanilla/index.html
+css/                                   Aspecto. Un archivo por zona; los comunes se cargan en todas las páginas
+  tokens.css · typography.css          Colores, tamaños y tipografías; estilos de texto compartidos
+  nav-logo.css · nav-links.css · menu.css · footer.css · cursor.css · transitions.css   Piezas comunes: tomate y enlaces de la barra, panel «Menu», pie, cursor y transiciones entre páginas
+  home.css · home-loading.css          La home y su pantalla de carga
+  case.css · case-layout.css · palettes.css   Fichas de proyecto y posters: base (cabecera fija, reproductor, More works), estructura (título que avanza, columna fija, partes) y colores propios de cada proyecto
+  posters.css · about.css · faq.css · privacy.css · not-found.css · contact-sachet.css · terminal.css
+  room.css · room-wii.css · room-pokemon.css   La habitación, la Wii y la «Pokémon collection»
 
-templates/                 Plantillas para copiar (no son páginas de la web)
-  project-template/index.html   Página de proyecto nueva, con todo explicado (mismo diseño que Lexus y Soap & Glory)
-  project-card.html             La fila de la lista Work de la home para un proyecto nuevo (8 miniaturas)
+js/                                    Comportamiento (sin dependencias ni compilación)
+  home-*.js                            La home: tomate 3D, introducción, lista Work y pantalla de carga
+  case.js · case-index.js · posters.js Fichas (aparición, reproductor, volver, índice de ENMAD) y visor de posters
+  room.js · room/                      La habitación 3D; room/ agrupa la Wii, la «Pokémon collection», la iluminación y la carga
+  menu.js · cursor.js · smooth-scroll.js · transitions.js · terminal.js · nav-tomato.js · contact-sachet.js · sachet.js   Comunes a casi todas las páginas
+  about.js · not-found-*.js · mode-switch.js   Páginas sueltas; mode-switch.js es la píldora HUMAN | MACHINE, aparcada (ver «Modo máquina»)
 
-css/                       Diseño (colores, tipografías, tamaños)
-  home.css · room.css · not-found.css
-  footer.css               El pie de página, igual en todas las páginas (ver la clase del color en cada <footer>)
-  nav-logo.css · nav-links.css   El tomate y los enlaces de la barra, iguales en todas las páginas
-  menu.css · js/menu.js          El botón «Menu» de arriba a la derecha: panel a pantalla completa con Work, About, Room, Contact y, abajo, Machine, FAQs, Terminal, Privacy. Los enlaces salen de la barra de cada página (la página nueva necesita el botón `li.menu-li` y `has-menu` en el script del `<head>`)
-  case.css                 Común a TODAS las páginas de proyecto
-
-js/                        Comportamiento (animaciones, tomate 3D, carrusel…)
-  home-*.js · room.js · not-found-*.js
-  project-stack.js         Carrusel de imágenes de los proyectos
-  project-grid.js          Galería en cuadrícula infinita (hero de Soap & Glory)
-
-assets/                    Imágenes, vídeos y modelos 3D
-  images/                  cielo, grano, tomate, imagen de relleno
-  models/                  tomate 3D y sobre DIZ (diz-ketchup/)
-  room/                    modelo de la habitación, pegatina "Now playing"…
-  projects/<nombre>/       las imágenes y vídeos de cada proyecto
+assets/                                Imágenes, vídeos y modelos 3D
+  fonts/ · images/ · brands/ · loading/   Tipografías, imágenes comunes, logos de clientes y animaciones de la pantalla de carga
+  models/                              Tomate 3D y sobre DIZ (diz-ketchup/), con sus fuentes
+  room/                                Habitación (shelf-web.glb es la que se carga; shelf.glb es la fuente), cartas Pokémon, discos de la Wii…
+  projects/<nombre>/                   Imágenes y vídeos de cada proyecto
+  posters/<proyecto>/                  Imágenes del collage de posters (miniatura de 720 px y vista grande)
+  vendor/three/                        three.js alojado en el propio repositorio
 ```
 
 Regla fácil: **textos → archivos `.html`**, **aspecto → `.css`**, **animaciones → `.js`**.
@@ -53,7 +55,7 @@ Regla fácil: **textos → archivos `.html`**, **aspecto → `.css`**, **animaci
 Abre `index.html` y busca `work-list` (Ctrl+F). Cada proyecto es un bloque `<li class="work-item">`. Cambia el año (`wi-date`), el nombre (`wi-name`) o las etiquetas (`wi-tags`). Cada fila lleva siempre 8 miniaturas (`wi-slot`), sin huecos.
 
 ### Cambiar el texto de una página de proyecto
-Abre `project/<nombre>/index.html`. Los trozos editables están marcados con comentarios (`EDITA:`): nombre, año y cliente, galería horizontal, etiquetas y texto.
+Abre `project/<nombre>/index.html`. Los trozos editables están marcados con comentarios (`EDITA:`): nombre, año y cliente, datos de la columna izquierda, texto y las imágenes o vídeos de cada parte.
 
 ### Crear un proyecto nuevo
 1. Duplica `templates/project-template` y muévela a `project/<nombre-del-proyecto>/` (sin espacios ni acentos, con guiones).

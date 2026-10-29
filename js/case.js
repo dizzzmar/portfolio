@@ -1,7 +1,4 @@
-// PÁGINAS DE PROYECTO · aparición de los bloques con data-reveal, galería horizontal y reproductor propio.
-// La galería se recorre con la rueda del ratón o el trackpad mientras está entera en pantalla, esté el cursor donde esté; al llegar a un extremo, tras una pausa, la página vuelve a desplazarse.
-// Con el dedo no se interviene: la página se desplaza sola. Además, se puede arrastrar con el ratón, con el dedo o con las flechas del teclado. Sin script, la tira se desliza de forma nativa.
-// Arrastrando con el ratón, con el dedo o con las flechas del teclado. Sin script, la tira se desliza de forma nativa.
+// PÁGINAS DE PROYECTO · aparición de los bloques con data-reveal, reproductor propio y botón de volver.
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced) document.querySelectorAll('video[autoplay]').forEach((v) => { v.autoplay = false; v.pause(); });
@@ -12,119 +9,6 @@
     entries.filter((e) => e.isIntersecting).forEach((e) => { e.target.classList.add('is-in'); io.unobserve(e.target); });
   }, { rootMargin: '0px 0px -10% 0px' });
   items.forEach((el) => io.observe(el));
-})();
-
-// ---------- Galería horizontal ----------
-(() => {
-  const track = document.querySelector('.p-track');
-  if (!track) return;
-  const bar = document.querySelector('.p-progress i');
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  track.querySelectorAll('.p-card').forEach((card, i) => card.style.setProperty('--i', i));
-
-  const max = () => Math.max(0, track.scrollWidth - track.clientWidth);
-  let target = track.scrollLeft, raf = 0, dragging = false;
-  const paint = () => { if (bar) bar.style.transform = `scaleX(${max() ? track.scrollLeft / max() : 0})`; };
-  // Llega a su destino con inercia: cada fotograma recorre una parte de lo que falta
-  const step = () => {
-    raf = 0;
-    const d = target - track.scrollLeft;
-    if (Math.abs(d) < 0.5) { track.scrollLeft = target; return; }
-    track.scrollLeft += d * 0.14;
-    raf = requestAnimationFrame(step);
-  };
-  const goTo = (x) => {
-    target = Math.max(0, Math.min(max(), x));
-    if (reduced) track.scrollLeft = target;
-    else if (!raf) raf = requestAnimationFrame(step);
-  };
-  // Si algo más mueve la tira (el dedo, el teclado), el destino se sincroniza
-  track.addEventListener('scroll', () => { if (!raf && !dragging) target = track.scrollLeft; paint(); }, { passive: true });
-  // En móvil las tarjetas se alinean arriba y la tira mide lo que mide la que más se ve: si no, junto a una foto vertical un vídeo apaisado
-  // deja unos 300 px en blanco. Se mide al parar el dedo, no en cada fotograma, y con «reducir movimiento» el cambio es instantáneo.
-  const narrow = matchMedia('(max-width: 760px)');
-  const cards = [...track.querySelectorAll('.p-card')];
-  let fitTimer = 0;
-  const fit = () => {
-    if (!narrow.matches) { track.style.height = ''; return; }
-    const left = track.scrollLeft, right = left + track.clientWidth;
-    let best = cards[0], seen = -1;
-    for (const card of cards) {
-      const visible = Math.min(right, card.offsetLeft + card.offsetWidth) - Math.max(left, card.offsetLeft);
-      if (visible > seen) { seen = visible; best = card; }
-    }
-    const h = best.offsetHeight;
-    if (h && track.style.height !== h + 'px') track.style.height = h + 'px';
-  };
-  track.addEventListener('scroll', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fit, 90); }, { passive: true });
-  narrow.addEventListener('change', fit);
-  addEventListener('load', fit);
-  addEventListener('resize', () => { fit(); paint(); });
-  paint();
-  fit();
-
-  // Rueda (ratón y trackpad): mientras la galería está entera en pantalla, la rueda la recorre esté el cursor donde esté.
-  // Al llegar a un extremo, la página vuelve a desplazarse; la inercia del trackpad que aún llega no la mueve de golpe (pausa de 300 ms).
-  let lastUsed = 0;
-  const gallery = document.querySelector('.p-gallery');
-  if (gallery && matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    addEventListener('wheel', (e) => {
-      if (e.defaultPrevented || e.ctrlKey || !e.cancelable || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-      const r = gallery.getBoundingClientRect();
-      if (r.top < 0 || r.bottom > innerHeight) return; // la galería no está entera en pantalla: se desplaza la página
-      const down = e.deltaY > 0;
-      if ((down && target >= max() - 1) || (!down && target <= 0)) {
-        if (performance.now() - lastUsed < 300) e.preventDefault();
-        return;
-      }
-      lastUsed = performance.now();
-      e.preventDefault();
-      goTo(target + e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1));
-    }, { passive: false });
-  }
-
-  // Arrastrar con el ratón (con el dedo ya funciona de forma nativa)
-  let startX = 0, startLeft = 0, moved = false;
-  track.addEventListener('pointerdown', (e) => {
-    if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('.player-bar, .player-toggle')) return;
-    dragging = true;
-    moved = false;
-    startX = e.clientX;
-    startLeft = track.scrollLeft;
-    // Sin captura todavía: capturar el puntero al pulsar desviaba el clic a la galería y el vídeo no recibía su Play/Pause
-  });
-  track.addEventListener('pointermove', (e) => {
-    if (!dragging) return;
-    if (!moved && Math.abs(e.clientX - startX) > 4) {
-      moved = true; // ahora sí es un arrastre: se captura el puntero para seguir aunque salga de la galería
-      track.setPointerCapture(e.pointerId);
-      track.classList.add('is-dragging');
-    }
-    if (!moved) return;
-    track.scrollLeft = startLeft - (e.clientX - startX);
-    target = track.scrollLeft;
-  });
-  const stop = () => { dragging = false; track.classList.remove('is-dragging'); };
-  track.addEventListener('pointerup', stop);
-  track.addEventListener('pointercancel', stop);
-  track.addEventListener('click', (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true); // arrastrar no cuenta como pulsar
-
-  // Flechas del teclado
-  track.addEventListener('keydown', (e) => {
-    const k = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
-    if (!k || e.target !== track) return;
-    e.preventDefault();
-    goTo(target + k * track.clientWidth * 0.6);
-  });
-
-  // "Go to film": la tira se desliza hasta la película (y, si hace falta, la página sube hasta la galería)
-  document.querySelectorAll('[data-go-film]').forEach((link) => link.addEventListener('click', (e) => {
-    const film = track.querySelector('#film');
-    if (!film) return;
-    e.preventDefault();
-    goTo(film.offsetLeft - parseFloat(getComputedStyle(track).paddingLeft));
-    track.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
-  }));
 })();
 
 // ---------- Barra de reproducción propia ----------
@@ -208,8 +92,6 @@
       else if (e.key === 'End') { e.preventDefault(); video.currentTime = video.duration; }
     });
   });
-  // Con los controles ya montados la tarjeta es más alta: la tira se vuelve a medir (si no, quedan cortados hasta que termina de cargar la página)
-  requestAnimationFrame(() => dispatchEvent(new Event('resize')));
 })();
 
 // ---------- Atrás: vuelve a la portada exactamente donde estaba ----------

@@ -8,7 +8,6 @@ The 35 cards of Mario's collection that make the best gallery: full arts, ex and
 - Cards from 2021–22 (Sword & Shield): the English card with the same illustration, from the TCGdex asset archive (`assets.tcgdex.net`). Korean, Chinese and Spanish copies show the same artwork as these, only the text language differs.
 - Card artwork and marks belong to their respective rights holders (Pokémon / Nintendo / Creatures / GAME FREAK and credited illustrators). Converted to local WebP at 520 px wide. The gallery makes no visitor requests to any of these sources.
 - `set` is the English name of the expansion the scan comes from. For the 2021–22 cards that is the English expansion, which can differ from the one printed on the Japanese or Korean copy (for example Fusion Strike for a Fusion Arts card).
-- The original geometric `*-placeholder.svg` assets remain available for use while curating the collection.
 
 ## Adding or replacing cards
 

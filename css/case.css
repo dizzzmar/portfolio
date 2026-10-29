@@ -1,7 +1,6 @@
-/* PÁGINAS DE PROYECTO — compartido por todo /project/*.
-   Referencia: 13322566869.com/works/<proyecto>, con el estilo de esta web: fondo blanco, nombre grande arriba, galería horizontal
-   de tarjetas con esquinas rectas (se recorre con la rueda, arrastrando o con el dedo) y, debajo, los datos y la descripción.
-   Orden: colores y base · cabecera · primera pantalla (galería + datos) · Instagram · reproductor · pie · móvil · movimiento.
+/* PÁGINAS DE PROYECTO — base compartida por todo /project/* y /posters/: colores, cabecera fija, reproductor propio, «More works» y pie.
+   La estructura de la ficha (título que avanza, columna fija y partes) está en case-layout.css; los colores propios de cada proyecto, en palettes.css.
+   Orden: colores y base · cabecera · reproductor · pie · móvil · movimiento · salida · More works.
    Familia y estilos de navegación y etiquetas compartidos en typography.css. */
 
 :root {
@@ -45,59 +44,6 @@ img, video { display: block; }
 .case-name .case-back { font: inherit; letter-spacing: inherit; text-transform: none; } /* si no, typography.css lo deja en 14px como los demás enlaces */
 .case-name .case-back:focus-visible { outline-offset: 6px; }
 .cb-text { display: inline-block; font-variant-ligatures: none; }
-
-/* ---------- Primera pantalla: cabecera, galería horizontal y datos ---------- */
-.case-first { min-height: 100vh; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr auto; padding: var(--nav-h) 0 0; }
-.p-gallery { align-self: center; min-width: 0; padding: 3vh 0 4vh; }
-/* La tira: las tarjetas empiezan al 25% del ancho (como en la referencia) y se recorren de lado a lado */
-.p-track {
-  --h: clamp(280px, 56vh, 580px);
-  display: flex;
-  gap: 8px;
-  padding: 0 var(--edge) 0 max(var(--edge), 25vw);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  cursor: grab;
-  outline-offset: -2px;
-}
-.p-track::-webkit-scrollbar { display: none; }
-.p-track.is-dragging { cursor: grabbing; user-select: none; }
-.p-track.is-dragging video { pointer-events: none; }
-.p-card { position: relative; flex: none; height: var(--h); aspect-ratio: var(--ar, 1); margin: 0; overflow: hidden; background: var(--panel); } /* esquinas rectas */
-.p-card img, .p-card video { width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; user-select: none; }
-.p-card video[controls] { background: #000; }
-/* Una línea fina marca cuánto de la galería llevas recorrido */
-.p-progress { position: relative; height: 1px; margin: clamp(14px, 1.8vh, 24px) var(--edge) 0 max(var(--edge), 25vw); background: var(--line); }
-.p-progress i { position: absolute; inset: -.5px auto -.5px 0; width: 100%; background: var(--ink); transform-origin: left; transform: scaleX(0); }
-
-/* Datos (izquierda) y descripción (derecha), abajo, como en la referencia */
-.case-info { display: grid; grid-template-columns: 41% minmax(0, 1fr) auto; padding: clamp(20px, 3vh, 36px) var(--edge) clamp(24px, 4vh, 40px); font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.3; }
-.case-tags { list-style: none; }
-/* La descripción: el mismo tamaño y los mismos pesos que About y Privacy (primer párrafo en negrita, el resto normal) */
-.case-text { max-width: var(--measure); font-size: var(--fs-read); line-height: var(--lh-body); letter-spacing: -.01em; }
-.case-text p:first-child { font-weight: var(--fw-bold); }
-.case-text p + p { margin-top: .9em; }
-.case-film-link { grid-column: 3; justify-self: end; align-self: start; white-space: nowrap; text-underline-offset: 3px; transition: opacity .2s; } /* "Go to film": lleva la galería hasta la película (js/case.js) */
-.case-film-link:hover { opacity: .6; }
-.case-lead { font-size: var(--fs-lead); letter-spacing: -.02em; line-height: 1.25; }
-
-/* ---------- Proyecto con un solo asset (class="is-single" en .p-gallery) ----------
-   Sin tira que recorrer: no hay línea de progreso ni «Go to film». El asset empieza donde empiezan las tarjetas de los demás proyectos (25 % del ancho),
-   se ve entero (16:9, o su proporción) y nunca más alto que lo que deja la pantalla para que el texto de abajo se vea sin hacer scroll. En móvil, a todo el ancho. */
-.p-gallery.is-single .p-progress, .case-first:has(.p-gallery.is-single) .case-film-link { display: none; }
-.p-gallery.is-single .p-track { overflow: visible; cursor: default; }
-.p-gallery.is-single .p-card { flex: none; height: auto; width: min(100%, calc((100svh - var(--nav-h) - 230px) * var(--r, 1.7778))); }
-@media (max-width: 760px) {
-  .p-gallery.is-single .p-track { padding: 0 var(--edge); }
-  .p-gallery.is-single .p-card, .p-gallery.is-single .p-card.player { width: 100%; }
-}
-
-/* ---------- Instagram (Lexus) ---------- */
-.case-embed { display: grid; grid-template-columns: 41% minmax(0, 1fr); padding: clamp(60px, 9vw, 120px) var(--edge) 0; margin-top: 2vh; }
-.case-embed h2 { font-size: var(--fs-read); font-weight: var(--fw-bold); line-height: 1.3; letter-spacing: -.01em; }
-.case-embed .instagram-media { width: min(540px, 100%) !important; min-width: 0 !important; margin: 0 !important; }
-.case-embed blockquote.instagram-media { padding: 24px; background: var(--panel); font-size: var(--fs-s); }
 
 /* ---------- Barra de reproducción propia (js/case.js, vídeos con data-player) ---------- */
 .player { position: relative; isolation: isolate; }
@@ -173,7 +119,7 @@ img, video { display: block; }
   .case-name.is-long ~ .case-meta.client { left: 70%; }
 }
 
-/* ---------- Móvil: el nombre sigue en la barra, junto al tomate; los datos pasan a una fila y las tarjetas se recorren con el dedo ---------- */
+/* ---------- Móvil: el nombre sigue en la barra, junto al tomate; los datos pasan a una fila ---------- */
 @media (max-width: 760px) {
   .case-head { height: auto; position: relative; inset: auto; padding: calc(var(--nav-h) + 4px) var(--edge) 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
   .case-head > * { position: static; transform: none; }
@@ -181,60 +127,39 @@ img, video { display: block; }
   @media (max-width: 700px) { .case-name { left: calc(var(--bar-gutter) + 36px + 12px); } } /* el tomate mide 36 px de ancho */
   /* Nombre largo (class="case-name is-long"): en móvil baja a dos líneas y un poco más pequeño, para no pisar el botón Menu (a la derecha, ~64 px) */
   @media (max-width: 700px) { .case-name.is-long { right: calc(var(--bar-gutter) + 64px); white-space: normal; font-size: 19px; line-height: 1.05; margin-top: -1.7px; } }
-  .case-first { padding-top: 0; grid-template-rows: auto auto; align-content: start; } /* la galería sube bajo el título; el texto va justo debajo */
-  .p-gallery { align-self: start; padding: 4vh 0 0; }
   .case-nav { display: none; } /* en el móvil hay solo la X y el tomate: Work, About, Contact y Room están en la portada */
-  /* Alineadas arriba; la altura de la tira la fija js/case.js según la tarjeta que se ve (con una transición corta, salvo con «reducir movimiento»).
-     overflow-y: clip recorta lo que sobra de la tarjeta vecina que asoma, sin crear un scroll vertical dentro de la tira */
-  .p-track { --h: min(52vh, 460px); padding-left: var(--edge); align-items: flex-start; overflow-y: clip; transition: height .3s var(--ease-out); }
   /* El reproductor: la barra y el estado van debajo del vídeo, no encima (en un vídeo de 190 px de alto tapaban media imagen) */
-  .p-card.player { aspect-ratio: auto; overflow: visible; background: none; }
-  .p-card.player video { height: auto; aspect-ratio: var(--ar); background: #000; }
   .player .player-toggle, .player-bar { position: static; mix-blend-mode: normal; color: var(--ink); opacity: 1; }
   .player .player-toggle { display: flex; align-items: center; gap: 14px; padding: 6px 0 0; }
   .player-bar { padding: 0 0 8px; gap: 16px; }
   .player-track::before { background: var(--ink); opacity: .25; } /* ya no va sobre el vídeo con «difference»: la línea es tinta sobre el blanco de la página */
   .player-track i { background: var(--ink); }
-  /* Cada tarjeta mide como mucho el 88% del ancho de la pantalla: se ve la foto casi entera y asoma un trozo de la siguiente (--r = ancho / alto) */
-  .p-card { height: auto; width: min(calc(var(--h) * var(--r, 1)), 88vw); }
-  .p-progress { margin-left: var(--edge); }
-  .case-info, .case-embed, .case-credit { grid-template-columns: 1fr; row-gap: 20px; }
-  .case-film-link { grid-column: 1; justify-self: start; }
+  .case-credit { grid-template-columns: 1fr; row-gap: 20px; }
   .case-credit p { grid-column: 1; }
 }
 
-/* ---------- Movimiento: las tarjetas se destapan una a una al abrir; lo de más abajo sube un poco al aparecer ----------
-   Como donut-studio.com: la página está ahí desde el primer momento. Cada tarjeta se destapa rápido (curva que arranca fuerte y frena)
-   mientras su imagen se aleja de 1,3 a 1; el escalonado es corto para que nada espere. */
+/* ---------- Movimiento: el nombre y los datos suben un poco al aparecer; lo de más abajo, al entrar en pantalla ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .js .p-card { animation: card-in .7s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 60ms); }
-  .js .p-card img, .js .p-card video { animation: card-zoom 1.2s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 60ms); }
-  .js .case-name, .js .case-meta, .js .case-info { animation: fade-up .5s var(--ease-out) both; }
+  .js .case-name, .js .case-meta { animation: fade-up .5s var(--ease-out) both; }
   .js [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .6s var(--ease-out), transform .6s var(--ease-out); }
   .js [data-reveal].is-in { opacity: 1; transform: none; }
   /* More works: al aparecer, la imagen se aleja de 1,2 a 1 dentro de su marco (el zoom del ratón va aparte, con transform) */
   .js .mw-list [data-reveal] .mw-img img { scale: 1.2; transition: transform 1.1s var(--ease-out), scale 1.2s var(--ease-out); }
   .js .mw-list [data-reveal].is-in .mw-img img { scale: 1; }
 }
-@keyframes card-in { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
-@keyframes card-zoom { from { scale: 1.3; } to { scale: 1; } }
 @keyframes fade-up { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0; } }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .p-track { transition: none; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---------- Salida: al volver a la lista, la galería se va hacia la derecha, el nombre sube y el resto se apaga (js/case.js) ---------- */
-.is-leaving .p-track { animation: leave-track .25s var(--ease-out) both; }
+/* ---------- Salida: al volver a la lista el nombre sube y el resto se apaga (js/case.js) ---------- */
 .is-leaving .case-head { animation: leave-up .25s var(--ease-out) both; }
-.is-leaving .case-info, .is-leaving .case-embed, .is-leaving .case-credit, .is-leaving .site-foot { animation: leave-fade .2s var(--ease-out) both; }
-@keyframes leave-track { to { transform: translateX(8vw); opacity: 0; } }
+.is-leaving .case-credit, .is-leaving .site-foot { animation: leave-fade .2s var(--ease-out) both; }
 @keyframes leave-up { to { transform: translateY(-14px); opacity: 0; } }
 @keyframes leave-fade { to { opacity: 0; } }
 
 /* Con dedo: los controles sueltos miden al menos 44 px de alto (sin mover nada de sitio: el padding se compensa con margen negativo) */
 @media (pointer: coarse) {
   .case-name .case-back { display: inline-block; padding-block: 14px; margin-block: -14px; }
-  .case-film-link { padding-block: 14px; margin-block: -14px; }
-  .case-film-link { display: inline-block; }
   .player-bar button { padding-block: 15px; }
   .player .player-toggle { min-height: 44px; }
   .player-track { height: 32px; }
