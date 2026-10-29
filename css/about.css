@@ -1,7 +1,5 @@
-/* ABOUT — estilos de about/index.html.
-   Como el "about" de nicolo-lombardi.com: todo en Helvetica negrita, pocos tamaños, y lo importante
-   cabe en la primera pantalla. Fondo: verde Lincoln y texto lima (6,98:1). Dos pesos: 700 para el título, la entrada y los títulos de bloque; 400 para el resto.
-   Orden: colores y base · barra de navegación · primera pantalla · clientes · pie · móvil · movimiento. */
+/* ABOUT — project-style running title, reading sidebar and portrait-led content.
+   Green/lime identity and the existing holographic photo are preserved. */
 
 :root {
   --bg: var(--green);
@@ -62,55 +60,6 @@ body .nav-links a, body .site-foot.on-green, body .site-foot.on-green a { color:
 .nav-links a:hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 .nav-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 
-main { padding: 0 var(--margin); }
-
-/* ---------- 1. Primera pantalla ---------- */
-/* Toda la página usa la misma rejilla de 4 columnas, para que todo quede alineado:
-   nombre y presentación en las tres primeras, la foto en la cuarta; debajo, "What I do" en la
-   primera, "Values" en la segunda y tercera, y "Now playing" en la cuarta, justo bajo la foto. */
-.intro, .facts {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: var(--gutter);
-}
-.intro {
-  grid-template-areas: "name name name portrait" "statement statement statement portrait";
-  align-items: end;
-  padding-top: calc(var(--nav-h) + clamp(16px, 4vh, 48px));
-}
-
-.name {
-  font-family: var(--font-display);
-  grid-area: name;
-  margin-left: -.04em; /* alinea la tinta de la M con el margen */
-  font-size: var(--fs-h1);
-  font-weight: var(--fw-title);
-  letter-spacing: -.055em;
-  line-height: .9;
-}
-
-.statement {
-  grid-area: statement;
-  max-width: var(--measure); /* líneas más cortas, más fáciles de leer */
-  margin-top: clamp(20px, 4vh, 48px);
-  font-size: var(--fs-read);
-  font-weight: var(--fw-bold);
-  letter-spacing: -.01em;
-  line-height: var(--lh-body);
-}
-
-/* La foto ocupa la cuarta columna */
-.portrait {
-  grid-area: portrait;
-  width: 100%;
-  aspect-ratio: 4 / 5;
-}
-
-/* Foto holográfica, como una carta coleccionable: la carta se inclina en 3D (--rx, --ry), un brillo metalizado con los
-   colores de la propia foto (aguamarina, azul y el verde del jersey) se desplaza con el ángulo (--mx, --my) y un reflejo de luz
-   sigue al cursor (--gx, --gy). --o es la intensidad. El brillo solo va en el fondo: la máscara mario-bg-mask.png deja fuera
-   a la persona (recortada de la foto); se encuadra igual que la foto (cover, 50% 25%).
-   Las variables las mueve js/about.js; sin él (o con "reducir movimiento") la foto se ve normal. */
 .holo { perspective: 900px; }
 .holo-card {
   position: relative;
@@ -118,7 +67,6 @@ main { padding: 0 var(--margin); }
   height: 100%;
   overflow: hidden;
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  box-shadow: var(--sx, 0px) calc(18px + var(--sy, 0px)) 40px -18px rgba(0, 25, 0, .6); /* la sombra se mueve con la inclinación */
   will-change: transform;
 }
 .holo-card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; } /* la cara arriba */
@@ -142,153 +90,48 @@ main { padding: 0 var(--margin); }
   mix-blend-mode: overlay;
   opacity: var(--o, 0);
 }
-.portrait-placeholder {
-  display: flex;
-  align-items: flex-end;
-  padding: 12px;
-  background: var(--bg-deep);
-}
-.portrait-placeholder span { color: var(--ink); font-family: var(--font-ui); font-style: italic; font-weight: 400; }
 
-/* Columnas en texto pequeño: el título en negrita y el texto normal, para que los párrafos largos se lean bien */
-.facts {
-  row-gap: var(--gutter);
-  margin-top: clamp(32px, 6vh, 64px);
-}
-.fact-values { grid-column: 2 / 4; }
-.now-playing { grid-column: 4; }
-.fact h2 { margin-bottom: .5em; font-size: inherit; font-weight: var(--fw-bold); }
-.fact p, .fact li { max-width: var(--measure); font-weight: var(--fw-regular); letter-spacing: -.01em; } /* todas las columnas con el mismo estilo de texto */
-.fact a { text-underline-offset: 3px; transition: opacity .2s; }
-.fact a:hover { opacity: .7; }
-/* LinkedIn y correo: una fila bajo las dos primeras columnas; sus enlaces llevan la raya animada de toda la web (css/cursor.css) */
-.contact-row { margin-top: clamp(28px, 5vh, 56px); }
-.contact-row a:hover { opacity: 1; }
-/* Área de toque: los enlaces de contacto miden ~20 px de alto en móvil. Se amplían con relleno y el mismo margen negativo,
-   así el texto y el hueco entre filas no cambian, pero el dedo acierta (mínimo 44 px de alto). Solo en pantallas táctiles. */
-@media (pointer: coarse) {
-  .contact-row a { display: inline-block; padding: 12px 6px; margin: -12px -6px; }
-}
-/* Now playing: el disco y la película de The room, en pequeño */
-.now-playing { text-decoration: none; }
-.np-row { display: grid; grid-template-columns: 84px 1fr; gap: 16px; align-items: center; }
-.np-row + .np-row { margin-top: 12px; }
+/* About follows the project pages: running title, sticky reading column and media. */
+:root { --margin: clamp(16px, 1.2vw, 24px); }
+.nav { background: var(--bg); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.about { padding-bottom: clamp(64px, 9vw, 140px); }
+.about-marquee { overflow: hidden; padding: calc(var(--nav-h) + clamp(8px, 2vw, 24px)) 0 clamp(12px, 2vw, 28px); }
+.about-run { display: inline-flex; white-space: nowrap; font-family: var(--font-display); font-size: clamp(72px, 13vw, 220px); font-weight: var(--fw-title); letter-spacing: -.04em; line-height: 1; animation: about-run 40s linear infinite; }
+.about-run > span { padding-right: .25em; }
+@keyframes about-run { to { transform: translateX(-50%); } }
+.about-layout { display: grid; grid-template-columns: minmax(260px, 28%) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); padding: 24px var(--margin) 0; }
+.about-bio { position: sticky; top: calc(var(--nav-h) + 24px); align-self: start; }
+.statement { max-width: 48ch; font-size: var(--fs-read); font-weight: var(--fw-regular); line-height: var(--lh-body); letter-spacing: -.01em; }
+.contact-row { display: flex; flex-direction: column; align-items: start; gap: 12px; margin-top: 32px; }
+.contact-row a { overflow-wrap: anywhere; text-underline-offset: 4px; }
+.faq-link { margin-top: 32px; font-size: var(--fs-s); }
+.about-content { min-width: 0; }
+.about-photo { width: min(100%, 620px); margin: 0 auto; }
+.portrait { width: 100%; aspect-ratio: 4 / 5; }
+.facts:not(.contact-row) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 32px; margin-top: clamp(48px, 6vw, 88px); }
+.fact h2, .clients h2 { font-family: var(--font-display); font-weight: var(--fw-title); font-size: var(--fs-l); line-height: 1.2; letter-spacing: -.015em; margin-bottom: 16px; }
+.fact p, .fact li { max-width: 48ch; }
+.fact li + li { margin-top: 4px; }
+.now-playing { grid-column: 1 / -1; text-decoration: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
+.now-playing h2 { grid-column: 1 / -1; }
+.np-row { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 16px; align-items: center; }
 .np-row img { width: 84px; height: 84px; object-fit: cover; }
 .np-row .np-film { height: 120px; }
-.np-row p { font-size: var(--fs-s); line-height: 1.35; }
-.np-row strong { display: inline-block; margin: 2px 0; font-family: var(--font-ui); font-weight: var(--fw-bold); font-size: var(--fs-read); line-height: 1.15; letter-spacing: -.01em; }
-.np-more { text-decoration: underline; text-underline-offset: 3px; }
-.now-playing:hover .np-more { opacity: .7; }
-
-/* ---------- 2. Clientes ---------- */
-.clients { margin-top: clamp(32px, 6vh, 64px); }
-.clients h2 { margin-bottom: 18px; font-size: inherit; font-weight: var(--fw-bold); }
-.client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 44px; max-width: 1100px; }
-.client-list a { display: block; transition: opacity .2s; }
-.client-list a:hover { opacity: .7; }
-@media (pointer: coarse) { .client-list { row-gap: 28px; } .client-list a { padding-block: 12px; margin-block: -12px; } } /* zona táctil de 44 px sin mover los logos */
-/* Cada logo se pinta del color del texto usando su silueta: así todos quedan en el mismo rojo */
-.client-logo {
-  display: block;
-  height: var(--h, 28px);
-  aspect-ratio: var(--ratio, 3);
-  background: currentColor;
-  -webkit-mask: var(--logo) center / contain no-repeat;
-  mask: var(--logo) center / contain no-repeat;
-}
-
-/* Enlace a las FAQs, al final de la página */
-.faq-link { margin: clamp(48px, 9vh, 96px) 0 clamp(24px, 4vh, 48px); font-weight: var(--fw-bold); }
-.faq-link a { text-underline-offset: 4px; }
-
-/* ---------- Móvil ---------- */
+.np-row p { font-size: var(--fs-s); line-height: 1.4; }
+.np-row strong { font-weight: 600; font-size: var(--fs-read); }
+.np-more { text-decoration: underline; text-underline-offset: 4px; }
+.clients { margin-top: clamp(48px, 6vw, 88px); }
+.client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 32px; }
+.client-list a { display: block; }
+.client-logo { display: block; height: var(--h, 28px); aspect-ratio: var(--ratio, 3); background: currentColor; mask: var(--logo) center / contain no-repeat; -webkit-mask: var(--logo) center / contain no-repeat; }
+@media (max-width: 1000px) { .now-playing { grid-template-columns: 1fr; row-gap: 16px; } }
 @media (max-width: 760px) {
-  :root { --gutter: 16px; }
-  .nav-links a { padding: 0 10px; font-size: var(--fs-s); }
-  .nav-links { margin-right: -10px; }
-  .intro, .facts { grid-template-columns: 1fr; }
-  .intro { grid-template-areas: "name" "statement" "portrait"; }
-  .fact-values, .now-playing { grid-column: auto; }
-  .name { font-size: var(--fs-h1); }
-  .portrait { width: 55%; margin-top: 32px; }
-  .facts { row-gap: 32px; }
-  .fact h2 { margin-bottom: .6em; }
+  .about-layout { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .about-bio { position: static; }
+  .about-photo { max-width: 520px; }
+  .facts:not(.contact-row) { grid-template-columns: 1fr; gap: 32px; }
+  .now-playing { grid-column: auto; }
 }
-
-/* ---------- Movimiento: cada bloque sube y aparece al entrar en pantalla (js/about.js) ----------
-   Solo si hay JavaScript y el visitante no ha pedido menos movimiento; si no, todo se ve desde el principio. */
-@media (prefers-reduced-motion: no-preference) {
-  .js [data-reveal] {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
-    transition-delay: var(--d, 0ms);
-  }
-  .js [data-reveal].is-in { opacity: 1; transform: none; }
-}
-
-/* ---------- Tarjeta (como la ficha «Information» de jacoblindblad.dk) ----------
-   La foto queda quieta a la izquierda, con su efecto holográfico, y el texto va en una tarjeta que entra por la derecha. Todo del mismo color (verde con texto lima), como en la referencia.
-   En escritorio la tarjeta está fija y se recorre por dentro; el pie queda abajo a la izquierda. En móvil la foto se queda arriba
-   y la tarjeta pasa por encima al bajar. */
-.about { padding: 0; }
-.about-photo { display: grid; place-items: center; }
-/* Foto grande, como en la referencia: llena el alto de la pantalla (4:5) sin pasar del 40 % del ancho */
-.about-photo .portrait { width: min(40vw, calc((100vh - var(--nav-h) - 120px) * .8)); margin: 0; }
-.about-card {
-  position: relative;
-  background: var(--green); /* del mismo color que la página: solo se nota que es una tarjeta por cómo entra */
-  color: var(--lime);
-  padding: clamp(28px, 4vw, 64px);
-}
-.about-card:focus { outline: none; }
-.about-card .intro { display: block; padding-top: 0; }
-.about-card .name { margin-left: -.04em; }
-.about-card .statement { margin-top: clamp(20px, 3vw, 40px); max-width: none; } /* ocupa las dos columnas de debajo */
-.about-card .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.about-card .fact-values { grid-column: 2; }
-.about-card .now-playing { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gutter); }
-.about-card .now-playing h2 { grid-column: 1 / -1; }
-.about-card .np-row + .np-row { margin-top: 0; }
-.about-card .clients { max-width: none; }
-.about-card .client-list { max-width: none; }
-
-@media (min-width: 761px) {
-  html:has(.about) { overflow: hidden; }                       /* la página no se desplaza: la tarjeta lo hace por dentro */
-  .about-photo { position: fixed; inset: var(--nav-h) 54vw 56px 0; }
-  .about-card {
-    position: fixed;
-    top: var(--nav-h);
-    right: 16px;
-    bottom: 16px;
-    left: 46vw;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: var(--lime) transparent;
-  }
-  .site-foot.on-green { position: fixed; left: 0; bottom: 0; width: 46vw; z-index: 6; padding-top: 0; }
-}
-
-@media (max-width: 760px) {
-  .about-photo { position: sticky; top: 0; height: calc(var(--nav-h) + 46vh); padding: var(--nav-h) 0 24px; box-sizing: border-box; z-index: 0; }
-  .about-photo { display: flex; justify-content: center; } /* foto centrada: con grid la pista se ensanchaba y la empujaba a la derecha */
-  .about-photo .portrait { flex: none; width: auto; height: 100%; aspect-ratio: 4 / 5; margin: 0; }
-  .about-card { z-index: 2; margin: 8px 8px 0; }
-  .about-card .facts { grid-template-columns: 1fr; }
-  .about-card .fact-values, .about-card .now-playing { grid-column: auto; }
-  .about-card .now-playing { grid-template-columns: 1fr; }
-}
-
-/* La tarjeta entra por la derecha (0,7 s, frenando al final); su contenido aparece al terminar */
-@media (prefers-reduced-motion: no-preference) {
-  /* Si se llega desde otra página con transición, es la transición (css/transitions.css) la que desliza la página; aquí solo en la carga directa */
-  html:not(.vt-about) .about-card { animation: card-from-right .8s var(--ease-out) both; }
-  html:not(.vt-about) .about-card > * { animation: card-content .5s var(--ease-out) .35s both; }
-  html:not(.vt-about) .about-photo .portrait { animation: photo-in .8s var(--ease-out) .1s both; }
-}
-/* Llegando desde el menú, la cortina roja tapa la página: la tarjeta y la foto esperan a que la cortina empiece a subir (js/menu.js pone menu-arriving-out) */
-html.menu-arriving:not(.menu-arriving-out) :is(.about-card, .about-card > *, .about-photo .portrait) { animation-play-state: paused; }
-@keyframes card-from-right { from { transform: translateX(110%); } }
-@keyframes card-content { from { opacity: 0; } }
-@keyframes photo-in { from { opacity: 0; transform: scale(.97); } }
+@media (pointer: coarse) { .contact-row a, .faq-link a { display: inline-block; padding-block: 10px; } }
+@media (prefers-reduced-motion: reduce) { .about-run { animation: none; } }

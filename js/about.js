@@ -62,20 +62,3 @@
     new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(card);
   }
 })();
-
-// TARJETA · en escritorio la página no se desplaza: lo hace la tarjeta (css/about.css). Aquí:
-//  · la rueda mueve la tarjeta aunque el ratón esté sobre la foto, y el teclado (flechas, Re Pág, Espacio) la recorre desde el principio;
-//  · «Back to top» sube la tarjeta en vez de la página.
-(() => {
-  const card = document.getElementById('about-card');
-  if (!card || !matchMedia('(min-width: 761px)').matches) return;
-  card.focus({ preventScroll: true });
-  addEventListener('wheel', (e) => {
-    if (e.defaultPrevented || e.ctrlKey || card.contains(e.target)) return;
-    card.scrollBy({ top: e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? card.clientHeight : 1) });
-  }, { passive: true });
-  document.querySelectorAll('.site-foot a[href="#top"]').forEach((a) => a.addEventListener('click', (e) => {
-    e.preventDefault();
-    card.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-  }));
-})();
