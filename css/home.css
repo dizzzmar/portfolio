@@ -377,7 +377,7 @@ body.white-on { background-color: #fff; }
   font-size: var(--fs-s);
   font-weight: 400;
   transform: translateY(2.5px); /* centra el año con el texto de las etiquetas */
-  font-variant-numeric: lining-nums; /* números alineados a la línea base */
+  font-variant-numeric: lining-nums tabular-nums; /* números alineados a la línea base */
   letter-spacing: -0.02em;
 }
 
@@ -529,10 +529,9 @@ body.white-on { background-color: #fff; }
 .work-list--studies .wi-name { color: #c41a08; }
 
 .wi-date, .wi-tags { margin-top: clamp(4px, .9vw, 14px); font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.32; color: rgba(255, 255, 255, .62); transition: color .5s ease; }
-.wi-date { grid-area: date; justify-self: start; font-variant-numeric: lining-nums; }
+.wi-date { grid-area: date; justify-self: start; font-variant-numeric: lining-nums tabular-nums; }
 .wi-tags { grid-area: tags; justify-self: end; text-align: right; list-style: none; }
 .wi-name {
-  font-family: var(--font-display);
   grid-area: name;
   min-width: 0;
   padding: 0 .02em .1em;
@@ -541,8 +540,8 @@ body.white-on { background-color: #fff; }
   font-family: var(--font-ui);
   font-size: var(--fs-h1);
   font-weight: var(--fw-title);
-  letter-spacing: var(--tracking-display);
-  line-height: .95;
+  letter-spacing: -.04em;
+  line-height: 1.02;
   text-align: center;
   transition: opacity .5s ease, color .35s var(--ease-out);
 }
