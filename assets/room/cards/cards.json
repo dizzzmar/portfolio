@@ -1,69 +1,249 @@
 {
-  "back": "card-back.webp",
   "cards": [
     {
-      "id": "charizard",
-      "name": "Charizard",
-      "set": "Base Set",
-      "front": "charizard.webp",
-      "example": true,
-      "source": "https://assets.tcgdex.net/en/base/base1/4/high.webp"
+      "id": "mega-charizard-x-ex",
+      "name": "Mega Charizard X ex",
+      "set": "Inferno X",
+      "front": "mega-charizard-x-ex.webp",
+      "source": "https://images.scrydex.com/pokemon/m2_ja-13/large"
     },
     {
-      "id": "blastoise",
-      "name": "Blastoise",
-      "set": "Base Set",
-      "front": "blastoise.webp",
-      "example": true,
-      "source": "https://assets.tcgdex.net/en/base/base1/2/high.webp"
-    },
-    {
-      "id": "venusaur",
-      "name": "Venusaur",
-      "set": "Base Set",
-      "front": "venusaur.webp",
-      "example": true,
-      "source": "https://assets.tcgdex.net/en/base/base1/15/high.webp"
-    },
-    {
-      "id": "pikachu",
-      "name": "Pikachu",
-      "set": "Base Set",
-      "front": "pikachu.webp",
-      "example": true,
-      "source": "https://assets.tcgdex.net/en/base/base1/58/high.webp"
-    },
-    {
-      "id": "umbreon-vmax",
-      "name": "Umbreon VMAX",
-      "set": "Evolving Skies",
-      "front": "umbreon-vmax.webp",
-      "example": true,
-      "source": "https://assets.tcgdex.net/en/swsh/swsh7/215/high.webp"
-    },
-    {
-      "id": "rayquaza-vmax",
-      "name": "Rayquaza VMAX",
-      "set": "Evolving Skies",
-      "front": "rayquaza-vmax.webp",
-      "example": true,
-      "source": "https://assets.tcgdex.net/en/swsh/swsh7/218/high.webp"
-    },
-    {
-      "id": "gengar-vmax",
-      "name": "Gengar VMAX",
+      "id": "mew-vmax",
+      "name": "Mew VMAX",
       "set": "Fusion Strike",
-      "front": "gengar-vmax.webp",
-      "example": true,
-      "source": "https://assets.tcgdex.net/en/swsh/swsh8/271/high.webp"
+      "front": "mew-vmax.webp",
+      "source": "https://assets.tcgdex.net/en/swsh/swsh8/114/high.webp"
     },
     {
-      "id": "mew-v",
-      "name": "Mew V",
+      "id": "flapple-vmax",
+      "name": "Flapple VMAX",
+      "set": "Battle Styles",
+      "front": "flapple-vmax.webp",
+      "source": "https://assets.tcgdex.net/en/swsh/swsh5/19/high.webp"
+    },
+    {
+      "id": "koraidon",
+      "name": "Koraidon",
+      "set": "Wild Force",
+      "front": "koraidon.webp",
+      "source": "https://images.scrydex.com/pokemon/sv5k_ja-52/large"
+    },
+    {
+      "id": "meloetta-ex",
+      "name": "Meloetta ex",
+      "set": "Black Bolt",
+      "front": "meloetta-ex.webp",
+      "source": "https://images.scrydex.com/pokemon/sv11b_ja-47/large"
+    },
+    {
+      "id": "kingdra-ex",
+      "name": "Kingdra ex",
+      "set": "Night Wanderer",
+      "front": "kingdra-ex.webp",
+      "source": "https://images.scrydex.com/pokemon/sv6a_ja-12/large"
+    },
+    {
+      "id": "cinccino",
+      "name": "Cinccino",
+      "set": "Wild Force",
+      "front": "cinccino.webp",
+      "source": "https://images.scrydex.com/pokemon/sv5k_ja-83/large"
+    },
+    {
+      "id": "gulpin",
+      "name": "Gulpin",
+      "set": "Stellar Miracle",
+      "front": "gulpin.webp",
+      "source": "https://images.scrydex.com/pokemon/sv7_ja-112/large"
+    },
+    {
+      "id": "misty-psyduck",
+      "name": "Misty’s Psyduck",
+      "set": "Hot Wind Arena",
+      "front": "misty-psyduck.webp",
+      "source": "https://images.scrydex.com/pokemon/sv9a_ja-71/large"
+    },
+    {
+      "id": "meltan",
+      "name": "Meltan",
+      "set": "Cyber Judge",
+      "front": "meltan.webp",
+      "source": "https://images.scrydex.com/pokemon/sv5m_ja-81/large"
+    },
+    {
+      "id": "snover",
+      "name": "Snover",
+      "set": "Mega Symphonia",
+      "front": "snover.webp",
+      "source": "https://images.scrydex.com/pokemon/m1s_ja-67/large"
+    },
+    {
+      "id": "eevee",
+      "name": "Eevee",
+      "set": "Night Wanderer",
+      "front": "eevee.webp",
+      "source": "https://images.scrydex.com/pokemon/sv6a_ja-50/large"
+    },
+    {
+      "id": "hisuian-sneasler",
+      "name": "Hisuian Sneasler",
+      "set": "Astral Radiance",
+      "front": "hisuian-sneasler.webp",
+      "source": "https://assets.tcgdex.net/en/swsh/swsh10/093/high.webp"
+    },
+    {
+      "id": "latias",
+      "name": "Latias",
       "set": "Fusion Strike",
-      "front": "mew-v.webp",
-      "example": true,
-      "source": "https://assets.tcgdex.net/en/swsh/swsh8/251/high.webp"
+      "front": "latias.webp",
+      "source": "https://assets.tcgdex.net/en/swsh/swsh8/193/high.webp"
+    },
+    {
+      "id": "entei",
+      "name": "Entei",
+      "set": "Battle Styles",
+      "front": "entei.webp",
+      "source": "https://assets.tcgdex.net/en/swsh/swsh5/20/high.webp"
+    },
+    {
+      "id": "miraidon",
+      "name": "Miraidon",
+      "set": "Abyss Eye",
+      "front": "miraidon.webp",
+      "source": "https://images.scrydex.com/pokemon/m5_ja-27/large"
+    },
+    {
+      "id": "dialga",
+      "name": "Dialga",
+      "set": "Mega Brave",
+      "front": "dialga.webp",
+      "source": "https://images.scrydex.com/pokemon/m1l_ja-47/large"
+    },
+    {
+      "id": "slither-wing",
+      "name": "Slither Wing",
+      "set": "Night Wanderer",
+      "front": "slither-wing.webp",
+      "source": "https://images.scrydex.com/pokemon/sv6a_ja-26/large"
+    },
+    {
+      "id": "inkay",
+      "name": "Inkay",
+      "set": "Abyss Eye",
+      "front": "inkay.webp",
+      "source": "https://images.scrydex.com/pokemon/m5_ja-49/large"
+    },
+    {
+      "id": "poltchageist",
+      "name": "Poltchageist",
+      "set": "Abyss Eye",
+      "front": "poltchageist.webp",
+      "source": "https://images.scrydex.com/pokemon/m5_ja-6/large"
+    },
+    {
+      "id": "crobat",
+      "name": "Crobat",
+      "set": "Ancient Roar",
+      "front": "crobat.webp",
+      "source": "https://images.scrydex.com/pokemon/sv4k_ja-46/large"
+    },
+    {
+      "id": "bronzong",
+      "name": "Bronzong",
+      "set": "Wild Force",
+      "front": "bronzong.webp",
+      "source": "https://images.scrydex.com/pokemon/sv5k_ja-29/large"
+    },
+    {
+      "id": "reuniclus",
+      "name": "Reuniclus",
+      "set": "Wild Force",
+      "front": "reuniclus.webp",
+      "source": "https://images.scrydex.com/pokemon/sv5k_ja-32/large"
+    },
+    {
+      "id": "hisuian-electrode",
+      "name": "Hisuian Electrode",
+      "set": "Astral Radiance",
+      "front": "hisuian-electrode.webp",
+      "source": "https://assets.tcgdex.net/en/swsh/swsh10/003/high.webp"
+    },
+    {
+      "id": "mamoswine",
+      "name": "Mamoswine",
+      "set": "Inferno X",
+      "front": "mamoswine.webp",
+      "source": "https://images.scrydex.com/pokemon/m2_ja-25/large"
+    },
+    {
+      "id": "eiscue",
+      "name": "Eiscue",
+      "set": "Mega Symphonia",
+      "front": "eiscue.webp",
+      "source": "https://images.scrydex.com/pokemon/m1s_ja-26/large"
+    },
+    {
+      "id": "snom",
+      "name": "Snom",
+      "set": "Wild Force",
+      "front": "snom.webp",
+      "source": "https://images.scrydex.com/pokemon/sv5k_ja-19/large"
+    },
+    {
+      "id": "rotom",
+      "name": "Rotom",
+      "set": "Hot Wind Arena",
+      "front": "rotom.webp",
+      "source": "https://images.scrydex.com/pokemon/sv9a_ja-39/large"
+    },
+    {
+      "id": "spiritomb",
+      "name": "Spiritomb",
+      "set": "Mega Brave",
+      "front": "spiritomb.webp",
+      "source": "https://images.scrydex.com/pokemon/m1l_ja-39/large"
+    },
+    {
+      "id": "skarmory",
+      "name": "Skarmory",
+      "set": "Abyss Eye",
+      "front": "skarmory.webp",
+      "source": "https://images.scrydex.com/pokemon/m5_ja-58/large"
+    },
+    {
+      "id": "cobalion",
+      "name": "Cobalion",
+      "set": "Black Bolt",
+      "front": "cobalion.webp",
+      "source": "https://images.scrydex.com/pokemon/sv11b_ja-68/large"
+    },
+    {
+      "id": "rabsca",
+      "name": "Rabsca",
+      "set": "Cyber Judge",
+      "front": "rabsca.webp",
+      "source": "https://images.scrydex.com/pokemon/sv5m_ja-15/large"
+    },
+    {
+      "id": "raboot",
+      "name": "Raboot",
+      "set": "Mega Brave",
+      "front": "raboot.webp",
+      "source": "https://images.scrydex.com/pokemon/m1l_ja-16/large"
+    },
+    {
+      "id": "exeggcute",
+      "name": "Exeggcute",
+      "set": "Mega Brave",
+      "front": "exeggcute.webp",
+      "source": "https://images.scrydex.com/pokemon/m1l_ja-4/large"
+    },
+    {
+      "id": "turtwig",
+      "name": "Turtwig",
+      "set": "Wild Force",
+      "front": "turtwig.webp",
+      "source": "https://images.scrydex.com/pokemon/sv5k_ja-3/large"
     }
   ]
 }

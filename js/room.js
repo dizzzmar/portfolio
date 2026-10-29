@@ -13,7 +13,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
-import { createPokemonAlbum } from './room/pokemon-album.js?v=20261030collage1';
+import { createPokemonAlbum } from './room/pokemon-album.js?v=20261030cards2';
 import { createWiiPlayer } from './room/wii-player.js?v=20261029wii1';
 import { createRoomLoading } from './room/loading.js?v=20261022p';
 import { createRoomLighting } from './room/lighting.js?v=20261023a';
@@ -141,7 +141,7 @@ const lastWatched = {
 const destinations = [
   // Both are outlined, but the camera looks at the collection on the lower shelf
   { label: 'Now playing', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, track: nowPlaying, href: null },
-  { label: 'Pokémon', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
+  { label: 'Pokémon collection', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
   { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, poster: lastWatched, href: null },
   // The camera frames just the tomato, not the cord that runs down to the floor
   { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, focus: /^lamp (tomato diffuser|green calyx)\b/, href: null },
@@ -321,6 +321,7 @@ canvas.addEventListener('pointerup', event => {
   if (lighting.dark) { lighting.setDark(false); return; }
   const selection = pick(event);
   if (selection?.item.key === 'tomato-lamp') { openItem(selection.item); return; }
+  if (selection?.item.key === 'mimikyu' && event.pointerType !== 'mouse') { openItem(selection.item); return; } // en el móvil abre directo: el zoom lo taparía el álbum
   if (selection?.item.key === 'wii') {
     wiiPlayer.open(nav.querySelector('[data-object="wii"]'));
     return;
@@ -492,13 +493,17 @@ roomLoader.load('/assets/room/shelf-web.glb?v=20261022a', gltf => {
       button.setAttribute('aria-pressed', 'true');
       button.setAttribute('aria-label', 'Tomato lamp — turn lights off');
     }
+    // Touching the Pokémon button opens the album at once, so the camera does not come closer (nobody would see it, and it costs a frame)
+    const opensAtOnce = item.key === 'mimikyu' && matchMedia('(pointer: coarse)').matches;
     button.addEventListener('focus', () => {
+      if (opensAtOnce) return;
       const mesh = meshes.find(candidate => destinationFor(candidate) === item);
       highlight({ item, object: mesh });
     });
-    button.addEventListener('focus', () => focusOn(item));
+    button.addEventListener('focus', () => { if (!opensAtOnce) focusOn(item); });
     button.addEventListener('blur', () => resetFocus());
     button.addEventListener('mouseenter', () => {
+      if (opensAtOnce) return;
       const mesh = meshes.find(candidate => destinationFor(candidate) === item);
       highlight({ item, object: mesh });
       focusOn(item);
@@ -510,6 +515,7 @@ roomLoader.load('/assets/room/shelf-web.glb?v=20261022a', gltf => {
     nav.append(button);
   });
   resize(); // the list now has its final size, so frame the room around it
+  (window.requestIdleCallback || (f => setTimeout(f, 2500)))(() => pokemonAlbum.prefetch(), { timeout: 5000 }); // the album opens already loaded
 }, event => loading.progress(event), () => loading.fail());
 
 // ---------- Framing ----------
