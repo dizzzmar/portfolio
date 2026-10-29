@@ -646,6 +646,23 @@ body.white-on { background-color: #fff; }
 .light-on .site-foot { color: rgba(12, 12, 11, .62); }
 .light-on .site-foot a:hover { color: #0c0c0b; }
 
+/* ---------- Studies: al llegar a los proyectos de la universidad, la página pasa a rosa y los textos a rojo (los colores de ENMAD) ----------
+   js/home-work.js pone studies-on en <body> cuando el título «Studies» pasa por la mitad de la pantalla, y la quita al volver arriba.
+   Rojo oscuro #8f1003 sobre rosa #ffa2d4: 5,1:1. Sin «difference» en la barra (sobre rosa saldría verde). */
+.fade { transition: background-color .7s var(--ease-out); }
+body.white-on .work-grid { transition: color .4s ease, background-color .7s var(--ease-out); }
+.work-top, .work-top .wt-creative > strong, .nav-links a, .site-foot, .work-item::before, .work-list { transition: color .5s ease, background-color .5s ease, border-color .5s ease; }
+body.studies-on .fade, body.studies-on .work-grid { background-color: #ffa2d4; }
+body.studies-on .work-grid, body.studies-on .wi-date, body.studies-on .wi-tags, body.studies-on .site-foot,
+body.studies-on .work-top, body.studies-on .work-top .wt-creative > strong, body.studies-on .work-top p > span,
+body.studies-on .nav-links a, body.studies-on .nav-links a:hover { color: #8f1003; }
+body.studies-on .work-top, body.studies-on .nav { mix-blend-mode: normal; }
+body.studies-on .work-list { border-bottom-color: rgba(143, 16, 3, .28); }
+body.studies-on .work-item::before { background: rgba(143, 16, 3, .28); }
+body.studies-on .wi-slot { background: rgba(143, 16, 3, .08); }
+body.studies-on ::selection { background: #8f1003; color: #ffa2d4; }
+@media (prefers-reduced-motion: reduce) { .fade, body.white-on .work-grid { transition: none; } }
+
 /* Sorpresa del sobre de ketchup (js/home-sachet-egg.js): mano al pasar por encima y al girarlo; con el sobre puesto, el dedo no desplaza la página */
 html.egg-on, html.egg-on body { touch-action: none; }
 html.egg-hover, html.egg-hover body { cursor: grab; }

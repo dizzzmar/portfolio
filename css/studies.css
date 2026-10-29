@@ -39,8 +39,8 @@ html { background: var(--bg); }
 .st-intro p + p { margin-top: .9em; }
 .st-facts div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: var(--fs-s); }
 .st-facts dd { text-align: right; }
-.st-index ol { list-style: none; border-top: 1px solid var(--line); }
-.st-index a { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); font-family: var(--font-display); font-size: var(--fs-xl); font-weight: var(--fw-title); letter-spacing: -.02em; color: var(--st-title); text-decoration: none; transition: padding-left .3s var(--ease-out); }
+.st-index ol { list-style: none; }
+.st-index a { display: flex; justify-content: space-between; padding: 6px 0; font-family: var(--font-display); font-size: var(--fs-xl); font-weight: var(--fw-title); letter-spacing: -.02em; color: var(--st-title); text-decoration: none; transition: padding-left .3s var(--ease-out); }
 .st-index a span { font-family: var(--font-ui); font-size: var(--fs-s); font-weight: var(--fw-regular); letter-spacing: 0; color: var(--ink); align-self: center; font-variant-numeric: tabular-nums; }
 .st-index a[aria-current] { padding-left: 14px; box-shadow: inset 4px 0 0 var(--st-red); } /* la parte que se ve: se mete un poco y lleva una barra del rojo de la marca */
 @media (hover: hover) and (pointer: fine) { .st-index a:hover { padding-left: 14px; } }

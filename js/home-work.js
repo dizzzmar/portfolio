@@ -145,5 +145,14 @@
   }
 
   // «View project» sobre una fila lo dibuja el propio cursor (js/cursor.js)
+  // Studies: al pasar el título «Studies» por la mitad de la pantalla, la página se tiñe de rosa y los textos de rojo (css/home.css, studies-on)
+  const studies = document.getElementById('studies');
+  if (studies) {
+    let queued = false;
+    const tint = () => { queued = false; document.body.classList.toggle('studies-on', studies.getBoundingClientRect().top < innerHeight * .55); };
+    addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(tint); } }, { passive: true });
+    addEventListener('resize', tint);
+    tint();
+  }
   arrive();
 })();
