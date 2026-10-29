@@ -7,7 +7,7 @@
   const own = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
   const PAGES = {
     home: '/', work: '/#work', about: '/about/', faq: '/faq/', room: '/room.html', machine: '/machine/',
-    lexus: '/project/lexus-electrified/', schweppes: '/project/schweppes/', soap: '/project/soap-and-glory-vanilla/',
+    lexus: '/project/lexus-electrified/', schweppes: '/project/schweppes/', soap: '/project/soap-and-glory-vanilla/', enmad: '/project/enmad/',
   };
   const SECTIONS = {
     about: [
@@ -19,6 +19,7 @@
       '2025  AUDIOVISUAL      Lexus Electrified          lexus       (Lexus Singapore)',
       '2026  AUDIOVISUAL      Schweppes                  schweppes   (AI film)',
       '2026  KEY VISUALS      Soap & Glory Vanillalicious soap       (Vanillalicious)',
+      '2023  STUDIES          ENMAD                      enmad       (university project)',
       'Type `cd <name>` to open a project, for example: cd lexus',
     ],
     contact: [
@@ -153,14 +154,14 @@
     if (machine) document.documentElement.classList.add('machine-leaving'); // en el modo máquina la página se funde antes de irse (estilos en machine/index.html)
     setTimeout(() => { location.href = page; }, reduced ? 0 : 240);
   };
-  const LS = () => ['home/  about/  faq/  room.html  machine/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/'];
+  const LS = () => ['home/  about/  faq/  room.html  machine/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/  enmad/'];
   let fpsBusy = false;
   const COMMANDS = {
     help: () => [
       'Commands:',
       '  help                    this list',
       '  ls                      list the pages of dizmar.xyz',
-      '  cd <page>               go to a page: home, work, about, faq, room, machine, lexus, schweppes, soap',
+      '  cd <page>               go to a page: home, work, about, faq, room, machine, lexus, schweppes, soap, enmad',
       '  view human | machine    switch between the visual site and the plain-text index',
       '  about | work | contact  print that section here',
       '  whoami                  who is behind this',
@@ -620,7 +621,7 @@
   const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'guide', 'fps', 'neofetch', 'clear', 'exit',
     ...(roomOn() ? ['look', 'inspect', 'lights', 'play', 'flicker', 'sunset', 'zoom'] : [])];
   const ARGS = () => ({
-    cd: ['home', 'work', 'about', 'faq', 'room', 'machine', 'lexus', 'schweppes', 'soap', 'contact'],
+    cd: ['home', 'work', 'about', 'faq', 'room', 'machine', 'lexus', 'schweppes', 'soap', 'enmad', 'contact'],
     view: ['human', 'machine'],
     inspect: ['vinyl', 'poster', 'mimikyu', 'lamp', 'plant', 'wii'],
     lights: ['on', 'off'],
