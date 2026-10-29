@@ -28,7 +28,7 @@ Director de arte que integra la IA dentro de la dirección de arte: no la usa so
 - Sala 3D (The room) con three.js, alojado en el propio repositorio (assets/vendor/three).
 - Sin cookies, sin analítica, sin servicios de terceros que reciban datos de visitantes (ver la página de privacidad).
 - Idioma: inglés.
-- Álbum Pokémon en The room: galería infinita sobre negro con cartas reales de ejemplo, desplazamiento en ambos ejes y giro al pasar el cursor para entrever la trasera compartida. Sin ampliación al pulsar; pendiente de sustituir los ejemplos por la colección real.
+- «Pokémon collection» en The room: collage infinito sobre negro con 35 cartas de la colección (escaneos oficiales, con nombre y expansión), desplazamiento en ambos ejes y la carta bajo el cursor que se levanta. Sin ampliación al pulsar. En el móvil, tocar el peluche o el botón abre el álbum directamente, sin acercar la cámara.
 
 ## Brand Commitments
 - El tomate es el símbolo: logo, tomate 3D y la identidad que ya tiene la web.

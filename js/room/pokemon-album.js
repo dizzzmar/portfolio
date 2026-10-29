@@ -50,25 +50,39 @@ export function createPokemonAlbum({ onOpen, onClose }) {
     grid = data.cards.length ? createInfiniteCardGrid({ surface, list, cards: data.cards, makeCard, reduced: motion, entrance: !motion.matches }) : null;
   }
 
+  // The card list, checked: used both by load() (when the album opens) and by prefetch() (before anyone asks for it)
+  async function fetchData(signal) {
+    const response = await fetch('/assets/room/cards/cards.json?v=20261030cards2', { signal });
+    if (!response.ok) throw new Error('Card list unavailable');
+    const raw = await response.json();
+    if (!Array.isArray(raw.cards)) throw new Error('Invalid card list');
+    const ids = new Set();
+    const cards = raw.cards.map(card => {
+      if (!card.id || !card.name || ids.has(card.id)) throw new Error('Invalid card');
+      ids.add(card.id); return { ...card, front: localImage(card.front) };
+    });
+    return { cards };
+  }
+
+  // Before the first tap: the list and the first screen of cards are fetched while the browser is idle, so the album opens already full.
+  let warmed = null;
+  function prefetch() {
+    if (data || warmed || navigator.connection?.saveData) return;
+    warmed = fetchData().then(next => {
+      data = data || next;
+      for (const card of next.cards.slice(0, 14)) new Image().src = card.front;
+    }).catch(() => { warmed = null; });
+  }
+
   async function load() {
     request?.abort();
     const controller = new AbortController(); request = controller;
     retry.hidden = true; status.hidden = false; status.textContent = 'Loading cards…';
     try {
-      const response = await fetch('/assets/room/cards/cards.json?v=20261030cards1', { signal: controller.signal });
-      if (!response.ok) throw new Error('Card list unavailable');
-      const raw = await response.json();
-      if (!Array.isArray(raw.cards)) throw new Error('Invalid card list');
-      const ids = new Set();
-      const cards = raw.cards.map(card => {
-        if (!card.id || !card.name || ids.has(card.id)) throw new Error('Invalid card');
-        ids.add(card.id); return { ...card, front: localImage(card.front) };
-      });
-      const next = { cards };
+      const next = await fetchData(controller.signal);
       if (!dialog.open || controller.signal.aborted) return;
       data = next; mountGrid();
-      dialog.querySelector('[data-example-label]').hidden = !cards.some(card => card.example);
-      status.textContent = cards.length ? '' : 'No cards added yet.'; status.hidden = Boolean(cards.length);
+      status.textContent = next.cards.length ? '' : 'No cards added yet.'; status.hidden = Boolean(next.cards.length);
     } catch (error) {
       if (controller.signal.aborted) return;
       status.textContent = 'The cards could not load. Please try again.'; retry.hidden = false;
@@ -103,6 +117,7 @@ export function createPokemonAlbum({ onOpen, onClose }) {
 
   return {
     get active() { return dialog.open; },
+    prefetch,
     open(trigger) {
       if (dialog.open || closing) return;
       returnFocus = trigger instanceof HTMLElement ? trigger : document.activeElement;
