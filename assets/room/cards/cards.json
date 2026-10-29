@@ -1,0 +1,11 @@
+{
+  "back": "back-placeholder.svg",
+  "cards": [
+    { "id": "card-01", "name": "Card 01", "front": "front-placeholder.svg", "placeholder": true },
+    { "id": "card-02", "name": "Card 02", "front": "front-placeholder.svg", "placeholder": true },
+    { "id": "card-03", "name": "Card 03", "front": "front-placeholder.svg", "placeholder": true },
+    { "id": "card-04", "name": "Card 04", "front": "front-placeholder.svg", "placeholder": true },
+    { "id": "card-05", "name": "Card 05", "front": "front-placeholder.svg", "placeholder": true },
+    { "id": "card-06", "name": "Card 06", "front": "front-placeholder.svg", "placeholder": true }
+  ]
+}

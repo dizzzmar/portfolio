@@ -209,6 +209,9 @@ A sky background and one phrase, "Tear top open". Tearing the top opens the mail
 ### The Terminal
 A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scramble on its title and hidden commands. It is the clearest place for humour in the site.
 
+### Room / Pokémon album
+- A full-screen dialog within Room keeps Lincoln Green, lime text and the existing Funnel fonts. Portrait cards float in a staggered three-column grid, changing to two columns on mobile; a short, once-only staggered entrance settles into angled cards, mouse movement tilts a card, and click, tap or keyboard activation flips it to the shared reverse. Reduced motion stops entrances, tilt and animated turns; Escape or Close returns to Room and restores focus. The local manifest supplies the collection; current fronts and shared reverse are labelled provisional placeholders.
+
 ## Do's and Don'ts
 
 ### Do:

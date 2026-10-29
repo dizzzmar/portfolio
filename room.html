@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="/css/tokens.css?v=20261027b">
   <link rel="stylesheet" href="/css/room.css?v=20261026g">
   <link rel="stylesheet" href="/css/room-wii.css?v=20261024n">
+  <link rel="stylesheet" href="/css/room-pokemon.css?v=20261029album1">
   <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
   <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
 <link rel="stylesheet" href="/css/menu.css?v=20261027r">
@@ -82,7 +83,14 @@
       <button class="wii-change" type="button" data-wii-change hidden>Change disc</button>
     </footer>
   </dialog>
-  <script type="module" src="/js/room.js?v=20261029wii1"></script>
+  <dialog class="pokemon-album" id="pokemon-album" aria-labelledby="pokemon-title">
+    <button class="pokemon-close" type="button" data-album-close autofocus>Back to room ×</button>
+    <header class="pokemon-heading"><h2 id="pokemon-title">Pokémon</h2></header>
+    <p class="pokemon-status" data-album-status role="status" aria-live="polite"></p>
+    <button class="pokemon-retry" type="button" data-album-retry hidden>Try again</button>
+    <ul class="pokemon-cards" aria-label="Card collection"></ul>
+  </dialog>
+  <script type="module" src="/js/room.js?v=20261029album1"></script>
   <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
   <script src="/js/cursor.js?v=20261029b" defer></script>
   <script src="/js/smooth-scroll.js?v=20261028n" defer></script>
