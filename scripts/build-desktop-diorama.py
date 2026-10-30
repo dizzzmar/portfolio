@@ -94,12 +94,30 @@ for x in [-.77,.77]:
   for dy,rr,m in [(0,r,rubber),(-.009,r*.79,metal),(-.014,r*.66,rubber),(-.022,r*.32,black)]:o=cylinder('Speaker cone',(x,.302+dy,z),rr,.012,m);o.rotation_euler.x=math.pi/2
  for dx in [-.10,.10]:
   for z in [1.30,1.67]:ball('Baffle screw',(x+dx,.303,z),(.005,.003,.005),metal)
-box('Keyboard',(-.14,-.23,1.112),(.77,.255,.041),metal,.012)
-for row in range(5):
- for col in range(15):
-  if row==0 and 4<=col<=9:continue
-  box('Keycap',(-.49+col*.05,-.33+row*.047,1.139),(.043,.039,.019),books[5] if col==0 else black,.003)
-box('Spacebar',(-.165,-.33,1.139),(.29,.039,.019),black,.003);ball('Mouse',(.48,-.22,1.12),(.063,.095,.038),black);box('Mouse seam',(.48,-.245,1.156),(.002,.07,.002),rubber,0)
+# Keychron K3 Max: low-profile 75% ANSI layout, six rows and separate navigation column.
+k3gray=material('K3 graphite keycaps',(.095,.105,.115),.80)
+k3dark=material('K3 dark modifiers',(.035,.042,.05),.82)
+k3orange=material('K3 orange Escape',(.78,.13,.025),.72)
+box('K3 Max aluminium chassis',(-.14,-.23,1.099),(.465,.162,.018),black,.004)
+box('K3 Max top plate',(-.14,-.23,1.109),(.455,.152,.004),metal,.002)
+unit=.029
+# Widths in key units, ordered back to front; gaps delimit the arrow cluster.
+rows=[
+ [('Esc',1),('F1',1),('F2',1),('F3',1),('F4',1),('F5',1),('F6',1),('F7',1),('F8',1),('F9',1),('F10',1),('F11',1),('F12',1),('Del',1),('Light',1)],
+ [(v,1) for v in ['`','1','2','3','4','5','6','7','8','9','0','-','=']]+[('Backspace',2),('PgUp',1)],
+ [('Tab',1.5)]+[(v,1) for v in 'QWERTYUIOP']+[('[',1),(']',1),('Backslash',1.5),('PgDn',1)],
+ [('Caps',1.75)]+[(v,1) for v in 'ASDFGHJKL']+[(';',1),("Quote",1),('Enter',2.25),('Home',1)],
+ [('Shift',2.25)]+[(v,1) for v in 'ZXCVBNM']+[(',',1),('.',1),('/',1),('Shift',1.75),('Up',1),('End',1)],
+ [('Ctrl',1.25),('Option',1.25),('Command',1.25),('Space',6.25),('Command',1),('Fn',1),('Ctrl',1),('Left',1),('Down',1),('Right',1)]
+]
+for row,keys in enumerate(rows):
+ x=-.14-sum(w for _,w in keys)*unit/2
+ for label,w in keys:
+  m=k3orange if label=='Esc' else k3gray if len(label)==1 else k3dark
+  box('K3 key '+label,(x+w*unit/2,-.164-row*.026,1.116),(w*unit-.003,.022,.009),m,.002)
+  x+=w*unit
+box('K3 USB-C port',(-.31,-.147,1.10),(.012,.003,.004),rubber,.001)
+ball('Mouse',(.48,-.22,1.12),(.063,.095,.038),black);box('Mouse seam',(.48,-.245,1.156),(.002,.07,.002),rubber,0)
 cylinder('Coaster',(-.85,-.20,1.085),.09,.009,green[0]);box('Notebook',(-.19,.13,1.099),(.37,.20,.025),terra)
 for i in range(3):rod('Pens',(-.29,.10+i*.032,1.123),(-.04,.10+i*.032,1.123),.007,black)
 cylinder('Pen cup',(.38,.16,1.18),.055,.19,black)
@@ -168,7 +186,7 @@ for x in [-.24,-.12]:
 rod('Glasses bridge',(-.20,.19,1.13),(-.16,.19,1.13),.002,metal)
 rod('Glasses temple',(-.28,.22,1.13),(-.27,.30,1.15),.002,black)
 cable('Cup handle',[(-.97,.13,1.18),(-1.02,.13,1.18),(-1.02,.13,1.12),(-.97,.13,1.12)],terra,.008)
-cable('Keyboard USB cable',[(-.36,-.10,1.11),(-.44,.02,1.10),(-.37,.23,1.10),(-.49,.43,1.10)],black,.003)
+cable('Keyboard USB cable',[(-.31,-.147,1.10),(-.44,.02,1.10),(-.37,.23,1.10),(-.49,.43,1.10)],black,.003)
 # Thin magazines casually stacked underneath the riser.
 for i in range(3):
  o=box('Magazine',(.58,.42,1.09+i*.014),(.34,.24,.012),books[(i+2)%6],.001);o.rotation_euler.z=.06-i*.045

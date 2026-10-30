@@ -23,4 +23,4 @@ Mushroom bulb, desk task spotlight, under-shelf lighting and three orange wall-w
 
 ## Scene refinement
 
-Matte enamel and worn cognac materials, thinner floor edge, Nothing Headphone (1)-inspired shells resting on a stand, and a SKÅDIS-style slotted board with hooks, overlapping cards, tape, a storage pocket and hanging cable. Loose papers, glasses, magazines and a keyboard cable add everyday detail. These are simplified modelled interpretations, not manufacturer CAD. Keyboard identity awaits clarification: M3 is a Keychron mouse.
+Matte enamel and worn cognac materials, thinner floor edge, Nothing Headphone (1)-inspired shells resting on a stand, and a SKÅDIS-style slotted board with hooks, overlapping cards, tape, a storage pocket and hanging cable. Loose papers, glasses, magazines and a keyboard cable add everyday detail. These are simplified modelled interpretations, not manufacturer CAD. Keyboard: Keychron K3 Max-inspired low-profile 75% ANSI layout, staggered keys, function row, navigation column, arrow cluster and orange Escape key.
