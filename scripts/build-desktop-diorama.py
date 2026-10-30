@@ -11,7 +11,7 @@ def material(name,c,rough=.65,metal=0,emit=0):
  m=bpy.data.materials.new(name);m.diffuse_color=(*c,1);m.use_nodes=True;n=m.node_tree.nodes.get('Principled BSDF');n.inputs['Base Color'].default_value=(*c,1);n.inputs['Roughness'].default_value=rough;n.inputs['Metallic'].default_value=metal
  if emit:n.inputs['Emission Color'].default_value=(*c,1);n.inputs['Emission Strength'].default_value=emit
  return m
-wood=material('Walnut',(.20,.075,.031));plaster=material('Warm plaster',(.55,.50,.41));black=material('Charcoal enamel',(.016,.02,.02),.35,.3);rubber=material('Rubber',(.009,.012,.012));metal=material('Brushed aluminium',(.3,.32,.30),.3,.7);ivory=material('Ivory',(.78,.73,.61));terra=material('Terracotta',(.48,.10,.035));red=material('Vermilion',(.60,.025,.014));leather=material('Cognac leather',(.25,.08,.035),.46);bulb=material('Warm diffuser',(1,.60,.20),emit=4);screen=material('MONITOR_SCREEN_REPLACE_ME',(.035,.065,.065),.35,emit=.3)
+wood=material('Walnut',(.20,.075,.031));plaster=material('Warm plaster',(.55,.50,.41));black=material('Charcoal enamel',(.016,.02,.02),.72,.12);rubber=material('Rubber',(.009,.012,.012));metal=material('Brushed aluminium',(.3,.32,.30),.3,.7);ivory=material('Ivory',(.78,.73,.61));terra=material('Terracotta',(.48,.10,.035));red=material('Vermilion',(.60,.025,.014));leather=material('Cognac leather',(.19,.07,.034),.78);bulb=material('Warm diffuser',(1,.60,.20),emit=4);screen=material('MONITOR_SCREEN_REPLACE_ME',(.035,.065,.065),.35,emit=.3)
 green=[material('Foliage '+str(i),c) for i,c in enumerate([(.055,.14,.023),(.12,.23,.033),(.20,.28,.05)])]
 books=[material('Binding '+str(i),c) for i,c in enumerate([(.58,.04,.024),(.73,.32,.06),(.59,.53,.35),(.10,.17,.14),(.03,.05,.06),(.30,.11,.06)])]
 # Tiny packed wood texture; UV mapped, portable to glTF (no procedural shader dependency).
@@ -71,7 +71,7 @@ def bunny(x,y,z,a=.10):
   ball('Rabbit ear',(x+a*dx,y,z+a*1.65),(a*.12,a*.12,a*.42),ivory);ball('Rabbit eye',(x+a*dx,y-a*.35,z+a*1.15),(a*.025,a*.015,a*.025),black)
  for sign in [-1,1]:rod('Rabbit mouth',(x-.006,y-a*.35,z+a*.95+sign*.006),(x+.006,y-a*.35,z+a*.95-sign*.006),.001,black)
 # Exactly two walls; left and camera-facing sides remain open.
-box('Foundation',(0,0,-.06),(2.65,2.02,.12),wood)
+box('Foundation',(0,0,-.012),(2.65,2.02,.025),wood)
 for i in range(13):box('Floor plank',(-1.22+i*.2,0,.006),(.195,1.97,.018),wood,.002)
 box('Front-facing wall',(0,1.0,1.65),(2.65,.10,3.30),plaster,.004);box('Right wall',(1.325,.02,1.65),(.10,2.06,3.30),plaster,.004)
 box('Back skirting',(0,.93,.07),(2.6,.035,.14),ivory,.003);box('Right skirting',(1.26,0,.07),(.035,1.95,.14),ivory,.003)
@@ -131,13 +131,47 @@ cylinder('Mushroom stem',(.05,.72,2.82),.042,.15,ivory);ball('Mushroom shade',(.
 box('Display case',(-.12,.72,2.27),(.30,.12,.23),black);box('Display lining',(-.12,.652,2.27),(.27,.008,.20),green[0])
 for i in range(4):box('Miniature',(-.22+i*.067,.63,2.245),(.037,.04,.10),books[i])
 for i in range(5):box('Game case',(.60,.74,2.76+i*.024),(.26,.15,.021),books[3])
-cable('Headphone band',[(-.63,.64,2.22),(-.65,.67,2.49),(-.48,.67,2.49),(-.47,.64,2.22)],black,.025)
-for x in [-.63,-.47]:ball('Headphone earcup',(x,.64,2.25),(.038,.055,.08),rubber)
-box('Right pinboard',(1.263,.40,2.13),(.025,.69,.84),black)
-for i in range(6):
- box('Pinned artwork',(1.245,.17+(i%3)*.20,1.94+(i//3)*.32),(.006,.16,.24),books[(i+1)%6],.001)
- ball('Pin',(1.237,.17+(i%3)*.20,2.04+(i//3)*.32),(.004,.008,.008),metal)
+# Nothing Headphone (1): rectangular aluminium shells and oval cushions on a stand.
+box('Headphone stand foot',(-.56,.72,2.16),(.20,.16,.018),black)
+rod('Headphone stand stem',(-.56,.75,2.17),(-.56,.75,2.48),.012,metal)
+box('Headband saddle',(-.56,.70,2.48),(.12,.08,.022),rubber)
+cable('Nothing padded headband',[(-.68,.69,2.30),(-.68,.69,2.45),(-.62,.69,2.50),(-.50,.69,2.50),(-.44,.69,2.45),(-.44,.69,2.30)],black,.017)
+for x in [-.68,-.44]:
+ box('Nothing aluminium earcup',(x,.68,2.265),(.085,.063,.15),metal,.016)
+ box('Nothing transparent cover rim',(x,.644,2.265),(.071,.009,.135),black,.014)
+ box('Nothing inset plate',(x,.637,2.265),(.057,.005,.116),metal,.011)
+ ball('Nothing oval cushion',(x,.723,2.265),(.042,.023,.070),rubber)
+ rod('Nothing exposed yoke',(x,.68,2.34),(x,.69,2.39),.006,metal)
+ cylinder('Nothing roller',(x,.64,2.337),.008,.022,black).rotation_euler.y=math.pi/2
+# SKADIS board with staggered vertical slots, hooks, a pocket and casual overlapping notes.
+box('SKADIS fibreboard',(1.256,.40,2.13),(.022,.74,.88),ivory,.008)
+for row in range(12):
+ for col in range(9):
+  yy=.065+col*.078+(row%2)*.018
+  box('SKADIS recessed slot',(1.243,yy,1.75+row*.068),(.002,.014,.030),books[5],.006)
+for yy,zz,w,h,tilt,col in [(.14,2.38,.18,.19,-.13,2),(.34,2.28,.16,.23,.12,0),(.53,2.36,.19,.15,-.05,3),(.38,2.02,.16,.22,-.09,2),(.65,2.14,.13,.18,.17,1)]:
+ o=box('Pinned postcard',(1.232,yy,zz),(.006,w,h),books[col],.001);o.rotation_euler.x=tilt
+ box('Paper tape',(1.225,yy,zz+h*.44),(.005,.06,.022),ivory,.001)
+ for j in range(3):
+  o=box('Postcard printed line',(1.227,yy,zz-.035+j*.025),(.002,w*.65,.003),books[4],0);o.rotation_euler.x=tilt
+box('SKADIS storage pocket',(1.18,.18,1.89),(.13,.21,.16),ivory,.008)
+for j in range(4):rod('Pocket pencil',(1.16,.11+j*.038,1.88),(1.14,.10+j*.04,2.08+j*.015),.005,books[j])
+for yy in [.52,.65]:cable('SKADIS hook',[(1.24,yy,1.90),(1.18,yy,1.90),(1.15,yy,1.86),(1.16,yy,1.85)],metal,.004)
+cable('Hanging USB cable',[(1.17,.52,1.88),(1.13,.43,1.73),(1.13,.53,1.64),(1.13,.60,1.75),(1.17,.52,1.88)],black,.005)
 box('Red frame',(1.261,.45,2.89),(.035,.42,.26),red);box('Right picture',(1.239,.45,2.89),(.004,.37,.21),ivory)
+# Everyday traces: uneven papers, annotated notebook, glasses, cables and cup handle.
+for i in range(4):
+ o=box('Loose desk paper',(-.64,.02,1.09+i*.003),(.19,.24,.002),ivory,.001);o.rotation_euler.z=-.18+i*.07
+ for j in range(5):box('Handwritten note',(-.64,.00+j*.025,1.103),(.10-random.random()*.025,.002,.001),books[5],0)
+for x in [-.24,-.12]:
+ cable('Reading glasses rim',[(x-.04,.16,1.13),(x-.04,.22,1.13),(x+.04,.22,1.13),(x+.04,.16,1.13),(x-.04,.16,1.13)],black,.002)
+rod('Glasses bridge',(-.20,.19,1.13),(-.16,.19,1.13),.002,metal)
+rod('Glasses temple',(-.28,.22,1.13),(-.27,.30,1.15),.002,black)
+cable('Cup handle',[(-.97,.13,1.18),(-1.02,.13,1.18),(-1.02,.13,1.12),(-.97,.13,1.12)],terra,.008)
+cable('Keyboard USB cable',[(-.36,-.10,1.11),(-.44,.02,1.10),(-.37,.23,1.10),(-.49,.43,1.10)],black,.003)
+# Thin magazines casually stacked underneath the riser.
+for i in range(3):
+ o=box('Magazine',(.58,.42,1.09+i*.014),(.34,.24,.012),books[(i+2)%6],.001);o.rotation_euler.z=.06-i*.045
 # Actual practical light sources, exported via KHR_lights_punctual.
 cylinder('Task lamp base',(.99,.56,1.27),.105,.026,black);rod('Lamp lower arm',(.99,.56,1.28),(1.01,.58,1.91),.015,black);rod('Lamp upper arm',(1.01,.58,1.91),(.65,.48,2.04),.015,black)
 for p in [(1.01,.58,1.91),(.65,.48,2.04)]:ball('Lamp hinge',p,(.027,.027,.027),metal)
