@@ -1,0 +1,88 @@
+/* CURSOR — el punto que sustituye al cursor del sistema (solo con ratón). Lo mueve js/cursor.js.
+   Como el de donut-studio.com: 16 px, amarillo y en modo «diferencia», así sobre cualquier fondo se ve con el color opuesto
+   (azul sobre blanco, amarillo sobre negro). Va pegado al ratón, sin retraso. Al pulsar encoge; sobre un proyecto se abre en «View». */
+.cursor-dot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 2147483000;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: difference;
+  will-change: transform;
+  transition: opacity .2s ease;
+}
+.cursor-dot.is-on { opacity: 1; }
+.cursor-dot i {
+  position: absolute;
+  left: -8px;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff70d;
+  transition: transform .25s cubic-bezier(.23, 1, .32, 1), opacity .2s ease;
+}
+.cursor-dot.is-down i { transform: scale(.65); transition-duration: .12s; }
+/* Sobre enlaces y botones (y objetos de la sala 3D): el punto crece y se vuelve algo transparente; el cursor real va encima */
+.cursor-dot.is-hot i { transform: scale(2.4); opacity: .7; transition: transform .4s cubic-bezier(.23, 1, .32, 1), opacity .25s ease; }
+.cursor-dot.is-hot.is-down i { transform: scale(1.8); transition-duration: .12s; }
+.cursor-dot.is-hide i { transform: scale(.2); opacity: 0; } /* vídeo con PLAY/PAUSE, deslizador */
+
+/* Sobre un proyecto: el punto se abre en una píldora con el texto («View project» en Work, «View» en More works) */
+.cursor-label {
+  position: absolute; left: 0; top: 0;
+  padding: 9px 14px 10px; border-radius: 999px;
+  background: #fff70d; color: #000;
+  font: 600 13px/1 var(--font-ui); letter-spacing: .02em; text-transform: uppercase; white-space: nowrap;
+  transform: translate(-50%, -50%) scale(.2); opacity: 0;
+  transition: transform .3s cubic-bezier(.23, 1, .32, 1), opacity .15s ease;
+}
+.cursor-dot.is-view .cursor-label { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+.cursor-dot.is-view.is-down .cursor-label { transform: translate(-50%, -50%) scale(.92); }
+.cursor-dot.is-view i { transform: scale(.2); opacity: 0; }
+
+/* Solo con ratón: se esconde el cursor del sistema desde el primer fotograma de cada página (sin esperar al JavaScript), también en las
+   transiciones entre páginas y detrás de las ventanas. Los campos de texto conservan su barra para escribir. */
+@media (hover: hover) and (pointer: fine) {
+  html, html *, html ::backdrop, ::view-transition, ::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { cursor: none !important; }
+  html input[type="text"], html input:not([type]), html textarea { cursor: text !important; }
+  /* Solo en enlaces y botones se ve el cursor real (la mano), por encima del punto; en las tarjetas de proyecto manda la píldora «View» */
+  html :is(a[href], button, summary, label, select, [role="button"]):not([data-cursor="view"], .work-item > a, .player *, .ct-slider) { cursor: pointer !important; }
+  html :is(a[href], button, summary, label, select, [role="button"]) * { cursor: pointer !important; }
+  html a[data-cursor="view"][href], html a[data-cursor="view"][href] *, html .work-item > a, html .work-item > a *, html .player, html .player *, html .player button, html .player a { cursor: none !important; }
+}
+
+/* TODOS LOS ENLACES DE TEXTO, UN SOLO ESTILO: con ratón el punto no crece y el enlace se subraya con una raya de 1 px.
+   La raya sale por el lado por el que entra el ratón y se retira por el lado por el que sale (referencia: yzavoku.com).
+   js/cursor.js pone mouse-left en <html> cuando el ratón va hacia la izquierda. Con táctil se queda como estaba (subrayado normal).
+   Los enlaces dentro de un párrafo (privacidad) llevan además una raya tenue fija, para que se reconozcan sin pasar el ratón.
+   Si añades un enlace de texto nuevo, añade su selector aquí y en LINK de js/cursor.js. */
+@media (hover: hover) and (pointer: fine) {
+  :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .pv-back a, .pv-row p a, .contact-row a, .np-more) {
+    --o: 100%; --y: calc(100% - .1em);
+    background: linear-gradient(currentColor, currentColor) no-repeat var(--o) var(--y) / 0% 1px content-box;
+    text-decoration: none;
+    transition: background-size .4s var(--ease-out), color .2s;
+  }
+  html :is(.nav-links a, .case-nav a) { --y: calc(50% + 11px); }  /* los enlaces del menú miden toda la barra: la raya va bajo el texto (el "html" delante le da más peso que la regla general de arriba, que si no gana) */
+  :is(.pv-row p a) {
+    background:
+      linear-gradient(currentColor, currentColor) no-repeat var(--o) var(--y) / 0% 1px content-box,
+      linear-gradient(color-mix(in srgb, currentColor 40%, transparent), color-mix(in srgb, currentColor 40%, transparent)) no-repeat 0 var(--y) / 100% 1px content-box;
+  }
+  html.mouse-left :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .pv-back a, .pv-row p a, .contact-row a, .np-more) { --o: 0%; }
+  :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .pv-back a, .pv-row p a, .contact-row a, .np-more):is(:hover, :focus-visible), .now-playing:hover .np-more,
+  .nav-links a[aria-current]:not([aria-current="false"]), .case-nav a[aria-current]:not([aria-current="false"]) { --o: 0%; background-size: 100% 1px; text-decoration: none; }
+  :is(.pv-row p a):is(:hover, :focus-visible) { background-size: 100% 1px, 100% 1px; }
+  html.mouse-left :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .pv-back a, .pv-row p a, .contact-row a, .np-more):is(:hover, :focus-visible), html.mouse-left .now-playing:hover .np-more { --o: 100%; }
+  .np-more { display: inline-block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-label { transition: opacity .15s ease; }
+  :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .pv-back a, .pv-row p a, .contact-row a, .np-more) { transition: color .2s; }
+  .cursor-dot i { transition: opacity .15s ease; }
+}

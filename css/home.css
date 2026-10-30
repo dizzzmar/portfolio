@@ -1,0 +1,466 @@
+/* HOME — estilos de index.html.
+   Orden: base y cielo · barra de navegación · hero · sección de trabajos · cards de proyecto · footer · móvil.
+   Los colores y tamaños importantes están aquí; busca la clase que ves en el HTML (por ejemplo .wi-name). */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Mientras el tomate sube al menú no se puede hacer scroll (js/home-intro.js quita la clase) */
+html.js:has(body.intro-lock), .js body.intro-lock { height: 100%; overflow: hidden; overscroll-behavior: none; }
+/* Con la portada desbloqueada, deslizar hacia abajo arriba del todo deshace el viaje del tomate: que el móvil no recargue la página */
+html { overscroll-behavior-y: contain; }
+
+body {
+  overflow-x: clip; /* que nada ensanche la página más allá de la pantalla */
+  color: #fff;
+  font-family: var(--font-ui);
+  background-color: #8cc0ef;
+}
+
+/* Del cielo al blanco: al bajar, el cielo se acerca (las nubes crecen y se difuminan) y al atravesarlas todo se funde en blanco.
+   js/home-intro.js escribe directamente en tres elementos (sin variables CSS, que se heredan y obligan a recalcular toda la página
+   en cada fotograma): el zoom en .sky (scale), el desenfoque en .sky-soft (opacity de una capa ya desenfocada) y el fundido en .fade (opacity).
+   La capa blanca es fija, así que todos los proyectos se acumulan sobre el mismo fondo limpio. */
+.fade { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #fff; opacity: 0; will-change: opacity; }
+
+/* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes.
+   Son dos capas iguales: la nítida y encima una desenfocada (el desenfoque se calcula una sola vez); al bajar, la desenfocada
+   aparece con opacity, que no cuesta nada (animar blur() cada fotograma sí). */
+.sky {
+  position: fixed;
+  inset: -8%;
+  z-index: -1;
+  animation: drift 40s ease-in-out 1 both; /* una sola pasada y se queda: con el grano a pantalla completa encima (mezcla overlay), un cielo que se mueve para siempre obliga a recomponer toda la pantalla cada fotograma */
+  will-change: transform, scale;
+}
+/* Con la página ya blanca, el fondo que asoma al rebotar al final (trackpad, móvil) también es blanco, no el azul del cielo */
+body.white-on { background-color: #fff; }
+/* Con la página ya blanca, el cielo y el grano se quitan del todo (display:none): fijos y más grandes que la pantalla (el cielo mide un 116 %), en iPad podían alargar la página y dejar bajar más allá del pie */
+.white-on .sky, .white-on .grain { display: none; }
+.sky-sharp, .sky-soft {
+  position: absolute;
+  inset: 0;
+  /* El grano va en .grain, una capa aparte, para que no se emborrone con el cielo */
+  background:
+    url("/assets/images/sky.webp") center / cover,
+    linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
+}
+.sky-soft { filter: blur(10px); opacity: 0; will-change: opacity; }
+/* Las tres capas fijas del fondo (cielo, blanco y grano) miden siempre lo mismo: 100vw de ancho (cuenta la barra de desplazamiento, aparezca o no)
+   y 100lvh de alto (la pantalla con la barra del navegador recogida). Con % cambiaban de tamaño a mitad del viaje de la portada a Work:
+   · en Chrome con barra de desplazamiento visible (ratón, Windows), al desbloquear la página aparece la barra y el ancho útil pierde ~15 px;
+   · en el móvil, al bajar se encoge la barra del navegador y crece el alto.
+   El cielo (cover) se reescalaba y el fondo «saltaba»; con vw y lvh, no. */
+@supports (height: 100lvh) {
+  .sky { inset: -8lvh auto auto -8vw; width: 116vw; height: 116lvh; }
+  .fade, .grain { inset: 0 auto auto 0; width: 100vw; height: 100lvh; }
+}
+
+/* El grano va en su propia capa, encima del cielo, para que siga nítido aunque el cielo se emborrone */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("/assets/images/grain-sky.png") 0 0 / 128px 128px repeat;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+@keyframes drift {
+  0%   { transform: translate(-3%, 1%) scale(1); }
+  50%  { transform: translate(1%, -1.5%) scale(1.04); }
+  100% { transform: translate(3%, 1%) scale(1.02); }
+}
+
+/* ---------- Barra de navegación ---------- */
+
+/* Barra superior sin fondo; el tomate, ya acoplado, hace de logo */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9; /* por debajo del lienzo del tomate, para que el tomate quede encima de la barra */
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 var(--bar-gutter);
+  /* La barra entera recoge los toques: así un toque que cae entre dos enlaces (o un poco
+     por encima o por debajo) no atraviesa la barra y abre la card que pasa por debajo */
+}
+
+/* Zona clicable invisible sobre el tomate acoplado */
+.nav-logo {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.nav-logo:focus-visible,
+.nav-links a:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.nav-links {
+  display: flex;
+  align-self: stretch;
+  margin: 0 -16px 0 auto; /* compensa el relleno del último enlace para que el texto quede donde estaba */
+  list-style: none;
+}
+
+/* Cada enlace ocupa toda la altura de la barra y el hueco entre enlaces (32px) es parte
+   de su zona pulsable, así es fácil acertar con el dedo */
+.nav-links a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 16px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: var(--fs-s);
+  text-decoration: none;
+  text-shadow: 0 1px 8px rgba(0, 20, 40, 0.25);
+  transition: color 0.2s, text-shadow 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a[aria-current="true"] { color: #fff; }
+/* La sección en la que estás (Work) lleva el enlace subrayado, como la página actual en el resto de la web (css/nav-links.css) */
+.nav-links a[aria-current="true"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+
+/* Sobre el fondo oscuro de Work, los enlaces de la barra se quedan claros. */
+.light-on .nav-links a { color: rgba(255, 255, 255, .7); text-shadow: none; }
+.light-on .nav-links a:hover,
+.light-on .nav-links a[aria-current="true"] { color: #fff; }
+
+/* Un enlace que pasa por encima de una card clara se oscurece */
+.nav-links a.on-light { color: rgba(17, 17, 17, 0.6); text-shadow: none; }
+.nav-links a.on-light:hover,
+.nav-links a.on-light[aria-current="true"] { color: #111; }
+
+/* Al saltar a un ancla (#work…) deja espacio para que no quede tapada por la barra */
+[id] { scroll-margin-top: calc(var(--nav-h) + 12px); }
+
+/* El lienzo del tomate cubre toda la pantalla y deja pasar los clics */
+#scene {
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: 100vw; /* no 100 %: al desbloquear la página aparece la barra de desplazamiento y el lienzo se redimensionaría en pleno vuelo */
+  /* La altura de la pantalla con las barras del navegador ocultas: así no cambia (ni hay que
+     redibujarlo) cada vez que la barra de Safari aparece o se esconde al hacer scroll */
+  height: 100vh;
+  height: 100lvh;
+  z-index: 10;
+  pointer-events: none;
+  transition: opacity .6s ease;
+}
+
+/* ---------- Carga ----------
+   Mientras llega el tomate 3D se ve un tomate plano en el mismo sitio y del mismo tamaño;
+   cuando el 3D está listo (clase tomato-ready, la pone js/home-tomato.js) se funden. */
+.js:not(.tomato-ready) #scene { opacity: 0; }
+.tomato-placeholder {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: calc(min(100vw, 100vh) * 0.5);
+  height: calc(min(100vw, 100svh) * 0.5);
+  width: auto;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: opacity .6s ease;
+  animation: placeholder-float 3s ease-in-out infinite;
+}
+.tomato-ready .tomato-placeholder { opacity: 0; }
+.work-engaged .tomato-placeholder { opacity: 0; }
+/* Llegando desde el tomate de otra página (land-fly): mientras carga el 3D, el tomate plano ya está en la barra (no el grande del centro) */
+.land-fly .tomato-placeholder { opacity: 0; animation: none; }
+.land-fly .nav-logo { background: url("/assets/images/tomato.webp") center / contain no-repeat; }
+.land-fly.tomato-ready .nav-logo { background: none; }
+@keyframes placeholder-float {
+  50% { transform: translate(-50%, calc(-50% - 10px)) rotate(-3deg); }
+}
+
+/* Texto solo para buscadores y lectores de pantalla (no se ve) */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- Página: hero ---------- */
+.hero {
+  /* Altura fija (la pantalla con las barras del navegador visibles): con 100dvh cambiaba al
+     aparecer o esconderse la barra de Safari y todo lo de debajo saltaba unos 80px */
+  height: 100vh;
+  height: 100svh;
+  position: relative;
+}
+
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: max(28px, calc(env(safe-area-inset-bottom) + 16px));
+  translate: -50% 12px;
+  padding: 10px 14px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--fs-s);
+  letter-spacing: 0;
+  text-transform: none;
+  text-shadow: 0 1px 8px rgba(0, 25, 70, .45);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .6s var(--ease-out), translate .6s var(--ease-out);
+}
+/* Visible cuando toca (js/home-intro.js) o en cuanto recibe el foco con el teclado */
+.scroll-hint.is-on, .scroll-hint:focus-visible { opacity: .9; translate: -50% 0; pointer-events: auto; }
+.scroll-hint:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+
+.scroll-hint::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 32px;
+  margin: 10px auto 0;
+  background: currentColor;
+  animation: drip 1.6s ease-in-out infinite;
+  transform-origin: top;
+}
+
+@keyframes drip {
+  0%   { transform: scaleY(0); }
+  50%  { transform: scaleY(1); }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* ---------- Sección "Selected work" ----------
+   La tira blanca y las cards van directamente sobre el cielo (ya no hay papel verde detrás). */
+.work {
+  position: relative;
+  color: #111;
+  padding: 120px 10px 120px;
+}
+
+/* ---------- Footer: acaba el papel y vuelve a verse el cielo ---------- */
+.footer {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: flex-end;
+  padding: 120px 30px 24px;
+  font-size: var(--fs-s);
+  line-height: 1.4;
+}
+
+@media (max-width: 700px) {
+  .work { padding: 80px 8px 80px; }
+  .nav { gap: 10px; }
+  .nav-logo { width: 36px; height: 36px; }
+  .nav-links { margin-right: -7px; }
+  .nav-links a { padding: 0 7px; }
+  .nav-links a { font-size: var(--fs-s); }
+  .footer { padding: 96px 20px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint::after, .sky, .tomato-placeholder { animation: none; }
+}
+
+/* ---------- Work: lista de proyectos ----------
+   Referencia: 13322566869.com/works, con el estilo de esta web (tinta oscura, Helvetica apretada, esquinas rectas).
+   Cada fila: fecha (izquierda), nombre gigante (centro), etiquetas (derecha) y una tira de miniaturas verticales debajo.
+   Los textos pequeños están apagados y se encienden al pasar el ratón. Los movimientos (aparecer, inercia, hover) están al final
+   y se apagan con "reducir movimiento". Sin JavaScript todo se ve completo y quieto. */
+.work-grid { position: relative; z-index: 5; padding: 0 clamp(16px, 1.2vw, 24px); color: #fff; scroll-margin-top: 0; } /* al llegar con el enlace Work, la barra de arriba queda justo en el borde de la pantalla */
+
+/* Barra de arriba, fija: se queda pegada arriba al llegar y los proyectos pasan por debajo. Misma tipografía y tamaño en todo;
+   Lleva «Based in Madrid» y la hora. A la izquierda deja sitio al tomate (44 px + margen) y a la
+   derecha a los enlaces de la barra, que van encima. */
+.work-top {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: 1.1fr 1.2fr 1fr;
+  column-gap: 24px;
+  align-items: center;
+  height: var(--nav-h);
+  margin: 0 calc(-1 * clamp(16px, 1.2vw, 24px));
+  padding: 0 clamp(300px, 24vw, 360px) 0 92px;
+  background: transparent; /* sin relleno: no se ve ninguna barra, los proyectos pasan por debajo del texto */
+  font: 500 var(--fs-s)/1.3 var(--font-ui);
+  letter-spacing: -.005em;
+}
+.work-top p > strong { display: block; font-weight: inherit; }
+.work-top p > span { display: block; color: rgba(255, 255, 255, .6); }
+.work-top p { grid-column: 2; }
+.work-top .wt-creative { grid-column: 1; }
+.work-top .wt-creative > strong { color: #fff; white-space: nowrap; }
+.wb-word { display: inline; font-variant-ligatures: none; }
+@media (max-width: 1000px) {
+  .work-top { grid-template-columns: 1fr 1fr; }
+}
+/* Móvil en horizontal: queda poco ancho entre el tomate y los enlaces; solo «Creative ___», como en vertical */
+@media (max-width: 1000px) and (max-height: 500px) {
+  .work-top { grid-template-columns: 1fr; }
+  .work-top p:not(.wt-creative) { display: none; }
+}
+
+.work-list { margin-top: 0; list-style: none; border-bottom: 1px solid rgba(255, 255, 255, .18); }
+.work-item { position: relative; overflow-x: clip; } /* la tira de miniaturas se mueve de lado con el scroll y ensanchaba la página unos 54 px */
+.work-item::before { content: ""; position: absolute; inset: 0 0 auto; height: 1px; background: rgba(255, 255, 255, .18); transform-origin: left; }
+.work-item > a {
+  display: grid;
+  grid-template-columns: minmax(70px, 1fr) auto minmax(70px, 1fr);
+  grid-template-areas: "date name tags" "strip strip strip";
+  align-items: start;
+  column-gap: 16px;
+  padding: clamp(52px, 6.6vw, 104px) 0 clamp(34px, 3.4vw, 52px);
+  color: inherit;
+  text-decoration: none;
+}
+.work-item > a:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+/* El primer proyecto empieza justo bajo la cabecera: sin raya ni hueco arriba (el resto de filas, con su aire de siempre) */
+.work-item:first-child::before { display: none; }
+.work-item:first-child > a { padding-top: clamp(8px, 1.2vw, 18px); }
+/* Studies: proyectos de la universidad, debajo de los de cliente. Un título pequeño y el nombre en el rojo del proyecto (5,9:1 sobre blanco) */
+.work-section { padding: clamp(56px, 7vw, 112px) 0 clamp(8px, 1vw, 14px); font: 500 var(--fs-s)/1.3 var(--font-ui); letter-spacing: -.005em; } /* sin raya: la de la lista de Work ya separa las dos secciones */
+.work-list--studies .wi-name { color: #c41a08; }
+
+.wi-date, .wi-tags { margin-top: clamp(4px, .9vw, 14px); font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.32; color: rgba(255, 255, 255, .62); transition: color .5s ease; }
+.wi-date { grid-area: date; justify-self: start; font-variant-numeric: lining-nums tabular-nums; }
+.wi-tags { grid-area: tags; justify-self: end; text-align: right; list-style: none; }
+.wi-name {
+  grid-area: name;
+  min-width: 0;
+  padding: 0 .02em .1em;
+  margin-bottom: -.1em;
+  overflow: hidden; /* máscara: el nombre sube desde abajo al aparecer */
+  font-family: var(--font-ui);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-title);
+  letter-spacing: -.04em;
+  line-height: 1.02;
+  text-align: center;
+  transition: opacity .5s ease, color .35s var(--ease-out);
+}
+.wi-name > span { display: block; }
+
+/* Tira de miniaturas verticales (9:16), esquinas rectas */
+.wi-strip { grid-area: strip; display: flex; justify-content: center; gap: 4px; margin-top: clamp(20px, 2.2vw, 34px); }
+.wi-slot { position: relative; flex: none; width: clamp(34px, 6.4vw, 118px); aspect-ratio: 9 / 16; overflow: hidden; background: rgba(255, 255, 255, .07); }
+.wi-gap { visibility: hidden; }
+.wi-slot img, .wi-slot video { display: block; width: 100%; height: 100%; object-fit: cover; scale: var(--sz, 1); }
+/* Miniaturas que son trozos de una misma imagen (class="wi-slot is-slice" + style="--i: 0…7"): cada una lleva la imagen entera, 8 miniaturas de ancho más los 7 huecos de 4 px,
+   desplazada a su trozo; con los huecos como cortes, juntas se ven como una sola imagen. */
+.wi-slot.is-slice img { position: absolute; top: 0; left: calc(var(--i, 0) * (-100% - 4px)); width: calc(800% + 28px); max-width: none; }
+.wi-strip { translate: 0 0; } /* js/home-work.js lo mueve directamente (la variable se heredaría a todas las miniaturas) */
+
+/* Al volver de un proyecto (js/home-work.js): la lista llega con un fundido corto y la fila de ese proyecto se enciende un momento */
+.work-grid.arriving { animation: work-arrive .6s ease both; }
+@keyframes work-arrive { from { opacity: 0; } }
+.work-list:has(.work-item.is-back) .work-item:not(.is-back) .wi-name { opacity: .28; }
+.work-item.is-back .wi-date, .work-item.is-back .wi-tags { color: rgba(255, 255, 255, .95); }
+.work-item.is-back .wi-slot:not(.wi-gap) { translate: 0 -8px; }
+
+/* Se enciende la fila bajo el ratón (o la del centro de la pantalla, en el móvil) */
+.work-item > a:hover .wi-date, .work-item > a:hover .wi-tags,
+.work-item > a:focus-visible .wi-date, .work-item > a:focus-visible .wi-tags,
+.work-item.is-hot .wi-date, .work-item.is-hot .wi-tags { color: rgba(255, 255, 255, .95); }
+
+/* ---------- Work: movimiento (solo con JavaScript y sin "reducir movimiento") ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .wi-slot img, .wi-slot video { transition: scale 1.1s var(--ease-out); }
+  .wi-slot { transition: translate .7s var(--ease-out) calc(var(--i, 0) * 22ms); }
+  .work-motion .work-item::before { transition: transform .9s var(--ease-in-out); }
+  .work-motion .wi-name > span { transition: translate 1.1s var(--ease-out) .15s; }
+  .work-motion .wi-date, .work-motion .wi-tags { transition: color .5s ease, opacity .9s ease .45s, translate .9s var(--ease-out) .45s; }
+  .work-motion .wi-slot { transition: clip-path .8s var(--ease-in-out) calc(.35s + var(--i, 0) * 70ms), translate .7s var(--ease-out) calc(var(--i, 0) * 22ms); }
+  /* Antes de entrar: la línea sin dibujar, el nombre escondido bajo su máscara y las miniaturas tapadas */
+  .work-motion .work-item:not(.is-in)::before { transform: scaleX(0); }
+  .work-motion .work-item:not(.is-in) .wi-name > span { translate: 0 112%; }
+  .work-motion .work-item:not(.is-in) .wi-date, .work-motion .work-item:not(.is-in) .wi-tags { opacity: 0; translate: 0 14px; }
+  .work-motion .work-item:not(.is-in) .wi-slot { clip-path: inset(100% 0 0 0); }
+  .work-motion .work-item:not(.is-in) .wi-slot img, .work-motion .work-item:not(.is-in) .wi-slot video { --sz: 1.3; }
+}
+/* Al pasar el ratón: las miniaturas suben una tras otra y se acercan, y las demás filas se apagan */
+@media (hover: hover) and (pointer: fine) {
+  .work-item > a:hover .wi-slot:not(.wi-gap), .work-item > a:focus-visible .wi-slot:not(.wi-gap) { translate: 0 -8px; }
+  .work-item > a:hover .wi-slot img, .work-item > a:hover .wi-slot video { --sz: 1.1; }
+  .work-list:has(.work-item > a:hover) .work-item:not(:has(> a:hover)) .wi-name { opacity: .28; }
+}
+
+/* ---------- Móvil: nombre a todo lo ancho y la tira de miniaturas se desliza con el dedo ---------- */
+@media (max-width: 760px) {
+  /* La barra fija ocupa también el hueco de la barra de enlaces (así los proyectos no pasan por detrás) */
+  .work-top { grid-template-columns: 1fr; height: auto; padding: var(--nav-h) clamp(16px, 1.2vw, 24px) 12px; font-size: var(--fs-s); }
+  .work-top p:not(.wt-creative) { display: none; } /* en móvil la barra solo lleva «Creative ___» */
+  .work-top p { grid-column: 1; }
+  .work-item > a { grid-template-columns: 1fr auto; grid-template-areas: "date tags" "name name" "strip strip"; row-gap: 12px; padding: 26px 0 30px; }
+  .wi-date, .wi-tags { margin-top: 0; font-size: var(--fs-s); }
+  .wi-name { text-align: left; font-size: var(--fs-h1); letter-spacing: -.04em; } /* a 56 px, −5 % hace que las letras se toquen */
+  .wi-name.is-long { font-size: min(var(--fs-h1), 13vw); } /* nombre largo (class="wi-name is-long"): se encoge con la pantalla para que «The Gentlemen» quepa en una línea */
+  .wi-strip { justify-content: flex-start; overflow-x: auto; margin-right: calc(-1 * clamp(16px, 1.2vw, 24px)); margin-top: 8px; scrollbar-width: none; translate: none; }
+  .wi-strip::-webkit-scrollbar { display: none; }
+  .wi-slot { width: 26vw; }
+  .wi-gap { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before { transition: none; }
+}
+
+/* ---------- Work sobre fondo blanco: los textos siguen blancos mientras el fondo es azul y pasan a oscuro cuando ya es claro
+   (clase light-on, que pone js/home-intro.js). ---------- */
+.work-grid, .work-top p > span, .wi-date, .wi-tags { transition: color .4s ease; }
+.light-on .work-grid { color: #0c0c0b; }
+.light-on .work-top p > span { color: rgba(12, 12, 11, .62); }
+/* Cuando la página ya es del todo blanca (clase white-on, que pone js/home-intro.js) la barra de arriba (textos de Work y menú) se mezcla con
+   "difference": negra sobre blanco y blanca sobre un nombre de proyecto o una foto oscuros. El fondo blanco va dentro de la propia sección (la capa
+   blanca de la página queda fuera de ella y la barra no la "ve"); se pone solo ahora, sin transición, porque antes taparía el cielo que aún se funde. */
+.white-on .work-grid { background-color: #fff; }
+.white-on .work-top, .white-on .nav { mix-blend-mode: difference; }
+/* Blanco puro (sin grises): con "difference" cada trozo de una letra sale negro o blanco según lo que tenga justo detrás, aunque sea dentro de una misma palabra */
+.light-on .work-top .wt-creative > strong { color: #0c0c0b; }
+.white-on .work-top, .white-on .work-top .wt-creative > strong { color: #fff; }
+.white-on .work-top p > span { color: rgba(255, 255, 255, .55); } /* la hora y "Selected work": en gris, como antes (el gris se ve igual de legible sobre blanco y sobre negro) */
+.light-on .work-list { border-bottom-color: rgba(12, 12, 11, .16); }
+.light-on .work-item::before { background: rgba(12, 12, 11, .16); }
+.light-on .wi-date, .light-on .wi-tags { color: rgba(12, 12, 11, .62); } /* 5,7:1 sobre blanco (con .4 eran 2,8:1) */
+/* En Work no hay color de acento sobre el texto: la fila encendida (ratón encima, foco de teclado o la del centro en el móvil) se lee porque las demás se atenúan (regla :has de arriba). */
+.light-on .work-item > a:focus-visible { outline-color: var(--accent); }
+.light-on ::selection { background: var(--accent); color: #fff; }
+.light-on .wi-slot { background: rgba(12, 12, 11, .06); } /* el hueco de la miniatura, mientras carga, ya es gris claro */
+.light-on .work-item > a:hover .wi-date, .light-on .work-item > a:hover .wi-tags,
+.light-on .work-item > a:focus-visible .wi-date, .light-on .work-item > a:focus-visible .wi-tags,
+.light-on .work-item.is-hot .wi-date, .light-on .work-item.is-hot .wi-tags,
+.light-on .work-item.is-back .wi-date, .light-on .work-item.is-back .wi-tags { color: rgba(12, 12, 11, .9); }
+/* Al fundirse a blanco, el menú y el pie pasan a oscuro */
+.light-on .nav-links a { color: rgba(12, 12, 11, .62); }
+.light-on .nav-links a:hover, .light-on .nav-links a[aria-current="true"] { color: #0c0c0b; }
+.white-on .nav-links a, .white-on .nav-links a:hover, .white-on .nav-links a[aria-current="true"] { color: #fff; }
+.light-on .site-foot { color: rgba(12, 12, 11, .62); }
+.light-on .site-foot a:hover { color: #0c0c0b; }
+
+/* ---------- Studies: al llegar a los proyectos de la universidad, la página pasa a rosa y los textos a rojo (los colores de ENMAD) ----------
+   js/home-work.js pone studies-on en <body> cuando el título «Studies» pasa por la mitad de la pantalla, y la quita al volver arriba.
+   Rojo oscuro #8f1003 sobre rosa #ffa2d4: 5,1:1. Sin «difference» en la barra (sobre rosa saldría verde). */
+.fade { transition: background-color .7s var(--ease-out); }
+body.white-on .work-grid { transition: color .4s ease, background-color .7s var(--ease-out); }
+.work-top, .work-top .wt-creative > strong, .nav-links a, .site-foot, .work-item::before, .work-list { transition: color .5s ease, background-color .5s ease, border-color .5s ease; }
+body.studies-on .fade, body.studies-on .work-grid { background-color: #ffa2d4; }
+body.studies-on .work-grid, body.studies-on .wi-date, body.studies-on .wi-tags, body.studies-on .site-foot,
+body.studies-on .work-top, body.studies-on .work-top .wt-creative > strong, body.studies-on .work-top p > span,
+body.studies-on .nav-links a, body.studies-on .nav-links a:hover { color: #8f1003; }
+body.studies-on .work-top, body.studies-on .nav { mix-blend-mode: normal; }
+body.studies-on .work-list { border-bottom-color: rgba(143, 16, 3, .28); }
+body.studies-on .work-item::before { background: rgba(143, 16, 3, .28); }
+body.studies-on .wi-slot { background: rgba(143, 16, 3, .08); }
+body.studies-on ::selection { background: #8f1003; color: #ffa2d4; }
+@media (prefers-reduced-motion: reduce) { .fade, body.white-on .work-grid { transition: none; } }
+
+/* Sorpresa del sobre de ketchup (js/home-sachet-egg.js): mano al pasar por encima y al girarlo; con el sobre puesto, el dedo no desplaza la página */
+html.egg-on, html.egg-on body { touch-action: none; }
+html.egg-hover, html.egg-hover body { cursor: grab; }
+html.egg-grab, html.egg-grab body { cursor: grabbing; user-select: none; }

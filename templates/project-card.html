@@ -1,0 +1,32 @@
+<!--
+  FILA DE PROYECTO PARA LA LISTA "WORK" DE LA HOME
+  Copia este <li> dentro de <ol class="work-list"> en index.html (sección #work), donde quieras que salga:
+  el orden en el código = el orden en la página (arriba, lo primero).
+
+  EDITA: año, nombre, etiquetas, enlace y las 8 miniaturas.
+  REGLA: cada fila lleva SIEMPRE 8 miniaturas (class="wi-slot"), sin huecos entre ellas. Si no tienes 8 imágenes distintas, repite
+  una con otro encuadre (style="object-position: 0% 50%", "50% 50%" o "100% 50%") o usa un vídeo corto (ejemplo B).
+  Las miniaturas son verticales (9:16): una imagen horizontal o cuadrada se recorta; object-position elige qué parte se ve.
+  Tamaño recomendado de cada miniatura: 800 px de ancho (.webp), en assets/projects/<nombre-del-proyecto>/.
+  Si el nombre es largo (más de ~20 letras), pon class="wi-name is-long" en el <h3>: en móvil se encoge para caber, y usa &nbsp; entre las últimas dos palabras para que no quede una sola suelta.
+-->
+<li class="work-item">
+  <a href="/project/nombre-del-proyecto/">                                                   <!-- EDITA: la página del proyecto -->
+    <span class="wi-date">2026</span>                                                        <!-- EDITA: año -->
+    <h3 class="wi-name"><span>Nombre del proyecto</span></h3>                                <!-- EDITA: nombre -->
+    <ul class="wi-tags"><li>Tipo de proyecto</li><li>Cliente</li></ul>                      <!-- EDITA: etiquetas (copia o borra <li>) -->
+    <div class="wi-strip" aria-hidden="true">
+      <!-- EJEMPLO A · imagen (si la imagen es horizontal, object-position elige la parte que se ve) -->
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-1-800.webp" style="object-position: 50% 50%" width="800" height="800" loading="lazy" alt=""></span>
+      <!-- EJEMPLO B · clip corto en bucle (solo se reproduce mientras se ve) -->
+      <span class="wi-slot"><video src="/assets/projects/nombre-del-proyecto/clip.mp4" poster="/assets/projects/nombre-del-proyecto/clip.webp" width="1280" height="720" muted loop playsinline preload="none" tabindex="-1"></video></span>
+      <!-- Hasta completar 8 miniaturas en total (copia las líneas de arriba y cambia las rutas) -->
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-2-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-3-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-4-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-5-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-6-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+      <span class="wi-slot"><img src="/assets/projects/nombre-del-proyecto/imagen-7-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+    </div>
+  </a>
+</li>

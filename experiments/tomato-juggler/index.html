@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tomato juggler — DIZ</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #fff; color: #282b22; font: 12px Arial, sans-serif; }
+    main { min-height: 100svh; display: grid; place-content: center; justify-items: center; }
+    .scene { width: min(92vw, 760px); aspect-ratio: 1; position: relative; }
+    canvas { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+    .controls { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 16px; padding: 0 20px 30px; }
+    button { font: inherit; color: inherit; background: none; border: 1px solid #d9dccf; border-radius: 0; padding: 9px 14px; cursor: pointer; }
+    button:hover { background: #f2f4ec; }
+    button:focus-visible { outline: 2px solid #cc3428; outline-offset: 4px; }
+    #status { position: absolute; inset: 0; display: grid; place-content: center; }
+    #status[hidden] { display: none; }
+  </style>
+  <script type="importmap">{"imports":{"three":"/assets/vendor/three/build/three.module.min.js","three/addons/":"/assets/vendor/three/examples/jsm/"}}</script>
+</head>
+<body>
+  <main>
+    <div class="scene" role="img" aria-label="A pixelated juggler in a patterned green sweater juggling three tomatoes on a stone circle surrounded by grass.">
+      <canvas aria-hidden="true"></canvas><span id="status" role="status">Preparing the tomatoes…</span>
+    </div>
+    <div class="controls"><span>DIZ / Tomato practice</span><button id="pause" type="button" aria-pressed="false">Pause</button></div>
+  </main>
+  <script type="module" src="./scene.js?v=20261028h"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+/* Tipografía compartida por Work y las páginas de proyecto. Los tamaños y la letra están en css/tokens.css (guía: DESIGN.md). */
+body, button, input, select, textarea { font-family: var(--font-ui); }
+
+/* La navegación mantiene el mismo tamaño y caja dentro y fuera de los proyectos. */
+.nav-links a,
+.case-nav a,
+.case-back {
+  font-family: var(--font-ui);
+  font-size: var(--fs-s);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.player .player-toggle,
+.player-bar,
+.player-bar button {
+  font-family: var(--font-ui);
+  font-size: var(--fs-s);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.player-time { font-family: var(--font-ui); font-size: var(--fs-s); font-weight: 400; letter-spacing: 0; }

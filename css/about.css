@@ -1,0 +1,137 @@
+/* ABOUT — project-style running title, reading sidebar and portrait-led content.
+   Green/lime identity and the existing holographic photo are preserved. */
+
+:root {
+  --bg: var(--green);
+  --bg-deep: rgba(0, 0, 0, .25); /* el recuadro de la foto */
+  --ink: var(--lime);     /* el texto (y los logos) */
+  --gutter: 20px;
+  --margin: clamp(24px, 6vw, 96px); /* margen a los lados de la página */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, html.menu-arriving:has(.theme-green, .about) { background: var(--bg); } /* también llegando desde el menú (que pinta <html> de rojo): si no, el fondo pasaba de rojo a verde de golpe al quitarse la cortina */ /* el fondo también en <html>: la captura de la transición de página lo necesita para llevar el verde consigo */
+body {
+  overflow-x: clip;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: var(--font-ui);
+  font-size: var(--fs-read);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+img { display: block; max-width: 100%; height: auto; }
+ul { list-style: none; }
+::selection { background: var(--ink); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* ---------- Barra de navegación (como la de la home) ---------- */
+.nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 9;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--margin); /* el tomate y el menú alineados con el texto */
+  /* sin fondo: el contenido pasa por debajo de la barra al hacer scroll */
+}
+.nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s var(--ease-out); }
+.nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
+.nav-links { display: flex; align-self: stretch; margin: 0 -16px 0 auto; }
+.nav-links a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 16px;
+  color: var(--ink);
+  opacity: 1; /* con menos opacidad el contraste baja; la página actual se marca con el subrayado */
+  font-size: var(--fs-s);
+  font-weight: 400;
+  text-decoration: none;
+  transition: opacity .2s;
+}
+/* nav-links.css y footer.css se cargan después y ponen su blanco al 70 % / 90 %: con «body» delante, aquí gana el lima pleno (6,98:1 sobre el verde) */
+body .nav-links a, body .site-foot.on-green, body .site-foot.on-green a { color: var(--ink); }
+.nav-links a:hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+.nav-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+
+.holo { perspective: 900px; }
+.holo-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  will-change: transform;
+}
+.holo-card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; } /* la cara arriba */
+.holo-shine, .holo-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask: url("/assets/images/mario-bg-mask.png") 50% 25% / cover no-repeat;
+  mask: url("/assets/images/mario-bg-mask.png") 50% 25% / cover no-repeat;
+}
+.holo-shine {
+  background: repeating-linear-gradient(115deg, #3fa7b0 0%, #7fe0d6 6%, #c8f0e0 12%, #9fd0ea 18%, #2c5f86 24%, #8fb04a 30%, #3fa7b0 36%);
+  background-size: 400% 400%;
+  background-position: var(--mx, 50%) var(--my, 50%);
+  mix-blend-mode: color-dodge;
+  filter: brightness(.7) contrast(1.4) saturate(1.2);
+  opacity: calc(var(--o, 0) * .6);
+}
+.holo-glare {
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, .8) 0%, rgba(255, 255, 255, .2) 25%, transparent 55%);
+  mix-blend-mode: overlay;
+  opacity: var(--o, 0);
+}
+
+/* About follows the project pages: running title, sticky reading column and media. */
+:root { --margin: clamp(16px, 1.2vw, 24px); }
+.nav { background: var(--bg); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.about { padding-bottom: clamp(64px, 9vw, 140px); }
+.about-marquee { overflow: hidden; padding: calc(var(--nav-h) + clamp(8px, 2vw, 24px)) 0 clamp(12px, 2vw, 28px); }
+.about-run { display: inline-flex; white-space: nowrap; font-family: var(--font-display); font-size: clamp(72px, 13vw, 220px); font-weight: var(--fw-title); letter-spacing: -.04em; line-height: 1; animation: about-run 40s linear infinite; }
+.about-run > span { padding-right: .25em; }
+@keyframes about-run { to { transform: translateX(-50%); } }
+.about-layout { display: grid; grid-template-columns: minmax(260px, 28%) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); padding: 24px var(--margin) 0; }
+.about-bio { position: sticky; top: calc(var(--nav-h) + 24px); align-self: start; }
+.statement { max-width: 48ch; font-size: var(--fs-read); font-weight: var(--fw-regular); line-height: var(--lh-body); letter-spacing: -.01em; }
+.contact-row { display: flex; flex-direction: column; align-items: start; gap: 12px; margin-top: 32px; }
+.contact-row a { overflow-wrap: anywhere; text-underline-offset: 4px; }
+.faq-link { margin-top: 32px; font-size: var(--fs-s); }
+.about-content { min-width: 0; }
+.about-photo { width: min(100%, 620px); margin: 0 auto; }
+.portrait { width: 100%; aspect-ratio: 4 / 5; }
+.facts:not(.contact-row) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 32px; margin-top: clamp(48px, 6vw, 88px); }
+.fact h2, .clients h2 { font-family: var(--font-display); font-weight: var(--fw-title); font-size: var(--fs-l); line-height: 1.2; letter-spacing: -.015em; margin-bottom: 16px; }
+.fact p, .fact li { max-width: 48ch; }
+.fact li + li { margin-top: 4px; }
+.now-playing { grid-column: 1 / -1; text-decoration: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
+.now-playing h2 { grid-column: 1 / -1; }
+.np-row { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 16px; align-items: center; }
+.np-row img { width: 84px; height: 84px; object-fit: cover; }
+.np-row .np-film { height: 120px; }
+.np-row p { font-size: var(--fs-s); line-height: 1.4; }
+.np-row strong { font-weight: 600; font-size: var(--fs-read); }
+.np-more { text-decoration: underline; text-underline-offset: 4px; }
+.clients { margin-top: clamp(48px, 6vw, 88px); }
+.client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 32px; }
+.client-list a { display: block; }
+.client-logo { display: block; height: var(--h, 28px); aspect-ratio: var(--ratio, 3); background: currentColor; mask: var(--logo) center / contain no-repeat; -webkit-mask: var(--logo) center / contain no-repeat; }
+@media (max-width: 1000px) { .now-playing { grid-template-columns: 1fr; row-gap: 16px; } }
+@media (max-width: 760px) {
+  .about-layout { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .about-bio { position: static; }
+  .about-photo { max-width: 520px; }
+  .facts:not(.contact-row) { grid-template-columns: 1fr; gap: 32px; }
+  .now-playing { grid-column: auto; }
+}
+@media (pointer: coarse) { .contact-row a, .faq-link a { display: inline-block; padding-block: 10px; } }
+@media (prefers-reduced-motion: reduce) { .about-run { animation: none; } }
