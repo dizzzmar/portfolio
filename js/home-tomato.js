@@ -113,9 +113,10 @@ new GLTFLoader().load('/assets/models/tomato.glb?v=20261025b', (gltf) => {
 // Hero: centered and large. Docked: small, in the top-left corner.
 // The canvas is as tall as the screen with the browser bars hidden (100lvh in the CSS), so
 // on phones it doesn't have to be rebuilt every time Safari's bar slides in or out while
-// scrolling. A hidden probe of that same height tells its size even while it's cropped.
+// scrolling. A hidden probe of that same height tells its size even while it's cropped. Its width is 100vw (not 100 %) for the same reason: the
+// scrollbar that appears when the page unlocks must not resize the canvas mid-flight.
 const probe = Object.assign(document.createElement('div'), { ariaHidden: 'true' });
-probe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100vh;height:100lvh;visibility:hidden;pointer-events:none';
+probe.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;height:100lvh;visibility:hidden;pointer-events:none';
 document.body.appendChild(probe);
 const hero = document.querySelector('.hero');
 let width = 0, height = 0;

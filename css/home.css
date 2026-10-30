@@ -45,6 +45,15 @@ body.white-on { background-color: #fff; }
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
 }
 .sky-soft { filter: blur(10px); opacity: 0; will-change: opacity; }
+/* Las tres capas fijas del fondo (cielo, blanco y grano) miden siempre lo mismo: 100vw de ancho (cuenta la barra de desplazamiento, aparezca o no)
+   y 100lvh de alto (la pantalla con la barra del navegador recogida). Con % cambiaban de tamaño a mitad del viaje de la portada a Work:
+   · en Chrome con barra de desplazamiento visible (ratón, Windows), al desbloquear la página aparece la barra y el ancho útil pierde ~15 px;
+   · en el móvil, al bajar se encoge la barra del navegador y crece el alto.
+   El cielo (cover) se reescalaba y el fondo «saltaba»; con vw y lvh, no. */
+@supports (height: 100lvh) {
+  .sky { inset: -8lvh auto auto -8vw; width: 116vw; height: 116lvh; }
+  .fade, .grain { inset: 0 auto auto 0; width: 100vw; height: 100lvh; }
+}
 
 /* El grano va en su propia capa, encima del cielo, para que siga nítido aunque el cielo se emborrone */
 .grain {
@@ -136,8 +145,8 @@ body.white-on { background-color: #fff; }
 /* El lienzo del tomate cubre toda la pantalla y deja pasar los clics */
 #scene {
   position: fixed;
-  inset: 0 0 auto;
-  width: 100%;
+  inset: 0 auto auto 0;
+  width: 100vw; /* no 100 %: al desbloquear la página aparece la barra de desplazamiento y el lienzo se redimensionaría en pleno vuelo */
   /* La altura de la pantalla con las barras del navegador ocultas: así no cambia (ni hay que
      redibujarlo) cada vez que la barra de Safari aparece o se esconde al hacer scroll */
   height: 100vh;

@@ -85,7 +85,7 @@
 
   // ---- Volver desde un proyecto: la lista llega con un fundido corto, la fila de ese proyecto se enciende un momento
   //      y la lista no repite su entrada (js/case.js guarda el proyecto al salir) ----
-  const cameBack = () => { try { return !!sessionStorage.getItem('dizmar-from'); } catch (e) { return false; } };
+  const returned = (() => { try { return !!sessionStorage.getItem('dizmar-from'); } catch (e) { return false; } })();
   const arrive = () => {
     let from = null;
     try { from = sessionStorage.getItem('dizmar-from'); sessionStorage.removeItem('dizmar-from'); } catch (e) { /* storage blocked */ }
@@ -99,9 +99,10 @@
     setTimeout(() => row.classList.remove('is-back'), settle + 1600);
   };
   addEventListener('pageshow', (e) => { if (e.persisted) arrive(); });
+  if (returned) arrive(); // volver sin caché del navegador (iPhone, recarga completa): la fila también se enciende
 
   // ---- Aparecer: cada fila entra una sola vez ----
-  if (!reduced && !cameBack()) {
+  if (!reduced && !returned) {
     document.documentElement.classList.add('work-motion');
     const io = new IntersectionObserver((entries) => entries.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
