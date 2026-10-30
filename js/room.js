@@ -24,7 +24,7 @@ const status = document.getElementById('status');
 const nav = document.getElementById('object-nav');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-// Resolution: at most 1.5 pixels per CSS pixel (the room is soft, grainy and blurred in places, so 2× only costs: on an iPad
+// Resolution: at most 1.5 pixels per CSS pixel (the room has fine pixels and is blurred in places, so 2× only costs: on an iPad
 // it is almost twice the pixels for every effect). If the frames still come late, it steps down on its own (see adaptQuality).
 let pixelRatio = Math.min(devicePixelRatio, 1.5);
 renderer.setPixelRatio(pixelRatio);
@@ -40,7 +40,7 @@ const scene = new THREE.Scene();
 // Cinematic, cozy evening: very little ambient light so the shadows stay deep, a narrow warm "sunset"
 // spotlight raking across the wall from the left, a cool moonlight rim from behind for contrast
 // (warm/cool, like a film still), and the tomato lamp doing most of the work (added on load).
-// On top: a soft bloom, a vignette, a warm grade and a little film grain (see `grade` below).
+// On top: soft bloom, a vignette, a warm grade and the fine pixel treatment below.
 scene.background = new THREE.Color('#0b2f04'); // verde Lincoln «de noche» (css/room.css: --night)
 const reflections = new THREE.PMREMGenerator(renderer);
 scene.environment = reflections.fromScene(new RoomEnvironment(renderer)).texture;
@@ -88,13 +88,13 @@ composer.addPass(outline);
 const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.4, 0.45, 2.6);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
-// Film look, after tone mapping: warm shadows and highlights, a vignette and fine moving grain
+// Film look after tone mapping: warm shadows/highlights and a vignette.
+// The presenter below adds the selected stable pixel texture instead of moving grain.
 const grade = new ShaderPass({
-  uniforms: { tDiffuse: { value: null }, time: { value: 0 }, vignette: { value: 0.42 }, grain: { value: 0.035 } },
+  uniforms: { tDiffuse: { value: null }, vignette: { value: 0.42 } },
   vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
   fragmentShader: `
-    uniform sampler2D tDiffuse; uniform float time, vignette, grain; varying vec2 vUv;
-    float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+    uniform sampler2D tDiffuse; uniform float vignette; varying vec2 vUv;
     void main() {
       vec3 c = texture2D(tDiffuse, vUv).rgb;
       float l = dot(c, vec3(0.299, 0.587, 0.114));
@@ -102,7 +102,6 @@ const grade = new ShaderPass({
       c = mix(c, c * vec3(0.92, 0.95, 1.08), (1.0 - smoothstep(0.0, 0.35, l)) * 0.35); // slightly cool deep shadows
       float d = distance(vUv, vec2(0.5));
       c *= 1.0 - vignette * smoothstep(0.35, 0.85, d);                  // vignette
-      c += (hash(vUv * 1000.0 + time) - 0.5) * grain;                    // film grain
       gl_FragColor = vec4(c, 1.0);
     }`,
 });
@@ -116,10 +115,29 @@ composer.addPass(verticalBlur);
 // The effects render into a texture, which is then copied to the screen. While the Wii's discs are being chosen, the blurred
 // room behind them doesn't change: then only the copy runs and the room isn't drawn again (bloom, outline, blur…) every frame.
 composer.renderToScreen = false;
+// Selected preview 03: a 480 × 480 grid at 960 × 960, i.e. 2 CSS px per cell.
+// Keep the lighting at full quality and pixelate only its final image; DOM text and Wii discs stay sharp.
+const ROOM_PIXEL_SIZE = 2;
 const present = new FullScreenQuad(new THREE.ShaderMaterial({
-  uniforms: { tDiffuse: { value: null } },
+  uniforms: { tDiffuse: { value: null }, grid: { value: new THREE.Vector2(1, 1) } },
   vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
-  fragmentShader: 'uniform sampler2D tDiffuse; varying vec2 vUv; void main() { gl_FragColor = texture2D(tDiffuse, vUv); }',
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform vec2 grid;
+    varying vec2 vUv;
+    // Build a 4 × 4 Bayer threshold from two nested 2 × 2 cells.
+    float bayer2(vec2 p) {
+      vec2 q = mod(floor(p), 2.0);
+      return 2.0*q.x + 3.0*q.y - 4.0*q.x*q.y;
+    }
+    void main() {
+      vec2 cell = floor(vUv * grid);
+      vec3 c = texture2D(tDiffuse, (cell + 0.5) / grid).rgb;
+      float threshold = (4.0*bayer2(cell) + bayer2(floor(cell/2.0)) + 0.5)/16.0 - 0.5;
+      // 64 colour steps/channel and light dithering match the finer study's third option.
+      c = floor(clamp(c + threshold*0.35/64.0, 0.0, 1.0)*64.0 + 0.5)/64.0;
+      gl_FragColor = vec4(c, 1.0);
+    }`,
   depthTest: false, depthWrite: false,
 }));
 
@@ -176,7 +194,6 @@ const lighting = createRoomLighting({
   onChange(dark) {
     if (lampFlicker) { lampFlicker.start = false; setLamp(dark ? 0 : 1); }
     scene.background.set(dark ? '#020c01' : '#0b2f04');
-    grade.uniforms.grain.value = dark ? 0 : .035;
     outline.enabled = bloom.enabled = !dark;
     const button = nav.querySelector('[data-object="tomato-lamp"]');
     button?.setAttribute('aria-pressed', String(!dark));
@@ -614,6 +631,7 @@ function focusOn(item) {
 function resize() {
   const width = innerWidth, height = innerHeight;
   renderer.setSize(width, height, false);
+  present.material.uniforms.grid.value.set(Math.max(1, Math.round(width / ROOM_PIXEL_SIZE)), Math.max(1, Math.round(height / ROOM_PIXEL_SIZE)));
   composer.setSize(width, height);
   bloom.setSize(width, height);
   camera.aspect = width / height;
@@ -713,7 +731,6 @@ function frame() {
     const t = now / 1000;
     setLamp(1 + Math.sin(t * 1.3) * 0.025 + Math.sin(t * 3.7) * 0.012);
   }
-  grade.uniforms.time.value = reduced ? 0 : (now / 1000) % 100;
   updatePoster(now);
   // Ease the camera towards its goal (overview or a focused object)
   // Rate per second of the ease: the camera reaches 90% of the way in ln(10)/rate seconds (acercarse ≈0.3 s, alejarse ≈0.14 s)
