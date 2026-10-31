@@ -1,6 +1,6 @@
 // PLAYGROUND · monta el sandbox en un contenedor: un editor de nodos con el grafo de partida (semilla → planta → hoja, más medio, tinta y papel)
 // y unos cuantos nodos sueltos para invitar a conectarlos. Se usa en /playground/ (pantalla completa) y dentro de la ficha de Plant Lab.
-import { createEditor } from './editor.js';
+import { createEditor } from './editor.js?v=20261106a'; // el ?v= cambia con cada cambio de editor.js: los módulos importados también se guardan en caché
 import { TYPES } from './nodes.js';
 
 // Posiciones de partida: columna (x) y orden dentro de la columna; las alturas se miden y los nodos se apilan con aire entre ellos.
