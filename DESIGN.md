@@ -217,7 +217,7 @@ No fixed underline. On hover a 1 px line draws in from the side the pointer ente
 A 24 px tomato dot. It grows over buttons, cards and objects; disappears over text links, "View project" and videos (the line, the label or PLAY/PAUSE act as the indicator); shrinks and turns white over red; stretches like a drop while scrolling. Lime on green pages.
 
 ### The Envelope (Contact)
-A sky background and one phrase, "Tear top open". Tearing the top opens the mail app directly; if nothing opens within 1.4 s, the address and a "Copy email" button appear below.
+A sky background and one phrase, "Tear top open". "Contact" opens it on every page (home, green pages and project pages). Tearing the top moves the sachet aside (to the left on desktop; up and smaller on a phone) and the panel comes in: Name, Email and Message as white text on 1.5 px white lines (16 px inputs, so iOS does not zoom), a white-outline "Send" pill and, below, the address in bold with "Copy email" and "LinkedIn". No app is launched unless asked: the address is a mailto link. The form posts to Formspree (`FORM_ENDPOINT` in js/contact-sachet.js; see the privacy page); without an endpoint, Send opens the mail app with the message written in. States: "Sending…", "Sent. I’ll write back soon." and an error that points to the address. A hidden trap field stops basic spam; no captcha.
 
 ### The Terminal
 A dark panel opened from the menu or with the ` key, with an ASCII tomato, a scramble on its title and hidden commands. It is the clearest place for humour in the site.
