@@ -9,7 +9,7 @@ const K_MIN = 0.3, K_MAX = 1.6;
 
 export function createEditor(root, { types, wheel = 'page', onReset, fullHref } = {}) {
   const nodes = [], edges = [];
-  let seq = 0, tx = 0, ty = 0, k = 1, z = 1, touched = false;
+  let seq = 0, shapes = 0, tx = 0, ty = 0, k = 1, z = 1, touched = false;
 
   // ---------- Estructura ----------
   const viewport = el('div', { className: 'pgn-viewport' });
@@ -256,7 +256,9 @@ export function createEditor(root, { types, wheel = 'page', onReset, fullHref } 
     (t.outputs || []).forEach((p) => io.append(makePort('out', p)));
     const body = el('div', { className: 'pgn-body' });
     node.el = el('div', { className: 'pgn-node' }, [head, ...(io.children.length ? [io] : []), body]);
-    node.el.dataset.type = type; if (t.wide) node.el.classList.add('is-wide');
+    node.el.dataset.type = type; node.el.dataset.shape = String(shapes++ % 4); // cuatro siluetas blandas que se reparten
+    node.el.classList.add('is-new'); node.el.addEventListener('animationend', () => node.el.classList.remove('is-new'), { once: true });
+    if (t.wide) node.el.classList.add('is-wide');
     node.el.style.zIndex = ++z;
     world.append(node.el);
     node.impl = t.create(node, body, api) || {};
@@ -306,5 +308,5 @@ export function createEditor(root, { types, wheel = 'page', onReset, fullHref } 
   const ro = 'ResizeObserver' in window ? new ResizeObserver(() => { if (!touched) fit(); }) : null;
   ro && ro.observe(viewport);
   applyView();
-  return { addNode, connect, clear, fit, focusOn, focusAt, changed, nodes, edges, viewport, get touched() { return touched; }, get scale() { return k; } };
+  return { addNode, connect, clear, fit, focusOn, focusAt, move(node, x, y) { node.x = x; node.y = y; place(node); drawWires(); }, changed, nodes, edges, viewport, get touched() { return touched; }, get scale() { return k; } };
 }

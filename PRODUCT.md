@@ -29,7 +29,7 @@ Director de arte que integra la IA dentro de la dirección de arte: no la usa so
 - Sin cookies, sin analítica, sin servicios de terceros que reciban datos de visitantes (ver la página de privacidad).
 - Idioma: inglés.
 - «Pokémon collection» en The room: collage infinito sobre negro con 35 cartas de la colección (escaneos oficiales, con nombre y expansión), desplazamiento en ambos ejes y la carta bajo el cursor que se levanta. Sin ampliación al pulsar. En el móvil, tocar el peluche o el botón abre el álbum directamente, sin acercar la cámara.
-- Plant Lab (/project/plant-lab/, en Work → Personal) y Playground (/playground/): un sandbox de nodos (semilla, rasgos, pose, medio, tinta, papel → planta → hoja) donde cada semilla dibuja una planta distinta con un lápiz de puntitos sobre papel. Estética de laboratorio como Posters (blanco y tinta). Se ejecuta en el navegador, sin subir nada ni usar servicios de terceros; el motor está en js/playground/.
+- Plant Lab (/project/plant-lab/, en Work → Personal) y Playground (/playground/): un sandbox de nodos (semilla, rasgos, pose, medio, tinta, papel → planta → hoja) donde cada semilla dibuja una planta distinta con un lápiz de puntitos sobre papel. Estética de cartel tipográfico (campo negro, hojas blancas de formas blandas, mayúsculas pequeñas junto a numerales enormes). El carácter humano de los trazos (temblor de la mano, presión, grano del lápiz y del papel, la letra de los nombres) se genera por completo con código procedural, sin ningún asset. Se ejecuta en el navegador, sin subir nada ni usar servicios de terceros; el motor está en js/playground/.
 
 ## Brand Commitments
 - El tomate es el símbolo: logo, tomate 3D y la identidad que ya tiene la web.

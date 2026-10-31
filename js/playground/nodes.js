@@ -192,10 +192,12 @@ const sheet = {
   params: () => ({ label: false, scale: 2 }),
   create(node, body, api) {
     const canvas = el('canvas', { width: 1200, height: 1200, className: 'pgn-sheet', role: 'img' });
-    const note = el('p', { className: 'pg-note', role: 'status' });
+    const note = el('p', { className: 'pg-note', role: 'status' }), cap = el('p', { className: 'pgn-cap' }), num = el('span', { className: 'pgn-num' });
+    const head = node.el.querySelector('.pgn-head');
+    head.insertBefore(num, head.querySelector('.pgn-x')); // la semilla en grande, como la fecha del cartel
     const save = pill('Save PNG');
     save.addEventListener('click', () => { last = ''; paint(true); savePng(canvas, `plant-lab_${Date.now()}.png`); last = ''; });
-    body.append(canvas, note);
+    body.append(canvas, cap, note);
     toggle(body, { label: 'Name on the sheet', get: () => node.params.label, set: (v) => { node.params.label = v; }, onChange: () => api.changed(false) });
     slider(body, { label: 'resolution', get: () => node.params.scale, set: (v) => { node.params.scale = Math.round(v); }, min: 1, max: 3, step: 1, unit: '×', onCommit: () => api.changed(false) });
     body.append(el('div', { className: 'pg-actions' }, [save]));
@@ -212,6 +214,8 @@ const sheet = {
         if (sig === last) return;
         last = sig; paint(false);
         const d = current.d;
+        num.textContent = d ? d.seed : '';
+        cap.textContent = !d ? '' : d.kind === 'plant' ? speciesName(rollTraits(d.seed, d.locks), d.seed).full : d.kind === 'study' ? `Study ${d.seed}–${(+d.seed || 0) + d.count - 1}` : d.kind === 'traits' ? `All variants of ${TRAITS[d.key].label}` : d.compare ? 'Six media, one shape' : d.shape;
         canvas.setAttribute('aria-label', !d ? 'Empty sheet: connect a drawing' : d.kind === 'plant' ? 'Plant drawing' : d.kind === 'study' ? 'Sheet of plant drawings' : d.kind === 'traits' ? 'Every variant of one trait' : d.compare ? 'The six media drawn on the same shape' : `A ${d.shape} drawn in ink`);
       },
     };
