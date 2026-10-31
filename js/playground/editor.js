@@ -6,6 +6,8 @@ const SVG = 'http://www.w3.org/2000/svg';
 const el = (tag, attrs = {}, kids = []) => { const n = Object.assign(document.createElement(tag), attrs); n.append(...kids); return n; };
 const svg = (tag, attrs = {}) => { const n = document.createElementNS(SVG, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); return n; };
 const K_MIN = 0.3, K_MAX = 1.6;
+const CONTROLS = 'input, select, textarea, button, a, label, .pg-pick, .pg-medium, .pg-ink, [contenteditable]';
+const TAP = (e) => (e.pointerType === 'mouse' ? 5 : 12); // movimiento por debajo del cual un toque en un puerto es un toque y no un arrastre (el dedo tiembla más que el ratón)
 
 export function createEditor(root, { types, wheel = 'page', onReset, fullHref } = {}) {
   const nodes = [], edges = [];
@@ -40,7 +42,8 @@ export function createEditor(root, { types, wheel = 'page', onReset, fullHref } 
   zoom.querySelectorAll('button').forEach((b) => b.classList.add('is-icon'));
   root.append(viewport, bar, zoom);
   document.addEventListener('pointerdown', (e) => { if (!menu.hidden && !menu.contains(e.target) && e.target !== addBtn) { menu.hidden = true; addBtn.setAttribute('aria-expanded', 'false'); } });
-  root.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { menu.hidden = true; addBtn.setAttribute('aria-expanded', 'false'); addBtn.focus(); } });
+  root.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pending) { pending = null; unmark(); return; } // Esc suelta el puerto elegido
+    if (e.key === 'Escape' && !menu.hidden) { menu.hidden = true; addBtn.setAttribute('aria-expanded', 'false'); addBtn.focus(); } });
 
   // ---------- Vista: desplazar y acercar ----------
   const applyView = () => {
@@ -88,12 +91,20 @@ export function createEditor(root, { types, wheel = 'page', onReset, fullHref } 
       return;
     }
     const t = e.target;
+    const startPan = () => { pan = { x: e.clientX, y: e.clientY, tx, ty }; viewport.setPointerCapture(e.pointerId); viewport.classList.add('is-panning'); };
+    if (e.pointerType === 'mouse' && e.button === 1) { e.preventDefault(); startPan(); return; } // botón central: desplaza en cualquier sitio
     if (t.closest('.pgn-port')) { startLink(e, t.closest('.pgn-port')); return; }
     if (t.closest('.pgn-x, .pgn-wire-x')) return;
     const head = t.closest('.pgn-head');
     if (head) { startDrag(e, nodes.find((n) => n.el === head.parentElement)); return; }
-    if (t.closest('.pgn-node')) { const n = nodes.find((m) => m.el === t.closest('.pgn-node')); front(n); return; }
-    if (e.button === 0 || e.pointerType !== 'mouse') { pan = { x: e.clientX, y: e.clientY, tx, ty }; viewport.setPointerCapture(e.pointerId); viewport.classList.add('is-panning'); }
+    const nodeEl = t.closest('.pgn-node');
+    if (nodeEl) {
+      front(nodes.find((m) => m.el === nodeEl));
+      // Los controles son de quien los toca; el resto de la hoja (textos, la lista de rasgos, el papel) desplaza el lienzo, igual que el fondo:
+      // en el móvil las hojas ocupan casi toda la pantalla y, si no, no habría dónde poner el dedo para moverse
+      if (t.closest(CONTROLS)) return;
+    }
+    if (e.button === 0 || e.pointerType !== 'mouse') startPan();
   });
   viewport.addEventListener('pointermove', (e) => {
     if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -109,14 +120,14 @@ export function createEditor(root, { types, wheel = 'page', onReset, fullHref } 
       if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 3) drag.moved = true;
       drag.node.x = drag.nx + dx; drag.node.y = drag.ny + dy; place(drag.node); drawWires();
     }
-    if (link) { link.moved = link.moved || Math.hypot(e.clientX - link.sx, e.clientY - link.sy) > 5; if (link.moved) drawTemp(e.clientX, e.clientY); }
+    if (link) { link.moved = link.moved || Math.hypot(e.clientX - link.sx, e.clientY - link.sy) > TAP(e); if (link.moved) drawTemp(e.clientX, e.clientY); }
   });
   const end = (e) => {
     pointers.delete(e.pointerId);
     if (pointers.size < 2) pinch = null;
     if (pan) { pan = null; viewport.classList.remove('is-panning'); }
     if (drag) { drag = null; }
-    if (link) finishLink(e);
+    if (link) { if (e.type === 'pointercancel') cancelLink(); else finishLink(e); } // si el sistema cancela el gesto, el cable no se suelta donde haya quedado el dedo
   };
   viewport.addEventListener('pointerup', end);
   viewport.addEventListener('pointercancel', end);
@@ -263,13 +274,14 @@ export function createEditor(root, { types, wheel = 'page', onReset, fullHref } 
     world.append(node.el);
     node.impl = t.create(node, body, api) || {};
     place(node); nodes.push(node);
-    if ('ResizeObserver' in window) new ResizeObserver(drawWires).observe(node.el);
+    if ('ResizeObserver' in window) { node.ro = new ResizeObserver(drawWires); node.ro.observe(node.el); }
     drawWires(); changed(false);
     return node;
   }
   function removeNode(node) {
     edges.filter((e) => e.from.node === node || e.to.node === node).forEach(disconnectEdge);
     node.impl.destroy && node.impl.destroy();
+    node.ro && node.ro.disconnect();
     node.el.remove(); nodes.splice(nodes.indexOf(node), 1); changed(false);
   }
   function addAtCenter(type) {
