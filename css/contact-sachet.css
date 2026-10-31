@@ -1,5 +1,5 @@
-/* CONTACT · la ventana del sobre de ketchup DIZ (js/contact-sachet.js). Fondo de cielo, como la portada; el sobre en el centro y un único texto,
-   «Tear top open». Al rasgarlo cae el ketchup (un rojo con gotas) y deja el formulario, con el email y LinkedIn debajo. */
+/* CONTACT · la ventana de contacto (js/contact-sachet.js): rojo del menú (--menu-red) con texto crema (4,55:1), como el telón del menú. Es solo el formulario;
+   el sobre de ketchup DIZ en 3D está abajo, pequeño, en el centro (se gira arrastrándolo y se puede rasgar). */
 .sachet {
   position: fixed;
   inset: 0;
@@ -11,22 +11,33 @@
   padding: 0;
   border: 0;
   overflow: hidden;
-  background: #4f8fd8 url("/assets/images/sky.webp") center / cover;
-  color: #fff;
-  text-shadow: 0 1px 10px rgba(0, 30, 70, .35); /* el blanco sobre las nubes sigue leyéndose */
+  background: var(--menu-red);
+  color: var(--cream);
   font-family: var(--font-ui);
   font-size: var(--fs-s); /* en About y Privacy el texto del cuerpo es más grande y se heredaría */
 }
-.sachet::backdrop { background: #4f8fd8; }
+.sachet:focus { outline: none; }
+.sachet::backdrop { background: var(--menu-red); }
+.sachet ::selection { background: var(--cream); color: var(--menu-red); }
 .sachet button { font: inherit; color: inherit; cursor: pointer; }
 .sachet :focus-visible { outline: 2px solid currentColor; outline-offset: 6px; }
 
-.sachet-canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+/* El sobre: una caja pequeña abajo en el centro, entre el email (a la izquierda) y los enlaces (a la derecha) del pie */
+.sachet-canvas {
+  position: absolute;
+  left: 50%;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  width: clamp(104px, 10vw, 150px);
+  height: clamp(150px, 22vh, 220px);
+  translate: -50% 0;
+  touch-action: none;
+}
 .sachet.is-tearing .sachet-canvas { cursor: ew-resize; }
 .sachet.is-turning .sachet-canvas { cursor: grabbing; }
+@media (max-height: 760px) { .sachet-canvas { width: 88px; height: 126px; } }
 
 .sachet-title {
-  z-index: 2; /* el lienzo 3D cubre toda la ventana y, sin esto, tapaba «Close ×» y no se podía pulsar */
+  z-index: 3;
   position: absolute;
   top: max(24px, env(safe-area-inset-top));
   left: 24px;
@@ -35,41 +46,9 @@
   line-height: 44px; /* a la altura del texto de Close */
 }
 .sachet .sachet-close { z-index: 2; position: absolute; top: 24px; right: 24px; min-height: 44px; padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); }
-.sachet-close:hover, .sachet-tear:hover { text-decoration: underline; text-underline-offset: 4px; }
+.sachet-close:hover { text-decoration: underline; text-underline-offset: 4px; }
 
-/* Pista y botón (también para teclado y lectores de pantalla): abajo, se van al rasgar */
-.sachet-hint {
-  position: absolute;
-  left: 24px;
-  right: 24px;
-  bottom: max(36px, env(safe-area-inset-bottom));
-  text-align: center;
-  font-size: var(--fs-s);
-  line-height: var(--lh-ui);
-  transition: opacity 200ms var(--ease-out);
-}
-.sachet .sachet-tear { padding: 8px 0; border: 0; background: none; font-size: var(--fs-lead); font-weight: var(--fw-bold); letter-spacing: -.01em; }
-.sachet:not([data-state="closed"]) .sachet-hint { opacity: 0; pointer-events: none; }
-
-/* Al rasgar el sobre cae el ketchup: un panel rojo del menú (--menu-red, con crema: 4,55:1) baja desde arriba con gotas en el borde, con la misma curva que
-   el telón del menú, y deja el formulario. El texto de los campos va en Funnel Display, grande, como un cartel; las etiquetas, el pie y los enlaces en Funnel Sans. */
-.sachet-pour {
-  z-index: 1;
-  position: absolute;
-  inset: 0 0 auto;
-  height: calc(100% + 90px); /* las gotas quedan por debajo del borde de la pantalla cuando el rojo ha caído del todo */
-  background: var(--menu-red);
-  translate: 0 calc(-100% - 2px);
-  transition: translate .8s var(--ease-in-out) .12s;
-  pointer-events: none;
-}
-.sachet-drips { position: absolute; left: 0; bottom: 0; width: 100%; height: 90px; translate: 0 100%; fill: var(--menu-red); }
-.sachet[data-state="open"] .sachet-pour { translate: 0 -90px; }
-.sachet[data-state="open"] { color: var(--cream); text-shadow: none; }
-.sachet[data-state="open"] ::selection { background: var(--cream); color: var(--menu-red); }
-.sachet-canvas { transition: opacity .3s ease .9s; }
-.sachet[data-state="open"] .sachet-canvas { opacity: 0; pointer-events: none; }
-
+/* El formulario: dos columnas (una en el móvil); lo que se escribe va en Funnel Display a 24 px, como un cartel; las etiquetas, el pie y los enlaces en Funnel Sans */
 .sachet-panel {
   z-index: 2;
   position: absolute;
@@ -80,12 +59,9 @@
   max-width: 1080px;
   margin: 0 auto;
   overflow-y: auto;
-  opacity: 0;
-  visibility: hidden;
-  translate: 0 18px;
-  transition: opacity .45s var(--ease-out), translate .6s var(--ease-out), visibility 0s linear .6s;
+  pointer-events: none; /* el panel cubre casi toda la ventana: solo sus campos y enlaces reciben el ratón, así se puede tocar el sobre que hay detrás, abajo */
 }
-.sachet[data-state="open"] .sachet-panel { opacity: 1; visibility: visible; translate: 0 0; transition: opacity .45s var(--ease-out) .75s, translate .6s var(--ease-out) .75s, visibility 0s linear .75s; }
+.sachet-panel :is(.sachet-field, a, button) { pointer-events: auto; }
 .sachet-form { display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 36px 40px; }
 .sachet-field { display: grid; gap: 8px; margin: 0; }
 .sachet-field:has(textarea) { grid-column: 1 / -1; }
@@ -119,34 +95,32 @@
 .sachet-status { margin: 0; font-size: var(--fs-s); }
 .sachet-status:empty { display: none; }
 .sachet[data-send="sent"] .sachet-status { font-weight: var(--fw-bold); }
-.sachet-direct { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 24px; margin: 0; font-size: var(--fs-s); }
+.sachet-direct { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 24px; margin: 0; font-size: var(--fs-s); pointer-events: none; }
 .sachet-mail { color: inherit; font-size: var(--fs-lead); font-weight: var(--fw-bold); letter-spacing: -.01em; text-decoration: none; overflow-wrap: anywhere; margin-right: auto; }
 .sachet-mail:hover { text-decoration: underline; text-underline-offset: 4px; }
 .sachet .sachet-copy, .sachet-in { padding: 6px 0; border: 0; background: none; color: inherit; font-size: var(--fs-s); font-weight: var(--fw-regular); text-decoration: underline; text-underline-offset: 4px; }
 
-/* Móvil: una sola columna; el panel tiene scroll propio para cuando el teclado tapa la mitad de abajo */
+/* Móvil: una columna; el panel tiene scroll propio (el teclado puede tapar la mitad de abajo) y deja sitio al sobre, que pasa a la esquina de abajo a la derecha */
 @media (max-width: 760px) {
-  .sachet-panel { inset: calc(max(24px, env(safe-area-inset-top)) + 44px + 20px) var(--bar-gutter) max(24px, env(safe-area-inset-bottom)); gap: 32px; }
+  .sachet-panel { inset: calc(max(24px, env(safe-area-inset-top)) + 44px + 20px) var(--bar-gutter) max(24px, env(safe-area-inset-bottom)); gap: 32px; padding-bottom: 150px; }
   .sachet-form { grid-template-columns: 1fr; align-content: start; gap: 26px; }
   .sachet-field input, .sachet-field textarea { font-size: var(--fs-l); } /* 20 px */
   .sachet-mail { flex-basis: 100%; }
+  .sachet-canvas { left: auto; right: var(--bar-gutter); translate: none; width: 92px; height: 132px; }
 }
 
-/* Entrada: la ventana aparece (0,3 s) y el sobre sube 20 px mientras se asienta (0,6 s). Salida: un fundido corto (0,18 s, js/contact-sachet.js la lanza antes de cerrar) */
+/* Entrada: la ventana aparece (0,3 s) y el formulario sube 18 px mientras se asienta (0,6 s). Salida: un fundido corto (0,18 s, js/contact-sachet.js la lanza antes de cerrar) */
 @media (prefers-reduced-motion: no-preference) {
   .sachet[open] { animation: sachet-in .3s var(--ease-out) both; }
-  .sachet[open] .sachet-canvas { animation: sachet-rise .6s var(--ease-out) both; }
+  .sachet[open] .sachet-panel { animation: sachet-rise .6s var(--ease-out) .08s both; }
+  .sachet[open] .sachet-canvas { animation: sachet-peek .8s var(--ease-out) .2s both; }
   .sachet.is-closing { animation: sachet-out .18s var(--ease-out) both; }
 }
 @keyframes sachet-in { from { opacity: 0; } }
-@keyframes sachet-rise { from { translate: 0 20px; } }
+@keyframes sachet-rise { from { opacity: 0; translate: 0 18px; } }
+@keyframes sachet-peek { from { opacity: 0; transform: translateY(40px); } }
 @keyframes sachet-out { to { opacity: 0; } }
 
 /* Mientras está abierta, la página de debajo no se desplaza */
 html.sachet-open { overflow: hidden; }
 
-@media (prefers-reduced-motion: reduce) {
-  .sachet-canvas, .sachet-panel, .sachet[data-state="open"] .sachet-panel { transition: none; }
-  .sachet-pour { translate: none; opacity: 0; transition: opacity .2s ease; } /* sin caída: el rojo aparece fundido */
-  .sachet[data-state="open"] .sachet-pour { translate: none; opacity: 1; }
-}
