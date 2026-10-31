@@ -6,7 +6,7 @@
   // Solo claves propias: «constructor», «toString»… no son comandos ni páginas
   const own = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
   const PAGES = {
-    home: '/', work: '/#work', about: '/about/', faq: '/faq/', room: '/room.html', machine: '/machine/', playground: '/playground/',
+    home: '/', work: '/#work', about: '/about/', faq: '/faq/', room: '/room.html', machine: '/machine/', playground: '/playground/', plantlab: '/project/plant-lab/',
     lexus: '/project/lexus-electrified/', schweppes: '/project/schweppes/', soap: '/project/soap-and-glory-vanilla/', enmad: '/project/enmad/', posters: '/posters/',
   };
   const SECTIONS = {
@@ -155,14 +155,14 @@
     if (machine) document.documentElement.classList.add('machine-leaving'); // en el modo máquina la página se funde antes de irse (estilos en machine/index.html)
     setTimeout(() => { location.href = page; }, reduced ? 0 : 240);
   };
-  const LS = () => ['home/  about/  faq/  room.html  machine/  posters/  playground/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/  enmad/'];
+  const LS = () => ['home/  about/  faq/  room.html  machine/  posters/  playground/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/  enmad/  plant-lab/'];
   let fpsBusy = false;
   const COMMANDS = {
     help: () => [
       'Commands:',
       '  help                    this list',
       '  ls                      list the pages of dizmar.xyz',
-      '  cd <page>               go to a page: home, work, about, faq, room, machine, posters, playground, lexus, schweppes, soap, enmad',
+      '  cd <page>               go to a page: home, work, about, faq, room, machine, posters, playground, plantlab, lexus, schweppes, soap, enmad',
       '  view human | machine    switch between the visual site and the plain-text index',
       '  about | work | contact  print that section here',
       '  whoami                  who is behind this',
@@ -622,7 +622,7 @@
   const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'guide', 'fps', 'neofetch', 'clear', 'exit',
     ...(roomOn() ? ['look', 'inspect', 'lights', 'play', 'flicker', 'sunset', 'zoom'] : [])];
   const ARGS = () => ({
-    cd: ['home', 'work', 'about', 'faq', 'room', 'machine', 'playground', 'lexus', 'schweppes', 'soap', 'enmad', 'contact'],
+    cd: ['home', 'work', 'about', 'faq', 'room', 'machine', 'playground', 'plantlab', 'lexus', 'schweppes', 'soap', 'enmad', 'contact'],
     view: ['human', 'machine'],
     inspect: ['vinyl', 'poster', 'mimikyu', 'lamp', 'plant', 'wii'],
     lights: ['on', 'off'],
