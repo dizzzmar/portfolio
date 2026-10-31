@@ -1,8 +1,8 @@
-// CONTACT · el enlace "Contact" de la barra (en todas las páginas: la de la portada y las verdes, y la de las fichas) abre un sobre de ketchup DIZ en 3D
-// sobre el cielo. Se rasga por "TEAR HERE" (arrastrando por la tira de arriba, pulsándola o con el botón «Tear top open») y al rasgarlo cae el ketchup:
-// un rojo con gotas baja como una cortina y deja el formulario, con el email (para copiarlo o abrir la app de correo) y LinkedIn. Arrastrando por el resto del sobre se gira.
+// CONTACT · el enlace "Contact" de la barra (en todas las páginas: la de la portada y las verdes, y la de las fichas) abre una ventana roja que es solo el
+// formulario (nombre, email y mensaje), con el email (para copiarlo o abrir la app de correo) y LinkedIn al pie. El sobre de ketchup DIZ en 3D está abajo,
+// pequeño: se gira arrastrándolo y se rasga por "TEAR HERE"; al rasgarlo sale volando la tira y, un momento después, aparece otro sobre nuevo.
 // El formulario se envía a FORM_ENDPOINT (Formspree, ver la página de privacidad); sin él, «Send» abre la app de correo con el mensaje ya escrito.
-// Sin JavaScript, o si el 3D no carga, Contact sigue siendo el enlace de email de siempre (y sin 3D, el formulario sale directamente).
+// Sin JavaScript, Contact sigue siendo el enlace de email de siempre; sin 3D, la ventana es igual pero sin el sobre.
 const FORM_ENDPOINT = 'https://formspree.io/f/mljjpgpa'; // la dirección pública del formulario en Formspree (no es una clave secreta); vacía, «Send» abre la app de correo
 const LINKEDIN = 'https://es.linkedin.com/in/mario-diaz-aguado';
 const link = document.querySelector('.nav-links a[href^="mailto:"], .case-nav a[href^="mailto:"]');
@@ -24,7 +24,6 @@ if (link) {
       catch { copy.textContent = 'Copy email'; }
       setTimeout(() => { copy.textContent = 'Copy email'; }, 1800);
     });
-    const tear = el('button', { type: 'button', className: 'sachet-tear', textContent: 'Tear top open' });
     const field = (name, label, input) => { input.name = name; input.id = 'sachet-' + name; input.required = true; return el('p', { className: 'sachet-field' }, [el('label', { htmlFor: input.id, textContent: label }), input]); };
     const send = el('button', { type: 'submit', className: 'sachet-send', textContent: 'Send' });
     const status = el('p', { className: 'sachet-status', role: 'status' });
@@ -41,21 +40,18 @@ if (link) {
     dialog = el('dialog', { className: 'sachet' }, [
       el('h2', { className: 'sachet-title', id: 'sachet-title', textContent: 'Contact' }),
       close,
-      el('canvas', { className: 'sachet-canvas' }),
-      el('div', { className: 'sachet-pour', innerHTML: '<svg class="sachet-drips" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0H1200V22C1172 22 1164 58 1140 58S1110 22 1086 22C1052 22 1046 82 1016 82S984 24 950 24C918 24 912 44 888 44S856 18 826 18C792 18 786 70 756 70S722 26 690 26C660 26 652 50 630 50S600 20 570 20C534 20 528 88 496 88S462 24 430 24C398 24 392 46 368 46S336 22 306 22C270 22 266 64 238 64S206 20 176 20C146 20 140 40 118 40S88 16 58 16C30 16 22 52 0 52Z"/></svg>' }),
-      el('div', { className: 'sachet-hint' }, [tear]),
+      el('canvas', { className: 'sachet-canvas', ariaHidden: 'true' }), // decorativo: el formulario y los enlaces son todo lo que hace falta
       el('div', { className: 'sachet-panel' }, [form, el('p', { className: 'sachet-direct' }, [
         el('a', { className: 'sachet-mail', href: link.href, textContent: email }), copy,
         el('a', { className: 'sachet-in', href: LINKEDIN, target: '_blank', rel: 'noopener', textContent: 'LinkedIn' }),
       ])]),
     ]);
     dialog.setAttribute('aria-labelledby', 'sachet-title');
-    dialog.dataset.state = 'closed';
+    dialog.dataset.state = 'open';
+    dialog.tabIndex = -1;
     close.addEventListener('click', closeSachet);
     dialog.addEventListener('cancel', (e) => { e.preventDefault(); closeSachet(); }); // Esc: mismo fundido de salida
-    tear.addEventListener('click', () => (stage ? stage.tear() : reveal()));
     dialog.addEventListener('close', () => {
-      clearTimeout(fallbackTimer);
       document.documentElement.classList.remove('sachet-open');
       stage?.stop();
     });
@@ -68,16 +64,6 @@ if (link) {
     if (reduced) { dialog.close(); return; }
     dialog.classList.add('is-closing');
     setTimeout(() => { dialog.classList.remove('is-closing'); dialog.close(); }, 180);
-  }
-
-  // Ya rasgado (con 3D o sin él): el sobre se aparta y sale el formulario. No se abre ninguna app sin que se pida: quien usa el correo
-  // en el navegador no tiene app y veía que no pasaba nada; el email y «Copy email» están a la vista desde el primer momento.
-  let fallbackTimer = 0;
-  function reveal() {
-    dialog.dataset.state = 'open';
-    setTimeout(() => { if (dialog.dataset.state === 'open') stage?.stop(); }, 1400); // tapado por el rojo: el 3D deja de dibujarse
-    clearTimeout(fallbackTimer);
-    fallbackTimer = setTimeout(() => { if (dialog.open) form.querySelector('input').focus({ preventScroll: true }); }, reduced ? 0 : 900);
   }
 
   // Envío: a Formspree si hay FORM_ENDPOINT; si no, se abre la app de correo con el mensaje ya escrito
@@ -102,17 +88,17 @@ if (link) {
 
   async function open() {
     if (!dialog) build();
-    dialog.dataset.state = 'closed';
     delete dialog.dataset.send; dialog.querySelector('.sachet-status').textContent = '';
+    dialog.dataset.state = 'open';
     dialog.showModal();
     document.documentElement.classList.add('sachet-open');
-    dialog.querySelector('.sachet-tear').focus({ preventScroll: true });
+    // Con ratón, el cursor ya está en el primer campo; con el dedo no, para que el teclado no tape la ventana nada más abrirla
+    if (matchMedia('(pointer: fine)').matches) form.querySelector('input').focus({ preventScroll: true }); else dialog.focus({ preventScroll: true });
     try {
-      if (!stage) stage = await createStage(dialog, { reduced, onOpen: reveal });
+      if (!stage) stage = await createStage(dialog, { reduced, onOpen: () => { dialog.dataset.state = 'open'; setTimeout(() => stage?.reset(), reduced ? 0 : 1100); } });
       stage.start();
     } catch (err) {
-      console.warn('Contact sachet: 3D unavailable', err);
-      reveal();
+      console.warn('Contact sachet: 3D unavailable', err); // sin el sobre, el formulario sigue igual
     }
   }
 
@@ -179,11 +165,12 @@ async function createStage(dialog, { reduced, onOpen }) {
   const s = { yaw: REST.yaw, pitch: REST.pitch, dragYaw: 0, dragPitch: 0, lift: 0, liftGoal: 0, torn: false, t0: 0, running: false, raf: 0, last: 0 };
 
   function resize() {
-    const w = dialog.clientWidth, h = dialog.clientHeight;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (!w || !h) return;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    // El sobre ocupa ~68% del alto de la pantalla (menos en pantallas estrechas, para que quepa a lo ancho)
-    const fitH = H / 0.68, fitW = (W * 1.5) / camera.aspect;
+    // El sobre ocupa ~84 % del alto de su caja (que es pequeña, abajo) y, si la caja es estrecha, cabe a lo ancho
+    const fitH = H / 0.84, fitW = (W * 1.3) / camera.aspect;
     const span = Math.max(fitH, fitW);
     camera.position.set(0, 0, span / 2 / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
     camera.lookAt(0, 0, 0);
@@ -201,7 +188,7 @@ async function createStage(dialog, { reduced, onOpen }) {
     if (!hit) return null;
     return holder.worldToLocal(hit.point.clone());
   };
-  const pxPerUnit = () => dialog.clientHeight / (2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
+  const pxPerUnit = () => canvas.clientHeight / (2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
   canvas.addEventListener('pointerdown', (e) => {
     if (s.torn) return;
     const p = hitAt(e);
@@ -288,14 +275,21 @@ async function createStage(dialog, { reduced, onOpen }) {
   const smoothstep = (a, b, v) => { const t = Math.min(1, Math.max(0, (v - a) / (b - a))); return t * t * (3 - 2 * t); };
   const kick = () => { if (s.running && !s.raf) s.raf = requestAnimationFrame(frame); };
 
+  // Un sobre nuevo sin rasgar (al abrir la ventana y un momento después de rasgar el anterior)
+  function fresh() {
+    Object.assign(s, { yaw: REST.yaw + 0.5, pitch: REST.pitch, dragYaw: 0, dragPitch: 0, lift: 0, liftGoal: 0, torn: false, last: 0 });
+    if (reduced) s.yaw = REST.yaw;
+    stripPivot.visible = true;
+    strip.mats.forEach((m) => { m.opacity = 1; m.transparent = false; });
+    kick();
+  }
+
   return {
     tear,
+    reset: fresh,
     start() {
-      // Cada vez que se abre, un sobre nuevo sin rasgar
-      Object.assign(s, { yaw: REST.yaw + 0.5, pitch: REST.pitch, dragYaw: 0, dragPitch: 0, lift: 0, liftGoal: 0, torn: false, running: true, last: 0 });
-      if (reduced) s.yaw = REST.yaw;
-      stripPivot.visible = true;
-      strip.mats.forEach((m) => { m.opacity = 1; m.transparent = false; });
+      s.running = true;
+      fresh();
       resize();
       addEventListener('resize', resize);
       kick();
