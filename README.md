@@ -90,7 +90,7 @@ Cada página pública lleva en su `<head>`: `<title>`, `<meta name="description"
 - Google no se entera solo: hay que dar de alta la web en Google Search Console y enviar `https://www.dizmar.xyz/sitemap.xml` (con tu cuenta de Google, en search.google.com/search-console).
 
 ### Cambiar el correo de «Contact»
-«Contact» del menú es un enlace `mailto:` directo: al pulsarlo se abre el programa de correo del visitante con la dirección y el asunto ya puestos. No hay página intermedia. La dirección está en el menú de todas las páginas (y en la de Privacy y About). Para cambiarla, busca `mailto:hey.mariodiz@gmail.com` y cámbiala en todos los archivos.
+«Contact» del menú es un enlace `mailto:` directo: al pulsarlo se abre el programa de correo del visitante con la dirección y el asunto ya puestos. No hay página intermedia. La dirección está en el menú de todas las páginas (y en la de Privacy y About). Para cambiarla, busca `mailto:contact@dizmar.xyz` y cámbiala en todos los archivos.
 
 ### Cambiar el texto de la página 404
 `404.html`, el párrafo con clase `message`.
