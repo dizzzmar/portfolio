@@ -3,7 +3,7 @@
 // un rojo con gotas baja como una cortina y deja el formulario, con el email (para copiarlo o abrir la app de correo) y LinkedIn. Arrastrando por el resto del sobre se gira.
 // El formulario se envía a FORM_ENDPOINT (Formspree, ver la página de privacidad); sin él, «Send» abre la app de correo con el mensaje ya escrito.
 // Sin JavaScript, o si el 3D no carga, Contact sigue siendo el enlace de email de siempre (y sin 3D, el formulario sale directamente).
-const FORM_ENDPOINT = ''; // p. ej. 'https://formspree.io/f/abcdwxyz' (la dirección pública del formulario: no es una clave secreta)
+const FORM_ENDPOINT = 'https://formspree.io/f/mljjpgpa'; // la dirección pública del formulario en Formspree (no es una clave secreta); vacía, «Send» abre la app de correo
 const LINKEDIN = 'https://es.linkedin.com/in/mario-diaz-aguado';
 const link = document.querySelector('.nav-links a[href^="mailto:"], .case-nav a[href^="mailto:"]');
 if (link) {
