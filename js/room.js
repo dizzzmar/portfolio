@@ -339,6 +339,11 @@ canvas.addEventListener('pointerup', event => {
 });
 canvas.addEventListener('pointercancel', () => { down = null; });
 
+// A tap anywhere that is not a name in the list ends a preview started by a finger (the room, the title, the menu…)
+document.addEventListener('pointerdown', event => {
+  if (touchPreview && event.pointerType !== 'mouse' && !event.target.closest?.('[data-object]')) resetFocus();
+}, true);
+
 // Clicking an object only keeps the camera zoomed on it. Only items with a page (href) navigate.
 function openItem(item) {
   if (item.key === 'mimikyu') { pokemonAlbum.open(nav.querySelector('[data-object="mimikyu"]')); return; }
@@ -501,14 +506,27 @@ roomLoader.load('/assets/room/shelf-web.glb?v=20261022a', gltf => {
       highlight({ item, object: mesh });
     });
     button.addEventListener('focus', () => { if (!opensAtOnce) focusOn(item); });
-    button.addEventListener('blur', () => resetFocus());
+    // Only the name that is being previewed can end its own preview: touching another name fires the previous one's blur/mouseleave AFTER the new preview has started
+    button.addEventListener('blur', () => { if (focused === item && touchPreview !== item) resetFocus(); });
     button.addEventListener('mouseenter', () => {
       if (opensAtOnce) return;
       const mesh = meshes.find(candidate => destinationFor(candidate) === item);
       highlight({ item, object: mesh });
       focusOn(item);
     });
-    button.addEventListener('mouseleave', () => resetFocus());
+    button.addEventListener('mouseleave', () => { if (focused === item && touchPreview !== item) resetFocus(); });
+    // Touch: the preview (camera closer + outline, and for the poster the new film) answers to the tap itself. iOS Safari does not focus a
+    // button on tap and only half-emulates the mouse (it can swallow the click), so relying on focus or mouseenter left some names inert.
+    // A second tap on the same name goes back to the overview.
+    let wasPreviewed = false;
+    button.addEventListener('pointerdown', event => { wasPreviewed = event.pointerType !== 'mouse' && focused === item; });
+    button.addEventListener('pointerup', event => {
+      if (event.pointerType === 'mouse' || opensAtOnce) return;
+      if (wasPreviewed) { resetFocus(); return; }
+      highlight({ item, object: meshes.find(candidate => destinationFor(candidate) === item) });
+      focusOn(item);
+      touchPreview = focused === item ? item : null;
+    });
     button.addEventListener('click', () => {
       openItem(item);
     });
@@ -560,6 +578,7 @@ function fitDistance(center, half, share) {
 
 let overview = null;
 let focused = null;
+let touchPreview = null; // name previewed by a finger: it ends with another tap, not with the browser's hover/blur events
 let returnRate = 16;
 let returning = false;  // true al alejarse: la vuelta es más rápida que el acercamiento
 const focusViews = new Map();
@@ -577,6 +596,7 @@ function frameRoom() {
 // towards a framing where it fills 60% of the free area. Closer, not a close-up.
 // Back to the overview at once (the camera eases back faster than it comes in)
 function resetFocus() {
+  touchPreview = null;
   highlight(null);
   focusOn(null);
   if (nav.contains(document.activeElement)) document.activeElement.blur();
