@@ -1,6 +1,6 @@
 // CONTACT · el enlace "Contact" de la barra (en todas las páginas: la de la portada y las verdes, y la de las fichas) abre un sobre de ketchup DIZ en 3D
-// sobre el cielo. Se rasga por "TEAR HERE" (arrastrando por la tira de arriba, pulsándola o con el botón «Tear top open») y al rasgarlo el sobre se aparta
-// y sale el formulario, con el email (para copiarlo o abrir la app de correo) y LinkedIn. Arrastrando por el resto del sobre se gira.
+// sobre el cielo. Se rasga por "TEAR HERE" (arrastrando por la tira de arriba, pulsándola o con el botón «Tear top open») y al rasgarlo cae el ketchup:
+// un rojo con gotas baja como una cortina y deja el formulario, con el email (para copiarlo o abrir la app de correo) y LinkedIn. Arrastrando por el resto del sobre se gira.
 // El formulario se envía a FORM_ENDPOINT (Formspree, ver la página de privacidad); sin él, «Send» abre la app de correo con el mensaje ya escrito.
 // Sin JavaScript, o si el 3D no carga, Contact sigue siendo el enlace de email de siempre (y sin 3D, el formulario sale directamente).
 const FORM_ENDPOINT = ''; // p. ej. 'https://formspree.io/f/abcdwxyz' (la dirección pública del formulario: no es una clave secreta)
@@ -42,6 +42,7 @@ if (link) {
       el('h2', { className: 'sachet-title', id: 'sachet-title', textContent: 'Contact' }),
       close,
       el('canvas', { className: 'sachet-canvas' }),
+      el('div', { className: 'sachet-pour', innerHTML: '<svg class="sachet-drips" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0H1200V22C1172 22 1164 58 1140 58S1110 22 1086 22C1052 22 1046 82 1016 82S984 24 950 24C918 24 912 44 888 44S856 18 826 18C792 18 786 70 756 70S722 26 690 26C660 26 652 50 630 50S600 20 570 20C534 20 528 88 496 88S462 24 430 24C398 24 392 46 368 46S336 22 306 22C270 22 266 64 238 64S206 20 176 20C146 20 140 40 118 40S88 16 58 16C30 16 22 52 0 52Z"/></svg>' }),
       el('div', { className: 'sachet-hint' }, [tear]),
       el('div', { className: 'sachet-panel' }, [form, el('p', { className: 'sachet-direct' }, [
         el('a', { className: 'sachet-mail', href: link.href, textContent: email }), copy,
@@ -74,8 +75,9 @@ if (link) {
   let fallbackTimer = 0;
   function reveal() {
     dialog.dataset.state = 'open';
+    setTimeout(() => { if (dialog.dataset.state === 'open') stage?.stop(); }, 1400); // tapado por el rojo: el 3D deja de dibujarse
     clearTimeout(fallbackTimer);
-    fallbackTimer = setTimeout(() => { if (dialog.open) form.querySelector('input').focus({ preventScroll: true }); }, reduced ? 0 : 450);
+    fallbackTimer = setTimeout(() => { if (dialog.open) form.querySelector('input').focus({ preventScroll: true }); }, reduced ? 0 : 900);
   }
 
   // Envío: a Formspree si hay FORM_ENDPOINT; si no, se abre la app de correo con el mensaje ya escrito
