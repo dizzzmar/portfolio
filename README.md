@@ -7,10 +7,11 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 ```
 index.html · room.html · 404.html      Home (el tomate gira con su nombre y baja a la lista Work), The room (habitación 3D) y «no encontrada»
 about/ · faq/ · privacy/               About, FAQs y Privacidad (cada una, un index.html)
+playground/index.html                  Playground: el sandbox de nodos (Plant Lab y Brush Lab) a pantalla completa; el dibujo se hace en el navegador
 posters/index.html                     Collage de trabajos personales y ficticios; cada pieza abre un visor con todo su mini-proyecto (js/posters.js)
 machine/index.html                     Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 project/<nombre>/index.html            Una ficha por proyecto → www.dizmar.xyz/project/<nombre>/
-                                       (lexus-electrified · schweppes · schweppes-the-gentlemen · soap-and-glory-vanilla · enmad)
+                                       (lexus-electrified · schweppes · schweppes-the-gentlemen · soap-and-glory-vanilla · enmad · plant-lab, que lleva el sandbox dentro)
 templates/                             Plantillas para copiar (no son páginas de la web)
   project-template/index.html          Ficha de proyecto nueva, con todo explicado
   project-card.html                    La fila de la lista Work de la home para un proyecto nuevo (8 miniaturas)
@@ -26,11 +27,12 @@ css/                                   Aspecto. Un archivo por zona; los comunes
   nav-logo.css · nav-links.css · menu.css · footer.css · cursor.css · transitions.css   Piezas comunes: tomate y enlaces de la barra, panel «Menu», pie, cursor y transiciones entre páginas
   home.css · home-loading.css          La home y su pantalla de carga
   case.css · case-layout.css · palettes.css   Fichas de proyecto y posters: base (cabecera fija, reproductor, More works), estructura (título que avanza, columna fija, partes) y colores propios de cada proyecto
-  posters.css · about.css · faq.css · privacy.css · not-found.css · contact-sachet.css · terminal.css
+  posters.css · sandbox.css · about.css · faq.css · privacy.css · not-found.css · contact-sachet.css · terminal.css
   room.css · room-wii.css · room-pokemon.css   La habitación, la Wii y la «Pokémon collection»
 
 js/                                    Comportamiento (sin dependencias ni compilación)
   home-*.js                            La home: tomate 3D, introducción, lista Work y pantalla de carga
+  playground/                          El sandbox de nodos: motor del pincel y del papel (engine.js), la planta (plant-engine.js), dibujo de la hoja (render.js), editor genérico (editor.js), tipos de nodo (nodes.js), grafo inicial (sandbox.js) y mount.js, que lo monta en cada página
   case.js · case-index.js · posters.js Fichas (aparición, reproductor, volver, índice de ENMAD) y visor de posters
   room.js · room/                      La habitación 3D; room/ agrupa la Wii, la «Pokémon collection», la iluminación y la carga
   menu.js · cursor.js · smooth-scroll.js · transitions.js · terminal.js · nav-tomato.js · contact-sachet.js · sachet.js   Comunes a casi todas las páginas
