@@ -4,7 +4,7 @@
    blanco o negro es el papel de los dibujos.
    Orden: página · lienzo · nodos · puertos y cables · barra · controles · móvil · movimiento. */
 
-:root { --pl-soft: rgba(20, 20, 20, .62); --sb-black: var(--accent); --sb-paper: #fff; --sb-radius: 40px; }
+:root { --pl-soft: rgba(20, 20, 20, .62); --sb-black: var(--accent); --sb-paper: #fff; --sb-radius: 40px; --sb-pad: 28px; }
 button, select, input { font: inherit; color: inherit; letter-spacing: inherit; }
 button { cursor: pointer; }
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -31,16 +31,24 @@ body.pg-black .case-head { position: fixed; inset: 0 0 auto; height: var(--nav-h
 .pgn-node { --ink: #141414; --bg: var(--sb-paper); position: absolute; width: 308px; color: var(--ink); background: var(--bg); font-size: var(--fs-s); line-height: var(--lh-ui); letter-spacing: 0; cursor: default; user-select: text;
   border-radius: var(--sb-radius); outline: 4px solid var(--sb-black); } /* un filo negro recorta cada hoja: dos hojas que se solapan no se funden */
 .pgn-node.is-wide { width: 468px; }
-.pgn-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 22px 26px 4px; cursor: grab; touch-action: none; user-select: none; }
+.pgn-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 23px var(--sb-pad) 4px; cursor: grab; touch-action: none; user-select: none; }
 .pgn-head:active { cursor: grabbing; }
 .pgn-title { text-wrap: balance; font-family: var(--font-display); font-size: var(--fs-node); font-weight: var(--fw-title); letter-spacing: -.055em; line-height: .95; }
 .pgn-num { margin-left: auto; font-family: var(--font-display); font-size: var(--fs-node); font-weight: var(--fw-title); letter-spacing: -.05em; line-height: .95; font-variant-numeric: tabular-nums; text-align: right; }
 .pgn-x { display: grid; place-items: center; flex: none; width: 24px; height: 24px; margin: 2px -6px 0 0; padding: 0; border: 0; border-radius: 999px; background: none; opacity: .6; transition: opacity .2s, background-color .2s; }
 .pgn-x:hover { opacity: 1; background: rgba(20, 20, 20, .08); }
 .pgn-io { padding: 14px 0 6px; }
-.pgn-row.is-in, .pgn-row.is-out { display: block; padding: 3px 26px; font-size: var(--fs-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; }
+.pgn-row.is-in, .pgn-row.is-out { display: block; padding: 3px var(--sb-pad); font-size: var(--fs-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; }
 .pgn-row.is-out { text-align: right; }
-.pgn-body { display: grid; gap: 16px; padding: 8px 26px 28px; }
+.pgn-body { display: grid; gap: 16px; padding: 8px var(--sb-pad) var(--sb-pb, 28px); }
+/* Padding óptico: la tinta (no la caja) queda a 28 px de los cuatro bordes. El último elemento de cada nodo trae su propio hueco interior (el aire de la línea de texto, el del
+   deslizador, el del botón), así que el relleno de abajo se descuenta: valores medidos sobre la captura de cada nodo (tinta a 28 px del borde de abajo, como el de arriba). */
+.pgn-node[data-type="seed"] { --sb-pb: 27px; }
+.pgn-node[data-type="ink"] { --sb-pb: 27px; }
+.pgn-node[data-type="medium"] { --sb-pb: 26px; }
+.pgn-node[data-type="paper"], .pgn-node[data-type="stroke"], .pgn-node[data-type="grain"], .pgn-node[data-type="hand"] { --sb-pb: 25px; }
+.pgn-node[data-type="plant"] { --sb-pb: 23px; }
+.pgn-node[data-type="pose"], .pgn-node[data-type="shape"], .pgn-node[data-type="study"] { --sb-pb: 22px; }
 .pgn-body:empty { display: none; padding-bottom: 14px; }
 .pgn-body > * { min-width: 0; }
 
@@ -72,7 +80,7 @@ body.pg-black .case-head { position: fixed; inset: 0 0 auto; height: var(--nav-h
 .pgn-zoom { position: absolute; right: var(--edge); bottom: 16px; z-index: 3000; display: flex; gap: 8px; }
 .pgn-bar .pg-btn, .pgn-zoom .pg-btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: var(--sb-black); } /* opacas: pasan por encima de las hojas blancas */
 @media (hover: hover) and (pointer: fine) { .pgn-bar .pg-btn:hover, .pgn-zoom .pg-btn:hover { background: #fff; color: var(--sb-black); } }
-.pgn-menu { --ink: #141414; --bg: var(--sb-paper); position: absolute; bottom: 52px; left: 0; display: grid; gap: 16px; min-width: 240px; padding: 22px 26px 18px; color: var(--ink); background: var(--bg); border-radius: var(--sb-radius); outline: 4px solid var(--sb-black); }
+.pgn-menu { --ink: #141414; --bg: var(--sb-paper); position: absolute; bottom: 52px; left: 0; display: grid; gap: 16px; min-width: 240px; padding: 24px var(--sb-pad) 20px; color: var(--ink); background: var(--bg); border-radius: var(--sb-radius); outline: 4px solid var(--sb-black); }
 .pgn-menu[hidden] { display: none; }
 .pgn-menu-group p { margin-bottom: 4px; font-size: var(--fs-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: var(--fw-bold); }
 .pgn-menu-group button { display: block; width: 100%; padding: 5px 0; border: 0; background: none; font-size: var(--fs-s); text-align: left; }
