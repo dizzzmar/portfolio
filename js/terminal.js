@@ -24,7 +24,7 @@
       'Type `cd <name>` to open a project, for example: cd lexus',
     ],
     contact: [
-      'Email     hey.mariodiz@gmail.com',
+      'Email     contact@dizmar.xyz',
       'LinkedIn  es.linkedin.com/in/mario-diaz-aguado',
       'Based     Madrid, Spain',
     ],
