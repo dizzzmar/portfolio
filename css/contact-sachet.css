@@ -1,5 +1,5 @@
 /* CONTACT · la ventana del sobre de ketchup DIZ (js/contact-sachet.js). Fondo de cielo, como la portada; el sobre en el centro y un único texto,
-   «Tear top open». Al rasgarlo se abre la app de correo; el email solo se enseña (debajo) si la ventana sigue en primer plano. */
+   «Tear top open». Al rasgarlo cae el ketchup (un rojo con gotas) y deja el formulario, con el email y LinkedIn debajo. */
 .sachet {
   position: fixed;
   inset: 0;
@@ -51,28 +51,86 @@
 .sachet .sachet-tear { padding: 8px 0; border: 0; background: none; font-size: var(--fs-lead); font-weight: var(--fw-bold); letter-spacing: -.01em; }
 .sachet:not([data-state="closed"]) .sachet-hint { opacity: 0; pointer-events: none; }
 
-/* Si tras rasgar el sobre la ventana sigue en primer plano (no hay app de correo), el email aparece debajo del sobre, con un botón para copiarlo */
-.sachet-fallback {
+/* Al rasgar el sobre cae el ketchup: un panel rojo del menú (--menu-red, con crema: 4,55:1) baja desde arriba con gotas en el borde, con la misma curva que
+   el telón del menú, y deja el formulario. El texto de los campos va en Funnel Display, grande, como un cartel; las etiquetas, el pie y los enlaces en Funnel Sans. */
+.sachet-pour {
+  z-index: 1;
   position: absolute;
-  left: 24px;
-  right: 24px;
-  bottom: max(36px, env(safe-area-inset-bottom)); /* en el mismo sitio que «Tear top open», que ya se ha ido */
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: baseline;
-  gap: 4px 20px;
-  font-size: var(--fs-lead);
-  font-weight: var(--fw-bold);
-  letter-spacing: -.01em;
+  inset: 0 0 auto;
+  height: calc(100% + 90px); /* las gotas quedan por debajo del borde de la pantalla cuando el rojo ha caído del todo */
+  background: var(--menu-red);
+  translate: 0 calc(-100% - 2px);
+  transition: translate .8s var(--ease-in-out) .12s;
+  pointer-events: none;
+}
+.sachet-drips { position: absolute; left: 0; bottom: 0; width: 100%; height: 90px; translate: 0 100%; fill: var(--menu-red); }
+.sachet[data-state="open"] .sachet-pour { translate: 0 -90px; }
+.sachet[data-state="open"] { color: var(--cream); text-shadow: none; }
+.sachet[data-state="open"] ::selection { background: var(--cream); color: var(--menu-red); }
+.sachet-canvas { transition: opacity .3s ease .9s; }
+.sachet[data-state="open"] .sachet-canvas { opacity: 0; pointer-events: none; }
+
+.sachet-panel {
+  z-index: 2;
+  position: absolute;
+  inset: calc(24px + 44px + 32px) var(--bar-gutter) max(32px, env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 40px;
+  max-width: 1080px;
+  margin: 0 auto;
+  overflow-y: auto;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 300ms var(--ease-out), visibility 0s linear 300ms;
+  translate: 0 18px;
+  transition: opacity .45s var(--ease-out), translate .6s var(--ease-out), visibility 0s linear .6s;
 }
-.sachet[data-state="fallback"] .sachet-fallback { opacity: 1; visibility: visible; transition: opacity 300ms var(--ease-out), visibility 0s; }
-.sachet-mail { color: inherit; text-decoration: none; overflow-wrap: anywhere; }
+.sachet[data-state="open"] .sachet-panel { opacity: 1; visibility: visible; translate: 0 0; transition: opacity .45s var(--ease-out) .75s, translate .6s var(--ease-out) .75s, visibility 0s linear .75s; }
+.sachet-form { display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 36px 40px; }
+.sachet-field { display: grid; gap: 8px; margin: 0; }
+.sachet-field:has(textarea) { grid-column: 1 / -1; }
+.sachet-field label { font-size: var(--fs-s); }
+.sachet-field input, .sachet-field textarea {
+  width: 100%;
+  padding: 2px 0 10px;
+  border: 0;
+  border-bottom: 1.5px solid var(--cream);
+  border-radius: 0;
+  background: none;
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: var(--fs-xl); /* 24 px */
+  font-weight: var(--fw-title);
+  letter-spacing: -.02em;
+  line-height: 1.25;
+  caret-color: var(--cream);
+}
+.sachet-field textarea { min-height: calc(3 * 1.25em + 12px); resize: none; field-sizing: content; max-height: 40dvh; }
+.sachet-field input:focus, .sachet-field textarea:focus { outline: none; border-bottom-width: 3px; padding-bottom: 8.5px; }
+/* El autocompletado de Chrome pinta el campo de amarillo: se tapa con el rojo */
+.sachet-field input:-webkit-autofill { -webkit-text-fill-color: var(--cream); -webkit-box-shadow: 0 0 0 100px var(--menu-red) inset; transition: background-color 9999s; }
+.sachet-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.sachet-actions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; }
+.sachet .sachet-send { min-height: 48px; padding: 0 28px; border: 0; border-radius: 999px; background: var(--cream); color: var(--menu-red); font-size: var(--fs-m); font-weight: var(--fw-bold); letter-spacing: -.01em; transition: transform .16s var(--ease-out), opacity .2s; }
+.sachet .sachet-send:hover { transform: scale(1.03); }
+.sachet .sachet-send:active { transform: scale(.97); }
+.sachet .sachet-send:disabled { opacity: .6; cursor: progress; }
+.sachet .sachet-send:focus-visible { outline: 2px solid var(--cream); outline-offset: 4px; }
+.sachet-status { margin: 0; font-size: var(--fs-s); }
+.sachet-status:empty { display: none; }
+.sachet[data-send="sent"] .sachet-status { font-weight: var(--fw-bold); }
+.sachet-direct { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 24px; margin: 0; font-size: var(--fs-s); }
+.sachet-mail { color: inherit; font-size: var(--fs-lead); font-weight: var(--fw-bold); letter-spacing: -.01em; text-decoration: none; overflow-wrap: anywhere; margin-right: auto; }
 .sachet-mail:hover { text-decoration: underline; text-underline-offset: 4px; }
-.sachet .sachet-copy { padding: 6px 0; border: 0; background: none; font-size: var(--fs-s); font-weight: var(--fw-regular); text-decoration: underline; text-underline-offset: 4px; }
+.sachet .sachet-copy, .sachet-in { padding: 6px 0; border: 0; background: none; color: inherit; font-size: var(--fs-s); font-weight: var(--fw-regular); text-decoration: underline; text-underline-offset: 4px; }
+
+/* Móvil: una sola columna; el panel tiene scroll propio para cuando el teclado tapa la mitad de abajo */
+@media (max-width: 760px) {
+  .sachet-panel { inset: calc(max(24px, env(safe-area-inset-top)) + 44px + 20px) var(--bar-gutter) max(24px, env(safe-area-inset-bottom)); gap: 32px; }
+  .sachet-form { grid-template-columns: 1fr; align-content: start; gap: 26px; }
+  .sachet-field input, .sachet-field textarea { font-size: var(--fs-l); } /* 20 px */
+  .sachet-mail { flex-basis: 100%; }
+}
 
 /* Entrada: la ventana aparece (0,3 s) y el sobre sube 20 px mientras se asienta (0,6 s). Salida: un fundido corto (0,18 s, js/contact-sachet.js la lanza antes de cerrar) */
 @media (prefers-reduced-motion: no-preference) {
@@ -88,5 +146,7 @@
 html.sachet-open { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
-  .sachet-fallback, .sachet[data-state="fallback"] .sachet-fallback { transition: none; }
+  .sachet-canvas, .sachet-panel, .sachet[data-state="open"] .sachet-panel { transition: none; }
+  .sachet-pour { translate: none; opacity: 0; transition: opacity .2s ease; } /* sin caída: el rojo aparece fundido */
+  .sachet[data-state="open"] .sachet-pour { translate: none; opacity: 1; }
 }

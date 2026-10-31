@@ -1,12 +1,15 @@
-// CONTACT · el enlace "Contact" de la barra abre un sobre de ketchup DIZ en 3D sobre el cielo. Se rasga por "TEAR HERE" (arrastrando por la tira
-// de arriba, pulsándola o con el botón «Tear top open») y al rasgarlo se abre la app de correo. Arrastrando por el resto del sobre se gira.
-// Si tras rasgarlo la ventana sigue en primer plano (el ordenador no tiene app de correo, o el navegador pregunta), aparece el email para copiarlo.
-// Sin JavaScript, o si el 3D no carga, Contact sigue siendo el enlace de email de siempre.
-const link = document.querySelector('.nav-links a[href^="mailto:"]');
+// CONTACT · el enlace "Contact" de la barra (en todas las páginas: la de la portada y las verdes, y la de las fichas) abre un sobre de ketchup DIZ en 3D
+// sobre el cielo. Se rasga por "TEAR HERE" (arrastrando por la tira de arriba, pulsándola o con el botón «Tear top open») y al rasgarlo cae el ketchup:
+// un rojo con gotas baja como una cortina y deja el formulario, con el email (para copiarlo o abrir la app de correo) y LinkedIn. Arrastrando por el resto del sobre se gira.
+// El formulario se envía a FORM_ENDPOINT (Formspree, ver la página de privacidad); sin él, «Send» abre la app de correo con el mensaje ya escrito.
+// Sin JavaScript, o si el 3D no carga, Contact sigue siendo el enlace de email de siempre (y sin 3D, el formulario sale directamente).
+const FORM_ENDPOINT = 'https://formspree.io/f/mljjpgpa'; // la dirección pública del formulario en Formspree (no es una clave secreta); vacía, «Send» abre la app de correo
+const LINKEDIN = 'https://es.linkedin.com/in/mario-diaz-aguado';
+const link = document.querySelector('.nav-links a[href^="mailto:"], .case-nav a[href^="mailto:"]');
 if (link) {
   const email = decodeURIComponent(link.href.replace(/^mailto:/, '').split('?')[0]);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let dialog = null, stage = null;
+  let dialog = null, stage = null, form = null;
 
   const el = (tag, attrs = {}, kids = []) => {
     const n = Object.assign(document.createElement(tag), attrs);
@@ -22,13 +25,29 @@ if (link) {
       setTimeout(() => { copy.textContent = 'Copy email'; }, 1800);
     });
     const tear = el('button', { type: 'button', className: 'sachet-tear', textContent: 'Tear top open' });
+    const field = (name, label, input) => { input.name = name; input.id = 'sachet-' + name; input.required = true; return el('p', { className: 'sachet-field' }, [el('label', { htmlFor: input.id, textContent: label }), input]); };
+    const send = el('button', { type: 'submit', className: 'sachet-send', textContent: 'Send' });
+    const status = el('p', { className: 'sachet-status', role: 'status' });
+    const trap = el('input', { type: 'text', name: '_gotcha', tabIndex: -1, autocomplete: 'off', className: 'sachet-trap' }); // campo trampa contra el spam: las personas no lo ven
+    trap.setAttribute('aria-hidden', 'true');
+    form = el('form', { className: 'sachet-form', noValidate: false }, [
+      field('name', 'Name', el('input', { type: 'text', autocomplete: 'name', maxLength: 120 })),
+      field('email', 'Email', el('input', { type: 'email', autocomplete: 'email', maxLength: 200 })),
+      field('message', 'Message', el('textarea', { rows: 4, maxLength: 5000 })),
+      trap, el('div', { className: 'sachet-actions' }, [send, status]),
+    ]);
+    form.addEventListener('submit', (e) => { e.preventDefault(); submit(form, send, status); });
     const close = el('button', { type: 'button', className: 'sachet-close', textContent: 'Close ×' });
     dialog = el('dialog', { className: 'sachet' }, [
       el('h2', { className: 'sachet-title', id: 'sachet-title', textContent: 'Contact' }),
       close,
       el('canvas', { className: 'sachet-canvas' }),
+      el('div', { className: 'sachet-pour', innerHTML: '<svg class="sachet-drips" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0H1200V22C1172 22 1164 58 1140 58S1110 22 1086 22C1052 22 1046 82 1016 82S984 24 950 24C918 24 912 44 888 44S856 18 826 18C792 18 786 70 756 70S722 26 690 26C660 26 652 50 630 50S600 20 570 20C534 20 528 88 496 88S462 24 430 24C398 24 392 46 368 46S336 22 306 22C270 22 266 64 238 64S206 20 176 20C146 20 140 40 118 40S88 16 58 16C30 16 22 52 0 52Z"/></svg>' }),
       el('div', { className: 'sachet-hint' }, [tear]),
-      el('div', { className: 'sachet-fallback' }, [el('a', { className: 'sachet-mail', href: link.href, textContent: email }), copy]),
+      el('div', { className: 'sachet-panel' }, [form, el('p', { className: 'sachet-direct' }, [
+        el('a', { className: 'sachet-mail', href: link.href, textContent: email }), copy,
+        el('a', { className: 'sachet-in', href: LINKEDIN, target: '_blank', rel: 'noopener', textContent: 'LinkedIn' }),
+      ])]),
     ]);
     dialog.setAttribute('aria-labelledby', 'sachet-title');
     dialog.dataset.state = 'closed';
@@ -51,22 +70,40 @@ if (link) {
     setTimeout(() => { dialog.classList.remove('is-closing'); dialog.close(); }, 180);
   }
 
-  // Ya rasgado (con 3D o sin él): se abre la app de correo. Si la ventana sigue en primer plano, se enseña el email para copiarlo.
+  // Ya rasgado (con 3D o sin él): el sobre se aparta y sale el formulario. No se abre ninguna app sin que se pida: quien usa el correo
+  // en el navegador no tiene app y veía que no pasaba nada; el email y «Copy email» están a la vista desde el primer momento.
   let fallbackTimer = 0;
   function reveal() {
     dialog.dataset.state = 'open';
-    location.href = link.href;
+    setTimeout(() => { if (dialog.dataset.state === 'open') stage?.stop(); }, 1400); // tapado por el rojo: el 3D deja de dibujarse
     clearTimeout(fallbackTimer);
-    fallbackTimer = setTimeout(() => {
-      if (!dialog.open || document.visibilityState !== 'visible' || !document.hasFocus()) return;
-      dialog.dataset.state = 'fallback';
-      dialog.querySelector('.sachet-mail').focus({ preventScroll: true });
-    }, 1400);
+    fallbackTimer = setTimeout(() => { if (dialog.open) form.querySelector('input').focus({ preventScroll: true }); }, reduced ? 0 : 900);
+  }
+
+  // Envío: a Formspree si hay FORM_ENDPOINT; si no, se abre la app de correo con el mensaje ya escrito
+  async function submit(f, send, status) {
+    if (!f.reportValidity()) return;
+    const data = Object.fromEntries(new FormData(f));
+    if (data._gotcha) return; // un robot ha rellenado el campo trampa
+    if (!FORM_ENDPOINT) {
+      const body = `${data.message}\n\n${data.name} · ${data.email}`;
+      location.href = `mailto:${email}?subject=${encodeURIComponent('Hello from dizmar.xyz')}&body=${encodeURIComponent(body)}`;
+      return;
+    }
+    send.disabled = true; status.textContent = 'Sending…'; dialog.dataset.send = 'sending';
+    try {
+      const res = await fetch(FORM_ENDPOINT, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, _subject: `dizmar.xyz · ${data.name}` }) });
+      if (!res.ok) throw new Error(String(res.status));
+      f.reset(); status.textContent = 'Sent. I’ll write back soon.'; dialog.dataset.send = 'sent';
+    } catch (err) {
+      status.textContent = `It didn’t go through. Write to ${email} instead.`; dialog.dataset.send = 'error';
+    } finally { send.disabled = false; }
   }
 
   async function open() {
     if (!dialog) build();
     dialog.dataset.state = 'closed';
+    delete dialog.dataset.send; dialog.querySelector('.sachet-status').textContent = '';
     dialog.showModal();
     document.documentElement.classList.add('sachet-open');
     dialog.querySelector('.sachet-tear').focus({ preventScroll: true });
