@@ -13,5 +13,8 @@ Also known as: dizmar, Mario Díaz, Mario Díaz Aguado (Mario Diaz Aguado). Link
 - [ENMAD](https://www.dizmar.xyz/project/enmad/): studies (university project), 2023: identity, spatial design and brand strategy for a fictional design school in Matadero Madrid
 - [Posters](https://www.dizmar.xyz/posters/): personal work, fictional: posters, merch and album artwork for artists and brands (The 1975, Paramore, The Beatles, Del Water Gap, Bon Iver, Halsey, Phoebe Bridgers, Rosalía and more), not commissioned by or affiliated with them
 - [The room](https://www.dizmar.xyz/room.html): interactive 3D shelf of the music, films and things Mario likes
+- [Playground](https://www.dizmar.xyz/playground/): experiments that run in the browser, nothing is uploaded
+- [Plant Lab](https://www.dizmar.xyz/playground/plant-lab/): generative drawing tool, every seed draws a different plant in a pencil of tiny dots on paper; medium, ink and paper can be changed and the drawing saved as PNG
+- [Brush Lab](https://www.dizmar.xyz/playground/brush-lab/): the dry-media brush behind Plant Lab (graphite, charcoal, ink, marker, chalk) tried on eight test shapes
 - [FAQs](https://www.dizmar.xyz/faq/): a joke FAQ: what inspires Mario, his position, where he is based, brands, how to contact him
 - [Privacy](https://www.dizmar.xyz/privacy/): no cookies, no analytics

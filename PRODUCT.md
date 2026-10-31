@@ -29,6 +29,7 @@ Director de arte que integra la IA dentro de la dirección de arte: no la usa so
 - Sin cookies, sin analítica, sin servicios de terceros que reciban datos de visitantes (ver la página de privacidad).
 - Idioma: inglés.
 - «Pokémon collection» en The room: collage infinito sobre negro con 35 cartas de la colección (escaneos oficiales, con nombre y expansión), desplazamiento en ambos ejes y la carta bajo el cursor que se levanta. Sin ampliación al pulsar. En el móvil, tocar el peluche o el botón abre el álbum directamente, sin acercar la cámara.
+- Playground (/playground/): Plant Lab (cada semilla dibuja una planta distinta con un lápiz de puntitos sobre papel) y Brush Lab (el pincel solo, probado sobre ocho formas). Herramientas que se ejecutan en el navegador, sin subir nada ni usar servicios de terceros; el motor está en js/playground/. El papel es lo único que no es lima sobre el verde Lincoln.
 
 ## Brand Commitments
 - El tomate es el símbolo: logo, tomate 3D y la identidad que ya tiene la web.

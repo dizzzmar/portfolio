@@ -18,6 +18,7 @@
   // Enlaces grandes (en este orden) y fila pequeña
   const big = ['Work', 'About', 'Room', 'Contact'].map(find).filter(Boolean);
   const small = [
+    { label: 'Playground', href: '/playground/' },
     { label: 'Machine', href: '/machine/' },
     { label: 'FAQs', href: '/faq/' },
     { label: 'Terminal', action: 'terminal', href: '#terminal' },

@@ -1,0 +1,136 @@
+/* PLAYGROUND — estilos de /playground/ y de sus dos herramientas (Plant Lab y Brush Lab). Se carga después de privacy.css, que pone el verde Lincoln con texto lima,
+   la barra y los dos pesos de letra; las migas y el pie son los de las demás páginas verdes.
+   Una página con la herramienta a la vista: el título y los controles a la izquierda y la hoja de papel grande a la derecha, fija al hacer scroll.
+   Los controles son texto, líneas de 1 px y puntos lima: sin cajas, sin sombras, sin textos de ayuda.
+   Orden: utilidades · portada · herramienta · controles · móvil · movimiento. */
+
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+button, select, input { font: inherit; color: inherit; letter-spacing: inherit; }
+button { cursor: pointer; }
+
+/* Migas de tres niveles (Home / Playground / Plant Lab): el segundo es un enlace, así que cada elemento se alinea como fila */
+.crumbs li { display: flex; align-items: center; }
+
+/* ---------- Portada de Playground: el título fijo a la izquierda y las dos herramientas a la derecha, la segunda más baja ---------- */
+.pg-hub { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: clamp(24px, 4vw, 72px); align-items: start; padding-bottom: clamp(40px, 6vw, 96px); }
+.pg-hub-side { position: sticky; top: calc(var(--nav-h) + clamp(24px, 4vw, 56px)); padding-top: clamp(40px, 7vw, 110px); }
+.pg-hub h1 { font-family: var(--font-display); font-size: var(--fs-h2); font-weight: var(--fw-title); letter-spacing: -.055em; line-height: .95; }
+.pg-tiles { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2.4vw, 40px); padding-top: calc(var(--nav-h) + clamp(40px, 7vw, 110px)); }
+.pg-tiles li:nth-child(2) { margin-top: clamp(40px, 8vw, 140px); }
+.pg-tile { display: block; color: inherit; text-decoration: none; }
+.pg-tile:focus-visible { outline-offset: 6px; }
+.pg-frame { display: block; aspect-ratio: 1; overflow: hidden; background: var(--cream); }
+.pg-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pg-cap { display: block; margin-top: 10px; font-size: var(--fs-s); line-height: var(--lh-ui); letter-spacing: 0; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .pg-frame img { transition: scale .9s var(--ease-out); }
+  .pg-tile:hover .pg-frame img { scale: 1.035; }
+}
+
+/* ---------- Herramienta ---------- */
+.pg-lab { display: grid; grid-template-columns: minmax(300px, 26%) minmax(0, 1fr); grid-template-areas: "title stage" "controls stage"; grid-template-rows: auto 1fr; column-gap: clamp(24px, 4vw, 72px); align-items: start; padding-top: calc(var(--nav-h) + clamp(16px, 2vw, 32px)); padding-bottom: clamp(40px, 6vw, 96px); }
+.pg-title { grid-area: title; margin-bottom: clamp(20px, 2.4vw, 36px); font-family: var(--font-display); font-size: var(--fs-h3); font-weight: var(--fw-title); letter-spacing: var(--tracking-display); line-height: var(--lh-tight); }
+.pg-controls { grid-area: controls; display: grid; gap: clamp(20px, 2.2vw, 32px); }
+/* La hoja: tan grande como deja la pantalla (menos la barra), fija mientras se tocan los controles */
+.pg-stage { grid-area: stage; position: sticky; top: calc(var(--nav-h) + 16px); justify-self: center; width: min(100%, calc(100dvh - var(--nav-h) - 56px)); }
+#view { display: block; width: 100%; height: auto; aspect-ratio: 1; background: var(--cream); }
+#view.is-sheet { cursor: pointer; }
+.pg-note { min-height: 1.45em; margin-top: 10px; font-size: var(--fs-s); line-height: var(--lh-ui); letter-spacing: 0; }
+
+/* ---------- Controles ---------- */
+.pg-seed { display: flex; align-items: center; gap: 8px; }
+.pg-seed input { width: 6ch; min-width: 0; padding: 8px 0; border: 0; border-bottom: 1px solid currentColor; border-radius: 0; background: none; font-size: var(--fs-s); font-variant-numeric: tabular-nums; text-align: center; }
+.pg-seed input:focus-visible { outline-offset: 2px; }
+.pg-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.pg-btn { min-height: 40px; padding: 0 18px; border: 1px solid currentColor; border-radius: 999px; background: none; font-size: var(--fs-s); line-height: 1; transition: transform .16s var(--ease-out), background-color .2s, color .2s; }
+.pg-btn:active { transform: scale(.97); }
+.pg-btn.is-icon { width: 40px; padding: 0; }
+.pg-btn.is-primary { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+@media (hover: hover) and (pointer: fine) { .pg-btn:not(.is-primary):hover { background: var(--ink); color: var(--bg); } }
+.pg-link { padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.pg-link:hover { text-decoration-thickness: 2px; }
+
+.pg-tabs { display: flex; flex-wrap: wrap; column-gap: 20px; }
+.pg-tab { padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); opacity: var(--dim); text-underline-offset: 6px; text-decoration-thickness: 1px; }
+.pg-tab:hover { opacity: 1; }
+.pg-tab[aria-pressed="true"] { opacity: 1; text-decoration: underline; }
+
+/* Medios: cada uno con su trazo; el elegido, con su nombre en negrita y un marco */
+.pg-media { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 10px; }
+.pg-medium { display: block; padding: 0; border: 0; background: none; text-align: left; font-size: var(--fs-s); line-height: var(--lh-ui); letter-spacing: 0; }
+.pg-medium canvas { display: block; width: 100%; height: auto; aspect-ratio: 104 / 28; margin-bottom: 6px; }
+.pg-medium[aria-pressed="true"] canvas { outline: 2px solid var(--ink); outline-offset: 3px; }
+.pg-medium[aria-pressed="true"] span { font-weight: var(--fw-bold); }
+.pg-inks { display: flex; flex-wrap: wrap; gap: 12px; }
+.pg-ink { width: 24px; height: 24px; padding: 0; border: 1px solid var(--ink); border-radius: 999px; }
+.pg-ink[aria-pressed="true"] { outline: 2px solid var(--ink); outline-offset: 3px; }
+/* En el móvil los campos miden 16 px: con menos, iOS acerca la página al enfocarlos */
+@media (pointer: coarse) { .pg-seed input, .pg-pick select { font-size: 16px; } }
+@media (pointer: coarse) { .pg-ink { width: 32px; height: 32px; } .pg-tab, .pg-link { padding-block: 12px; } }
+
+/* Grupos que se abren con +, como las FAQs */
+.pg-group { border-top: 1px solid var(--ink); }
+.pg-group:last-child { border-bottom: 1px solid var(--ink); }
+.pg-group[hidden] { display: none; }
+.pg-group summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; list-style: none; cursor: pointer; font-weight: var(--fw-bold); line-height: 1.3; }
+.pg-group summary::-webkit-details-marker { display: none; }
+.pg-plus { position: relative; width: 14px; height: 14px; flex: none; }
+.pg-plus::before, .pg-plus::after { content: ""; position: absolute; left: 0; top: 50%; width: 100%; height: 1.5px; margin-top: -.75px; background: currentColor; transition: transform .3s var(--ease-out); }
+.pg-plus::after { transform: rotate(90deg); }
+.pg-group[open] .pg-plus::after { transform: rotate(0deg); }
+.pg-body { padding: 4px 0 22px; }
+.pg-body > * + * { margin-top: 22px; }
+
+.pg-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; row-gap: 2px; font-size: var(--fs-s); line-height: var(--lh-ui); letter-spacing: 0; }
+.pg-row + .pg-row { margin-top: 10px; }
+.pg-row output { font-variant-numeric: tabular-nums; }
+.pg-row-inline { align-items: center; column-gap: 12px; }
+
+input[type="range"] { grid-column: 1 / -1; -webkit-appearance: none; appearance: none; width: 100%; height: 24px; margin: 0; background: none; color: var(--ink); cursor: pointer; }
+input[type="range"]::-webkit-slider-runnable-track { height: 1px; background: currentColor; }
+input[type="range"]::-moz-range-track { height: 1px; background: currentColor; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -6.5px; border: 0; border-radius: 999px; background: currentColor; transition: transform .16s var(--ease-out); }
+input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 999px; background: currentColor; }
+input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.3); }
+input[type="range"]:focus-visible { outline-offset: 2px; }
+
+/* Selector que enseña su valor: el <select> real va encima, invisible, para que funcione el del sistema (teclado, móvil, lector de pantalla) */
+.pg-pick { position: relative; display: flex; align-items: center; justify-content: flex-end; gap: 10px; min-width: 9em; padding: 8px 0; border-bottom: 1px solid currentColor; }
+.pg-pick.is-wide { min-width: 0; width: 100%; }
+.pg-shown { flex: 1; text-align: right; }
+.pg-pick.is-wide .pg-shown { text-align: left; }
+.pg-pick::after { content: ""; flex: none; width: 6px; height: 6px; margin-top: -3px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; rotate: 45deg; }
+.pg-pick select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.pg-pick select option { color: var(--ink); background: var(--bg); }
+.pg-pick:focus-within { outline: 2px solid var(--ink); outline-offset: 3px; }
+.pg-pick.is-locked .pg-shown { font-weight: var(--fw-bold); }
+.pg-body .pg-traits + .pg-traits { margin-top: 26px; }
+
+.pg-switch { padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.pg-switch[aria-pressed="true"] { font-weight: var(--fw-bold); }
+
+/* ---------- Móvil: título, hoja (fija arriba mientras se tocan los controles) y controles debajo ---------- */
+@media (max-width: 900px) {
+  .pg-hub { grid-template-columns: 1fr; }
+  .pg-hub-side { position: static; padding-top: calc(var(--nav-h) + clamp(24px, 6vw, 48px)); }
+  .pg-tiles { padding-top: clamp(28px, 7vw, 48px); gap: 14px; }
+  .pg-tiles li:nth-child(2) { margin-top: clamp(24px, 8vw, 56px); }
+  .pg-lab { grid-template-columns: 1fr; grid-template-areas: "title" "stage" "controls"; row-gap: 16px; }
+  .pg-title { position: relative; z-index: 3; margin-bottom: 0; }
+  /* Ocupa todo el ancho y empieza en el borde de arriba, por debajo de la barra, para que los controles no se vean pasar por los lados ni por encima de la hoja */
+  .pg-stage { top: 0; z-index: 2; width: auto; justify-self: stretch; margin: calc(-1 * var(--nav-h)) calc(-1 * var(--gutter)) 0; padding: calc(var(--nav-h) + 8px) var(--gutter) 8px; background: var(--bg); }
+  #view { width: min(100%, 34dvh); margin-inline: auto; }
+  .pg-note { margin-top: 6px; }
+}
+
+/* ---------- Movimiento: lo que aparece sube un poco; sin «reducir movimiento», nada de esto ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .pg-hub h1, .pg-tiles li, .pg-title, .pg-stage, .pg-controls { animation: pv-in .6s var(--ease-out) both; }
+  .pg-tiles li:nth-child(2) { animation-delay: .08s; }
+  .pg-stage { animation-delay: .06s; }
+  .pg-controls { animation-delay: .1s; }
+  .pg-group::details-content { block-size: 0; overflow: clip; transition: block-size .35s var(--ease-out), content-visibility .35s allow-discrete; }
+  .pg-group[open]::details-content { block-size: auto; }
+}
+@media (prefers-reduced-motion: reduce) { .pg-plus::before, .pg-plus::after, .pg-btn { transition: none; } }
+:root { interpolate-size: allow-keywords; }
