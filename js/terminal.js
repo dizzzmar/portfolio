@@ -1,4 +1,4 @@
-// TERMINAL · una ventana de texto que se abre desde el enlace «Terminal» del pie de página (todas las páginas) o con la tecla `. Escribe `help`.
+// TERMINAL · una ventana de texto que se abre con la tecla ` desde cualquier página (no tiene enlace visible: es un guiño para quien lo busca). Escribe `help`.
 // Todo va en el propio script: sin red, sin cookies, sin datos de visitantes. Los textos se escriben con textContent, nunca como HTML.
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -31,22 +31,9 @@
   };
 
   // ---------- Construcción (una vez) ----------
-  // Entrada: «Terminal» en la fila pequeña del menú (js/menu.js); donde no hay menú (Machine, 404), un enlace en el pie. La tecla ` la abre desde cualquier sitio.
+  // Entrada: la tecla ` (sin enlace en el menú ni en el pie, para que el pie sea el mismo en todas partes)
   const triggers = [];
   let lastTrigger = null;
-  const foot = document.querySelector('.site-foot, .room-foot, .wrap > footer');
-  if (foot && !document.querySelector('.menu-li')) {
-    const footLink = document.createElement('a');
-    footLink.href = '#terminal';
-    footLink.className = 'term-open term-foot';
-    footLink.setAttribute('aria-haspopup', 'dialog');
-    footLink.setAttribute('aria-controls', 'term');
-    footLink.textContent = 'Terminal';
-    if (foot.classList.contains('site-foot') || foot.children.length === 2) foot.insertBefore(footLink, foot.lastElementChild);
-    else (foot.querySelector('span') || foot).append(' · ', footLink);
-    triggers.push(footLink);
-    lastTrigger = footLink;
-  }
 
   const panel = document.createElement('section');
   panel.id = 'term';
@@ -722,7 +709,7 @@
   refreshSuggestions();
 
   triggers.forEach((t) => t.addEventListener('click', (e) => { e.preventDefault(); lastTrigger = t; panel.hidden ? openTerm() : closeTerm(); }));
-  document.addEventListener('terminal:open', () => { if (panel.hidden) openTerm(); }); // la fila pequeña del menú (js/menu.js)
+  document.addEventListener('terminal:open', () => { if (panel.hidden) openTerm(); }); // para abrirla desde otras piezas de la web
   close.addEventListener('click', closeTerm);
   row.addEventListener('submit', (e) => { e.preventDefault(); run(input.value); input.value = ''; });
   // El tabulador se queda dentro de la terminal mientras está abierta (Escape la cierra y devuelve el foco)
