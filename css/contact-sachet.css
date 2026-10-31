@@ -99,19 +99,19 @@
   background: none;
   color: var(--cream);
   font-family: var(--font-display);
-  font-size: var(--fs-h3); /* 24–44 px: el texto que se escribe es lo más grande de la pantalla */
+  font-size: var(--fs-xl); /* 24 px */
   font-weight: var(--fw-title);
-  letter-spacing: -.03em;
-  line-height: 1.15;
+  letter-spacing: -.02em;
+  line-height: 1.25;
   caret-color: var(--cream);
 }
-.sachet-field textarea { min-height: calc(3 * 1.15em + 12px); resize: none; field-sizing: content; max-height: 40dvh; }
+.sachet-field textarea { min-height: calc(3 * 1.25em + 12px); resize: none; field-sizing: content; max-height: 40dvh; }
 .sachet-field input:focus, .sachet-field textarea:focus { outline: none; border-bottom-width: 3px; padding-bottom: 8.5px; }
 /* El autocompletado de Chrome pinta el campo de amarillo: se tapa con el rojo */
 .sachet-field input:-webkit-autofill { -webkit-text-fill-color: var(--cream); -webkit-box-shadow: 0 0 0 100px var(--menu-red) inset; transition: background-color 9999s; }
 .sachet-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .sachet-actions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; }
-.sachet .sachet-send { min-height: 56px; padding: 0 34px; border: 0; border-radius: 999px; background: var(--cream); color: var(--menu-red); font-size: var(--fs-l); font-weight: var(--fw-bold); letter-spacing: -.01em; transition: transform .16s var(--ease-out), opacity .2s; }
+.sachet .sachet-send { min-height: 48px; padding: 0 28px; border: 0; border-radius: 999px; background: var(--cream); color: var(--menu-red); font-size: var(--fs-m); font-weight: var(--fw-bold); letter-spacing: -.01em; transition: transform .16s var(--ease-out), opacity .2s; }
 .sachet .sachet-send:hover { transform: scale(1.03); }
 .sachet .sachet-send:active { transform: scale(.97); }
 .sachet .sachet-send:disabled { opacity: .6; cursor: progress; }
@@ -128,7 +128,7 @@
 @media (max-width: 760px) {
   .sachet-panel { inset: calc(max(24px, env(safe-area-inset-top)) + 44px + 20px) var(--bar-gutter) max(24px, env(safe-area-inset-bottom)); gap: 32px; }
   .sachet-form { grid-template-columns: 1fr; align-content: start; gap: 26px; }
-  .sachet-field input, .sachet-field textarea { font-size: 28px; }
+  .sachet-field input, .sachet-field textarea { font-size: var(--fs-l); } /* 20 px */
   .sachet-mail { flex-basis: 100%; }
 }
 
