@@ -77,5 +77,5 @@
   --lh-ui: 1.3;                           /* menús y textos cortos */
   --lh-body: 1.45;                        /* texto corrido */
 }
-@media (min-width: 821px) { :root { --fs-menu: clamp(44px, 6.8vw, 112px); } }
+@media (min-width: 821px) { :root { --fs-menu: clamp(36px, 5.1vw, 96px); } } /* cinco enlaces en una fila (Playground es largo) */
 @media (max-width: 700px) { :root { --nav-h: 56px; --bar-gutter: 14px; } }
