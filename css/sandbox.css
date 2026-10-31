@@ -11,6 +11,7 @@ button { cursor: pointer; }
 
 /* ---------- Página /playground/: toda en negro; el lienzo ocupa la pantalla bajo la barra y el pie queda debajo ---------- */
 body.pg-black { background: var(--sb-black); color: #fff; }
+body.pg-black .case-head { position: fixed; inset: 0 0 auto; height: var(--nav-h); padding: 0; display: block; } /* en móvil la cabecera de proyecto es una fila de la página; aquí es la barra fija de siempre y el lienzo empieza justo debajo */
 .pg-app { position: relative; height: calc(100dvh - var(--nav-h)); margin-top: var(--nav-h); }
 .pg-app .pgn-root { position: absolute; inset: 0; }
 
@@ -28,19 +29,19 @@ body.pg-black { background: var(--sb-black); color: #fff; }
 
 /* ---------- Nodos: hojas de papel de formas blandas (cuatro siluetas que se reparten) ---------- */
 .pgn-node { --ink: #141414; --bg: var(--sb-paper); position: absolute; width: 308px; color: var(--ink); background: var(--bg); font-size: var(--fs-s); line-height: var(--lh-ui); letter-spacing: 0; cursor: default; user-select: text;
-  border-radius: 46px 30px 52px 34px / 38px 50px 34px 46px; }
+  border-radius: 46px 30px 52px 34px / 38px 50px 34px 46px; outline: 4px solid var(--sb-black); } /* un filo negro recorta cada hoja: dos hojas que se solapan no se funden */
 .pgn-node[data-shape="1"] { border-radius: 32px 52px 36px 48px / 48px 34px 50px 36px; }
 .pgn-node[data-shape="2"] { border-radius: 54px 36px 30px 50px / 34px 46px 52px 38px; }
 .pgn-node[data-shape="3"] { border-radius: 36px 48px 50px 30px / 52px 32px 40px 48px; }
 .pgn-node.is-wide { width: 468px; }
 .pgn-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 22px 26px 4px; cursor: grab; touch-action: none; user-select: none; }
 .pgn-head:active { cursor: grabbing; }
-.pgn-title { font-family: var(--font-display); font-size: 36px; font-weight: var(--fw-title); letter-spacing: -.055em; line-height: .95; }
-.pgn-num { margin-left: auto; font-family: var(--font-display); font-size: 36px; font-weight: var(--fw-title); letter-spacing: -.05em; line-height: .95; font-variant-numeric: tabular-nums; text-align: right; }
-.pgn-x { display: grid; place-items: center; flex: none; width: 24px; height: 24px; margin: 2px -6px 0 0; padding: 0; border: 0; border-radius: 999px; background: none; opacity: .5; transition: opacity .2s, background-color .2s; }
+.pgn-title { text-wrap: balance; font-family: var(--font-display); font-size: var(--fs-node); font-weight: var(--fw-title); letter-spacing: -.055em; line-height: .95; }
+.pgn-num { margin-left: auto; font-family: var(--font-display); font-size: var(--fs-node); font-weight: var(--fw-title); letter-spacing: -.05em; line-height: .95; font-variant-numeric: tabular-nums; text-align: right; }
+.pgn-x { display: grid; place-items: center; flex: none; width: 24px; height: 24px; margin: 2px -6px 0 0; padding: 0; border: 0; border-radius: 999px; background: none; opacity: .6; transition: opacity .2s, background-color .2s; }
 .pgn-x:hover { opacity: 1; background: rgba(20, 20, 20, .08); }
 .pgn-io { padding: 14px 0 6px; }
-.pgn-row.is-in, .pgn-row.is-out { display: block; padding: 3px 26px; font-size: var(--fs-xs); letter-spacing: .06em; text-transform: uppercase; }
+.pgn-row.is-in, .pgn-row.is-out { display: block; padding: 3px 26px; font-size: var(--fs-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; }
 .pgn-row.is-out { text-align: right; }
 .pgn-body { display: grid; gap: 16px; padding: 8px 26px 28px; }
 .pgn-body:empty { display: none; padding-bottom: 14px; }
@@ -74,9 +75,9 @@ body.pg-black { background: var(--sb-black); color: #fff; }
 .pgn-zoom { position: absolute; right: var(--edge); bottom: 16px; z-index: 3000; display: flex; gap: 8px; }
 .pgn-bar .pg-btn, .pgn-zoom .pg-btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: var(--sb-black); } /* opacas: pasan por encima de las hojas blancas */
 @media (hover: hover) and (pointer: fine) { .pgn-bar .pg-btn:hover, .pgn-zoom .pg-btn:hover { background: #fff; color: var(--sb-black); } }
-.pgn-menu { --ink: #141414; --bg: var(--sb-paper); position: absolute; bottom: 52px; left: 0; display: grid; gap: 16px; min-width: 240px; padding: 22px 26px 18px; color: var(--ink); background: var(--bg); border-radius: 38px 26px 42px 30px / 30px 40px 28px 38px; }
+.pgn-menu { --ink: #141414; --bg: var(--sb-paper); position: absolute; bottom: 52px; left: 0; display: grid; gap: 16px; min-width: 240px; padding: 22px 26px 18px; color: var(--ink); background: var(--bg); border-radius: 38px 26px 42px 30px / 30px 40px 28px 38px; outline: 4px solid var(--sb-black); }
 .pgn-menu[hidden] { display: none; }
-.pgn-menu-group p { margin-bottom: 4px; font-size: var(--fs-xs); letter-spacing: .06em; text-transform: uppercase; font-weight: var(--fw-bold); }
+.pgn-menu-group p { margin-bottom: 4px; font-size: var(--fs-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: var(--fw-bold); }
 .pgn-menu-group button { display: block; width: 100%; padding: 5px 0; border: 0; background: none; font-size: var(--fs-s); text-align: left; }
 .pgn-menu-group button:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 
@@ -89,7 +90,7 @@ body.pg-black { background: var(--sb-black); color: #fff; }
 .pg-link { padding: 6px 0; border: 0; background: none; font-size: var(--fs-s); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; text-align: left; }
 .pg-link:hover { text-decoration-thickness: 2px; }
 .pg-seed { display: flex; align-items: center; gap: 8px; }
-.pg-seed input { width: 4.4ch; min-width: 0; padding: 0; border: 0; border-radius: 0; background: none; font-family: var(--font-display); font-size: 64px; font-weight: var(--fw-title); letter-spacing: -.06em; line-height: .9; font-variant-numeric: tabular-nums; }
+.pg-seed input { width: 4.4ch; min-width: 0; padding: 0; border: 0; border-radius: 0; background: none; font-family: var(--font-display); font-size: var(--fs-numeral); font-weight: var(--fw-title); letter-spacing: -.06em; line-height: .9; font-variant-numeric: tabular-nums; }
 .pg-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .pg-note { font-size: var(--fs-s); line-height: var(--lh-ui); }
 .pg-note:empty { display: none; }
@@ -110,7 +111,7 @@ body.pg-black { background: var(--sb-black); color: #fff; }
 
 .pg-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; font-size: var(--fs-s); line-height: var(--lh-ui); letter-spacing: 0; }
 .pg-row + .pg-row { margin-top: 6px; }
-.pg-row > :first-child { font-size: var(--fs-xs); letter-spacing: .06em; text-transform: uppercase; }
+.pg-row > :first-child { font-size: var(--fs-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; }
 .pg-row > :first-child::before { content: "+"; display: inline-block; width: 1.3em; }
 .pg-row output { font-variant-numeric: tabular-nums; }
 .pg-row-inline { align-items: center; column-gap: 12px; }
@@ -137,17 +138,17 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.3); }
 
 /* La hoja de papel, su pie en mayúsculas (como la lista de nombres del cartel) y la ficha de la planta */
 .pgn-sheet { display: block; width: 100%; height: auto; aspect-ratio: 1; border-radius: 30px 16px 34px 20px; background: var(--panel); }
-.pgn-cap { font-size: var(--fs-xs); letter-spacing: .06em; line-height: 1.45; text-transform: uppercase; overflow-wrap: anywhere; }
+.pgn-cap { text-wrap: pretty; font-size: var(--fs-xs); letter-spacing: var(--tracking-label); line-height: 1.45; text-transform: uppercase; overflow-wrap: anywhere; }
 .pgn-species { font-weight: var(--fw-bold); font-style: italic; }
 .pgn-traits { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; row-gap: 2px; }
-.pgn-traits dt { font-size: var(--fs-xs); letter-spacing: .06em; text-transform: uppercase; color: rgba(20, 20, 20, .75); }
+.pgn-traits dt { font-size: var(--fs-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; color: rgba(20, 20, 20, .75); }
 .pgn-traits dt::before { content: "+"; display: inline-block; width: 1.3em; }
 .pgn-traits dd { text-align: right; }
 .pgn-traits dd.is-locked { font-weight: var(--fw-bold); }
 
 /* ---------- Móvil ---------- */
 @media (pointer: coarse) {
-  .pg-seed input, .pg-pick select { font-size: 16px; } .pg-seed input { font-size: 64px; } .pg-ink { width: 34px; height: 34px; } .pg-tab, .pg-link, .pg-switch { padding-block: 10px; }
+  .pg-pick select { font-size: var(--fs-m); } /* con menos de 16 px iOS acerca la página al enfocar */ .pg-ink { width: 34px; height: 34px; } .pg-tab, .pg-link, .pg-switch { padding-block: 10px; }
   .pgn-x { width: 40px; height: 40px; margin: -8px -14px -8px 0; } .pgn-port::after { inset: -16px; } .pgn-wire-x circle { r: 16px; }
   .pg-btn { min-height: 44px; } .pg-btn.is-icon { width: 44px; }
   /* En la ficha, un dedo que empieza dentro del sandbox sigue desplazando la página (vertical); para mover el lienzo en vertical, Full screen */

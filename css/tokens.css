@@ -53,6 +53,8 @@
   --fs-h3: clamp(24px, 2.8vw, 44px);      /* títulos de sección y de proyecto (barra) */
   --fs-h2: clamp(40px, 5vw, 76px);        /* títulos grandes */
   --fs-h1: clamp(56px, 9vw, 140px);       /* título de página y nombres de proyecto */
+  --fs-node: 36px;     /* título de un nodo del sandbox (Plant Lab / Playground) y la semilla de su hoja */
+  --fs-numeral: 64px;  /* la semilla del nodo Seed, como la fecha del cartel */
   --fs-menu: clamp(52px, 16vw, 84px);     /* los cuatro enlaces grandes del menú (apilados en móvil, en fila desde 821 px: ver abajo) */
 
   /* Movimiento: dos curvas para todo. De salida (rápida al empezar, frena suave) y de ida y vuelta (arranca y frena: moverse por la pantalla). Duraciones en DESIGN.md */

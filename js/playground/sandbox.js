@@ -29,10 +29,9 @@ export function mountSandbox(root, { wheel = 'page', extra = false, fullHref } =
     const settle = () => { layout(ids); if (!editor.touched) frame(); };
     const frame = () => {
       editor.fit();
-      if (editor.scale < 0.6) { // el grafo entero no cabe con letra legible: se empieza en la cadena semilla → planta → hoja, con el borde de arriba bajo la barra de botones
-        const narrow = root.clientWidth < 700, k = narrow ? 0.9 : Math.min(0.85, Math.max(0.6, root.clientWidth / 1500));
-        editor.focusAt(narrow ? 590 : 800, root.clientHeight / 2 / k - 80 / k, k);
-      }
+      // El texto de los nodos se lee a tamaño real (zoom 1; con zoom menor, las mayúsculas pequeñas bajan de 8 px): se empieza en la cadena planta → hoja y «Fit» da el panorama
+      const w = root.clientWidth, k = w < 700 ? 1 : Math.min(1, Math.max(0.8, w / 960));
+      editor.focusAt(w < 700 ? 590 : w >= 1300 ? 654 : 864, root.clientHeight / 2 / k - 80 / k, k);
     };
     requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(settle)));
     document.fonts && document.fonts.ready.then(() => { if (!editor.touched) settle(); });
