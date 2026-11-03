@@ -1,0 +1,36 @@
+/* FOOTER GRANDE (solo en la portada, al final de Projects) · referencia: wearepanico.com. Un bloque de color liso (rojo del menú) con «DIZMAR» enorme en crema,
+   de borde a borde. Sus piezas (enlaces, letras y «Go up») llegan desordenadas, desplazadas y giradas, y se colocan en su sitio según se baja
+   (js/big-foot.js, atado al scroll). Al llegar al final, «Go up» da un pulso. El pie pequeño de siempre sigue debajo, igual que en todas las páginas.
+   Sin JavaScript (o con «reducir movimiento») todo está ya en su sitio. */
+.big-foot {
+  position: relative; z-index: 5;
+  display: grid; grid-template-rows: auto 1fr auto; row-gap: clamp(24px, 4vw, 56px);
+  min-height: min(100vh, 760px); min-height: min(100svh, 760px);
+  padding: clamp(28px, 4vw, 56px) var(--bar-gutter) clamp(24px, 3vw, 40px);
+  background: var(--menu-red); color: var(--cream); overflow: clip;
+}
+.bf-top, .bf-bottom { display: flex; align-items: center; justify-content: flex-end; gap: 24px; }
+.bf-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px clamp(20px, 3.4vw, 56px); list-style: none; font-size: var(--fs-s); line-height: 1.4; text-transform: uppercase; letter-spacing: .04em; }
+.bf-links a { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
+.bf-links a::before { content: ""; width: 14px; height: 2px; background: currentColor; rotate: -55deg; }   /* la rayita de Pánico, antes de cada enlace */
+.bf-word {
+  align-self: center; margin: 0; white-space: nowrap; user-select: none;
+  font-family: var(--font-display); font-weight: 800; letter-spacing: -.04em; line-height: .8;
+  font-size: var(--bf-size, 21vw);                         /* js/big-foot.js lo ajusta para que ocupe justo todo el ancho */
+  display: flex; justify-content: space-between;
+}
+.bf-word span { display: block; will-change: transform; }
+.bf-up { margin-left: auto; display: inline-flex; align-items: center; gap: 16px; color: inherit; text-decoration: none; font-size: var(--fs-s); text-transform: uppercase; letter-spacing: .08em; }
+.bf-up-box { position: relative; display: grid; place-items: center; width: 56px; height: 56px; border: 2px solid currentColor; transition: background-color .35s var(--ease-out), color .35s var(--ease-out); }
+.bf-up-box svg { width: 22px; height: 22px; transition: translate .5s var(--ease-out); }
+.bf-up:hover .bf-up-box, .bf-up.is-active .bf-up-box { background: var(--cream); color: var(--menu-red); }
+.bf-up:hover .bf-up-box svg, .bf-up.is-active .bf-up-box svg { translate: 0 -3px; }
+.bf-up:focus-visible { outline: 2px solid var(--cream); outline-offset: 6px; }
+.bf-links a:focus-visible { outline: 2px solid var(--cream); outline-offset: 4px; }
+.big-foot ::selection { background: var(--cream); color: var(--menu-red); }
+@media (max-width: 700px) {
+  .big-foot { min-height: 0; row-gap: 40px; }
+  .bf-top { justify-content: flex-start; }
+  .bf-links { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .bf-word { font-size: var(--bf-size, 23vw); }
+}

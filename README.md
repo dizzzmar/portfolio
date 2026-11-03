@@ -33,6 +33,7 @@ css/                                   Aspecto. Un archivo por zona; los comunes
 
 js/                                    Comportamiento (sin dependencias ni compilación)
   home-*.js                            La home: tomate 3D, introducción, lista Projects y pantalla de carga
+  big-foot.js                          El footer grande de la home («DIZMAR» enorme cuyas piezas se recomponen con el scroll; estilos en css/big-foot.css)
   playground/                          El sandbox de nodos: motor del pincel y del papel (engine.js), la planta (plant-engine.js), dibujo de la hoja (render.js), editor genérico (editor.js), tipos de nodo (nodes.js), grafo inicial (sandbox.js) y mount.js, que lo monta en cada página
   case.js · case-index.js · posters.js Fichas (aparición, reproductor, volver, índice de ENMAD) y visor de posters
   room.js · room/                      La habitación 3D; room/ agrupa la Wii, la «Pokémon collection», la iluminación y la carga
