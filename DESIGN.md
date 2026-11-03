@@ -199,7 +199,7 @@ A node sandbox in the look of a Belgian typographic poster (the reference: two c
 - **Motion:** the sandbox rises 18 px when the page opens (`pgn-in`); new nodes grow in; sliders, buttons and ports give a quick press; with reduced motion none of it.
 
 ### Text links
-No fixed underline. On hover a 1 px line draws in from the side the pointer enters and leaves from the side it exits (0.4 s). In a paragraph there is also a faint permanent line. On touch it is a normal underline. The current page keeps the full line.
+No fixed underline and no line on hover: on hover, as on donut-studio.com, the letters of a text link rise one by one and the word is written again from below (0.42 s, 20 ms between letters, `var(--ease-out)`; css/link-roll.css, js/link-roll.js). It covers the bar, the footer, the menu (small and big links) and the links inside paragraphs; project cards, thumbnails, logos and player controls keep their own hover. In a paragraph there is also a faint permanent line. On touch there is no roll: a normal underline. The current page keeps the full line. Reduced motion: no roll.
 
 ### Buttons
 - **Shape:** a full pill (999 px).
