@@ -65,7 +65,7 @@
   --accent: #0c0c0b;
   --cursor: #f83d0c; /* el punto del cursor sigue siendo rojo tomate */
   --menu-red: #df1f1f;
-  --mustard: #ffc214;   /* amarillo mostaza (de wearepanico.com): la ventana de Contact; con --green, 5,5:1 para texto pequeño */
+  --mustard: #ffc214;   /* amarillo mostaza (de wearepanico.com): la ventana de Contact; con el rojo de la web da 3:1 (solo para texto grande) */
   --cream: #fff6ea;
 
   /* La barra de arriba: 64 px de alto y 24 px de margen a los lados (56 px y 14 px en móvil, hasta 700 px de ancho). Barra, tomate, pie y menú comparten estos dos valores */

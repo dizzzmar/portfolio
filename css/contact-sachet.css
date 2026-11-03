@@ -1,6 +1,7 @@
-/* CONTACT · la ventana de contacto (js/contact-sachet.js): amarillo mostaza liso con un «SAY HI» enorme en rojo a la izquierda y el formulario a la derecha, con cada campo
-   como una barra roja de texto crema (4,51:1), el verde para lo pequeño (enlaces, etiquetas) y el botón. Combinación de wearepanico.com. Es solo el formulario;
-   el sobre de ketchup DIZ en 3D está abajo a la izquierda, pequeño (se gira arrastrándolo y se puede rasgar). */
+/* CONTACT · la ventana de contacto (js/contact-sachet.js): amarillo mostaza liso y todo en rojo, como la sección de contacto de wearepanico.com: los campos son barras rojas a todo
+   el ancho arriba, que van apareciendo una a una (nombre, email, mensaje y por fin «Send»), «SAY HI» enorme abajo a la izquierda y los datos de contacto abajo a la derecha.
+   Todo en el rojo de la web (--menu-red) sobre el amarillo, sin verde; texto crema sobre las barras (4,51:1). Es solo el formulario; el sobre de ketchup DIZ en 3D está abajo,
+   pequeño, en el centro (se gira arrastrándolo y se puede rasgar). */
 .sachet {
   position: fixed;
   inset: 0;
@@ -13,7 +14,7 @@
   border: 0;
   overflow: hidden;
   background: var(--mustard);
-  color: var(--green);
+  color: var(--menu-red);
   font-family: var(--font-ui);
   font-size: var(--fs-s); /* en About y Privacy el texto del cuerpo es más grande y se heredaría */
 }
@@ -23,29 +24,31 @@
 .sachet button { font: inherit; color: inherit; cursor: pointer; }
 .sachet :focus-visible { outline: 2px solid currentColor; outline-offset: 6px; }
 
-/* El sobre: una caja pequeña abajo en el centro, entre el email (a la izquierda) y los enlaces (a la derecha) del pie */
+/* El sobre: una caja pequeña abajo en el centro, entre el título (a la izquierda) y los datos (a la derecha) */
 .sachet-canvas {
   position: absolute;
-  left: var(--bar-gutter);
+  left: 50%;
   bottom: max(8px, env(safe-area-inset-bottom));
   width: clamp(104px, 10vw, 150px);
   height: clamp(150px, 22vh, 220px);
+  translate: -50% 0;
   touch-action: none;
 }
 .sachet.is-tearing .sachet-canvas { cursor: ew-resize; }
 .sachet.is-turning .sachet-canvas { cursor: grabbing; }
 @media (max-height: 760px) { .sachet-canvas { width: 88px; height: 126px; } }
 
+/* El título: dos líneas («SAY / HI») enormes, abajo a la izquierda, como en la referencia */
 .sachet-title {
   z-index: 3;
   position: absolute;
-  top: calc(max(24px, env(safe-area-inset-top)) + 64px);
   left: var(--bar-gutter);
-  max-width: 34vw;
+  bottom: max(28px, env(safe-area-inset-bottom));
+  width: 3.1em;
   margin: 0;
-  color: #da1c1c;   /* el rojo del menú, un punto más oscuro: sobre el mostaza llega a 3,1:1 (texto grande) */
+  color: var(--menu-red);
   font-family: var(--font-display);
-  font-size: clamp(64px, 10.5vw, 168px);
+  font-size: clamp(72px, 13vw, 200px);
   font-weight: 800;
   letter-spacing: -.045em;
   line-height: .86;
@@ -55,65 +58,69 @@
 .sachet .sachet-close { z-index: 2; position: absolute; top: 24px; right: 24px; min-height: 44px; padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); }
 .sachet-close:hover { text-decoration: underline; text-underline-offset: 4px; }
 
-/* El formulario: dos columnas (una en el móvil); lo que se escribe va en Funnel Display a 24 px, como un cartel; las etiquetas, el pie y los enlaces en Funnel Sans */
+/* El formulario: las barras rojas ocupan todo el ancho, debajo de la barra de la página; los datos de contacto van abajo a la derecha */
 .sachet-panel {
   z-index: 2;
   position: absolute;
-  inset: calc(24px + 44px + 32px) var(--bar-gutter) max(32px, env(safe-area-inset-bottom)) 38vw;   /* a la derecha del título */
+  inset: calc(24px + 44px + 20px) var(--bar-gutter) max(28px, env(safe-area-inset-bottom));
   display: grid;
-  grid-template-rows: 1fr auto;
-  gap: 40px;
-  max-width: none;
-  margin: 0;
+  grid-template-rows: auto 1fr;
+  gap: 24px;
   overflow-y: auto;
   pointer-events: none; /* el panel cubre casi toda la ventana: solo sus campos y enlaces reciben el ratón, así se puede tocar el sobre que hay detrás, abajo */
 }
 .sachet-panel :is(.sachet-field, a, button) { pointer-events: auto; }
-.sachet-form { display: grid; grid-template-columns: 1fr 1fr; align-content: start; gap: 28px 16px; }
-.sachet-field { display: grid; gap: 8px; margin: 0; }
-.sachet-field:has(textarea) { grid-column: 1 / -1; }
-.sachet-field label { font-size: var(--fs-s); font-weight: var(--fw-bold); letter-spacing: .06em; text-transform: uppercase; }
+.sachet-form { display: grid; grid-template-columns: 1fr; align-content: start; gap: 12px; }
+.sachet-field[hidden], .sachet-actions[hidden] { display: none; }
+.sachet-field { position: relative; display: block; margin: 0; background: var(--menu-red); }   /* la barra roja de cada campo */
+.sachet-field label { position: absolute; top: 16px; left: 24px; z-index: 1; color: var(--cream); font-size: 12px; font-weight: var(--fw-bold); letter-spacing: .08em; text-transform: uppercase; opacity: .85; pointer-events: none; }
 .sachet-field input, .sachet-field textarea {
   width: 100%;
-  padding: 18px 20px;
+  padding: 44px 24px 22px;
   border: 0;
   border-radius: 0;
-  background: var(--menu-red);          /* la barra roja de cada campo */
+  background: none;
   color: var(--cream);
   font-family: var(--font-display);
-  font-size: var(--fs-xl); /* 24 px */
+  font-size: clamp(24px, 3.2vw, 44px);
   font-weight: var(--fw-title);
   letter-spacing: -.02em;
   line-height: 1.25;
   caret-color: var(--cream);
 }
-.sachet-field textarea { min-height: calc(4 * 1.25em + 36px); resize: none; field-sizing: content; max-height: 40dvh; }
-.sachet-field input:focus, .sachet-field textarea:focus { outline: 3px solid var(--green); outline-offset: 3px; }
+.sachet-field textarea { min-height: calc(3 * 1.25em + 66px); resize: none; field-sizing: content; max-height: 34dvh; }
+.sachet-field:has(input:focus, textarea:focus) { outline: 3px solid var(--cream); outline-offset: -8px; }   /* un aro crema por dentro de la barra */
+.sachet-field input:focus, .sachet-field textarea:focus { outline: none; }
 /* El autocompletado de Chrome pinta el campo de amarillo: se tapa con el rojo */
 .sachet-field input:-webkit-autofill { -webkit-text-fill-color: var(--cream); -webkit-box-shadow: 0 0 0 100px var(--menu-red) inset; transition: background-color 9999s; }
+/* «Next»: sale dentro de la barra cuando el campo es válido; sin él, Intro también avanza */
+.sachet-next { position: absolute; right: 24px; bottom: 20px; z-index: 1; padding: 8px 0; border: 0; background: none; color: var(--cream); font-size: var(--fs-s); font-weight: var(--fw-bold); letter-spacing: .08em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 4px; opacity: 0; visibility: hidden; transition: opacity .25s ease; }
+.sachet-field.is-ready .sachet-next { opacity: 1; visibility: visible; }
 .sachet-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-.sachet-actions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; }
-.sachet .sachet-send { min-height: 56px; padding: 0 36px; border: 0; border-radius: 0; background: var(--green); color: var(--mustard); text-transform: uppercase; letter-spacing: .06em; font-size: var(--fs-m); font-weight: var(--fw-bold); letter-spacing: -.01em; transition: transform .16s var(--ease-out), opacity .2s; }
+.sachet-actions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; margin-top: 4px; }
+.sachet .sachet-send { min-height: 56px; padding: 0 36px; border: 0; border-radius: 0; background: var(--menu-red); color: var(--cream); font-size: var(--fs-m); font-weight: var(--fw-bold); letter-spacing: .06em; text-transform: uppercase; transition: transform .16s var(--ease-out); }
 .sachet .sachet-send:hover { transform: scale(1.03); }
 .sachet .sachet-send:active { transform: scale(.97); }
 .sachet .sachet-send:disabled { opacity: .6; cursor: progress; }
-.sachet .sachet-send:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; }
+.sachet .sachet-send:focus-visible { outline: 2px solid var(--menu-red); outline-offset: 4px; }
 .sachet-status { margin: 0; font-size: var(--fs-s); }
 .sachet-status:empty { display: none; }
 .sachet[data-send="sent"] .sachet-status { font-weight: var(--fw-bold); }
-.sachet-direct { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 24px; margin: 0; font-size: var(--fs-s); pointer-events: none; }
-.sachet-mail { color: inherit; font-size: var(--fs-lead); font-weight: var(--fw-bold); letter-spacing: -.01em; text-decoration: none; overflow-wrap: anywhere; margin-right: auto; }
+.sachet-direct { align-self: end; justify-self: end; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; margin: 0; text-align: right; font-size: var(--fs-s); pointer-events: none; }
+.sachet-mail { color: inherit; font-size: var(--fs-lead); font-weight: var(--fw-bold); letter-spacing: -.01em; text-decoration: none; overflow-wrap: anywhere; }
 .sachet-mail:hover { text-decoration: underline; text-underline-offset: 4px; }
 .sachet .sachet-copy, .sachet-in { padding: 6px 0; border: 0; background: none; color: inherit; font-size: var(--fs-s); font-weight: var(--fw-regular); text-decoration: underline; text-underline-offset: 4px; }
 
-/* Móvil: una columna; el panel tiene scroll propio (el teclado puede tapar la mitad de abajo) y deja sitio al sobre, que pasa a la esquina de abajo a la derecha */
+/* Móvil: una columna, el título en una línea bajo la barra y el panel con scroll propio (el teclado puede tapar la mitad de abajo); el sobre pasa a la esquina de abajo a la derecha */
 @media (max-width: 760px) {
-  .sachet-title { max-width: none; font-size: clamp(56px, 17vw, 88px); top: calc(max(24px, env(safe-area-inset-top)) + 52px); }
-  .sachet-panel { inset: calc(max(24px, env(safe-area-inset-top)) + 52px + clamp(56px, 17vw, 88px) + 24px) var(--bar-gutter) max(24px, env(safe-area-inset-bottom)); gap: 32px; padding-bottom: 150px; }
-  .sachet-form { grid-template-columns: 1fr; align-content: start; gap: 20px; }
-  .sachet-field input, .sachet-field textarea { font-size: var(--fs-l); padding: 14px 16px; } /* 20 px */
-  .sachet-mail { flex-basis: 100%; }
-  .sachet-canvas { left: auto; right: var(--bar-gutter); width: 92px; height: 132px; }
+  .sachet-title { top: calc(max(24px, env(safe-area-inset-top)) + 52px); bottom: auto; width: auto; font-size: clamp(56px, 17vw, 88px); }
+  .sachet-panel { inset: calc(max(24px, env(safe-area-inset-top)) + 52px + clamp(56px, 17vw, 88px) + 24px) var(--bar-gutter) max(24px, env(safe-area-inset-bottom)); gap: 28px; padding-bottom: 150px; }
+  .sachet-form { grid-template-columns: 1fr; }
+  .sachet-field input, .sachet-field textarea { font-size: var(--fs-l); padding: 40px 16px 18px; } /* 20 px */
+  .sachet-field label { left: 16px; }
+  .sachet-next { right: 16px; bottom: 14px; }
+  .sachet-direct { align-self: start; justify-self: start; align-items: flex-start; text-align: left; }
+  .sachet-canvas { left: auto; right: var(--bar-gutter); translate: none; width: 92px; height: 132px; }
 }
 
 /* Entrada: la ventana aparece (0,3 s) y el formulario sube 18 px mientras se asienta (0,6 s). Salida: un fundido corto (0,18 s, js/contact-sachet.js la lanza antes de cerrar) */
@@ -123,6 +130,12 @@
   .sachet[open] .sachet-canvas { animation: sachet-peek .8s var(--ease-out) .2s both; }
   .sachet.is-closing { animation: sachet-out .18s var(--ease-out) both; }
 }
+@media (prefers-reduced-motion: no-preference) {
+  .sachet-field.is-new { animation: sachet-bar .55s var(--ease-out) both; }   /* cada barra se abre de izquierda a derecha al aparecer */
+  .sachet-actions:not([hidden]) { animation: sachet-bar-in .5s var(--ease-out) .1s both; }
+}
+@keyframes sachet-bar { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+@keyframes sachet-bar-in { from { opacity: 0; translate: 0 10px; } }
 @keyframes sachet-in { from { opacity: 0; } }
 @keyframes sachet-rise { from { opacity: 0; translate: 0 18px; } }
 @keyframes sachet-peek { from { opacity: 0; transform: translateY(40px); } }
@@ -130,4 +143,3 @@
 
 /* Mientras está abierta, la página de debajo no se desplaza */
 html.sachet-open { overflow: hidden; }
-

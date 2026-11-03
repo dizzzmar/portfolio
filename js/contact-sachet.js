@@ -24,14 +24,14 @@ if (link) {
       catch { copy.textContent = 'Copy email'; }
       setTimeout(() => { copy.textContent = 'Copy email'; }, 1800);
     });
-    const field = (name, label, input) => { input.name = name; input.id = 'sachet-' + name; input.required = true; return el('p', { className: 'sachet-field' }, [el('label', { htmlFor: input.id, textContent: label }), input]); };
+    const field = (name, label, input, next) => { input.name = name; input.id = 'sachet-' + name; input.required = true; return el('p', { className: 'sachet-field' }, [el('label', { htmlFor: input.id, textContent: label }), input, ...(next ? [el('button', { type: 'button', className: 'sachet-next', textContent: 'Next' })] : [])]); };
     const send = el('button', { type: 'submit', className: 'sachet-send', textContent: 'Send' });
     const status = el('p', { className: 'sachet-status', role: 'status' });
     const trap = el('input', { type: 'text', name: '_gotcha', tabIndex: -1, autocomplete: 'off', className: 'sachet-trap' }); // campo trampa contra el spam: las personas no lo ven
     trap.setAttribute('aria-hidden', 'true');
     form = el('form', { className: 'sachet-form', noValidate: false }, [
-      field('name', 'Name', el('input', { type: 'text', autocomplete: 'name', maxLength: 120 })),
-      field('email', 'Email', el('input', { type: 'email', autocomplete: 'email', maxLength: 200 })),
+      field('name', 'Name', el('input', { type: 'text', autocomplete: 'name', maxLength: 120, enterKeyHint: 'next' }), true),
+      field('email', 'Email', el('input', { type: 'email', autocomplete: 'email', maxLength: 200, enterKeyHint: 'next' }), true),
       field('message', 'Message', el('textarea', { rows: 4, maxLength: 5000 })),
       trap, el('div', { className: 'sachet-actions' }, [send, status]),
     ]);
@@ -56,6 +56,7 @@ if (link) {
       stage?.stop();
     });
     document.body.append(dialog);
+    initSteps();
   }
 
   // Cierre con un fundido corto (0,18 s); con «reducir movimiento» se cierra al instante
@@ -67,6 +68,30 @@ if (link) {
   }
 
   // Envío: a Formspree si hay FORM_ENDPOINT; si no, se abre la app de correo con el mensaje ya escrito
+  // ---------- Los campos van apareciendo poco a poco (como en wearepanico.com) ----------
+  // Primero solo el nombre; al pulsar Intro (o «Next», que sale cuando el campo es válido) aparece el siguiente, y tras el mensaje salen Send y su aviso.
+  let fields = [], actions = null, shown = 1;
+  const setSteps = (n, { focus = false } = {}) => {
+    const before = shown; shown = n;
+    fields.forEach((f, i) => { f.hidden = i >= n; if (i >= before && i < n) { f.classList.remove('is-new'); void f.offsetWidth; f.classList.add('is-new'); } });
+    actions.hidden = !(n >= fields.length || dialog.dataset.send === 'sent');
+    if (focus && n > before) fields[n - 1].querySelector('input, textarea')?.focus({ preventScroll: true });
+  };
+  const ready = (f) => f.querySelector('input, textarea').checkValidity();
+  function initSteps() {
+    fields = [...form.querySelectorAll('.sachet-field')];
+    actions = form.querySelector('.sachet-actions');
+    fields.forEach((f, i) => {
+      const input = f.querySelector('input, textarea'), next = f.querySelector('.sachet-next');
+      const sync = () => f.classList.toggle('is-ready', ready(f));
+      input.addEventListener('input', sync);
+      const advance = () => { if (!ready(f)) { input.reportValidity(); return; } setSteps(Math.max(shown, i + 2), { focus: true }); };
+      next?.addEventListener('click', advance);
+      if (input.tagName === 'INPUT') input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && i < fields.length - 1) { e.preventDefault(); advance(); } });
+    });
+    setSteps(1);
+  }
+
   async function submit(f, send, status) {
     if (!f.reportValidity()) return;
     const data = Object.fromEntries(new FormData(f));
@@ -80,7 +105,7 @@ if (link) {
     try {
       const res = await fetch(FORM_ENDPOINT, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, _subject: `dizmar.xyz · ${data.name}` }) });
       if (!res.ok) throw new Error(String(res.status));
-      f.reset(); status.textContent = 'Sent. I’ll write back soon.'; dialog.dataset.send = 'sent';
+      f.reset(); fields.forEach((x) => x.classList.remove('is-ready')); status.textContent = 'Sent. I’ll write back soon.'; dialog.dataset.send = 'sent'; setSteps(0);
     } catch (err) {
       status.textContent = `It didn’t go through. Write to ${email} instead.`; dialog.dataset.send = 'error';
     } finally { send.disabled = false; }
@@ -89,6 +114,7 @@ if (link) {
   async function open() {
     if (!dialog) build();
     delete dialog.dataset.send; dialog.querySelector('.sachet-status').textContent = '';
+    if (shown !== 1) setSteps(1);                      // cada vez que se abre, otra vez solo el primer campo
     dialog.dataset.state = 'open';
     dialog.showModal();
     document.documentElement.classList.add('sachet-open');
