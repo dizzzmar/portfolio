@@ -4,7 +4,7 @@ description: Portfolio of Mario Diz, art director in Madrid. One family, two wei
 colors:
   accent: "#0c0c0b"
   cursor: "#f83d0c"
-  menu-red: "#d03a22"
+  menu-red: "#df1f1f"
   cream: "#fff6ea"
   lincoln-green: "#125603"
   lime: "#c3f380"
@@ -107,7 +107,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 ### Primary
 - **Accent** (#0c0c0b, `--accent`): near-black. The "View project" button, text selection and focus rings in Projects. There is no coloured accent on text or buttons.
 - **Cursor** (#f83d0c, `--cursor`): tomato red, used for the tomato itself. The cursor dot follows donut-studio.com instead: 16 px of #fff70d in `mix-blend-mode: difference` (blue on white, yellow on black), glued to the mouse with no lag, shrinking on press and opening into a "View" / "View project" pill over projects.
-- **Menu Red** (#d03a22): the full-screen menu panel. A deeper tomato chosen so cream text on it reaches 4.55:1 (the brand red gives only 3.6:1).
+- **Menu Red** (#df1f1f): the full-screen menu panel, the Contact window, the page curtain and the big footer. A vivid pure red (the reference site's #ff1a1f is brighter but gives cream text only 3.6:1); this is the brightest red that keeps cream text at 4.51:1 (WCAG AA for small text).
 
 ### Secondary
 - **Lincoln Green** (#125603): background of About, Privacy, FAQs and Machine, paired with Lime.
@@ -122,7 +122,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **Sky Blue** (#4f8fd8): fallback for the sky photograph (`assets/images/sky.webp`) behind the landing page and Contact.
 
 ### Tokens
-`--accent` (#0c0c0b), `--cursor` (#f83d0c), `--menu-red` (#d03a22) and `--cream` (#fff6ea) live in `css/tokens.css`; so do the two curves, `--ease-out` for arrivals and `--ease-in-out` (`cubic-bezier(.77, 0, .175, 1)`) for moving across the screen. Do not write these values in other files.
+`--accent` (#0c0c0b), `--cursor` (#f83d0c), `--menu-red` (#df1f1f) and `--cream` (#fff6ea) live in `css/tokens.css`; so do the two curves, `--ease-out` for arrivals and `--ease-in-out` (`cubic-bezier(.77, 0, .175, 1)`) for moving across the screen. Do not write these values in other files.
 
 ### Named Rules
 **The Green Pair Rule.** On green pages the only text colour is lime, never white or red. The red cursor would fall to 2.4:1 there, so it turns lime too.
@@ -219,7 +219,7 @@ No fixed underline and no line on hover: on hover, as on donut-studio.com, the l
 A 24 px tomato dot. It grows over buttons, cards and objects; disappears over text links, "View project" and videos (the line, the label or PLAY/PAUSE act as the indicator); shrinks and turns white over red; stretches like a drop while scrolling. Lime on green pages.
 
 ### The Envelope (Contact)
-"Contact" opens a full-screen Menu Red window (`--menu-red`, cream text at 4.55:1, like the menu curtain) on every page (home, green pages and project pages). It is only the form: Name and Email side by side and Message below (one column on a phone), small labels in Funnel Sans and what you type in Funnel Display at 24 px (20 px on a phone), on 1.5 px cream lines that thicken to 3 px on focus; a solid cream "Send" pill with red text; at the foot, the address in bold (a mailto link) on the left, with "Copy email" and "LinkedIn" on the right. With a mouse the cursor lands in Name; on touch nothing is focused so the keyboard does not cover the window on opening. No app is launched unless asked. The form posts to Formspree (`FORM_ENDPOINT` in js/contact-sachet.js; see the privacy page); without an endpoint, Send opens the mail app with the message written in. States: "Sending…", "Sent. I’ll write back soon." and an error that points to the address. A hidden trap field stops basic spam; no captcha. Chrome's yellow autofill is painted red.
+"Contact" opens a full-screen Menu Red window (`--menu-red`, cream text at 4.51:1, like the menu curtain) on every page (home, green pages and project pages). It is only the form: Name and Email side by side and Message below (one column on a phone), small labels in Funnel Sans and what you type in Funnel Display at 24 px (20 px on a phone), on 1.5 px cream lines that thicken to 3 px on focus; a solid cream "Send" pill with red text; at the foot, the address in bold (a mailto link) on the left, with "Copy email" and "LinkedIn" on the right. With a mouse the cursor lands in Name; on touch nothing is focused so the keyboard does not cover the window on opening. No app is launched unless asked. The form posts to Formspree (`FORM_ENDPOINT` in js/contact-sachet.js; see the privacy page); without an endpoint, Send opens the mail app with the message written in. States: "Sending…", "Sent. I’ll write back soon." and an error that points to the address. A hidden trap field stops basic spam; no captcha. Chrome's yellow autofill is painted red.
 The DIZ ketchup sachet is small, at the bottom centre (bottom right on a phone, where the form leaves room for it): decorative (`aria-hidden`), it turns when dragged and tears at "TEAR HERE"; the torn strip flies off and a fresh sachet appears a moment later. The form's empty areas let pointer events through to it. If 3D is unavailable the window is identical without the sachet. Entrance: the window fades in, the form rises 18 px and the sachet peeks up from below; with reduced motion none of that.
 
 ### The Terminal
