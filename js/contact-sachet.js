@@ -38,7 +38,7 @@ if (link) {
     form.addEventListener('submit', (e) => { e.preventDefault(); submit(form, send, status); });
     const close = el('button', { type: 'button', className: 'sachet-close', textContent: 'Close ×' });
     dialog = el('dialog', { className: 'sachet' }, [
-      el('h2', { className: 'sachet-title', id: 'sachet-title', textContent: 'Contact' }),
+      el('h2', { className: 'sachet-title', id: 'sachet-title', textContent: 'Say hi' }),
       close,
       el('canvas', { className: 'sachet-canvas', ariaHidden: 'true' }), // decorativo: el formulario y los enlaces son todo lo que hace falta
       el('div', { className: 'sachet-panel' }, [form, el('p', { className: 'sachet-direct' }, [

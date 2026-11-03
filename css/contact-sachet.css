@@ -1,5 +1,6 @@
-/* CONTACT · la ventana de contacto (js/contact-sachet.js): rojo del menú (--menu-red) con texto crema (4,51:1), como el telón del menú. Es solo el formulario;
-   el sobre de ketchup DIZ en 3D está abajo, pequeño, en el centro (se gira arrastrándolo y se puede rasgar). */
+/* CONTACT · la ventana de contacto (js/contact-sachet.js): amarillo mostaza liso con un «SAY HI» enorme en rojo a la izquierda y el formulario a la derecha, con cada campo
+   como una barra roja de texto crema (4,51:1), el verde para lo pequeño (enlaces, etiquetas) y el botón. Combinación de wearepanico.com. Es solo el formulario;
+   el sobre de ketchup DIZ en 3D está abajo a la izquierda, pequeño (se gira arrastrándolo y se puede rasgar). */
 .sachet {
   position: fixed;
   inset: 0;
@@ -11,25 +12,24 @@
   padding: 0;
   border: 0;
   overflow: hidden;
-  background: var(--menu-red);
-  color: var(--cream);
+  background: var(--mustard);
+  color: var(--green);
   font-family: var(--font-ui);
   font-size: var(--fs-s); /* en About y Privacy el texto del cuerpo es más grande y se heredaría */
 }
 .sachet:focus { outline: none; }
-.sachet::backdrop { background: var(--menu-red); }
-.sachet ::selection { background: var(--cream); color: var(--menu-red); }
+.sachet::backdrop { background: var(--mustard); }
+.sachet ::selection { background: var(--menu-red); color: var(--cream); }
 .sachet button { font: inherit; color: inherit; cursor: pointer; }
 .sachet :focus-visible { outline: 2px solid currentColor; outline-offset: 6px; }
 
 /* El sobre: una caja pequeña abajo en el centro, entre el email (a la izquierda) y los enlaces (a la derecha) del pie */
 .sachet-canvas {
   position: absolute;
-  left: 50%;
+  left: var(--bar-gutter);
   bottom: max(8px, env(safe-area-inset-bottom));
   width: clamp(104px, 10vw, 150px);
   height: clamp(150px, 22vh, 220px);
-  translate: -50% 0;
   touch-action: none;
 }
 .sachet.is-tearing .sachet-canvas { cursor: ew-resize; }
@@ -39,11 +39,18 @@
 .sachet-title {
   z-index: 3;
   position: absolute;
-  top: max(24px, env(safe-area-inset-top));
-  left: 24px;
-  font-size: var(--fs-s);
-  font-weight: 400;
-  line-height: 44px; /* a la altura del texto de Close */
+  top: calc(max(24px, env(safe-area-inset-top)) + 64px);
+  left: var(--bar-gutter);
+  max-width: 34vw;
+  margin: 0;
+  color: #da1c1c;   /* el rojo del menú, un punto más oscuro: sobre el mostaza llega a 3,1:1 (texto grande) */
+  font-family: var(--font-display);
+  font-size: clamp(64px, 10.5vw, 168px);
+  font-weight: 800;
+  letter-spacing: -.045em;
+  line-height: .86;
+  text-transform: uppercase;
+  pointer-events: none;
 }
 .sachet .sachet-close { z-index: 2; position: absolute; top: 24px; right: 24px; min-height: 44px; padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); }
 .sachet-close:hover { text-decoration: underline; text-underline-offset: 4px; }
@@ -52,27 +59,26 @@
 .sachet-panel {
   z-index: 2;
   position: absolute;
-  inset: calc(24px + 44px + 32px) var(--bar-gutter) max(32px, env(safe-area-inset-bottom));
+  inset: calc(24px + 44px + 32px) var(--bar-gutter) max(32px, env(safe-area-inset-bottom)) 38vw;   /* a la derecha del título */
   display: grid;
   grid-template-rows: 1fr auto;
   gap: 40px;
-  max-width: 1080px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   overflow-y: auto;
   pointer-events: none; /* el panel cubre casi toda la ventana: solo sus campos y enlaces reciben el ratón, así se puede tocar el sobre que hay detrás, abajo */
 }
 .sachet-panel :is(.sachet-field, a, button) { pointer-events: auto; }
-.sachet-form { display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 36px 40px; }
+.sachet-form { display: grid; grid-template-columns: 1fr 1fr; align-content: start; gap: 28px 16px; }
 .sachet-field { display: grid; gap: 8px; margin: 0; }
 .sachet-field:has(textarea) { grid-column: 1 / -1; }
-.sachet-field label { font-size: var(--fs-s); }
+.sachet-field label { font-size: var(--fs-s); font-weight: var(--fw-bold); letter-spacing: .06em; text-transform: uppercase; }
 .sachet-field input, .sachet-field textarea {
   width: 100%;
-  padding: 2px 0 10px;
+  padding: 18px 20px;
   border: 0;
-  border-bottom: 1.5px solid var(--cream);
   border-radius: 0;
-  background: none;
+  background: var(--menu-red);          /* la barra roja de cada campo */
   color: var(--cream);
   font-family: var(--font-display);
   font-size: var(--fs-xl); /* 24 px */
@@ -81,17 +87,17 @@
   line-height: 1.25;
   caret-color: var(--cream);
 }
-.sachet-field textarea { min-height: calc(3 * 1.25em + 12px); resize: none; field-sizing: content; max-height: 40dvh; }
-.sachet-field input:focus, .sachet-field textarea:focus { outline: none; border-bottom-width: 3px; padding-bottom: 8.5px; }
+.sachet-field textarea { min-height: calc(4 * 1.25em + 36px); resize: none; field-sizing: content; max-height: 40dvh; }
+.sachet-field input:focus, .sachet-field textarea:focus { outline: 3px solid var(--green); outline-offset: 3px; }
 /* El autocompletado de Chrome pinta el campo de amarillo: se tapa con el rojo */
 .sachet-field input:-webkit-autofill { -webkit-text-fill-color: var(--cream); -webkit-box-shadow: 0 0 0 100px var(--menu-red) inset; transition: background-color 9999s; }
 .sachet-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .sachet-actions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; }
-.sachet .sachet-send { min-height: 48px; padding: 0 28px; border: 0; border-radius: 999px; background: var(--cream); color: var(--menu-red); font-size: var(--fs-m); font-weight: var(--fw-bold); letter-spacing: -.01em; transition: transform .16s var(--ease-out), opacity .2s; }
+.sachet .sachet-send { min-height: 56px; padding: 0 36px; border: 0; border-radius: 0; background: var(--green); color: var(--mustard); text-transform: uppercase; letter-spacing: .06em; font-size: var(--fs-m); font-weight: var(--fw-bold); letter-spacing: -.01em; transition: transform .16s var(--ease-out), opacity .2s; }
 .sachet .sachet-send:hover { transform: scale(1.03); }
 .sachet .sachet-send:active { transform: scale(.97); }
 .sachet .sachet-send:disabled { opacity: .6; cursor: progress; }
-.sachet .sachet-send:focus-visible { outline: 2px solid var(--cream); outline-offset: 4px; }
+.sachet .sachet-send:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; }
 .sachet-status { margin: 0; font-size: var(--fs-s); }
 .sachet-status:empty { display: none; }
 .sachet[data-send="sent"] .sachet-status { font-weight: var(--fw-bold); }
@@ -102,11 +108,12 @@
 
 /* Móvil: una columna; el panel tiene scroll propio (el teclado puede tapar la mitad de abajo) y deja sitio al sobre, que pasa a la esquina de abajo a la derecha */
 @media (max-width: 760px) {
-  .sachet-panel { inset: calc(max(24px, env(safe-area-inset-top)) + 44px + 20px) var(--bar-gutter) max(24px, env(safe-area-inset-bottom)); gap: 32px; padding-bottom: 150px; }
-  .sachet-form { grid-template-columns: 1fr; align-content: start; gap: 26px; }
-  .sachet-field input, .sachet-field textarea { font-size: var(--fs-l); } /* 20 px */
+  .sachet-title { max-width: none; font-size: clamp(56px, 17vw, 88px); top: calc(max(24px, env(safe-area-inset-top)) + 52px); }
+  .sachet-panel { inset: calc(max(24px, env(safe-area-inset-top)) + 52px + clamp(56px, 17vw, 88px) + 24px) var(--bar-gutter) max(24px, env(safe-area-inset-bottom)); gap: 32px; padding-bottom: 150px; }
+  .sachet-form { grid-template-columns: 1fr; align-content: start; gap: 20px; }
+  .sachet-field input, .sachet-field textarea { font-size: var(--fs-l); padding: 14px 16px; } /* 20 px */
   .sachet-mail { flex-basis: 100%; }
-  .sachet-canvas { left: auto; right: var(--bar-gutter); translate: none; width: 92px; height: 132px; }
+  .sachet-canvas { left: auto; right: var(--bar-gutter); width: 92px; height: 132px; }
 }
 
 /* Entrada: la ventana aparece (0,3 s) y el formulario sube 18 px mientras se asienta (0,6 s). Salida: un fundido corto (0,18 s, js/contact-sachet.js la lanza antes de cerrar) */
