@@ -1,18 +1,20 @@
 // CONTACT · el enlace "Contact" de la barra (en todas las páginas: la de la portada y las verdes, y la de las fichas) abre una ventana amarilla con el contacto
 // hecho como el de wearepanico.com: no es un formulario a la vista, es una conversación que va apareciendo poco a poco. Una sola barra roja a la vez, con lo que se
-// escribe en amarillo: primero el MENSAJE, después el NOMBRE y por fin el EMAIL. El título enorme de debajo es a la vez la pregunta y el botón: «Say hi» → «Next» →
-// «Write your name» → «Next» → «Write your email» → «Send» → «Thank you!». Lo ya contestado sube a una vista previa encima de la barra. Pulsar el título (o Intro/Espacio
-// sobre él) avanza; si el campo está vacío avisa. El email (para copiarlo o abrir la app de correo) y LinkedIn van a la derecha, y el sobre de ketchup DIZ en 3D, pequeño, abajo:
-// se gira arrastrándolo y se rasga por "TEAR HERE"; al rasgarlo sale volando la tira y, un momento después, aparece otro sobre nuevo.
-// Se envía a FORM_ENDPOINT (Formspree, ver la página de privacidad); sin él, el último paso abre la app de correo con el mensaje ya escrito.
-// Sin JavaScript, Contact sigue siendo el enlace de email de siempre; sin 3D, la ventana es igual pero sin el sobre.
+// escribe en amarillo: primero el MENSAJE, después el NOMBRE y por fin el EMAIL. El título enorme de debajo es a la vez la pregunta y el botón (un <button> de verdad, con una
+// flecha): «Say hi» → «Next» → «Write your name» → «Next» → «Write your email» → «Send» → «Thank you!». Lo ya contestado sube a una vista previa encima de la barra y se puede
+// pulsar para volver a esa respuesta y corregirla. Lo escrito no se pierde si se cierra la ventana y se vuelve a abrir (se guarda mientras la página esté abierta; solo se borra
+// al enviar o con «Clear and start again»). El email (para copiarlo o abrir la app de correo) y LinkedIn van a la derecha, y el sobre de ketchup DIZ en 3D, pequeño, abajo: se gira
+// arrastrándolo y se rasga por "TEAR HERE"; con ahorro de datos o una conexión lenta no se descarga (la ventana es igual, sin el sobre).
+// Se envía a FORM_ENDPOINT (Formspree, ver la página de privacidad), con un tiempo límite de 15 s; sin él, el último paso abre la app de correo con el mensaje ya escrito.
+// Sin JavaScript, Contact sigue siendo el enlace de email de siempre.
 const FORM_ENDPOINT = 'https://formspree.io/f/mljjpgpa'; // la dirección pública del formulario en Formspree (no es una clave secreta); vacía, se abre la app de correo
 const LINKEDIN = 'https://es.linkedin.com/in/mario-diaz-aguado';
+const SEND_TIMEOUT = 15000;
 const link = document.querySelector('.nav-links a[href^="mailto:"], .case-nav a[href^="mailto:"]');
 if (link) {
   const email = decodeURIComponent(link.href.replace(/^mailto:/, '').split('?')[0]);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let dialog = null, stage = null, form = null;
+  let dialog = null, stage = null, form = null, closeTimer = 0;
 
   const el = (tag, attrs = {}, kids = []) => {
     const n = Object.assign(document.createElement(tag), attrs);
@@ -23,8 +25,9 @@ if (link) {
   // Lo que dice el título en cada paso (es la pregunta y el botón) y los avisos de campo vacío
   const LABELS = { message: 'Say<br>hi', name: 'Write your name', next: 'Next', email: 'Write your email', send: 'Send', sending: 'Sending…', sent: 'Thank you!' };
   const ERRORS = { message: 'Write a message before continuing', name: 'Write your name before continuing', email: 'Write a valid email before sending' };
+  const ORDER = ['message', 'name', 'email'];
   let step = 'message', pending = false;
-  let preview, resetBtn, title, errorEl, sentEl, textarea, nameInput, emailInput, rows;
+  let preview, resetBtn, title, titleLabel, errorEl, sentEl, textarea, nameInput, emailInput, rows, inputs;
 
   function build() {
     const copy = el('button', { type: 'button', className: 'sachet-copy', textContent: 'Copy email' });
@@ -38,6 +41,7 @@ if (link) {
     textarea = el('textarea', { rows: 4, maxLength: 5000 });
     nameInput = el('input', { type: 'text', autocomplete: 'name', maxLength: 120, enterKeyHint: 'next' });
     emailInput = el('input', { type: 'email', autocomplete: 'email', maxLength: 200, enterKeyHint: 'send' });
+    inputs = { message: textarea, name: nameInput, email: emailInput };
     const trap = el('input', { type: 'text', name: '_gotcha', tabIndex: -1, autocomplete: 'off', className: 'sachet-trap' }); // campo trampa contra el spam: las personas no lo ven
     trap.setAttribute('aria-hidden', 'true');
     rows = { message: field('message', 'Message', textarea), name: field('name', 'Name', nameInput), email: field('email', 'Email', emailInput) };
@@ -47,9 +51,12 @@ if (link) {
     preview = el('div', { className: 'sachet-preview' });
     resetBtn = el('button', { type: 'button', className: 'sachet-reset', textContent: 'Clear and start again' });
     errorEl = el('p', { className: 'sachet-error', role: 'alert' });
-    sentEl = el('p', { className: 'sachet-sent', textContent: 'Message sent' });
-    title = el('h2', { className: 'sachet-title', role: 'button', tabIndex: 0 });
-    title.innerHTML = LABELS.message;
+    sentEl = el('p', { className: 'sachet-sent', textContent: 'Message sent', role: 'status', tabIndex: -1 });  // se lee en voz alta y recibe el foco al enviar
+    titleLabel = el('span', { className: 'sachet-title-label' });
+    titleLabel.innerHTML = LABELS.message;
+    const arrow = el('span', { className: 'sachet-arrow', ariaHidden: 'true' });
+    arrow.innerHTML = '<svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M2 11h17M12 4l7 7-7 7"/></svg>';
+    title = el('button', { type: 'button', className: 'sachet-title' }, [titleLabel, arrow]);
     const slash = el('span', { className: 'sachet-slash', ariaHidden: 'true' });
     const direct = el('div', { className: 'sachet-direct' }, [
       el('a', { className: 'sachet-mail', href: link.href, textContent: email }),
@@ -74,17 +81,21 @@ if (link) {
     initFlow();
   }
 
-  // Cierre con un fundido corto (0,18 s); con «reducir movimiento» se cierra al instante
+  // Cierre con un fundido corto (0,18 s); con «reducir movimiento» se cierra al instante. Lo escrito se queda guardado.
   function closeSachet() {
     if (!dialog?.open) return;
     if (reduced) { dialog.close(); return; }
     dialog.classList.add('is-closing');
-    setTimeout(() => { dialog.classList.remove('is-closing'); dialog.close(); }, 180);
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => { dialog.classList.remove('is-closing'); dialog.close(); }, 180);
   }
 
   // ---------- La conversación ----------
   const valid = (input) => input.value.trim() !== '' && input.checkValidity();
-  const setTitle = (text) => { if (text.includes('<br>')) title.innerHTML = text; else title.textContent = text; };
+  const filled = (name) => (name === 'email' ? valid(inputs.email) : inputs[name].value.trim() !== '');
+  const setTitle = (text) => { if (text.includes('<br>')) titleLabel.innerHTML = text; else titleLabel.textContent = text; };
+  // Lo que dice el título según el paso y si ya hay respuesta: la pregunta, o «Next» / «Send»
+  const labelFor = (name) => (filled(name) ? (name === 'email' ? LABELS.send : LABELS.next) : LABELS[name]);
   const showError = (text, input) => {
     errorEl.textContent = text; dialog.dataset.hasError = 'true';
     if (!reduced) errorEl.animate([{ opacity: 0, transform: 'translateY(-8px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'cubic-bezier(.23,1,.32,1)' });
@@ -92,11 +103,28 @@ if (link) {
   };
   const clearError = () => { errorEl.textContent = ''; dialog.dataset.hasError = 'false'; };
   const syncReset = () => {
-    const has = step !== 'sent' && (step !== 'message' || textarea.value.trim() !== '');
+    const has = step !== 'sent' && ORDER.some((n) => inputs[n].value.trim() !== '');
     dialog.dataset.hasContent = has ? 'true' : 'false';
   };
-  const syncCarets = () => [textarea, nameInput, emailInput].forEach((f) => f.parentElement.classList.toggle('has-value', f.value !== ''));
-  // La vista previa crece (0,5 s) cuando se le añade una línea
+  const syncCarets = () => Object.values(inputs).forEach((f) => f.parentElement.classList.toggle('has-value', f.value !== ''));
+  // La vista previa: las respuestas de los pasos anteriores al actual; cada una se puede pulsar para volver a ella y corregirla
+  const renderPreview = (upTo) => {
+    preview.replaceChildren();
+    const list = upTo === 'sent' ? ORDER : ORDER.slice(0, ORDER.indexOf(upTo));
+    for (const name of list) {
+      const text = inputs[name].value.trim();
+      if (!text) continue;
+      const cls = name === 'message' ? 'sachet-preview-line sachet-preview-body' : 'sachet-preview-line';
+      if (upTo === 'sent') preview.append(el('p', { className: cls, textContent: text }));
+      else {
+        const b = el('button', { type: 'button', className: cls, textContent: text, title: 'Edit' });
+        b.setAttribute('aria-label', `Edit your ${name}: ${text}`);
+        b.addEventListener('click', () => goTo(name));
+        preview.append(b);
+      }
+    }
+  };
+  // La vista previa crece (0,5 s) cuando cambia
   const growPreview = (mutate) => {
     if (reduced) { mutate(); return; }
     const from = preview.offsetHeight; mutate(); const to = preview.offsetHeight;
@@ -107,32 +135,32 @@ if (link) {
     const reveal = () => {
       step = next; dialog.dataset.step = next; clearError(); syncReset();
       out.hidden = true; if (into) into.hidden = false;
-      setTitle(label);
-      if (focusEl && (matchMedia('(pointer: fine)').matches || next !== 'sent')) focusEl.focus({ preventScroll: true });
+      setTitle(label); title.disabled = next === 'sent';
+      if (next === 'sent') sentEl.focus({ preventScroll: true });   // el aviso «Message sent» se anuncia y el foco no se pierde
+      else focusEl?.focus({ preventScroll: true });
       if (!reduced && into) into.animate([{ opacity: 0, transform: 'translateY(15px)' }, { opacity: 1, transform: 'none' }], { duration: 400, easing: 'cubic-bezier(.23,1,.32,1)' });
     };
     if (reduced) { reveal(); return; }
     out.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-15px)' }], { duration: 300, easing: 'cubic-bezier(.55,.06,.68,.19)', fill: 'forwards' }).finished.then(reveal, reveal);
   }
-  const line = (cls, text) => { const p = el('p', { className: cls, textContent: text }); preview.append(p); };
+  // Ir a un paso (hacia delante o, pulsando una respuesta, hacia atrás); lo ya escrito se conserva
+  function goTo(name) {
+    if (pending || name === step || step === 'sent') return;
+    const into = rows[name];
+    growPreview(() => renderPreview(name));
+    swap(rows[step], into, name, inputs[name], labelFor(name));
+  }
 
   function activate() {
     if (pending) return;
-    if (step === 'message') {
-      if (textarea.value.trim() === '') return showError(ERRORS.message, textarea);
-      growPreview(() => { preview.replaceChildren(); line('sachet-preview-body', textarea.value.trim()); });
-      swap(rows.message, rows.name, 'name', nameInput, LABELS.name);
-    } else if (step === 'name') {
-      if (nameInput.value.trim() === '') return showError(ERRORS.name, nameInput);
-      growPreview(() => line('sachet-preview-name', nameInput.value.trim()));
-      swap(rows.name, rows.email, 'email', emailInput, LABELS.email);
-    } else if (step === 'email') {
-      if (!valid(emailInput)) return showError(ERRORS.email, emailInput);
-      send();
-    }
+    if (step === 'sent') return;
+    const current = step;
+    if (!filled(current)) return showError(ERRORS[current], inputs[current]);
+    if (current === 'email') return send();
+    goTo(ORDER[ORDER.indexOf(current) + 1]);
   }
 
-  // Envío: a Formspree si hay FORM_ENDPOINT; si no, se abre la app de correo con el mensaje ya escrito
+  // Envío: a Formspree si hay FORM_ENDPOINT (con tiempo límite); si no, se abre la app de correo con el mensaje ya escrito
   async function send() {
     const data = { name: nameInput.value.trim(), email: emailInput.value.trim(), message: textarea.value.trim() };
     if (form.querySelector('[name="_gotcha"]').value) return; // un robot ha rellenado el campo trampa
@@ -140,46 +168,53 @@ if (link) {
       location.href = `mailto:${email}?subject=${encodeURIComponent('Hello from dizmar.xyz')}&body=${encodeURIComponent(`${data.message}\n\n${data.name} · ${data.email}`)}`;
       return;
     }
-    pending = true; setTitle(LABELS.sending); dialog.dataset.send = 'sending';
+    pending = true; setTitle(LABELS.sending); title.disabled = true; dialog.dataset.send = 'sending';
+    const controller = new AbortController(), timer = setTimeout(() => controller.abort(), SEND_TIMEOUT);
     try {
-      const res = await fetch(FORM_ENDPOINT, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, _subject: `dizmar.xyz · ${data.name}` }) });
+      const res = await fetch(FORM_ENDPOINT, { method: 'POST', signal: controller.signal, headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, _subject: `dizmar.xyz · ${data.name}` }) });
       if (!res.ok) throw new Error(String(res.status));
-      growPreview(() => line('sachet-preview-email', data.email));
+      clearTimeout(timer);
+      growPreview(() => renderPreview('sent'));
       dialog.dataset.send = 'sent'; pending = false;
-      textarea.value = nameInput.value = emailInput.value = ''; syncCarets();
+      Object.values(inputs).forEach((f) => { f.value = ''; }); syncCarets();   // la vista previa ya tiene el texto; los campos se vacían
       swap(rows.email, sentEl, 'sent', null, LABELS.sent); sentEl.hidden = false;
     } catch (err) {
-      pending = false; setTitle(LABELS.send); dialog.dataset.send = 'error';
-      showError(`It didn’t go through. Write to ${email} instead.`);
+      clearTimeout(timer);
+      pending = false; title.disabled = false; setTitle(LABELS.send); dialog.dataset.send = 'error';
+      showError(`It didn’t go through. Write to ${email} instead.`);   // lo escrito sigue ahí
     }
   }
 
   function reset() {
     clearError(); pending = false; step = 'message'; dialog.dataset.step = 'message'; delete dialog.dataset.send;
-    textarea.value = nameInput.value = emailInput.value = ''; syncCarets();
-    preview.replaceChildren();
+    Object.values(inputs).forEach((f) => { f.value = ''; }); syncCarets();
+    preview.replaceChildren(); title.disabled = false;
     rows.message.hidden = false; rows.name.hidden = true; rows.email.hidden = true; sentEl.hidden = true;
     setTitle(LABELS.message); syncReset();
   }
 
   function initFlow() {
-    textarea.addEventListener('input', () => { syncCarets(); syncReset(); clearError(); if (step === 'message') setTitle(textarea.value.trim() !== '' ? LABELS.next : LABELS.message); });
-    nameInput.addEventListener('input', () => { syncCarets(); clearError(); if (step === 'name') setTitle(nameInput.value.trim() !== '' ? LABELS.next : LABELS.name); });
-    emailInput.addEventListener('input', () => { syncCarets(); clearError(); if (step === 'email') setTitle(valid(emailInput) ? LABELS.send : LABELS.email); });
+    textarea.addEventListener('input', () => { syncCarets(); syncReset(); clearError(); if (step === 'message') setTitle(labelFor('message')); });
+    nameInput.addEventListener('input', () => { syncCarets(); syncReset(); clearError(); if (step === 'name') setTitle(labelFor('name')); });
+    emailInput.addEventListener('input', () => { syncCarets(); syncReset(); clearError(); if (step === 'email') setTitle(labelFor('email')); });
     for (const input of [nameInput, emailInput]) input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); activate(); } });
     title.addEventListener('click', activate);
-    title.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); } });
     resetBtn.addEventListener('click', () => { reset(); textarea.focus({ preventScroll: true }); });
     reset();
   }
 
+  // Con ahorro de datos o conexión lenta no se descarga el sobre en 3D (unos 2 MB, decorativo)
+  const lite = () => { const c = navigator.connection; return !!c && (c.saveData || /(^|-)(2g|3g)$/.test(c.effectiveType || '')); };
+
   async function open() {
     if (!dialog) build();
-    reset();                                              // cada vez que se abre, otra vez desde el mensaje
+    if (step === 'sent') reset();                          // tras enviar, otra vez desde el mensaje; si no, se conserva lo escrito
     dialog.dataset.state = 'open';
-    dialog.showModal();
+    clearTimeout(closeTimer); dialog.classList.remove('is-closing');   // si se vuelve a abrir en pleno fundido de salida, se cancela el cierre pendiente
+    if (!dialog.open) dialog.showModal();
     document.documentElement.classList.add('sachet-open');
-    textarea.focus({ preventScroll: true });              // en cuanto se abre, el cursor ya está en la barra (también con el dedo: la pila va arriba y el teclado no la tapa)
+    (inputs[step] || textarea).focus({ preventScroll: true });   // en cuanto se abre, el cursor ya está en la barra del paso en el que se quedó
+    if (lite()) { dialog.classList.add('is-lite'); return; }
     try {
       if (!stage) stage = await createStage(dialog, { reduced, onOpen: () => { dialog.dataset.state = 'open'; setTimeout(() => stage?.reset(), reduced ? 0 : 1100); } });
       stage.start();
