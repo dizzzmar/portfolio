@@ -541,7 +541,7 @@
     info.append(
       who, el('div', 'term-rule'),
       infoBox('Profile', [['Name', 'Mario Diz'], ['Role', 'Art director · visual designer'], ['Based', 'Madrid, Spain'], ['Focus', 'Key visuals · AI · 3D · film']]),
-      infoBox('Work', [['2025', 'Lexus Electrified'], ['2026', 'Schweppes'], ['2026', 'Soap & Glory']]),
+      infoBox('Projects', [['2025', 'Lexus Electrified'], ['2026', 'Schweppes'], ['2026', 'Soap & Glory']]),
       session, swatch,
     );
     root.append(artBox, info);
