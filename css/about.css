@@ -93,7 +93,6 @@ body .nav-links a, body .site-foot.on-green, body .site-foot.on-green a { color:
 
 /* About follows the project pages: running title, sticky reading column and media. */
 :root { --margin: clamp(16px, 1.2vw, 24px); }
-.nav { background: var(--bg); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .about { padding-bottom: clamp(64px, 9vw, 140px); }
 .about-marquee { overflow: hidden; padding: calc(var(--nav-h) + clamp(8px, 2vw, 24px)) 0 clamp(12px, 2vw, 28px); }

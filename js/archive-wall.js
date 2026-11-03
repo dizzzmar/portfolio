@@ -103,14 +103,14 @@ function show(item) {
   current = item; fillViewer(item);
   viewer.hidden = false; void viewer.offsetWidth;
   viewer.classList.add('is-open'); document.body.classList.add('archive-viewing');
-  surface.inert = true; document.querySelector('.nav')?.setAttribute('inert', ''); document.querySelector('.crumbs')?.setAttribute('inert', '');
+  surface.inert = true; document.querySelector('.nav')?.setAttribute('inert', '');
   viewer.focus({ preventScroll: true }); rest(); wake();   // el foco entra en el visor, no en «Close»: así no se dibuja un aro al abrir con el ratón
 }
 function hide() {
   if (!current) return;
   current = null;
   viewer.classList.remove('is-open'); document.body.classList.remove('archive-viewing');
-  surface.inert = false; document.querySelector('.nav')?.removeAttribute('inert'); document.querySelector('.crumbs')?.removeAttribute('inert');
+  surface.inert = false; document.querySelector('.nav')?.removeAttribute('inert');
   setTimeout(() => { if (!current) viewer.hidden = true; }, motion.matches ? 220 : 520);
   if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
 }
