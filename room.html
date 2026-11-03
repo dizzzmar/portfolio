@@ -15,7 +15,8 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="alternate" type="text/html" href="/machine/" title="Machine mode: the same content as plain text">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
   <link rel="icon" href="/assets/images/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" as="image" href="/assets/room/now-playing-sticker.webp">
@@ -26,13 +27,14 @@
 <script>document.documentElement.classList.add('has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
   <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/tokens.css?v=20261027b">
+  <link rel="stylesheet" href="/css/tokens.css?v=20261109a">
   <link rel="stylesheet" href="/css/room.css?v=20261026g">
   <link rel="stylesheet" href="/css/room-wii.css?v=20261024n">
-  <link rel="stylesheet" href="/css/room-pokemon.css?v=20261030collagemotion1">
+  <link rel="stylesheet" href="/css/room-pokemon.css?v=20261103scatter2">
   <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
   <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
-<link rel="stylesheet" href="/css/menu.css?v=20261027r">
+<link rel="stylesheet" href="/css/menu.css?v=20261109a">
+  <link rel="stylesheet" href="/css/link-roll.css?v=20261110roll1">
   <link rel="stylesheet" href="/css/transitions.css?v=20261029j">
   <script type="importmap">
     {
@@ -43,8 +45,8 @@
     }
   </script>
   <script src="/js/transitions.js?v=20261030a"></script>
-  <link rel="stylesheet" href="/css/cursor.css?v=20261031a">
-  <link rel="stylesheet" href="/css/contact-sachet.css?v=20261029a">
+  <link rel="stylesheet" href="/css/cursor.css?v=20261110roll1">
+  <link rel="stylesheet" href="/css/contact-sachet.css?v=20261108b">
   <link rel="stylesheet" href="/css/terminal.css?v=20261024b">
 </head>
 <body class="theme-green" data-room-loading="true">
@@ -52,9 +54,9 @@
   <nav class="nav" aria-label="Main">
     <a class="nav-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" alt=""></a>
     <ul class="nav-links">
-      <li><a href="/#work">Work</a></li>
+      <li><a href="/#work">Projects</a></li>
       <li><a href="/about/">About</a></li>
-      <li><a href="mailto:hey.mariodiz@gmail.com?subject=Hello%20from%20dizmar.xyz">Contact</a></li>
+      <li><a href="mailto:contact@dizmar.xyz?subject=Hello%20from%20dizmar.xyz">Contact</a></li>
       <li><a href="/room.html" aria-current="page">Room</a></li>
     <li class="menu-li"><a class="menu-toggle" href="#menu" role="button" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false">Menu</a></li>
     </ul>
@@ -71,7 +73,7 @@
     <span data-loading-label>Entering the room…</span>
     <span class="room-loading-meter" role="progressbar" aria-label="Room download" aria-valuemin="0" aria-valuemax="100"><i></i></span>
   </div>
-  <footer class="room-foot"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span></footer>
+  <footer class="room-foot"><span>Mario Diz, Madrid · <a href="/faq/">FAQs</a> · <a href="/privacy/">Privacy</a></span></footer>
   <dialog class="wii-player" id="wii-player" aria-labelledby="wii-title" aria-describedby="wii-status">
     <header class="wii-heading">
       <h2 id="wii-title">Recently played</h2>
@@ -94,12 +96,13 @@
     <p class="pokemon-status" data-album-status role="status" aria-live="polite"></p>
     <button class="pokemon-retry" type="button" data-album-retry hidden>Try again</button>
   </dialog>
-  <script type="module" src="/js/room.js?v=20261030pixels1"></script>
+  <script type="module" src="/js/room.js?v=20261103pixels2"></script>
   <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
   <script src="/js/cursor.js?v=20261029b" defer></script>
   <script src="/js/smooth-scroll.js?v=20261028n" defer></script>
-    <script type="module" src="/js/contact-sachet.js?v=20261024n"></script>
-<script src="/js/menu.js?v=20261025d" defer></script>
-<script src="/js/terminal.js?v=20261030b" defer></script>
+    <script type="module" src="/js/contact-sachet.js?v=20261108a"></script>
+<script src="/js/menu.js?v=20261110projects" defer></script>
+<script src="/js/link-roll.js?v=20261110roll1" defer></script>
+<script src="/js/terminal.js?v=20261110projects" defer></script>
 </body>
 </html>

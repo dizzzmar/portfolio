@@ -94,21 +94,21 @@
   });
 })();
 
-// ---------- Atrás: vuelve a la portada exactamente donde estaba ----------
-// Si se llegó desde la web, usa el historial (js/home-intro.js guarda y restaura la posición).
-// Si no (por ejemplo, abriendo el proyecto directamente), el enlace lleva a /#work como siempre.
+// ---------- Atrás: vuelve a la lista de Work, justo en este proyecto ----------
+// Siempre se guarda el proyecto del que se sale: la portada (js/home-intro.js) coloca la lista con su fila a la vista y js/home-work.js la enciende.
+// Si se llegó desde la portada, se usa además el historial, que devuelve la posición exacta y permite la animación de vuelta.
+// Si no (se abrió el proyecto directamente, o desde About o el menú), el enlace lleva a /#work y la portada hace el resto.
 (() => {
-  // Solo si se llegó desde la portada: desde otro proyecto o desde About, «atrás» devolvería a donde no se prometía (el enlace lleva a /#work)
   const from = document.referrer.startsWith(location.origin + '/') ? new URL(document.referrer).pathname : '';
-  if (history.length < 2 || from !== '/') return;
+  const viaHistory = history.length >= 2 && from === '/'; // desde otro proyecto o desde About, «atrás» devolvería a donde no se prometía
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let leaving = false;
   document.querySelectorAll('.case-back').forEach((back) => back.addEventListener('click', (e) => {
+    try { sessionStorage.setItem('dizmar-from', location.pathname); } catch (err) { /* storage blocked */ }
+    if (!viaHistory) return; // el enlace sigue su camino (/#work)
     e.preventDefault();
     if (leaving) return; // un doble clic no debe retroceder dos veces
     leaving = true;
-    // La portada sabe de qué proyecto llegamos (js/home-work.js) para encender su fila al volver
-    try { sessionStorage.setItem('dizmar-from', location.pathname); } catch (err) { /* storage blocked */ }
     // Con View Transitions (css/transitions.css) la vuelta se anima sola: la primera tarjeta se encoge hasta su miniatura. Sin ellas, se despide aquí
     if (reduced || 'onpageswap' in window) { history.back(); return; }
     // Antes de volver, el proyecto se despide (css/case.css, clase is-leaving) y después se vuelve atrás

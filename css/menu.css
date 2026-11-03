@@ -75,33 +75,29 @@ html.menu-open { overflow: hidden; scrollbar-gutter: stable; background: var(--m
 .menu-item { overflow: hidden; padding-bottom: .14em; margin-bottom: -.14em; } /* la máscara; el relleno deja sitio a la «y» y a la «p» */
 .menu-item a { display: block; color: inherit; text-decoration: none; transition: opacity .3s; }
 .menu-item a[aria-current] > span { text-decoration: underline; text-decoration-thickness: .05em; text-underline-offset: .12em; } /* la página en la que estás, como en la barra */
-.menu-item a > span { display: block; transform: translateY(112%); transition: transform .35s var(--menu-ease) calc((3 - var(--i)) * 40ms); }
+.menu-item a > span { display: block; transform: translateY(112%); transition: transform .35s var(--menu-ease) calc((4 - var(--i)) * 40ms); }
 .menu[data-open="true"] .menu-item a > span { transform: none; transition: transform .7s var(--menu-out) calc(.3s + var(--i) * 70ms); }
 @media (hover: hover) { .menu-items:hover a:not(:hover) { opacity: .75; } } /* el resto se apaga al señalar uno (como en Work) */
 
-/* Fila pequeña de abajo */
+/* Pie de abajo: el mismo texto, tamaño y sitio que el pie de todas las páginas («Mario Diz, Madrid · FAQs · Privacy»), en crema */
 .menu-small {
   position: absolute;
   left: var(--bar-gutter);
   right: var(--bar-gutter);
   bottom: max(24px, env(safe-area-inset-bottom));
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px 24px;
-  list-style: none;
+  margin: 0;
   font-size: var(--fs-s);
+  line-height: 1.4;
   opacity: 0;
   transition: opacity .2s ease 0s;
 }
 .menu[data-open="true"] .menu-small { opacity: 1; transition: opacity .5s ease .55s; }
-.menu-small ul { display: flex; gap: 20px; list-style: none; }
-.menu-small a { color: inherit; text-underline-offset: 4px; }
+.menu-small a { color: inherit; text-underline-offset: 3px; }
 @media (pointer: coarse) { .menu-small a { display: inline-block; padding-block: 12px; margin-block: -12px; } }
 
 /* Móvil y tabla vertical: los enlaces se apilan y bajan hasta la altura del pulgar, justo encima de la fila pequeña */
 @media (max-width: 820px) {
-  .menu-items { flex-direction: column; justify-content: flex-start; left: 14px; right: 14px; top: auto; bottom: calc(max(24px, env(safe-area-inset-bottom)) + 72px); translate: none; gap: 4px; }
+  .menu-items { flex-direction: column; justify-content: flex-start; left: 14px; right: 14px; top: auto; bottom: calc(max(24px, env(safe-area-inset-bottom)) + 56px); translate: none; gap: 4px; }
   .menu-small { left: 14px; right: 14px; }
 }
 /* Móvil en horizontal: no cabe una columna de enlaces grandes (Work quedaba fuera de pantalla); vuelven a la fila, más pequeños y en el centro */

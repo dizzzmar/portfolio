@@ -12,15 +12,24 @@
 // Lo hacemos nosotros porque la portada bloquea el scroll al cargar y el navegador no lo restauraba.
 const NAVIGATION_TYPE = performance.getEntriesByType('navigation')[0]?.type;
 const BACK = NAVIGATION_TYPE === 'back_forward';
+// Cualquier ancla que lleve a la lista (la de Work, o las de Studies y Personal) entra directamente en ella, sin pasar por la portada
+const WORK_HASH = /^#(work|studies|personal)$/;
+// Proyecto del que se vuelve: js/case.js lo guarda al pulsar «Back to projects» y js/home-work.js lo consume (por eso se lee aquí, que corre antes)
+let FROM = null;
+try { FROM = sessionStorage.getItem('dizmar-from'); } catch (e) { /* storage blocked */ }
 // Recargar la landing vuelve a su portada, aunque el último clic haya dejado #work en la URL.
-if (NAVIGATION_TYPE === 'reload' && location.hash === '#work') {
+if (NAVIGATION_TYPE === 'reload' && WORK_HASH.test(location.hash)) {
   history.replaceState(null, '', location.pathname + location.search);
   scrollTo({ top: 0, behavior: 'instant' });
 }
 let SAVED_Y = 0;
 try { SAVED_Y = Number(sessionStorage.getItem('dizmar-home-y')) || 0; } catch (e) { /* storage blocked */ }
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y', String(scrollY)); } catch (e) { /* ignore */ } });
+// La posición se guarda por tres vías: al pulsar un proyecto, al ocultarse la página y al salir. En iPhone «pagehide» no siempre llega a tiempo.
+const saveY = () => { try { sessionStorage.setItem('dizmar-home-y', String(scrollY)); } catch (e) { /* ignore */ } };
+addEventListener('pagehide', saveY);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveY(); });
+document.addEventListener('click', (e) => { if (e.target instanceof Element && e.target.closest('.work-item > a')) saveY(); }, true);
 
 
 (() => {
@@ -65,7 +74,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     requestAnimationFrame(step);
   }
   // «Work» desde un enlace de la misma página (#work) estando en la portada: sube el tomate como con la rueda
-  addEventListener('hashchange', () => { if (location.hash === '#work' && J.target < 1) go(1); });
+  addEventListener('hashchange', () => { if (WORK_HASH.test(location.hash) && J.target < 1) go(1); });
   const scrollToWork = () => { if (workEl) animateScroll(workEl.offsetTop, () => J.target >= 1); };
   // Volver a la portada desde Work: el tomate vuela de vuelta y la página sube a la vez (un solo gesto, sin tener que subir toda la página)
   function backToLanding() {
@@ -136,7 +145,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     if (workEl) workEl.inert = hidden;
     if (footEl) footEl.inert = hidden;
     // Al volver a la portada con la rueda o el dedo, #work deja de estar en la dirección
-    if (J.target <= 0 && J.j <= 0.001 && location.hash === '#work') history.replaceState(null, '', location.pathname + location.search);
+    if (J.target <= 0 && J.j <= 0.001 && WORK_HASH.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
     body.classList.toggle('work-engaged', J.j > 0.001 || J.target > 0);
     if (J.j > 0.02 || J.target > 0) hintDone = true; // quien ya ha empezado el viaje no necesita la pista
     hint?.classList.toggle('is-on', hintReady && !hintDone && !J.hold);
@@ -242,17 +251,37 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
 
   // Atrás restaura la posición exacta, incluso si la URL conserva #work.
   // Los enlaces explícitos a Work entran directamente en la lista, sin viaje.
+  // Atrás: la posición exacta donde se salió. Si no se guardó (o se vuelve con el botón de la ficha, sin historial), la fila del proyecto
+  const RETURN_TO_ROW = !!FROM && NAVIGATION_TYPE !== 'reload' && !(BACK && SAVED_Y > 0);
+  // Fila (en la lista de Work) del proyecto del que se vuelve: se deja a un 30 % de la altura de la pantalla
+  const rowTop = () => {
+    if (!FROM) return 0;
+    const a = [...document.querySelectorAll('.work-item > a')].find((el) => el.getAttribute('href') === FROM);
+    return a ? Math.max(0, Math.round(scrollY + a.getBoundingClientRect().top - innerHeight * 0.3)) : 0;
+  };
+  // La altura de la página sigue cambiando mientras cargan tipografías e imágenes: se recoloca hasta que pasa un momento o el visitante toca algo
+  function holdPosition(target) {
+    let live = true;
+    const stop = () => { live = false; };
+    ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((n) => addEventListener(n, stop, { once: true, passive: true }));
+    const t0 = performance.now();
+    const step = () => {
+      if (!live || performance.now() - t0 > 2000) return;
+      const y = target();
+      if (Math.abs(scrollY - y) > 2) scrollTo({ top: y, behavior: 'instant' });
+      requestAnimationFrame(step);
+    };
+    step();
+  }
   if (BACK && SAVED_Y > 0) {
     J.j = J.target = 1;
-    // Se repite al terminar de cargar: hasta entonces la altura de la página aún cambia y el salto se vería
-    const restore = () => scrollTo({ top: SAVED_Y, behavior: 'instant' });
     apply();
-    restore();
-    addEventListener('load', restore, { once: true });
-  } else if (location.hash === '#work') {
+    holdPosition(() => SAVED_Y);
+  } else if (RETURN_TO_ROW || WORK_HASH.test(location.hash)) {
+    // Desde «Back to projects» (o un enlace a Work): directo a la lista, con el proyecto del que se vuelve justo a la vista
     J.j = J.target = 1;
     apply();
-    requestAnimationFrame(() => document.getElementById('work').scrollIntoView({ behavior: 'instant' }));
+    holdPosition(() => rowTop() || (workEl ? workEl.offsetTop : 0));
   } else if (FLY_FROM_NAV) {
     // Desde otra página: el tomate empieza en la barra y vuela al centro cuando el 3D está listo (js/home-tomato.js llama a go(0))
     J.j = 1; J.target = 0; J.simple = true;
@@ -277,7 +306,7 @@ addEventListener('pagehide', () => { try { sessionStorage.setItem('dizmar-home-y
     queued = false;
     // Mientras la página carga y se restaura la posición (Atrás o #work), se usa la posición de destino: así no hay un destello de la portada
     const loading = document.readyState !== 'complete';
-    const y = loading && BACK && SAVED_Y > 0 ? SAVED_Y : loading && location.hash === '#work' && work ? work.offsetTop : scrollY;
+    const y = loading && BACK && SAVED_Y > 0 ? SAVED_Y : loading && (WORK_HASH.test(location.hash) || !!FROM) && work ? work.offsetTop : scrollY;
     const q = clamp01(y / Math.max(1, work ? work.offsetTop : innerHeight)); // 0 en la portada, 1 al llegar a Work
     const zoom = still ? 0 : smooth(clamp01(q / 0.85));  // el cielo se acerca; las nubes se agrandan y se difuminan
     const fade = smooth(clamp01((q - 0.3) / 0.65));       // al atravesarlas, todo se funde en blanco (a lo largo de casi todo el recorrido, sin un golpe de blanco)

@@ -1,4 +1,4 @@
-// TERMINAL · una ventana de texto que se abre desde el enlace «Terminal» del pie de página (todas las páginas) o con la tecla `. Escribe `help`.
+// TERMINAL · una ventana de texto que se abre con la tecla ` desde cualquier página (no tiene enlace visible: es un guiño para quien lo busca). Escribe `help`.
 // Todo va en el propio script: sin red, sin cookies, sin datos de visitantes. Los textos se escriben con textContent, nunca como HTML.
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -6,7 +6,7 @@
   // Solo claves propias: «constructor», «toString»… no son comandos ni páginas
   const own = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
   const PAGES = {
-    home: '/', work: '/#work', about: '/about/', faq: '/faq/', room: '/room.html', machine: '/machine/',
+    home: '/', work: '/#work', about: '/about/', faq: '/faq/', room: '/room.html', machine: '/machine/', playground: '/playground/', plantlab: '/project/plant-lab/',
     lexus: '/project/lexus-electrified/', schweppes: '/project/schweppes/', soap: '/project/soap-and-glory-vanilla/', enmad: '/project/enmad/', posters: '/posters/',
   };
   const SECTIONS = {
@@ -24,29 +24,16 @@
       'Type `cd <name>` to open a project, for example: cd lexus',
     ],
     contact: [
-      'Email     hey.mariodiz@gmail.com',
+      'Email     contact@dizmar.xyz',
       'LinkedIn  es.linkedin.com/in/mario-diaz-aguado',
       'Based     Madrid, Spain',
     ],
   };
 
   // ---------- Construcción (una vez) ----------
-  // Entrada: «Terminal» en la fila pequeña del menú (js/menu.js); donde no hay menú (Machine, 404), un enlace en el pie. La tecla ` la abre desde cualquier sitio.
+  // Entrada: la tecla ` (sin enlace en el menú ni en el pie, para que el pie sea el mismo en todas partes)
   const triggers = [];
   let lastTrigger = null;
-  const foot = document.querySelector('.site-foot, .room-foot, .wrap > footer');
-  if (foot && !document.querySelector('.menu-li')) {
-    const footLink = document.createElement('a');
-    footLink.href = '#terminal';
-    footLink.className = 'term-open term-foot';
-    footLink.setAttribute('aria-haspopup', 'dialog');
-    footLink.setAttribute('aria-controls', 'term');
-    footLink.textContent = 'Terminal';
-    if (foot.classList.contains('site-foot') || foot.children.length === 2) foot.insertBefore(footLink, foot.lastElementChild);
-    else (foot.querySelector('span') || foot).append(' · ', footLink);
-    triggers.push(footLink);
-    lastTrigger = footLink;
-  }
 
   const panel = document.createElement('section');
   panel.id = 'term';
@@ -155,14 +142,14 @@
     if (machine) document.documentElement.classList.add('machine-leaving'); // en el modo máquina la página se funde antes de irse (estilos en machine/index.html)
     setTimeout(() => { location.href = page; }, reduced ? 0 : 240);
   };
-  const LS = () => ['home/  about/  faq/  room.html  machine/  posters/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/  enmad/'];
+  const LS = () => ['home/  about/  faq/  room.html  machine/  posters/  playground/  project/', '  lexus-electrified/  schweppes/  soap-and-glory-vanilla/  enmad/  plant-lab/'];
   let fpsBusy = false;
   const COMMANDS = {
     help: () => [
       'Commands:',
       '  help                    this list',
       '  ls                      list the pages of dizmar.xyz',
-      '  cd <page>               go to a page: home, work, about, faq, room, machine, posters, lexus, schweppes, soap, enmad',
+      '  cd <page>               go to a page: home, work, about, faq, room, machine, posters, playground, plantlab, lexus, schweppes, soap, enmad',
       '  view human | machine    switch between the visual site and the plain-text index',
       '  about | work | contact  print that section here',
       '  whoami                  who is behind this',
@@ -554,7 +541,7 @@
     info.append(
       who, el('div', 'term-rule'),
       infoBox('Profile', [['Name', 'Mario Diz'], ['Role', 'Art director · visual designer'], ['Based', 'Madrid, Spain'], ['Focus', 'Key visuals · AI · 3D · film']]),
-      infoBox('Work', [['2025', 'Lexus Electrified'], ['2026', 'Schweppes'], ['2026', 'Soap & Glory']]),
+      infoBox('Projects', [['2025', 'Lexus Electrified'], ['2026', 'Schweppes'], ['2026', 'Soap & Glory']]),
       session, swatch,
     );
     root.append(artBox, info);
@@ -622,7 +609,7 @@
   const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'guide', 'fps', 'neofetch', 'clear', 'exit',
     ...(roomOn() ? ['look', 'inspect', 'lights', 'play', 'flicker', 'sunset', 'zoom'] : [])];
   const ARGS = () => ({
-    cd: ['home', 'work', 'about', 'faq', 'room', 'machine', 'lexus', 'schweppes', 'soap', 'enmad', 'contact'],
+    cd: ['home', 'work', 'about', 'faq', 'room', 'machine', 'playground', 'plantlab', 'lexus', 'schweppes', 'soap', 'enmad', 'contact'],
     view: ['human', 'machine'],
     inspect: ['vinyl', 'poster', 'mimikyu', 'lamp', 'plant', 'wii'],
     lights: ['on', 'off'],
@@ -722,7 +709,7 @@
   refreshSuggestions();
 
   triggers.forEach((t) => t.addEventListener('click', (e) => { e.preventDefault(); lastTrigger = t; panel.hidden ? openTerm() : closeTerm(); }));
-  document.addEventListener('terminal:open', () => { if (panel.hidden) openTerm(); }); // la fila pequeña del menú (js/menu.js)
+  document.addEventListener('terminal:open', () => { if (panel.hidden) openTerm(); }); // para abrirla desde otras piezas de la web
   close.addEventListener('click', closeTerm);
   row.addEventListener('submit', (e) => { e.preventDefault(); run(input.value); input.value = ''; });
   // El tabulador se queda dentro de la terminal mientras está abierta (Escape la cierra y devuelve el foco)

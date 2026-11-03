@@ -5,15 +5,16 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 ## Cómo está organizado
 
 ```
-index.html · room.html · 404.html      Home (el tomate gira con su nombre y baja a la lista Work), The room (habitación 3D) y «no encontrada»
+index.html · room.html · 404.html      Home (el tomate gira con su nombre y baja a la lista Projects), The room (habitación 3D) y «no encontrada»
 about/ · faq/ · privacy/               About, FAQs y Privacidad (cada una, un index.html)
+playground/index.html                  Playground: el sandbox de nodos (Plant Lab y Brush Lab) a pantalla completa; el dibujo se hace en el navegador
 posters/index.html                     Collage de trabajos personales y ficticios; cada pieza abre un visor con todo su mini-proyecto (js/posters.js)
 machine/index.html                     Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 project/<nombre>/index.html            Una ficha por proyecto → www.dizmar.xyz/project/<nombre>/
-                                       (lexus-electrified · schweppes · schweppes-the-gentlemen · soap-and-glory-vanilla · enmad)
+                                       (lexus-electrified · schweppes · schweppes-the-gentlemen · soap-and-glory-vanilla · enmad · plant-lab, que lleva el sandbox dentro)
 templates/                             Plantillas para copiar (no son páginas de la web)
   project-template/index.html          Ficha de proyecto nueva, con todo explicado
-  project-card.html                    La fila de la lista Work de la home para un proyecto nuevo (8 miniaturas)
+  project-card.html                    La fila de la lista Projects de la home para un proyecto nuevo (imagen o vídeo grande)
 experiments/                           Estudios sueltos (tomato-grass, tomato-juggler); no forman parte de la web
 scripts/                               Utilidades de Blender para generar archivos de la habitación
 robots.txt · sitemap.xml · llms.txt    Para buscadores y agentes de IA
@@ -26,14 +27,15 @@ css/                                   Aspecto. Un archivo por zona; los comunes
   nav-logo.css · nav-links.css · menu.css · footer.css · cursor.css · transitions.css   Piezas comunes: tomate y enlaces de la barra, panel «Menu», pie, cursor y transiciones entre páginas
   home.css · home-loading.css          La home y su pantalla de carga
   case.css · case-layout.css · palettes.css   Fichas de proyecto y posters: base (cabecera fija, reproductor, More works), estructura (título que avanza, columna fija, partes) y colores propios de cada proyecto
-  posters.css · about.css · faq.css · privacy.css · not-found.css · contact-sachet.css · terminal.css
+  posters.css · sandbox.css · about.css · faq.css · privacy.css · not-found.css · contact-sachet.css · terminal.css
   room.css · room-wii.css · room-pokemon.css   La habitación, la Wii y la «Pokémon collection»
 
 js/                                    Comportamiento (sin dependencias ni compilación)
-  home-*.js                            La home: tomate 3D, introducción, lista Work y pantalla de carga
+  home-*.js                            La home: tomate 3D, introducción, lista Projects y pantalla de carga
+  playground/                          El sandbox de nodos: motor del pincel y del papel (engine.js), la planta (plant-engine.js), dibujo de la hoja (render.js), editor genérico (editor.js), tipos de nodo (nodes.js), grafo inicial (sandbox.js) y mount.js, que lo monta en cada página
   case.js · case-index.js · posters.js Fichas (aparición, reproductor, volver, índice de ENMAD) y visor de posters
   room.js · room/                      La habitación 3D; room/ agrupa la Wii, la «Pokémon collection», la iluminación y la carga
-  menu.js · cursor.js · smooth-scroll.js · transitions.js · terminal.js · nav-tomato.js · contact-sachet.js · sachet.js   Comunes a casi todas las páginas
+  menu.js · link-roll.js · cursor.js · smooth-scroll.js · transitions.js · terminal.js · nav-tomato.js · contact-sachet.js · sachet.js   Comunes a casi todas las páginas
   about.js · not-found-*.js · mode-switch.js   Páginas sueltas; mode-switch.js es la píldora HUMAN | MACHINE, aparcada (ver «Modo máquina»)
 
 assets/                                Imágenes, vídeos y modelos 3D
@@ -51,8 +53,8 @@ Regla fácil: **textos → archivos `.html`**, **aspecto → `.css`**, **animaci
 
 ## Tareas habituales
 
-### Cambiar un texto de una fila de la lista Work de la home
-Abre `index.html` y busca `work-list` (Ctrl+F). Cada proyecto es un bloque `<li class="work-item">`. Cambia el año (`wi-date`), el nombre (`wi-name`) o las etiquetas (`wi-tags`). Cada fila lleva siempre 8 miniaturas (`wi-slot`), sin huecos.
+### Cambiar un texto de una fila de la lista Projects de la home
+Abre `index.html` y busca `work-list` (Ctrl+F). Cada proyecto es un bloque `<li class="work-item">`. Cambia el año (`wi-date`), el nombre (`wi-name`) o las etiquetas (`wi-tags`). Cada fila lleva una imagen o un vídeo grande (`wi-tile`), o tres piezas verticales en fila con `--cols: 3`. La página tiene dos columnas: el título «Projects» fijo a la izquierda y los proyectos a la derecha. Al cambiar el recuento de proyectos, actualiza el `(7)` del título.
 
 ### Cambiar el texto de una página de proyecto
 Abre `project/<nombre>/index.html`. Los trozos editables están marcados con comentarios (`EDITA:`): nombre, año y cliente, datos de la columna izquierda, texto y las imágenes o vídeos de cada parte.
@@ -62,7 +64,7 @@ Abre `project/<nombre>/index.html`. Los trozos editables están marcados con com
 2. Crea `assets/projects/<nombre-del-proyecto>/` y sube allí las imágenes (`.webp`, en dos tamaños: 800 y 1600 px de ancho) y los vídeos (`.mp4`).
 3. En el nuevo `index.html`, cambia `nombre-del-proyecto` por el nombre real (Ctrl+F, "reemplazar todo") y edita los textos marcados con `EDITA:`. La plantilla trae ejemplos de película, clip en bucle e imágenes: deja los que uses y borra el resto.
    Colores propios (opcional): añade `data-palette="nombre"` a `<html>` y define esa paleta en `css/palettes.css` (hay cinco de ejemplo; comprueba el contraste). Sin él, la ficha es blanca.
-4. Abre `templates/project-card.html`, copia el `<li>` y pégalo en la lista `work-list` de `index.html`, donde quieras que salga (el orden en el código = el orden en la página). Cada fila lleva siempre 8 miniaturas, sin huecos.
+4. Abre `templates/project-card.html`, copia el `<li>` y pégalo en la lista `work-list` de `index.html`, donde quieras que salga (el orden en el código = el orden en la página), y actualiza el `(7)` del título.
 5. Cuando esté listo, borra la línea `<meta name="robots" content="noindex">` de la página del proyecto y añade su dirección a `sitemap.xml`.
 6. Si cambias un `.css` o un `.js`, sube el número `?v=` de sus enlaces en todas las páginas.
 
@@ -88,7 +90,7 @@ Cada página pública lleva en su `<head>`: `<title>`, `<meta name="description"
 - Google no se entera solo: hay que dar de alta la web en Google Search Console y enviar `https://www.dizmar.xyz/sitemap.xml` (con tu cuenta de Google, en search.google.com/search-console).
 
 ### Cambiar el correo de «Contact»
-«Contact» del menú es un enlace `mailto:` directo: al pulsarlo se abre el programa de correo del visitante con la dirección y el asunto ya puestos. No hay página intermedia. La dirección está en el menú de todas las páginas (y en la de Privacy y About). Para cambiarla, busca `mailto:hey.mariodiz@gmail.com` y cámbiala en todos los archivos.
+«Contact» del menú es un enlace `mailto:` directo: al pulsarlo se abre el programa de correo del visitante con la dirección y el asunto ya puestos. No hay página intermedia. La dirección está en el menú de todas las páginas (y en la de Privacy y About). Para cambiarla, busca `mailto:contact@dizmar.xyz` y cámbiala en todos los archivos.
 
 ### Cambiar el texto de la página 404
 `404.html`, el párrafo con clase `message`.

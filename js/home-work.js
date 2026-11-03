@@ -1,8 +1,7 @@
-// WORK · lista de proyectos (referencia: 13322566869.com/works, con el estilo de esta web).
-//  · cada fila aparece una vez al entrar: la línea se dibuja, el nombre sube desde su máscara y las miniaturas se destapan una a una;
-//  · al hacer scroll la tira de miniaturas se desplaza un poco de lado, con inercia (la fila se mueve distinto que la página);
-//  · al pasar el ratón: se encienden los textos, suben las miniaturas y "View project" hace de cursor (la parte visual está en css/home.css);
-//  · los vídeos de las miniaturas solo se reproducen mientras se ven;
+// PROJECTS · lista de proyectos: título fijo a la izquierda y proyectos a la derecha (la parte visual está en css/home.css).
+//  · cada proyecto aparece una vez al entrar: el marco de la imagen se abre de arriba abajo y debajo sube su texto;
+//  · al pasar el ratón: se enciende el texto, la imagen se acerca un poco y "View project" hace de cursor;
+//  · los vídeos solo se reproducen mientras se ven;
 //  · la barra de arriba lleva «Creative ___»: la segunda palabra cambia sola mientras se ve.
 // Todo se apaga con "reducir movimiento". Sin este script, la lista se ve completa y quieta.
 (() => {
@@ -70,13 +69,9 @@
   }
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const rows = [...work.querySelectorAll('.work-item')];
-  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-
-  // ---- Miniaturas: cada una sabe su posición (--i) para destaparse en cadena ----
-  rows.forEach((row) => row.querySelectorAll('.wi-slot').forEach((slot, i) => slot.style.setProperty('--i', i)));
-
+  
   // ---- Vídeos: solo se reproducen mientras se ven ----
-  const videos = [...work.querySelectorAll('.wi-slot video')];
+  const videos = [...work.querySelectorAll('.wi-tile video')];
   videos.forEach((v) => { v.autoplay = false; v.pause(); });
   if (!reduced && videos.length) {
     const io = new IntersectionObserver((entries) => entries.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())));
@@ -85,7 +80,7 @@
 
   // ---- Volver desde un proyecto: la lista llega con un fundido corto, la fila de ese proyecto se enciende un momento
   //      y la lista no repite su entrada (js/case.js guarda el proyecto al salir) ----
-  const cameBack = () => { try { return !!sessionStorage.getItem('dizmar-from'); } catch (e) { return false; } };
+  const returned = (() => { try { return !!sessionStorage.getItem('dizmar-from'); } catch (e) { return false; } })();
   const arrive = () => {
     let from = null;
     try { from = sessionStorage.getItem('dizmar-from'); sessionStorage.removeItem('dizmar-from'); } catch (e) { /* storage blocked */ }
@@ -99,9 +94,10 @@
     setTimeout(() => row.classList.remove('is-back'), settle + 1600);
   };
   addEventListener('pageshow', (e) => { if (e.persisted) arrive(); });
+  if (returned) arrive(); // volver sin caché del navegador (iPhone, recarga completa): la fila también se enciende
 
   // ---- Aparecer: cada fila entra una sola vez ----
-  if (!reduced && !cameBack()) {
+  if (!reduced && !returned) {
     document.documentElement.classList.add('work-motion');
     const io = new IntersectionObserver((entries) => entries.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
@@ -113,35 +109,6 @@
   if (!fine) {
     const io = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('is-hot', e.isIntersecting)), { rootMargin: '-42% 0px -42% 0px' });
     rows.forEach((row) => io.observe(row));
-  }
-
-  // ---- Inercia: la tira de cada fila se desplaza de lado algo por detrás del scroll (se escribe directamente en la tira: una variable CSS se heredaría a todas sus miniaturas) ----
-  if (!reduced && matchMedia('(min-width: 761px)').matches) {
-    const strips = rows.map((row) => row.querySelector('.wi-strip'));
-    const now = rows.map(() => 0);
-    let raf = 0, last = 0;
-    const frame = (t) => {
-      raf = 0;
-      const k = 1 - Math.exp(-(t - (last || t - 16)) / 120);
-      last = t;
-      let moving = false;
-      const vh = innerHeight;
-      rows.forEach((row, i) => {
-        const r = row.getBoundingClientRect();
-        const off = r.top + r.height / 2 - vh / 2;
-        if (Math.abs(off) > vh * 1.6) return;
-        const to = clamp(off * -0.07, -70, 70) * (i % 2 ? -1 : 1); // las filas pares van hacia un lado y las impares hacia el otro
-        now[i] += (to - now[i]) * k;
-        if (Math.abs(to - now[i]) > 0.05) moving = true;
-        strips[i].style.translate = now[i].toFixed(2) + 'px 0';
-      });
-      if (moving) raf = requestAnimationFrame(frame);
-      else last = 0;
-    };
-    const wake = () => { if (!raf) raf = requestAnimationFrame(frame); };
-    addEventListener('scroll', wake, { passive: true });
-    addEventListener('resize', wake);
-    wake();
   }
 
   // «View project» sobre una fila lo dibuja el propio cursor (js/cursor.js)

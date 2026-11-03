@@ -13,6 +13,7 @@
 <meta property="og:url" content="https://www.dizmar.xyz/privacy/">
 <meta property="og:image" content="https://www.dizmar.xyz/assets/images/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="text/html" href="/machine/" title="Machine mode: the same content as plain text">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/assets/images/favicon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -22,12 +23,13 @@
 <script>document.documentElement.classList.add('has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
 <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/css/tokens.css?v=20261027b">
+<link rel="stylesheet" href="/css/tokens.css?v=20261109a">
 <link rel="stylesheet" href="/css/privacy.css?v=20261029a">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
-<link rel="stylesheet" href="/css/menu.css?v=20261027r">
+<link rel="stylesheet" href="/css/menu.css?v=20261109a">
+  <link rel="stylesheet" href="/css/link-roll.css?v=20261110roll1">
 <link rel="stylesheet" href="/css/transitions.css?v=20261029j">
 <script type="importmap">
   {
@@ -38,8 +40,8 @@
   }
 </script>
 <script src="/js/transitions.js?v=20261030a"></script>
-<link rel="stylesheet" href="/css/cursor.css?v=20261031a">
-  <link rel="stylesheet" href="/css/contact-sachet.css?v=20261029a">
+<link rel="stylesheet" href="/css/cursor.css?v=20261110roll1">
+  <link rel="stylesheet" href="/css/contact-sachet.css?v=20261108b">
   <link rel="stylesheet" href="/css/terminal.css?v=20261024b">
 </head>
 <body id="top" class="theme-green">
@@ -48,9 +50,9 @@
 <nav class="nav" aria-label="Main">
   <a class="nav-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" alt="" width="44" height="47"></a>
   <ul class="nav-links">
-    <li><a href="/#work">Work</a></li>
+    <li><a href="/#work">Projects</a></li>
     <li><a href="/about/">About</a></li>
-    <li><a href="mailto:hey.mariodiz@gmail.com?subject=Hello%20from%20dizmar.xyz">Contact</a></li>
+    <li><a href="mailto:contact@dizmar.xyz?subject=Hello%20from%20dizmar.xyz">Contact</a></li>
     <li><a href="/room.html">Room</a></li>
     <li class="menu-li"><a class="menu-toggle" href="#menu" role="button" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false">Menu</a></li>
   </ul>
@@ -61,20 +63,20 @@
   <header class="pv-head">
     <h1>Privacy</h1>
     <!-- EDITA la fecha cada vez que cambie el texto -->
-    <p class="pv-updated">Last updated: 27 October 2026</p>
+    <p class="pv-updated">Last updated: 31 October 2026</p>
   </header>
 
   <section class="pv-row" aria-labelledby="short">
     <h2 id="short">In short</h2>
     <div>
-      <p>This website does not set cookies, has no analytics and does not ask you for personal data. It does not sell or share anything about you. Apart from the hosting and one embedded Instagram post, nothing is loaded from other companies; both are explained below.</p>
+      <p>This website does not set cookies, has no analytics and only asks for personal data if you choose to use the contact form. It does not sell or share anything about you. Apart from the hosting, one embedded Instagram post and the contact form, nothing involves other companies; all three are explained below.</p>
     </div>
   </section>
 
   <section class="pv-row" aria-labelledby="who">
     <h2 id="who">Who is responsible</h2>
     <div>
-      <p>Mario Díaz Aguado (Mario Diz), Madrid, Spain — <a href="mailto:hey.mariodiz@gmail.com">hey.mariodiz@gmail.com</a>.</p>
+      <p>Mario Díaz Aguado (Mario Diz), Madrid, Spain — <a href="mailto:contact@dizmar.xyz">contact@dizmar.xyz</a>.</p>
     </div>
   </section>
 
@@ -106,6 +108,13 @@
     </div>
   </section>
 
+  <section class="pv-row" aria-labelledby="form">
+    <h2 id="form">Contact form</h2>
+    <div>
+      <p>If you write to me through the contact form, the name, email address and message you type are sent to Formspree (Formspree, Inc., United States), which forwards them to me by email and keeps a copy on its servers. Nothing is sent until you press Send, and I use it only to reply to you. See <a href="https://formspree.io/legal/privacy-policy/" rel="noopener">Formspree’s privacy policy</a>. If you prefer, write to me directly at <a href="mailto:contact@dizmar.xyz">contact@dizmar.xyz</a>.</p>
+    </div>
+  </section>
+
   <section class="pv-row" aria-labelledby="device">
     <h2 id="device">On your device</h2>
     <div>
@@ -130,19 +139,20 @@
   <section class="pv-row" aria-labelledby="rights">
     <h2 id="rights">Your rights</h2>
     <div>
-      <p>Under the GDPR you can ask to access, correct or delete any personal data I hold about you. Write to <a href="mailto:hey.mariodiz@gmail.com">hey.mariodiz@gmail.com</a>. You can also complain to the Spanish data protection authority, the <a href="https://www.aepd.es" rel="noopener">AEPD</a>.</p>
+      <p>Under the GDPR you can ask to access, correct or delete any personal data I hold about you. Write to <a href="mailto:contact@dizmar.xyz">contact@dizmar.xyz</a>. You can also complain to the Spanish data protection authority, the <a href="https://www.aepd.es" rel="noopener">AEPD</a>.</p>
     </div>
   </section>
 
   <p class="pv-back"><a href="/">← Back to the portfolio</a></p>
 </main>
 
-<footer class="site-foot on-green"><span>Mario Diz, Madrid · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
+<footer class="site-foot on-green"><span>Mario Diz, Madrid · <a href="/faq/">FAQs</a> · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
 <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
 <script src="/js/cursor.js?v=20261029b" defer></script>
 <script src="/js/smooth-scroll.js?v=20261028n" defer></script>
-  <script type="module" src="/js/contact-sachet.js?v=20261024n"></script>
-<script src="/js/menu.js?v=20261025d" defer></script>
-<script src="/js/terminal.js?v=20261030b" defer></script>
+  <script type="module" src="/js/contact-sachet.js?v=20261108a"></script>
+<script src="/js/menu.js?v=20261110projects" defer></script>
+<script src="/js/link-roll.js?v=20261110roll1" defer></script>
+<script src="/js/terminal.js?v=20261110projects" defer></script>
 </body>
 </html>
