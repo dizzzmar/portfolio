@@ -1,6 +1,6 @@
 /* CONTACT · la ventana de contacto (js/contact-sachet.js): amarillo mostaza liso y todo en rojo, como la sección de contacto de wearepanico.com: los campos son barras rojas a todo
    el ancho arriba, de una en una (mensaje, nombre, email), con lo que se escribe en amarillo; debajo, el título enorme que es la pregunta y el botón, una rayita y los datos
-   de contacto a la derecha. Todo en el rojo de la web (--menu-red) sobre el amarillo, sin verde. El sobre de ketchup DIZ en 3D está abajo, pequeño, en el centro (se gira
+   de contacto a la derecha; la barra no lleva ningún borde ni aro (el cursor parpadeante y lo escrito marcan el foco). Todo en el rojo de la web (--menu-red) sobre el amarillo, sin verde. El sobre de ketchup DIZ en 3D está abajo, pequeño, en el centro (se gira
    arrastrándolo y se puede rasgar). */
 .sachet {
   position: fixed;
@@ -79,7 +79,6 @@
 .sachet-field input { padding: .25em .4em; }
 .sachet-field textarea { padding: .25em .4em; min-height: clamp(150px, 17vw, 260px); resize: none; field-sizing: content; max-height: 38dvh; }
 .sachet-field input:focus, .sachet-field textarea:focus { outline: none; }
-.sachet-field:has(:focus-visible) { outline: 2px solid var(--mustard); outline-offset: -10px; }   /* un aro amarillo por dentro de la barra */
 .sachet-field:not(.has-value) :is(input, textarea) { caret-color: transparent; }
 /* El cursor falso: un bloque amarillo parpadeante siempre visible en la barra vacía (haya o no el foco) */
 .sachet-caret { position: absolute; z-index: 0; left: .4em; top: .25em; width: 5px; height: 1.5em; background: var(--mustard); font-size: clamp(30px, 5vw, 100px); animation: sachet-blink 1.06s steps(1) infinite; pointer-events: none; }
