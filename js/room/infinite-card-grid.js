@@ -1,15 +1,17 @@
 // Infinite card collage: a fixed pool of cards wraps around the viewport in both directions, so distance travelled never adds DOM nodes.
-// Columns are staggered in height (as in the Posters collage), every card keeps its caption, and the same card never sits next to itself.
-// One animation clock moves the 2D field and eases local card perspective around the cursor or finger.
-// The collage, captions and arrangement stay intact. Rendering stops at rest and while the tab is hidden.
+// The layout is the archive-wall one of nicolo-lombardi.com/archive/la-barra: a skewed lattice, so every row climbs to the right and
+// each row is shifted sideways against the one above. Cards stand upright, centred on their lattice point, with wide gaps and no captions.
+// The same card never sits next to itself. One animation clock moves the field and eases local card perspective around the cursor
+// or finger. Rendering stops at rest and while the tab is hidden.
 const MOTION = {
   follow: 30,      // while dragging the field stays under the hand
   glide: 9,        // after wheel or release: the same rate as the page scroll (js/smooth-scroll.js, EASE = 9)
   friction: 5,     // release velocity decays continuously
   maxSpeed: 2200, response: 16, touchRadius: 250, touchDepth: 34,
 };
-const STAGGER = [0, .42, .14, .6, .28, .74, .06];   // vertical offset of each column, as a fraction of a row
-const CAPTION = 34, CAPTION_SMALL = 52;              // caption under each card: one line, or two on a phone (css/room-pokemon.css)
+// Lattice, in card widths (measured on the reference at 1440 px: card ≈ 165 wide, steps of (252, -58) along a row and (73, 325) between rows).
+const ROW_STEP = { x: 1.53, y: -.35 };      // from one card to the next in a row: right and slightly up
+const COLUMN_STEP = { x: .44, y: 1.98 };    // from a row to the next: down and a little to the right (≈ 1.4 card heights)
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const wrap = (value, length) => ((value % length) + length) % length;
 const approach = (value, target, rate, dt) => {
@@ -50,7 +52,8 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
   const target = { x: 0, y: 0 };
   const velocity = { x: 0, y: 0 };
   const contact = { x: 0, y: 0, active: false, touch: false, amount: 0 };
-  let columns = 0, rows = 0, stepX = 0, stepY = 0, cardWidth = 0, cardHeight = 0, caption = CAPTION;
+  let columns = 0, rows = 0, stepX = 0, stepY = 0, cardWidth = 0, cardHeight = 0;
+  let A = { x: 0, y: 0 }, B = { x: 0, y: 0 }, det = 1, uLow = 0, vLow = 0;   // lattice vectors, their determinant and the wrap origin
   let width = 0, height = 0, raf = 0, lastTime = 0, drag = null, focused = null, first = entrance;
   let destroyed = false;
 
@@ -60,15 +63,18 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
 
   function place() {
     for (const tile of tiles) {
-      const x = wrap(tile.column * stepX + position.x + stepX, columns * stepX) - stepX;
-      const y = wrap((tile.row + STAGGER[tile.column % STAGGER.length]) * stepY + position.y + stepY, rows * stepY) - stepY;
+      // Cell coordinates (u along a row, v between rows) of the field's shift, wrapped so the pool always covers the screen.
+      const u = uLow + wrap(tile.column + (B.y * position.x - B.x * position.y) / det - uLow, columns);
+      const v = vLow + wrap(tile.row + (A.x * position.y - A.y * position.x) / det - vLow, rows);
+      const x = width / 2 + u * A.x + v * B.x - cardWidth / 2;
+      const y = height / 2 + u * A.y + v * B.y - cardHeight / 2;
       if (x === tile.x && y === tile.y) continue;
       tile.x = x; tile.y = y;
       tile.item.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
     }
   }
 
-  // Depth stays local to each scan: stagger, spacing and captions never move out of their 2D layout.
+  // Depth stays local to each scan: the lattice and its spacing never move out of their 2D layout.
   function poseCards(dt) {
     const calm = reduced.matches;
     contact.amount = calm ? 0 : approach(contact.amount, contact.active ? 1 : 0, 12, dt);
@@ -143,13 +149,19 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
     const focusedId = document.activeElement?.closest?.('.pokemon-card')?.dataset.card;
     width = nextWidth; height = nextHeight; focused = null;
     const small = width < 700;
-    cardWidth = small ? clamp(width * .38, 118, 190) : clamp(width * .15, 150, 236);
+    cardWidth = small ? clamp(width * .34, 100, 150) : clamp(width * .115, 120, 190);
     cardHeight = cardWidth * 88 / 63;
-    const gap = small ? 18 : clamp(width * .032, 28, 56);
-    caption = small ? CAPTION_SMALL : CAPTION;
-    stepX = cardWidth + gap; stepY = cardHeight + caption + gap * 1.3;
-    columns = Math.max(4, Math.ceil(width / stepX) + 2);
-    rows = Math.max(3, Math.ceil(height / stepY) + 3);   // one more row than needed: the staggered columns start lower
+    A = { x: ROW_STEP.x * cardWidth, y: ROW_STEP.y * cardWidth }; B = { x: COLUMN_STEP.x * cardWidth, y: COLUMN_STEP.y * cardWidth };
+    det = A.x * B.y - B.x * A.y; stepX = A.x; stepY = B.y;
+    // How many cells the pool needs: the screen's four corners, in cell coordinates, plus a whole cell of margin on every side
+    // (the cards that wrap round are always a full cell outside the screen, so they never pop in view).
+    const us = [], vs = [];
+    for (const [px, py] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+      const dx = px * width / 2, dy = py * height / 2;
+      us.push((B.y * dx - B.x * dy) / det); vs.push((A.x * dy - A.y * dx) / det);
+    }
+    uLow = Math.min(...us) - 1; vLow = Math.min(...vs) - 1;
+    columns = Math.ceil(Math.max(...us) - Math.min(...us)) + 3; rows = Math.ceil(Math.max(...vs) - Math.min(...vs)) + 3;
     list.style.setProperty('--card-width', `${cardWidth}px`);
     list.replaceChildren(); tiles.length = 0;
     const order = arrange(cards, columns, rows);
@@ -168,7 +180,7 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
         tiles.push(tile);
         element.addEventListener('focus', () => {
           focused = tile;
-          if (tile.x < 0 || tile.y < 0 || tile.x + cardWidth > width || tile.y + cardHeight + caption > height) {
+          if (tile.x < 0 || tile.y < 0 || tile.x + cardWidth > width || tile.y + cardHeight > height) {
             move(cx - cardWidth / 2 - tile.x, cy - cardHeight / 2 - tile.y);
           }
           wake();
@@ -176,8 +188,6 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
         element.addEventListener('blur', () => { if (focused === tile) focused = null; wake(); });
       }
     }
-    position.x = target.x = wrap(target.x, columns * stepX);
-    position.y = target.y = wrap(target.y, rows * stepY);
     place(); poseCards(1);
     // Entrance on opening: the cards rise into place from the centre outward; after a resize they are simply there.
     for (const tile of tiles) {
