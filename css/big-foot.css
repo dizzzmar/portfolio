@@ -1,6 +1,6 @@
-/* FOOTER GRANDE (solo en la portada, al final de Projects) · referencia: wearepanico.com. Un bloque de color liso (rojo del menú) con «DIZMAR» enorme en crema,
+/* FOOTER GRANDE (el único pie de la web) · referencia: wearepanico.com. Un bloque de color liso (rojo del menú) con «DIZMAR» enorme en crema,
    de borde a borde. Sus piezas (enlaces, letras y «Go up») llegan desordenadas, desplazadas y giradas, y se colocan en su sitio según se baja
-   (js/big-foot.js, atado al scroll). Al llegar al final, «Go up» da un pulso. Es el único pie de la portada: lleva también la línea «Mario Diz, Madrid · FAQs · Privacy».
+   (js/big-foot.js, atado al scroll). Al llegar al final, «Go up» da un pulso. Es el único pie de la web (igual en todas las páginas con scroll): FAQs y Privacy van entre los enlaces de arriba, y «Mario Diz, Madrid» y «Go up» abajo.
    Sin JavaScript (o con «reducir movimiento») todo está ya en su sitio. */
 .big-foot {
   position: relative; z-index: 5;
@@ -12,9 +12,6 @@
 .bf-top { display: flex; align-items: center; justify-content: flex-end; gap: 24px; }
 .bf-bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
 .bf-legal { margin: 0; font-size: var(--fs-s); line-height: 1.4; }
-.bf-legal a { color: inherit; text-underline-offset: 3px; }
-.bf-legal a:focus-visible { outline: 2px solid var(--cream); outline-offset: 4px; }
-@media (pointer: coarse) { .bf-legal a { display: inline-block; padding: 12px 6px; margin: -12px -6px; } }
 .bf-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px clamp(20px, 3.4vw, 56px); list-style: none; font-size: var(--fs-s); line-height: 1.4; text-transform: uppercase; letter-spacing: .04em; }
 .bf-links a { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
 .bf-links a::before { content: ""; width: 14px; height: 2px; background: currentColor; rotate: -55deg; }   /* la rayita de Pánico, antes de cada enlace */

@@ -12,7 +12,7 @@
     const room = foot.clientWidth - parseFloat(getComputedStyle(foot).paddingLeft) - parseFloat(getComputedStyle(foot).paddingRight);
     foot.style.setProperty('--bf-size', '100px');
     word.style.justifyContent = 'flex-start';
-    const natural = [...word.children].reduce((sum, s) => sum + s.getBoundingClientRect().width, 0);
+    const natural = [...word.children].reduce((sum, s) => sum + s.offsetWidth, 0);   // offsetWidth: no cambia con el desvío (transform) de cada letra
     word.style.justifyContent = '';
     if (natural > 0) foot.style.setProperty('--bf-size', (100 * room / natural).toFixed(2) + 'px');
   };
