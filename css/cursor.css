@@ -26,6 +26,11 @@
   transition: transform .25s cubic-bezier(.23, 1, .32, 1), opacity .2s ease;
 }
 .cursor-dot.is-down i { transform: scale(.65); transition-duration: .12s; }
+/* Sobre una barra de escribir (Contact): el punto se estira en una raya amarilla de 3 × 34 px, sin mezcla de colores (es la misma raya que el cursor de texto) */
+.cursor-dot i { transition: transform .25s cubic-bezier(.23, 1, .32, 1), opacity .2s ease, width .22s cubic-bezier(.23, 1, .32, 1), height .22s cubic-bezier(.23, 1, .32, 1), left .22s cubic-bezier(.23, 1, .32, 1), top .22s cubic-bezier(.23, 1, .32, 1), border-radius .22s ease; }
+.cursor-dot.is-text { mix-blend-mode: normal; }
+.cursor-dot.is-text i { left: -1.5px; top: -17px; width: 3px; height: 34px; border-radius: 2px; background: var(--mustard, #ffc214); }
+.cursor-dot.is-text.is-down i { transform: scaleY(.85); }
 /* Sobre enlaces y botones (y objetos de la sala 3D): el punto crece y se vuelve algo transparente; el cursor real va encima */
 .cursor-dot.is-hot i { transform: scale(2.4); opacity: .7; transition: transform .4s cubic-bezier(.23, 1, .32, 1), opacity .25s ease; }
 .cursor-dot.is-hot.is-down i { transform: scale(1.8); transition-duration: .12s; }
@@ -58,6 +63,7 @@
 @media (hover: hover) and (pointer: fine) {
   html, html *, html ::backdrop, ::view-transition, ::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { cursor: none !important; }
   html input[type="text"], html input:not([type]), html textarea { cursor: text !important; }
+  html .sachet-field, html .sachet-field input, html .sachet-field textarea { cursor: none !important; }   /* en las barras de Contact manda la raya del punto, no la del sistema */
   /* Solo en enlaces y botones se ve el cursor real (la mano), por encima del punto; en las tarjetas de proyecto manda la píldora «View» */
   html :is(a[href], button, summary, label, select, [role="button"]):not([data-cursor="view"], .work-item > a, .player *, .ct-slider, [data-cursor-pic], [data-cursor-pic] *) { cursor: pointer !important; }
   html :is(a[href], button, summary, label, select, [role="button"]):not([data-cursor-pic]) *:not([data-cursor-pic] *) { cursor: pointer !important; }
