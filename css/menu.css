@@ -1,5 +1,5 @@
 /* MENÚ · el botón «Menu» de arriba a la derecha (js/menu.js) abre un panel de color liso que baja desde arriba y cubre la pantalla; los enlaces grandes
-   suben uno a uno desde una máscara y abajo hay una fila pequeña. Al cerrar hace lo mismo al revés (transiciones: la salida es la entrada invertida).
+   suben uno a uno desde una máscara. El panel no lleva pie. Al cerrar hace lo mismo al revés (transiciones: la salida es la entrada invertida).
    Referencia: pesqueradiez.com. Sin JavaScript no se ve nada de esto: la barra con los enlaces de siempre sigue funcionando. */
 :root {
   --menu-bg: var(--menu-red);   /* rojo tomate: con el texto crema, 4,5:1 (con var(--tomato) bajaba a 3,6:1) */
@@ -82,35 +82,18 @@ html.menu-open { overflow: hidden; scrollbar-gutter: stable; background: var(--m
 @media (max-width: 820px) { .menu-item--archive { position: static; margin-top: 14px; font-size: 24px; } }
 @media (hover: hover) { .menu-items:hover a:not(:hover) { opacity: .75; } } /* el resto se apaga al señalar uno (como en Work) */
 
-/* Pie de abajo: el mismo texto, tamaño y sitio que el pie de todas las páginas («Mario Diz, Madrid · FAQs · Privacy»), en crema */
-.menu-small {
-  position: absolute;
-  left: var(--bar-gutter);
-  right: var(--bar-gutter);
-  bottom: max(24px, env(safe-area-inset-bottom));
-  margin: 0;
-  font-size: var(--fs-s);
-  line-height: 1.4;
-  opacity: 0;
-  transition: opacity .2s ease 0s;
-}
-.menu[data-open="true"] .menu-small { opacity: 1; transition: opacity .5s ease .55s; }
-.menu-small a { color: inherit; text-underline-offset: 3px; }
-@media (pointer: coarse) { .menu-small a { display: inline-block; padding-block: 12px; margin-block: -12px; } }
-
-/* Móvil y tabla vertical: los enlaces se apilan y bajan hasta la altura del pulgar, justo encima de la fila pequeña */
+/* Móvil y tabla vertical: los enlaces se apilan y bajan hasta la altura del pulgar, a 32 px del borde de abajo */
 @media (max-width: 820px) {
-  .menu-items { flex-direction: column; justify-content: flex-start; left: 14px; right: 14px; top: auto; bottom: calc(max(24px, env(safe-area-inset-bottom)) + 56px); translate: none; gap: 4px; }
-  .menu-small { left: 14px; right: 14px; }
+  .menu-items { flex-direction: column; justify-content: flex-start; left: 14px; right: 14px; top: auto; bottom: max(32px, env(safe-area-inset-bottom)); translate: none; gap: 4px; }
 }
 /* Móvil en horizontal: no cabe una columna de enlaces grandes (Work quedaba fuera de pantalla); vuelven a la fila, más pequeños y en el centro */
 @media (max-height: 500px) and (max-width: 1000px) {
   .menu-items { flex-direction: row; flex-wrap: wrap; justify-content: space-between; top: 50%; bottom: auto; translate: 0 -50%; font-size: clamp(2rem, 7vw, 3.5rem); }
 }
 
-/* Al elegir una opción de otra página: los textos salen hacia arriba (el elegido, el último) y la fila pequeña se apaga; el rojo se queda */
+/* Al elegir una opción de otra página: los textos salen hacia arriba (el elegido, el último) y el rojo se queda */
 .menu[data-leaving="true"] .menu-item a > span { transform: translateY(-112%); transition: transform .4s var(--menu-ease) calc(var(--i) * 40ms + var(--leave, 0) * 120ms); }
-.menu[data-leaving="true"] .menu-small, .menu[data-leaving="true"] .menu-close span { opacity: 0; transition: opacity .25s ease 0s; }
+.menu[data-leaving="true"] .menu-close span { opacity: 0; transition: opacity .25s ease 0s; }
 .menu[data-leaving="true"] .menu-close span { transform: translateY(-110%); transition: transform .3s var(--menu-ease) 0s; }
 
 /* La página nueva llega tapada por el mismo rojo (html.menu-arriving la pone un script del <head>, antes de pintar nada) y la cortina sube al cargar (js/menu.js).
@@ -125,6 +108,5 @@ html.menu-arriving-out body::before { clip-path: inset(0 0 100% 0); transition: 
   .menu { clip-path: none; opacity: 0; transition: opacity .15s linear, visibility 0s linear .15s; }
   .menu[data-open="true"] { opacity: 1; transition: opacity .15s linear, visibility 0s; }
   .menu-item a > span, .menu[data-open="true"] .menu-item a > span, .menu-close span, .menu[data-open="true"] .menu-close span { transform: none; transition: none; }
-  .menu-small, .menu[data-open="true"] .menu-small { opacity: 1; transition: none; }
   html.menu-arriving body::before { display: none; }
 }
