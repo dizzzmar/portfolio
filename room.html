@@ -28,11 +28,11 @@
   <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/tokens.css?v=20261111menu1">
-  <link rel="stylesheet" href="/css/room.css?v=20261026g">
+  <link rel="stylesheet" href="/css/room.css?v=20261112navdiff1">
   <link rel="stylesheet" href="/css/room-wii.css?v=20261024n">
   <link rel="stylesheet" href="/css/room-pokemon.css?v=20261103scatter2">
   <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
-  <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
+  <link rel="stylesheet" href="/css/nav-links.css?v=20261112navdiff1">
 <link rel="stylesheet" href="/css/menu.css?v=20261111archive1">
   <link rel="stylesheet" href="/css/link-roll.css?v=20261110roll1">
   <link rel="stylesheet" href="/css/transitions.css?v=20261029j">
@@ -51,8 +51,9 @@
 </head>
 <body class="theme-green" data-room-loading="true">
   <canvas id="room" aria-label="Interactive shelf of personal interests"></canvas>
-  <nav class="nav" aria-label="Main">
-    <a class="nav-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" alt=""></a>
+  <!-- El tomate va fuera de <nav>: la barra se mezcla con «difference» y el tomate no debe invertir sus colores -->
+<a class="nav-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" alt=""></a>
+<nav class="nav" aria-label="Main">
     <ul class="nav-links">
       <li><a href="/#work">Projects</a></li>
       <li><a href="/about/">About</a></li>
@@ -61,7 +62,7 @@
     <li class="menu-li"><a class="menu-toggle" href="#menu" role="button" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false">Menu</a></li>
     </ul>
   </nav>
-  <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Room</li></ol></nav>
+  
   <section class="intro" aria-labelledby="room-title">
     <header class="intro-head">
       <h1 id="room-title">Room</h1>
