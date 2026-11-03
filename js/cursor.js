@@ -11,6 +11,31 @@
   dot.innerHTML = '<i></i><span class="cursor-label"></span>';
   document.body.appendChild(dot);
   const label = dot.querySelector('.cursor-label');
+  // Un cursor de imagen: sobre lo marcado con data-cursor-pic el punto desaparece y el cursor es una imagen (la lleva su propio elemento, fuera del punto, para que el
+  // modo «diferencia» no le invierta los colores). El valor es la ruta de una imagen, o «random:» + la ruta de un items.json (se elige una pieza al azar cada vez que se entra).
+  const pic = document.createElement('div');
+  pic.className = 'cursor-pic';
+  pic.setAttribute('aria-hidden', 'true');
+  pic.innerHTML = '<img alt="" decoding="async">';
+  document.body.appendChild(pic);
+  const picImg = pic.querySelector('img');
+  const lists = new Map();
+  let picEl = null, picToken = 0;
+  const loadList = (url) => { if (!lists.has(url)) lists.set(url, fetch(url).then((r) => r.json()).then((d) => ({ base: url.replace(/[^/]*$/, ''), items: d.items || [] })).catch(() => ({ base: '', items: [] }))); return lists.get(url); };
+  async function showPic(spec) {
+    const token = ++picToken;
+    let src = spec, rot = 0;
+    if (spec.startsWith('random:')) {
+      const { base, items } = await loadList(spec.slice(7));
+      if (token !== picToken || !items.length) return;
+      src = base + items[Math.floor(Math.random() * items.length)].src;
+      rot = Math.round(Math.random() * 28 - 14);                   // cada pegatina llega con un giro distinto
+    }
+    pic.style.setProperty('--rot', rot + 'deg');
+    const show = () => { if (token === picToken) pic.classList.add('is-on'); };
+    picImg.onload = show; picImg.src = src;
+    if (picImg.complete) show();
+  }
 
   // Proyectos: el punto se abre en una píldora con este texto
   const VIEW = [['[data-cursor="view"]', null], ['.work-item > a', 'View project']];
@@ -23,16 +48,21 @@
   let hot = false;
   const paintHot = () => set('is-hot', hot || root.classList.contains('dot-hot'));
   let x = -100, y = -100, raf = 0, lastTarget = null, lastX = -1;
-  const paint = () => { raf = 0; dot.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
+  const paint = () => { raf = 0; const m = `translate3d(${x}px, ${y}px, 0)`; dot.style.transform = m; pic.style.transform = m; };
 
   function look(t) {
     if (t === lastTarget) return;
     lastTarget = t;
+    const pe = t && t.closest('[data-cursor-pic]');
+    if (pe !== picEl) {
+      picEl = pe;
+      if (pe) showPic(pe.dataset.cursorPic); else { picToken++; pic.classList.remove('is-on'); }
+    }
     let view = null, text = '';
     for (const [sel, fixed] of VIEW) { const el = t && t.closest(sel); if (el) { view = el; text = fixed || el.dataset.cursorLabel || 'View'; break; } }
     if (view) label.textContent = text;
     set('is-view', !!view);
-    const hide = !view && !!(t && t.closest(HIDE));
+    const hide = !view && !!(pe || (t && t.closest(HIDE)));
     set('is-hide', hide);
     hot = !view && !hide && !!(t && t.closest(HOT));
     paintHot();
@@ -55,14 +85,14 @@
     if (pending || lastX < 0) return;
     pending = requestAnimationFrame(() => { pending = 0; lastTarget = undefined; look(document.elementFromPoint(x, y)); });
   }, { passive: true });
-  addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') set('is-down', true); }, { passive: true });
-  addEventListener('pointerup', () => set('is-down', false), { passive: true });
-  root.addEventListener('pointerleave', () => { set('is-on', false); set('is-down', false); });
+  addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') { set('is-down', true); pic.classList.add('is-down'); } }, { passive: true });
+  addEventListener('pointerup', () => { set('is-down', false); pic.classList.remove('is-down'); }, { passive: true });
+  root.addEventListener('pointerleave', () => { set('is-on', false); set('is-down', false); pic.classList.remove('is-on', 'is-down'); picEl = null; picToken++; });
 
   // La sala 3D marca dot-hot sobre un objeto (js/room.js): el punto crece un poco
   new MutationObserver(paintHot).observe(root, { attributes: true, attributeFilter: ['class'] });
   // Las ventanas (dialog) viven en la capa superior del navegador: mientras hay una abierta el punto se mete dentro
-  const home = () => { const d = document.querySelector('dialog[open]'); (d || document.body).appendChild(dot); };
+  const home = () => { const d = document.querySelector('dialog[open]'); (d || document.body).appendChild(dot); (d || document.body).appendChild(pic); };
   new MutationObserver(home).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'] });
 
   // Al cambiar de página el punto aparece donde estaba, sin esperar a que se mueva el ratón (se guarda al salir, no en cada movimiento)

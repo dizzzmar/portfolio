@@ -44,15 +44,23 @@
 .cursor-dot.is-view.is-down .cursor-label { transform: translate(-50%, -50%) scale(.92); }
 .cursor-dot.is-view i { transform: scale(.2); opacity: 0; }
 
+/* Cursor de imagen (data-cursor-pic, js/cursor.js): la imagen va pegada al ratón, sin mezcla de colores, y entra con un pequeño rebote. */
+.cursor-pic { position: fixed; left: 0; top: 0; z-index: 2147483001; width: 0; height: 0; pointer-events: none; opacity: 0; will-change: transform; transition: opacity .15s ease; }
+.cursor-pic.is-on { opacity: 1; }
+.cursor-pic img { position: absolute; left: 0; top: 0; display: block; width: auto; height: auto; max-width: 56px; max-height: 56px; transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(.4); transition: transform .4s cubic-bezier(.23, 1, .32, 1); }
+.cursor-pic.is-on img { transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(1); }
+.cursor-pic.is-on.is-down img { transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(.88); transition-duration: .12s; }
+@media (prefers-reduced-motion: reduce) { .cursor-pic img, .cursor-pic.is-on img { transition: none; } }
+
 /* Solo con ratón: se esconde el cursor del sistema desde el primer fotograma de cada página (sin esperar al JavaScript), también en las
    transiciones entre páginas y detrás de las ventanas. Los campos de texto conservan su barra para escribir. */
 @media (hover: hover) and (pointer: fine) {
   html, html *, html ::backdrop, ::view-transition, ::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { cursor: none !important; }
   html input[type="text"], html input:not([type]), html textarea { cursor: text !important; }
   /* Solo en enlaces y botones se ve el cursor real (la mano), por encima del punto; en las tarjetas de proyecto manda la píldora «View» */
-  html :is(a[href], button, summary, label, select, [role="button"]):not([data-cursor="view"], .work-item > a, .player *, .ct-slider) { cursor: pointer !important; }
-  html :is(a[href], button, summary, label, select, [role="button"]) * { cursor: pointer !important; }
-  html a[data-cursor="view"][href], html a[data-cursor="view"][href] *, html .work-item > a, html .work-item > a *, html .player, html .player *, html .player button, html .player a { cursor: none !important; }
+  html :is(a[href], button, summary, label, select, [role="button"]):not([data-cursor="view"], .work-item > a, .player *, .ct-slider, [data-cursor-pic], [data-cursor-pic] *) { cursor: pointer !important; }
+  html :is(a[href], button, summary, label, select, [role="button"]):not([data-cursor-pic]) *:not([data-cursor-pic] *) { cursor: pointer !important; }
+  html a[data-cursor="view"][href], html a[data-cursor="view"][href] *, html .work-item > a, html .work-item > a *, html .player, html .player *, html .player button, html .player a, html [data-cursor-pic], html [data-cursor-pic] * { cursor: none !important; }
 }
 
 /* ENLACES DE TEXTO · al pasar el ratón, las letras suben una a una (css/link-roll.css, js/link-roll.js), como en donut-studio.com.
