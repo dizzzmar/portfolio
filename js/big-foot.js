@@ -35,7 +35,7 @@
 
   // ---- Desvíos fijos por pieza (en % de su tamaño y grados): siempre llegan igual de desordenadas ----
   const pieces = [
-    ...foot.querySelectorAll('.bf-links li'), ...word.children, ...foot.querySelectorAll('.bf-up'),
+    ...foot.querySelectorAll('.bf-links li'), ...word.children, ...foot.querySelectorAll('.bf-up'), ...foot.querySelectorAll('.bf-legal'),
   ];
   const SCATTER = [[-40, 60, -35], [55, -45, 30], [-60, 40, 45], [35, 70, -25], [-30, -55, 40], [60, 50, -45], [-45, 65, 30], [40, -60, -40]];
   const spread = matchMedia('(max-width: 700px)').matches ? .55 : 1;
