@@ -1,0 +1,66 @@
+{
+  "collection": "Fruit stickers",
+  "placeholder": true,
+  "items": [
+    {
+      "id": "sticker-01",
+      "name": "Orange sticker",
+      "src": "sticker-01.webp"
+    },
+    {
+      "id": "sticker-02",
+      "name": "Apple sticker",
+      "src": "sticker-02.webp"
+    },
+    {
+      "id": "sticker-03",
+      "name": "Lemon sticker",
+      "src": "sticker-03.webp"
+    },
+    {
+      "id": "sticker-04",
+      "name": "Pear sticker",
+      "src": "sticker-04.webp"
+    },
+    {
+      "id": "sticker-05",
+      "name": "Strawberry sticker",
+      "src": "sticker-05.webp"
+    },
+    {
+      "id": "sticker-06",
+      "name": "Cherry sticker",
+      "src": "sticker-06.webp"
+    },
+    {
+      "id": "sticker-07",
+      "name": "Watermelon sticker",
+      "src": "sticker-07.webp"
+    },
+    {
+      "id": "sticker-08",
+      "name": "Banana sticker",
+      "src": "sticker-08.webp"
+    },
+    {
+      "id": "sticker-09",
+      "name": "Grapes sticker",
+      "src": "sticker-09.webp"
+    },
+    {
+      "id": "sticker-10",
+      "name": "Kiwi sticker",
+      "src": "sticker-10.webp"
+    },
+    {
+      "id": "sticker-11",
+      "name": "Lime sticker",
+      "src": "sticker-11.webp"
+    },
+    {
+      "id": "sticker-12",
+      "name": "Peach sticker",
+      "src": "sticker-12.webp"
+    }
+  ]
+}

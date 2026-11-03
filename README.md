@@ -9,6 +9,7 @@ index.html · room.html · 404.html      Home (el tomate gira con su nombre y ba
 about/ · faq/ · privacy/               About, FAQs y Privacidad (cada una, un index.html)
 playground/index.html                  Playground: el sandbox de nodos (Plant Lab y Brush Lab) a pantalla completa; el dibujo se hace en el navegador
 posters/index.html                     Collage de trabajos personales y ficticios; cada pieza abre un visor con todo su mini-proyecto (js/posters.js)
+archive/index.html · archive/<colección>/index.html   Digital Archive: el índice de colecciones y el muro de cada colección (ahora solo fruit-stickers); piezas en assets/archive/<colección>/items.json
 machine/index.html                     Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 project/<nombre>/index.html            Una ficha por proyecto → www.dizmar.xyz/project/<nombre>/
                                        (lexus-electrified · schweppes · schweppes-the-gentlemen · soap-and-glory-vanilla · enmad · plant-lab, que lleva el sandbox dentro)
@@ -16,7 +17,7 @@ templates/                             Plantillas para copiar (no son páginas d
   project-template/index.html          Ficha de proyecto nueva, con todo explicado
   project-card.html                    La fila de la lista Projects de la home para un proyecto nuevo (imagen o vídeo grande)
 experiments/                           Estudios sueltos (tomato-grass, tomato-juggler); no forman parte de la web
-scripts/                               Utilidades de Blender para generar archivos de la habitación
+scripts/                               Utilidades de Blender para generar archivos de la habitación y las pegatinas provisionales del archivo (build-archive-placeholders.py)
 robots.txt · sitemap.xml · llms.txt    Para buscadores y agentes de IA
 CNAME · favicon.ico · apple-touch-icon.png
 CLAUDE.md · PRODUCT.md · DESIGN.md     Reglas para Claude, contexto del producto y sistema de diseño
@@ -58,6 +59,9 @@ Abre `index.html` y busca `work-list` (Ctrl+F). Cada proyecto es un bloque `<li 
 
 ### Cambiar el texto de una página de proyecto
 Abre `project/<nombre>/index.html`. Los trozos editables están marcados con comentarios (`EDITA:`): nombre, año y cliente, datos de la columna izquierda, texto y las imágenes o vídeos de cada parte.
+
+### Añadir piezas o una colección al Digital Archive
+Las pegatinas de frutas de ahora son **dibujos provisionales** (`scripts/build-archive-placeholders.py`). Para poner las de verdad: sustituye los `.webp` de `assets/archive/fruit-stickers/` (cuadrados, fondo transparente, recortados a la forma de la pegatina, ~640 px), ajusta `items.json` (`name` es el texto alternativo y `src` el archivo) y pon `"placeholder": false`. Una colección nueva: copia `archive/fruit-stickers/` a `archive/<nombre>/`, cambia el título, las migas, `data-base` y los textos, crea `assets/archive/<nombre>/items.json`, añade su fila en `archive/index.html` y su dirección en `sitemap.xml`, `llms.txt` y `machine/index.html`.
 
 ### Crear un proyecto nuevo
 1. Duplica `templates/project-template` y muévela a `project/<nombre-del-proyecto>/` (sin espacios ni acentos, con guiones).
