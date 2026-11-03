@@ -32,6 +32,7 @@
       rot = Math.round(Math.random() * 28 - 14);                   // cada pegatina llega con un giro distinto
     }
     pic.style.setProperty('--rot', rot + 'deg');
+    pic.dataset.kind = spec.startsWith('random:') ? 'sticker' : 'icon';   // las pegatinas se ven más grandes que un icono
     const show = () => { if (token === picToken) pic.classList.add('is-on'); };
     picImg.onload = show; picImg.src = src;
     if (picImg.complete) show();

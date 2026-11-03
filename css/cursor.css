@@ -48,6 +48,7 @@
 .cursor-pic { position: fixed; left: 0; top: 0; z-index: 2147483001; width: 0; height: 0; pointer-events: none; opacity: 0; will-change: transform; transition: opacity .15s ease; }
 .cursor-pic.is-on { opacity: 1; }
 .cursor-pic img { position: absolute; left: 0; top: 0; display: block; width: auto; height: auto; max-width: 56px; max-height: 56px; transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(.4); transition: transform .4s cubic-bezier(.23, 1, .32, 1); }
+.cursor-pic[data-kind="sticker"] img { max-width: 120px; max-height: 120px; }   /* las pegatinas, el doble de grandes */
 .cursor-pic.is-on img { transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(1); }
 .cursor-pic.is-on.is-down img { transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(.88); transition-duration: .12s; }
 @media (prefers-reduced-motion: reduce) { .cursor-pic img, .cursor-pic.is-on img { transition: none; } }
