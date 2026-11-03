@@ -1,6 +1,6 @@
 // MENÚ · el botón «Menu» de la barra (todas las páginas con barra) abre un panel a pantalla completa con los enlaces grandes de arriba y una fila pequeña abajo.
 // Estilos y animación (entrada y salida iguales, una al revés de la otra): css/menu.css. Referencia: pesqueradiez.com.
-// Los enlaces del panel salen de los de la barra de cada página, y los que tienen un comportamiento propio (Work en la portada, el sobre de Contact, la terminal)
+// Los enlaces del panel salen de los de la barra de cada página, y los que tienen un comportamiento propio (Projects en la portada, el sobre de Contact, la terminal)
 // lo mantienen: el panel se cierra y se pulsa el enlace original.
 (() => {
   const root = document.documentElement;
@@ -16,9 +16,9 @@
   const find = (label) => originals.find((a) => a.textContent.trim() === label);
 
   // Enlaces grandes (en este orden) y fila pequeña
-  // Playground no está en la barra de las páginas (la barra tiene Work, About, Contact y Room): su enlace se crea aquí
+  // Playground no está en la barra de las páginas (la barra tiene Projects, About, Contact y Room): su enlace se crea aquí
   const playground = { fake: true, textContent: 'Playground', href: new URL('/playground/', location.origin).href, getAttribute: () => '/playground/' };
-  const big = ['Work', 'About', 'Room', 'Playground', 'Contact'].map((l) => find(l) || (l === 'Playground' ? playground : null)).filter(Boolean);
+  const big = ['Projects', 'About', 'Room', 'Playground', 'Contact'].map((l) => find(l) || (l === 'Playground' ? playground : null)).filter(Boolean);
   // Debajo, el mismo pie que el de todas las páginas (texto de la izquierda): sin más enlaces, para que no haya un pie distinto en cada sitio
   const small = [{ label: 'FAQs', href: '/faq/' }, { label: 'Privacy', href: '/privacy/' }];
 
@@ -122,7 +122,7 @@
   }, true);
 
   // Pulsar un enlace del panel. Los de otra página navegan sin más (la transición entre páginas se encarga del resto); los que se quedan en la
-  // misma página o tienen un comportamiento propio (Work en la portada, el sobre de Contact) cierran el panel y pulsan el enlace original.
+  // misma página o tienen un comportamiento propio (Projects en la portada, el sobre de Contact) cierran el panel y pulsan el enlace original.
   panel.addEventListener('click', (e) => {
     const a = e.target instanceof Element && e.target.closest('a');
     if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;

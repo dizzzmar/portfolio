@@ -38,7 +38,7 @@
   <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/tokens.css?v=20261109a">
-  <link rel="stylesheet" href="/css/home.css?v=20261031c">
+  <link rel="stylesheet" href="/css/home.css?v=20261110projects3">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
   <link rel="stylesheet" href="/css/typography.css?v=20261031a">
 <link rel="stylesheet" href="/css/transitions.css?v=20261029j">
@@ -55,10 +55,11 @@
 <script src="/js/transitions.js?v=20261030a"></script>
 <link rel="stylesheet" href="/css/home-loading.css?v=20261030a">
 <script src="/js/home-loading.js?v=20261030a"></script>
-<link rel="stylesheet" href="/css/cursor.css?v=20261031a">
+<link rel="stylesheet" href="/css/cursor.css?v=20261110roll1">
   <link rel="stylesheet" href="/css/contact-sachet.css?v=20261108b">
   <link rel="stylesheet" href="/css/terminal.css?v=20261024b">
   <link rel="stylesheet" href="/css/menu.css?v=20261109a">
+  <link rel="stylesheet" href="/css/link-roll.css?v=20261110roll1">
 </head>
 <body class="intro-lock" data-intro="work"> <!-- El tomate gira en la landing; solo sube al pulsar Work. -->
   <div class="home-loader" role="status" aria-live="polite" aria-label="Loading portfolio">
@@ -77,7 +78,7 @@
   <nav class="nav" aria-label="Main">
     <a class="nav-logo" href="/" aria-label="Home"></a> <!-- pulsar el tomate de la barra: vuelve volando a la portada (js/home-intro.js) -->
     <ul class="nav-links">
-      <li><a href="#work">Work</a></li>
+      <li><a href="#work">Projects</a></li>
       <li><a href="/about/">About</a></li>
       <li><a href="mailto:contact@dizmar.xyz?subject=Hello%20from%20dizmar.xyz">Contact</a></li>
       <li><a href="/room.html">Room</a></li>
@@ -96,85 +97,70 @@
       <button class="scroll-hint" id="hint" type="button">Scroll</button>
     </section>
 
-    <!-- Work: lista de proyectos como 13322566869.com/works, con el estilo de esta web.
-         Cada fila: fecha (izquierda), nombre gigante (centro), etiquetas (derecha) y una tira de miniaturas verticales debajo.
-         Las miniaturas son esquinas rectas: 9 huecos por tira (los "wi-gap" son huecos vacíos que dan ritmo).
-         EDITA: para un proyecto nuevo copia una fila y cambia su enlace, fecha, nombre, etiquetas y miniaturas. -->
+    <!-- Projects: columna a la izquierda (el título se queda fijo) y los proyectos a la derecha, como las páginas de proyecto y donut-studio.com/work.
+         Cada proyecto: una imagen o un vídeo grande (esquinas rectas) y debajo su nombre, etiquetas y año. Los que solo tienen piezas verticales
+         (carteles, dibujos) enseñan tres en fila dentro del mismo marco: pon --cols: 3 en el .wi-media.
+         EDITA: para un proyecto nuevo copia una fila (ver templates/project-card.html) y cambia su enlace, nombre, etiquetas, año y medios.
+         (El id "work" y la clase "work-item" los usan js/home-intro.js, js/home-work.js y js/case.js: no los cambies.) -->
     <section class="work-grid" id="work" aria-labelledby="work-title">
-      <h2 class="sr-only" id="work-title">Selected work</h2>
       <!-- Barra fija de arriba (se queda pegada al llegar) -->
+      <div class="work-cover" aria-hidden="true"></div> <!-- tapa lisa bajo la barra: los proyectos pasan por debajo sin mezclarse con sus textos -->
       <div class="work-top" aria-hidden="true">
         <p class="wt-creative"><strong>Creative <span class="wb-word">Designer</span></strong></p> <!-- la segunda palabra cambia sola (js/home-work.js) -->
         <p><strong>Based in Madrid</strong><span class="wt-time" data-madrid-time>&nbsp;</span></p> <!-- la hora de Madrid, al minuto (js/home-work.js) -->
       </div>
+      <div class="work-layout">
+        <div class="work-side">
+          <h2 class="work-title" id="work-title">Projects<sup aria-hidden="true">(7)</sup></h2>
+        </div>
+        <div class="work-main">
       <ol class="work-list">
         <li class="work-item">
           <a href="/project/schweppes-the-gentlemen/">
-            <span class="wi-date">2026</span>
-            <h3 class="wi-name is-long"><span>Schweppes x The&nbsp;Gentlemen</span></h3>
-            <ul class="wi-tags"><li>Key visual</li><li>TCCC</li></ul>
-            <div class="wi-strip" aria-hidden="true">
-              <!-- Una sola imagen cortada en trozos (is-slice): juntos se ven como una; el CSS reparte la imagen entre las miniaturas. No todas tienen que ser trozos (la sexta es otra imagen) -->
-              <span class="wi-slot is-slice" style="--i: 0"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
-              <span class="wi-slot is-slice" style="--i: 1"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
-              <span class="wi-slot is-slice" style="--i: 2"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
-              <span class="wi-slot is-slice" style="--i: 3"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
-              <span class="wi-slot is-slice" style="--i: 4"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/schweppes-the-gentlemen/poster-yellow.webp" width="524" height="1080" loading="lazy" alt=""></span> <!-- la sexta no es un trozo: es el panel amarillo del póster cuadrado -->
-              <span class="wi-slot is-slice" style="--i: 6"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
-              <span class="wi-slot is-slice" style="--i: 7"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
+            <div class="wi-media" aria-hidden="true">
+              <span class="wi-tile"><img src="/assets/projects/schweppes-the-gentlemen/poster-a3-1600.webp" style="object-position: 50% 48%" width="1600" height="1131" loading="lazy" alt=""></span>
+            </div>
+            <div class="wi-info">
+              <h3 class="wi-name">Schweppes x The&nbsp;Gentlemen</h3>
+              <span class="wi-date">2026</span>
+              <ul class="wi-tags"><li>Key visual</li><li>TCCC</li></ul>
             </div>
           </a>
         </li>
         <li class="work-item">
           <a href="/project/lexus-electrified/">
-            <span class="wi-date">2025</span>
-            <h3 class="wi-name"><span>Lexus Electrified</span></h3>
-            <ul class="wi-tags"><li>Audiovisual</li><li>Lexus Singapore</li></ul>
-            <div class="wi-strip" aria-hidden="true">
-              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/thumb.webp" style="object-position: 0% 50%" width="1280" height="720" loading="lazy" alt=""></span>
-              <span class="wi-slot"><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" muted loop playsinline preload="none" tabindex="-1"></video></span>
-              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/film-poster.webp" style="object-position: 0% 50%" width="1280" height="720" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/film-poster.webp" style="object-position: 50% 50%" width="1280" height="720" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/film-poster.webp" style="object-position: 100% 50%" width="1280" height="720" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/poised-640.webp" style="object-position: 50% 50%" width="640" height="1138" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/kv-lake-800.webp" style="object-position: 30% 50%" width="800" height="566" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/lexus-electrified/kv-building-800.webp" style="object-position: 45% 50%" width="800" height="566" loading="lazy" alt=""></span>
+            <div class="wi-media" aria-hidden="true">
+              <span class="wi-tile"><video src="/assets/projects/lexus-electrified/thumb.mp4" poster="/assets/projects/lexus-electrified/thumb.webp" width="1280" height="720" muted loop playsinline preload="none" tabindex="-1"></video></span>
+            </div>
+            <div class="wi-info">
+              <h3 class="wi-name">Lexus Electrified</h3>
+              <span class="wi-date">2025</span>
+              <ul class="wi-tags"><li>Audiovisual</li><li>Lexus Singapore</li></ul>
             </div>
           </a>
         </li>
         <li class="work-item">
           <a href="/project/soap-and-glory-vanilla/">
-            <span class="wi-date">2026</span>
-            <h3 class="wi-name"><span>Soap &amp; Glory</span></h3>
-            <ul class="wi-tags"><li>Key visuals</li><li>Vanillalicious</li></ul>
-            <div class="wi-strip" aria-hidden="true">
-              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg3-800.webp" width="800" height="800" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg1-800.webp" width="800" height="800" loading="lazy" alt=""></span>
-              <span class="wi-slot"><video src="/assets/projects/soap-and-glory-vanilla/video.mp4" poster="/assets/projects/soap-and-glory-vanilla/video-poster.webp" width="360" height="640" muted loop playsinline preload="none" tabindex="-1"></video></span>
-              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg4-800.webp" width="800" height="800" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg5-800.webp" width="800" height="800" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg2-800.webp" width="800" height="800" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg4-800.webp" style="object-position: 100% 50%" width="800" height="800" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/soap-and-glory-vanilla/sg5-800.webp" style="object-position: 100% 50%" width="800" height="800" loading="lazy" alt=""></span>
+            <div class="wi-media" style="--cols: 2" aria-hidden="true">
+              <span class="wi-tile"><img src="/assets/projects/soap-and-glory-vanilla/sg3-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+              <span class="wi-tile"><img src="/assets/projects/soap-and-glory-vanilla/sg1-800.webp" width="800" height="800" loading="lazy" alt=""></span>
+            </div>
+            <div class="wi-info">
+              <h3 class="wi-name">Soap &amp; Glory</h3>
+              <span class="wi-date">2026</span>
+              <ul class="wi-tags"><li>Key visuals</li><li>Vanillalicious</li></ul>
             </div>
           </a>
         </li>
-        <!-- Proyectos de relleno (EDITA: sustituye cada uno por uno real, con su <a href>, fecha, nombre, etiquetas y miniaturas) -->
         <li class="work-item">
           <a href="/project/schweppes/">
-            <span class="wi-date">2026</span>
-            <h3 class="wi-name"><span>Schweppes</span></h3>
-            <ul class="wi-tags"><li>Audiovisual</li><li>AI film</li></ul>
-            <div class="wi-strip" aria-hidden="true">
-              <span class="wi-slot"><video src="/assets/projects/schweppes/thumb.mp4" poster="/assets/projects/schweppes/thumb.webp" width="1280" height="720" muted loop playsinline preload="none" tabindex="-1"></video></span>
-              <span class="wi-slot"><img src="/assets/projects/schweppes/frame-1-800.webp" style="object-position: 12% 50%" width="800" height="450" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/schweppes/frame-2-800.webp" style="object-position: 45% 50%" width="800" height="450" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/schweppes/film-poster.webp" style="object-position: 50% 50%" width="1600" height="900" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/schweppes/thumb.webp" style="object-position: 70% 50%" width="1280" height="720" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/schweppes/frame-1-800.webp" style="object-position: 24% 50%" width="800" height="450" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/schweppes/frame-2-800.webp" style="object-position: 72% 50%" width="800" height="450" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/schweppes/thumb.webp" style="object-position: 25% 50%" width="1280" height="720" loading="lazy" alt=""></span>
+            <div class="wi-media" aria-hidden="true">
+              <span class="wi-tile"><video src="/assets/projects/schweppes/thumb.mp4" poster="/assets/projects/schweppes/thumb.webp" width="1280" height="720" muted loop playsinline preload="none" tabindex="-1"></video></span>
+            </div>
+            <div class="wi-info">
+              <h3 class="wi-name">Schweppes</h3>
+              <span class="wi-date">2026</span>
+              <ul class="wi-tags"><li>Audiovisual</li><li>AI film</li></ul>
             </div>
           </a>
         </li>
@@ -184,62 +170,53 @@
       <ol class="work-list">
         <li class="work-item">
           <a href="/posters/">
-            <span class="wi-date">2021–2024</span>
-            <h3 class="wi-name"><span>Posters</span></h3>
-            <ul class="wi-tags"><li>Posters, merch &amp; album art</li><li>Fictional work</li></ul>
-            <div class="wi-strip" aria-hidden="true">
-              <span class="wi-slot"><img src="/assets/posters/the-1975/red-720.webp" width="720" height="1018" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/posters/paramore-this-is-why/blue-red-720.webp" width="720" height="1018" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/posters/kick-2021/pink-720.webp" width="720" height="1018" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/posters/bon-iver-tour-2022/white-720.webp" width="720" height="1018" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/posters/the-washing-pods/set-720.webp" width="720" height="1018" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/posters/halsey-the-great-impersonator/yellow-720.webp" width="720" height="1018" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/posters/phoebe-bridgers-punisher-in-the-alps/poster-720.webp" width="720" height="1018" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/posters/rosalia-motomami/poster-720.webp" width="720" height="1018" loading="lazy" alt=""></span>
+            <div class="wi-media" style="--cols: 3" aria-hidden="true">
+              <span class="wi-tile"><img src="/assets/posters/the-1975/red-720.webp" width="720" height="1018" loading="lazy" alt=""></span>
+              <span class="wi-tile"><img src="/assets/posters/paramore-this-is-why/blue-red-720.webp" width="720" height="1018" loading="lazy" alt=""></span>
+              <span class="wi-tile"><img src="/assets/posters/kick-2021/pink-720.webp" width="720" height="1018" loading="lazy" alt=""></span>
+            </div>
+            <div class="wi-info">
+              <h3 class="wi-name">Posters</h3>
+              <span class="wi-date">2021–2024</span>
+              <ul class="wi-tags"><li>Posters, merch &amp; album art</li><li>Fictional work</li></ul>
             </div>
           </a>
         </li>
         <li class="work-item">
           <a href="/project/plant-lab/">
-            <span class="wi-date">2026</span>
-            <h3 class="wi-name"><span>Plant Lab</span></h3>
-            <ul class="wi-tags"><li>Procedural drawing</li><li>Personal</li></ul>
-            <div class="wi-strip" aria-hidden="true">
-              <span class="wi-slot"><img src="/assets/projects/plant-lab/thumb-1-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/plant-lab/thumb-2-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/plant-lab/thumb-3-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/plant-lab/thumb-4-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/plant-lab/thumb-5-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/plant-lab/thumb-6-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/plant-lab/thumb-7-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/plant-lab/thumb-8-540.webp" width="540" height="960" loading="lazy" alt=""></span>
+            <div class="wi-media" style="--cols: 3" aria-hidden="true">
+              <span class="wi-tile"><img src="/assets/projects/plant-lab/thumb-1-540.webp" width="540" height="960" loading="lazy" alt=""></span>
+              <span class="wi-tile"><img src="/assets/projects/plant-lab/thumb-3-540.webp" width="540" height="960" loading="lazy" alt=""></span>
+              <span class="wi-tile"><img src="/assets/projects/plant-lab/thumb-5-540.webp" width="540" height="960" loading="lazy" alt=""></span>
+            </div>
+            <div class="wi-info">
+              <h3 class="wi-name">Plant Lab</h3>
+              <span class="wi-date">2026</span>
+              <ul class="wi-tags"><li>Procedural drawing</li><li>Personal</li></ul>
             </div>
           </a>
         </li>
       </ol>
-      <!-- STUDIES · proyectos de la universidad, aparte de los de cliente: misma fila, con el nombre en rojo (css/home.css, .work-list--studies) -->
+      <!-- STUDIES · proyectos de la universidad, aparte de los de cliente: mismo marco, con el nombre en rojo (css/home.css, .work-list--studies) -->
       <h3 class="work-section" id="studies">Studies</h3>
       <ol class="work-list work-list--studies">
         <li class="work-item">
           <a href="/project/enmad/">
-            <span class="wi-date">2023</span>
-            <h3 class="wi-name"><span>ENMAD</span></h3>
-            <ul class="wi-tags"><li>Identity, space &amp; brand</li><li>Studies</li></ul>
-            <div class="wi-strip" aria-hidden="true">
-              <!-- Ocho recortes 9:16 hechos a propósito (assets/projects/enmad/thumb-*-540.webp): cada uno centra un elemento gráfico entero del proyecto,
-                   sin texto cortado. Para cambiarlos, regenera el recorte y mantén las 8 miniaturas. -->
-              <span class="wi-slot"><img src="/assets/projects/enmad/thumb-1-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/enmad/thumb-2-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/enmad/thumb-3-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/enmad/thumb-4-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/enmad/thumb-5-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/enmad/thumb-6-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/enmad/thumb-7-540.webp" width="540" height="960" loading="lazy" alt=""></span>
-              <span class="wi-slot"><img src="/assets/projects/enmad/thumb-8-540.webp" width="540" height="960" loading="lazy" alt=""></span>
+            <div class="wi-media" style="--cols: 3" aria-hidden="true">
+              <span class="wi-tile"><img src="/assets/projects/enmad/thumb-1-540.webp" width="540" height="960" loading="lazy" alt=""></span>
+              <span class="wi-tile"><img src="/assets/projects/enmad/thumb-3-540.webp" width="540" height="960" loading="lazy" alt=""></span>
+              <span class="wi-tile"><img src="/assets/projects/enmad/thumb-5-540.webp" width="540" height="960" loading="lazy" alt=""></span>
+            </div>
+            <div class="wi-info">
+              <h3 class="wi-name">ENMAD</h3>
+              <span class="wi-date">2023</span>
+              <ul class="wi-tags"><li>Identity, space &amp; brand</li><li>Studies</li></ul>
             </div>
           </a>
         </li>
       </ol>
+        </div>
+      </div>
     </section>
   </main>
   <footer class="site-foot"><span>Mario Diz, Madrid · <a href="/faq/">FAQs</a> · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
@@ -247,12 +224,13 @@
 
   <!-- Scripts: recorrido del tomate y vídeos · tomate 3D -->
   <script src="/js/home-intro.js?v=20261031b" defer></script>
-  <script src="/js/home-work.js?v=20261031b" defer></script>
+  <script src="/js/home-work.js?v=20261110projects3" defer></script>
   <script type="module" src="/js/home-tomato.js?v=20261031c"></script>
 <script src="/js/cursor.js?v=20261029b" defer></script>
 <script src="/js/smooth-scroll.js?v=20261028n" defer></script>
   <script type="module" src="/js/contact-sachet.js?v=20261108a"></script>
-<script src="/js/menu.js?v=20261109a" defer></script>
-<script src="/js/terminal.js?v=20261109a" defer></script>
+<script src="/js/menu.js?v=20261110projects3" defer></script>
+<script src="/js/link-roll.js?v=20261110roll1" defer></script>
+<script src="/js/terminal.js?v=20261110projects3" defer></script>
 </body>
 </html>
