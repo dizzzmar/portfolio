@@ -55,11 +55,10 @@
   html a[data-cursor="view"][href], html a[data-cursor="view"][href] *, html .work-item > a, html .work-item > a *, html .player, html .player *, html .player button, html .player a { cursor: none !important; }
 }
 
-/* TODOS LOS ENLACES DE TEXTO, UN SOLO ESTILO: con ratón el punto no crece y el enlace se subraya con una raya de 1 px.
-   La raya sale por el lado por el que entra el ratón y se retira por el lado por el que sale (referencia: yzavoku.com).
-   js/cursor.js pone mouse-left en <html> cuando el ratón va hacia la izquierda. Con táctil se queda como estaba (subrayado normal).
-   Los enlaces dentro de un párrafo (privacidad) llevan además una raya tenue fija, para que se reconozcan sin pasar el ratón.
-   Si añades un enlace de texto nuevo, añade su selector aquí y en LINK de js/cursor.js. */
+/* ENLACES DE TEXTO · al pasar el ratón, las letras suben una a una (css/link-roll.css, js/link-roll.js), como en donut-studio.com.
+   Aquí solo quedan las rayas que no dependen del ratón: la de la página actual en la barra y la tenue de los enlaces dentro de un párrafo (privacidad),
+   para que se reconozcan sin pasar el ratón. La raya de 1 px que entraba por el lado del ratón (referencia: yzavoku.com) se retiró.
+   Con táctil se queda como estaba (subrayado normal). Si añades un enlace de texto nuevo, añade su selector en LINK de js/cursor.js. */
 @media (hover: hover) and (pointer: fine) {
   :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .pv-back a, .pv-row p a, .contact-row a, .np-more) {
     --o: 100%; --y: calc(100% - .1em);
@@ -69,15 +68,10 @@
   }
   html :is(.nav-links a, .case-nav a) { --y: calc(50% + 11px); }  /* los enlaces del menú miden toda la barra: la raya va bajo el texto (el "html" delante le da más peso que la regla general de arriba, que si no gana) */
   :is(.pv-row p a) {
-    background:
-      linear-gradient(currentColor, currentColor) no-repeat var(--o) var(--y) / 0% 1px content-box,
-      linear-gradient(color-mix(in srgb, currentColor 40%, transparent), color-mix(in srgb, currentColor 40%, transparent)) no-repeat 0 var(--y) / 100% 1px content-box;
+    background: linear-gradient(color-mix(in srgb, currentColor 40%, transparent), color-mix(in srgb, currentColor 40%, transparent)) no-repeat 0 var(--y) / 100% 1px content-box;
   }
-  html.mouse-left :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .pv-back a, .pv-row p a, .contact-row a, .np-more) { --o: 0%; }
-  :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .pv-back a, .pv-row p a, .contact-row a, .np-more):is(:hover, :focus-visible), .now-playing:hover .np-more,
-  .nav-links a[aria-current]:not([aria-current="false"]), .case-nav a[aria-current]:not([aria-current="false"]) { --o: 0%; background-size: 100% 1px; text-decoration: none; }
-  :is(.pv-row p a):is(:hover, :focus-visible) { background-size: 100% 1px, 100% 1px; }
-  html.mouse-left :is(.nav-links a, .case-nav a, .site-foot a, .case-back, .pv-back a, .pv-row p a, .contact-row a, .np-more):is(:hover, :focus-visible), html.mouse-left .now-playing:hover .np-more { --o: 100%; }
+  .nav-links a[aria-current]:not([aria-current="false"]), .case-nav a[aria-current]:not([aria-current="false"]), .now-playing:hover .np-more { --o: 0%; background-size: 100% 1px; text-decoration: none; }
+  html.mouse-left .now-playing:hover .np-more { --o: 100%; }
   .np-more { display: inline-block; }
 }
 

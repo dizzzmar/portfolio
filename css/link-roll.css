@@ -1,0 +1,14 @@
+/* LINK ROLL · hover de los enlaces de texto (js/link-roll.js): cada letra sube una línea y entra de nuevo desde abajo, con un pequeño escalón entre letras.
+   La copia de cada letra es su propia sombra (text-shadow) una línea más abajo, así que no hay texto duplicado en la página. */
+.roll {
+  --roll: calc(1lh + .24em);                      /* lo que sube cada letra: una línea y el margen que evita que asome la copia */
+  display: inline-flex; overflow: hidden; vertical-align: top; white-space: pre;
+  padding-block: .12em; margin-block: -.12em;     /* sitio para las colas de la «g», la «y»… sin mover el texto */
+  text-shadow: 0 var(--roll) 0 currentColor;
+  text-decoration: inherit;                       /* el subrayado del enlace (página actual, enlaces dentro de un párrafo) sigue viéndose */
+}
+.roll > span { display: block; backface-visibility: hidden; flex-shrink: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .roll > span { transition: transform .42s var(--ease-out, cubic-bezier(.23, 1, .32, 1)) calc(var(--i, 0) * 20ms); }
+  a:hover > .roll > span, a:hover > span > .roll > span, a:focus-visible > .roll > span, a:focus-visible > span > .roll > span { transform: translateY(calc(-1 * var(--roll))); }
+}
