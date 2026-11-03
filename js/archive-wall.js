@@ -1,7 +1,7 @@
 // DIGITAL ARCHIVE · muro de una colección (/archive/<colección>/): las piezas cuelgan en una rejilla inclinada que se repite sin fin, como en el álbum de
 // Pokémon (mismo motor: js/room/infinite-card-grid.js). Las piezas salen de assets/archive/<colección>/items.json; no llevan pie (el nombre es el texto
 // alternativo de la imagen). Pulsar una pieza (o Enter) abre su visor: título grande, la pieza al centro que se inclina hacia el ratón por toda la
-// pantalla y sus datos abajo (referencia: nicolo-lombardi.com/archive/la-barra). La dirección lleva la pieza (#sticker-03). Sin JavaScript queda el título de la colección y un aviso.
+// pantalla y sus datos abajo (referencia: nicolo-lombardi.com/archive/la-barra). La dirección lleva la pieza (#pink-lady). Sin JavaScript queda el título de la colección y un aviso.
 import { createInfiniteCardGrid } from '/js/room/infinite-card-grid.js?v=20261111archive1';
 
 const surface = document.querySelector('.archive-surface');
@@ -17,7 +17,7 @@ function makeCard(item) {
   figure.className = 'archive-card'; figure.dataset.card = item.id;
   const turn = document.createElement('span'); turn.className = 'archive-turn';
   const img = document.createElement('img');
-  img.src = new URL(item.src, location.origin + base).href; img.alt = item.name; img.width = 640; img.height = 640;
+  img.src = new URL(item.src, location.origin + base).href; img.alt = item.name; img.width = item.width || 640; img.height = item.height || 640;
   img.draggable = false; img.decoding = 'async';
   turn.append(img); figure.append(turn);
   return figure;
@@ -26,7 +26,7 @@ function makeCard(item) {
 async function load() {
   retry.hidden = true; status.hidden = false; status.textContent = 'Loading…';
   try {
-    const response = await fetch(base + 'items.json?v=20261111archive2');
+    const response = await fetch(base + 'items.json?v=20261111archive3');
     if (!response.ok) throw new Error('Collection unavailable');
     const data = await response.json();
     if (!Array.isArray(data.items) || !data.items.length) throw new Error('Empty collection');
@@ -34,7 +34,7 @@ async function load() {
     items = data.items;
     grid?.destroy();
     grid = createInfiniteCardGrid({ surface, list, cards: data.items, makeCard, reduced: motion, entrance: !motion.matches, prefix: 'archive', aspect: 1, size: 1.1 });
-    if (location.hash) fromHash();                 // dirección con pieza (#sticker-03): se abre esa pieza al cargar
+    if (location.hash) fromHash();                 // dirección con pieza (#pink-lady): se abre esa pieza al cargar
   } catch (error) {
     status.textContent = 'The collection could not load. Please try again.'; retry.hidden = false;
   }
@@ -63,6 +63,7 @@ function fillViewer(item) {
   const src = new URL(item.src, location.origin + base).href;
   imgEl.src = src; imgEl.alt = item.name;
   pieceEl.style.setProperty('--piece', `url("${src}")`);
+  pieceEl.style.setProperty('--ratio', ((item.width || 1) / (item.height || 1)).toFixed(3));   // cada pieza con su proporción
   factsEl.replaceChildren(...(item.facts || []).map(([label, value], i) => {
     const row = document.createElement('div'); row.style.setProperty('--i', i);
     const dt = document.createElement('dt'); dt.textContent = label;
