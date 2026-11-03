@@ -179,8 +179,7 @@ if (link) {
     dialog.dataset.state = 'open';
     dialog.showModal();
     document.documentElement.classList.add('sachet-open');
-    // Con ratón, el cursor ya está en la barra; con el dedo no, para que el teclado no tape la ventana nada más abrirla
-    if (matchMedia('(pointer: fine)').matches) textarea.focus({ preventScroll: true }); else dialog.focus({ preventScroll: true });
+    textarea.focus({ preventScroll: true });              // en cuanto se abre, el cursor ya está en la barra (también con el dedo: la pila va arriba y el teclado no la tapa)
     try {
       if (!stage) stage = await createStage(dialog, { reduced, onOpen: () => { dialog.dataset.state = 'open'; setTimeout(() => stage?.reset(), reduced ? 0 : 1100); } });
       stage.start();
