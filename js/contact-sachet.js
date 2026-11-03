@@ -1,9 +1,12 @@
-// CONTACT · el enlace "Contact" de la barra (en todas las páginas: la de la portada y las verdes, y la de las fichas) abre una ventana roja que es solo el
-// formulario (nombre, email y mensaje), con el email (para copiarlo o abrir la app de correo) y LinkedIn al pie. El sobre de ketchup DIZ en 3D está abajo,
-// pequeño: se gira arrastrándolo y se rasga por "TEAR HERE"; al rasgarlo sale volando la tira y, un momento después, aparece otro sobre nuevo.
-// El formulario se envía a FORM_ENDPOINT (Formspree, ver la página de privacidad); sin él, «Send» abre la app de correo con el mensaje ya escrito.
+// CONTACT · el enlace "Contact" de la barra (en todas las páginas: la de la portada y las verdes, y la de las fichas) abre una ventana amarilla con el contacto
+// hecho como el de wearepanico.com: no es un formulario a la vista, es una conversación que va apareciendo poco a poco. Una sola barra roja a la vez, con lo que se
+// escribe en amarillo: primero el MENSAJE, después el NOMBRE y por fin el EMAIL. El título enorme de debajo es a la vez la pregunta y el botón: «Say hi» → «Next» →
+// «Write your name» → «Next» → «Write your email» → «Send» → «Thank you!». Lo ya contestado sube a una vista previa encima de la barra. Pulsar el título (o Intro/Espacio
+// sobre él) avanza; si el campo está vacío avisa. El email (para copiarlo o abrir la app de correo) y LinkedIn van a la derecha, y el sobre de ketchup DIZ en 3D, pequeño, abajo:
+// se gira arrastrándolo y se rasga por "TEAR HERE"; al rasgarlo sale volando la tira y, un momento después, aparece otro sobre nuevo.
+// Se envía a FORM_ENDPOINT (Formspree, ver la página de privacidad); sin él, el último paso abre la app de correo con el mensaje ya escrito.
 // Sin JavaScript, Contact sigue siendo el enlace de email de siempre; sin 3D, la ventana es igual pero sin el sobre.
-const FORM_ENDPOINT = 'https://formspree.io/f/mljjpgpa'; // la dirección pública del formulario en Formspree (no es una clave secreta); vacía, «Send» abre la app de correo
+const FORM_ENDPOINT = 'https://formspree.io/f/mljjpgpa'; // la dirección pública del formulario en Formspree (no es una clave secreta); vacía, se abre la app de correo
 const LINKEDIN = 'https://es.linkedin.com/in/mario-diaz-aguado';
 const link = document.querySelector('.nav-links a[href^="mailto:"], .case-nav a[href^="mailto:"]');
 if (link) {
@@ -17,6 +20,12 @@ if (link) {
     return n;
   };
 
+  // Lo que dice el título en cada paso (es la pregunta y el botón) y los avisos de campo vacío
+  const LABELS = { message: 'Say<br>hi', name: 'Write your name', next: 'Next', email: 'Write your email', send: 'Send', sending: 'Sending…', sent: 'Thank you!' };
+  const ERRORS = { message: 'Write a message before continuing', name: 'Write your name before continuing', email: 'Write a valid email before sending' };
+  let step = 'message', pending = false;
+  let preview, resetBtn, title, errorEl, sentEl, textarea, nameInput, emailInput, rows;
+
   function build() {
     const copy = el('button', { type: 'button', className: 'sachet-copy', textContent: 'Copy email' });
     copy.addEventListener('click', async () => {
@@ -24,29 +33,35 @@ if (link) {
       catch { copy.textContent = 'Copy email'; }
       setTimeout(() => { copy.textContent = 'Copy email'; }, 1800);
     });
-    const field = (name, label, input) => { input.name = name; input.id = 'sachet-' + name; input.required = true; return el('p', { className: 'sachet-field' }, [el('label', { htmlFor: input.id, textContent: label }), input]); };
-    const send = el('button', { type: 'submit', className: 'sachet-send', textContent: 'Send' });
-    const status = el('p', { className: 'sachet-status', role: 'status' });
+    // Cada campo es una barra roja; el nombre del campo para los lectores de pantalla va en una etiqueta oculta (la pregunta visible es el título)
+    const field = (name, label, input) => { input.name = name; input.id = 'sachet-' + name; input.required = true; return el('p', { className: 'sachet-field' }, [el('label', { htmlFor: input.id, className: 'sachet-hidden', textContent: label }), el('span', { className: 'sachet-caret', ariaHidden: 'true' }), input]); };
+    textarea = el('textarea', { rows: 4, maxLength: 5000 });
+    nameInput = el('input', { type: 'text', autocomplete: 'name', maxLength: 120, enterKeyHint: 'next' });
+    emailInput = el('input', { type: 'email', autocomplete: 'email', maxLength: 200, enterKeyHint: 'send' });
     const trap = el('input', { type: 'text', name: '_gotcha', tabIndex: -1, autocomplete: 'off', className: 'sachet-trap' }); // campo trampa contra el spam: las personas no lo ven
     trap.setAttribute('aria-hidden', 'true');
-    form = el('form', { className: 'sachet-form', noValidate: false }, [
-      field('name', 'Name', el('input', { type: 'text', autocomplete: 'name', maxLength: 120 })),
-      field('email', 'Email', el('input', { type: 'email', autocomplete: 'email', maxLength: 200 })),
-      field('message', 'Message', el('textarea', { rows: 4, maxLength: 5000 })),
-      trap, el('div', { className: 'sachet-actions' }, [send, status]),
+    rows = { message: field('message', 'Message', textarea), name: field('name', 'Name', nameInput), email: field('email', 'Email', emailInput) };
+    form = el('form', { className: 'sachet-form', noValidate: true }, [rows.message, rows.name, rows.email, trap]);
+    form.addEventListener('submit', (e) => e.preventDefault()); // el envío lo lanza el título del último paso
+
+    preview = el('div', { className: 'sachet-preview' });
+    resetBtn = el('button', { type: 'button', className: 'sachet-reset', textContent: 'Clear and start again' });
+    errorEl = el('p', { className: 'sachet-error', role: 'alert' });
+    sentEl = el('p', { className: 'sachet-sent', textContent: 'Message sent' });
+    title = el('h2', { className: 'sachet-title', role: 'button', tabIndex: 0 });
+    title.innerHTML = LABELS.message;
+    const slash = el('span', { className: 'sachet-slash', ariaHidden: 'true' });
+    const direct = el('div', { className: 'sachet-direct' }, [
+      el('a', { className: 'sachet-mail', href: link.href, textContent: email }),
+      el('p', { className: 'sachet-links' }, [copy, el('a', { className: 'sachet-in', href: LINKEDIN, target: '_blank', rel: 'noopener', textContent: 'LinkedIn' })]),
     ]);
-    form.addEventListener('submit', (e) => { e.preventDefault(); submit(form, send, status); });
     const close = el('button', { type: 'button', className: 'sachet-close', textContent: 'Close ×' });
     dialog = el('dialog', { className: 'sachet' }, [
-      el('h2', { className: 'sachet-title', id: 'sachet-title', textContent: 'Contact' }),
       close,
-      el('canvas', { className: 'sachet-canvas', ariaHidden: 'true' }), // decorativo: el formulario y los enlaces son todo lo que hace falta
-      el('div', { className: 'sachet-panel' }, [form, el('p', { className: 'sachet-direct' }, [
-        el('a', { className: 'sachet-mail', href: link.href, textContent: email }), copy,
-        el('a', { className: 'sachet-in', href: LINKEDIN, target: '_blank', rel: 'noopener', textContent: 'LinkedIn' }),
-      ])]),
+      el('canvas', { className: 'sachet-canvas', ariaHidden: 'true' }), // decorativo: la conversación y los enlaces son todo lo que hace falta
+      el('div', { className: 'sachet-stack' }, [preview, resetBtn, form, errorEl, sentEl, el('div', { className: 'sachet-actionable' }, [title, slash, direct])]),
     ]);
-    dialog.setAttribute('aria-labelledby', 'sachet-title');
+    dialog.setAttribute('aria-label', 'Contact');
     dialog.dataset.state = 'open';
     dialog.tabIndex = -1;
     close.addEventListener('click', closeSachet);
@@ -56,6 +71,7 @@ if (link) {
       stage?.stop();
     });
     document.body.append(dialog);
+    initFlow();
   }
 
   // Cierre con un fundido corto (0,18 s); con «reducir movimiento» se cierra al instante
@@ -66,39 +82,110 @@ if (link) {
     setTimeout(() => { dialog.classList.remove('is-closing'); dialog.close(); }, 180);
   }
 
+  // ---------- La conversación ----------
+  const valid = (input) => input.value.trim() !== '' && input.checkValidity();
+  const setTitle = (text) => { if (text.includes('<br>')) title.innerHTML = text; else title.textContent = text; };
+  const showError = (text, input) => {
+    errorEl.textContent = text; dialog.dataset.hasError = 'true';
+    if (!reduced) errorEl.animate([{ opacity: 0, transform: 'translateY(-8px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'cubic-bezier(.23,1,.32,1)' });
+    input?.focus({ preventScroll: true });
+  };
+  const clearError = () => { errorEl.textContent = ''; dialog.dataset.hasError = 'false'; };
+  const syncReset = () => {
+    const has = step !== 'sent' && (step !== 'message' || textarea.value.trim() !== '');
+    dialog.dataset.hasContent = has ? 'true' : 'false';
+  };
+  const syncCarets = () => [textarea, nameInput, emailInput].forEach((f) => f.parentElement.classList.toggle('has-value', f.value !== ''));
+  // La vista previa crece (0,5 s) cuando se le añade una línea
+  const growPreview = (mutate) => {
+    if (reduced) { mutate(); return; }
+    const from = preview.offsetHeight; mutate(); const to = preview.offsetHeight;
+    if (to !== from) preview.animate([{ height: from + 'px', overflow: 'hidden' }, { height: to + 'px', overflow: 'hidden' }], { duration: 500, easing: 'cubic-bezier(.22,1,.36,1)' });
+  };
+  // Paso a paso: la barra actual sale hacia arriba (0,3 s) y la siguiente entra desde abajo (0,4 s)
+  function swap(out, into, next, focusEl, label) {
+    const reveal = () => {
+      step = next; dialog.dataset.step = next; clearError(); syncReset();
+      out.hidden = true; if (into) into.hidden = false;
+      setTitle(label);
+      if (focusEl && (matchMedia('(pointer: fine)').matches || next !== 'sent')) focusEl.focus({ preventScroll: true });
+      if (!reduced && into) into.animate([{ opacity: 0, transform: 'translateY(15px)' }, { opacity: 1, transform: 'none' }], { duration: 400, easing: 'cubic-bezier(.23,1,.32,1)' });
+    };
+    if (reduced) { reveal(); return; }
+    out.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-15px)' }], { duration: 300, easing: 'cubic-bezier(.55,.06,.68,.19)', fill: 'forwards' }).finished.then(reveal, reveal);
+  }
+  const line = (cls, text) => { const p = el('p', { className: cls, textContent: text }); preview.append(p); };
+
+  function activate() {
+    if (pending) return;
+    if (step === 'message') {
+      if (textarea.value.trim() === '') return showError(ERRORS.message, textarea);
+      growPreview(() => { preview.replaceChildren(); line('sachet-preview-body', textarea.value.trim()); });
+      swap(rows.message, rows.name, 'name', nameInput, LABELS.name);
+    } else if (step === 'name') {
+      if (nameInput.value.trim() === '') return showError(ERRORS.name, nameInput);
+      growPreview(() => line('sachet-preview-name', nameInput.value.trim()));
+      swap(rows.name, rows.email, 'email', emailInput, LABELS.email);
+    } else if (step === 'email') {
+      if (!valid(emailInput)) return showError(ERRORS.email, emailInput);
+      send();
+    }
+  }
+
   // Envío: a Formspree si hay FORM_ENDPOINT; si no, se abre la app de correo con el mensaje ya escrito
-  async function submit(f, send, status) {
-    if (!f.reportValidity()) return;
-    const data = Object.fromEntries(new FormData(f));
-    if (data._gotcha) return; // un robot ha rellenado el campo trampa
+  async function send() {
+    const data = { name: nameInput.value.trim(), email: emailInput.value.trim(), message: textarea.value.trim() };
+    if (form.querySelector('[name="_gotcha"]').value) return; // un robot ha rellenado el campo trampa
     if (!FORM_ENDPOINT) {
-      const body = `${data.message}\n\n${data.name} · ${data.email}`;
-      location.href = `mailto:${email}?subject=${encodeURIComponent('Hello from dizmar.xyz')}&body=${encodeURIComponent(body)}`;
+      location.href = `mailto:${email}?subject=${encodeURIComponent('Hello from dizmar.xyz')}&body=${encodeURIComponent(`${data.message}\n\n${data.name} · ${data.email}`)}`;
       return;
     }
-    send.disabled = true; status.textContent = 'Sending…'; dialog.dataset.send = 'sending';
+    pending = true; setTitle(LABELS.sending); dialog.dataset.send = 'sending';
     try {
       const res = await fetch(FORM_ENDPOINT, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, _subject: `dizmar.xyz · ${data.name}` }) });
       if (!res.ok) throw new Error(String(res.status));
-      f.reset(); status.textContent = 'Sent. I’ll write back soon.'; dialog.dataset.send = 'sent';
+      growPreview(() => line('sachet-preview-email', data.email));
+      dialog.dataset.send = 'sent'; pending = false;
+      textarea.value = nameInput.value = emailInput.value = ''; syncCarets();
+      swap(rows.email, sentEl, 'sent', null, LABELS.sent); sentEl.hidden = false;
     } catch (err) {
-      status.textContent = `It didn’t go through. Write to ${email} instead.`; dialog.dataset.send = 'error';
-    } finally { send.disabled = false; }
+      pending = false; setTitle(LABELS.send); dialog.dataset.send = 'error';
+      showError(`It didn’t go through. Write to ${email} instead.`);
+    }
+  }
+
+  function reset() {
+    clearError(); pending = false; step = 'message'; dialog.dataset.step = 'message'; delete dialog.dataset.send;
+    textarea.value = nameInput.value = emailInput.value = ''; syncCarets();
+    preview.replaceChildren();
+    rows.message.hidden = false; rows.name.hidden = true; rows.email.hidden = true; sentEl.hidden = true;
+    setTitle(LABELS.message); syncReset();
+  }
+
+  function initFlow() {
+    textarea.addEventListener('input', () => { syncCarets(); syncReset(); clearError(); if (step === 'message') setTitle(textarea.value.trim() !== '' ? LABELS.next : LABELS.message); });
+    nameInput.addEventListener('input', () => { syncCarets(); clearError(); if (step === 'name') setTitle(nameInput.value.trim() !== '' ? LABELS.next : LABELS.name); });
+    emailInput.addEventListener('input', () => { syncCarets(); clearError(); if (step === 'email') setTitle(valid(emailInput) ? LABELS.send : LABELS.email); });
+    for (const input of [nameInput, emailInput]) input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); activate(); } });
+    title.addEventListener('click', activate);
+    title.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); } });
+    resetBtn.addEventListener('click', () => { reset(); textarea.focus({ preventScroll: true }); });
+    reset();
   }
 
   async function open() {
     if (!dialog) build();
-    delete dialog.dataset.send; dialog.querySelector('.sachet-status').textContent = '';
+    reset();                                              // cada vez que se abre, otra vez desde el mensaje
     dialog.dataset.state = 'open';
     dialog.showModal();
     document.documentElement.classList.add('sachet-open');
-    // Con ratón, el cursor ya está en el primer campo; con el dedo no, para que el teclado no tape la ventana nada más abrirla
-    if (matchMedia('(pointer: fine)').matches) form.querySelector('input').focus({ preventScroll: true }); else dialog.focus({ preventScroll: true });
+    // Con ratón, el cursor ya está en la barra; con el dedo no, para que el teclado no tape la ventana nada más abrirla
+    if (matchMedia('(pointer: fine)').matches) textarea.focus({ preventScroll: true }); else dialog.focus({ preventScroll: true });
     try {
       if (!stage) stage = await createStage(dialog, { reduced, onOpen: () => { dialog.dataset.state = 'open'; setTimeout(() => stage?.reset(), reduced ? 0 : 1100); } });
       stage.start();
     } catch (err) {
-      console.warn('Contact sachet: 3D unavailable', err); // sin el sobre, el formulario sigue igual
+      console.warn('Contact sachet: 3D unavailable', err); // sin el sobre, la ventana sigue igual
     }
   }
 

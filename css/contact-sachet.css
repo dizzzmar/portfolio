@@ -1,5 +1,7 @@
-/* CONTACT · la ventana de contacto (js/contact-sachet.js): rojo del menú (--menu-red) con texto crema (4,51:1), como el telón del menú. Es solo el formulario;
-   el sobre de ketchup DIZ en 3D está abajo, pequeño, en el centro (se gira arrastrándolo y se puede rasgar). */
+/* CONTACT · la ventana de contacto (js/contact-sachet.js): amarillo mostaza liso y todo en rojo, como la sección de contacto de wearepanico.com: los campos son barras rojas a todo
+   el ancho arriba, de una en una (mensaje, nombre, email), con lo que se escribe en amarillo; debajo, el título enorme que es la pregunta y el botón, una rayita y los datos
+   de contacto a la derecha; la barra no lleva ningún borde ni aro (el cursor parpadeante y lo escrito marcan el foco). Todo en el rojo de la web (--menu-red) sobre el amarillo, sin verde. El sobre de ketchup DIZ en 3D está abajo, pequeño, en el centro (se gira
+   arrastrándolo y se puede rasgar). */
 .sachet {
   position: fixed;
   inset: 0;
@@ -11,18 +13,18 @@
   padding: 0;
   border: 0;
   overflow: hidden;
-  background: var(--menu-red);
-  color: var(--cream);
+  background: var(--mustard);
+  color: var(--menu-red);
   font-family: var(--font-ui);
   font-size: var(--fs-s); /* en About y Privacy el texto del cuerpo es más grande y se heredaría */
 }
 .sachet:focus { outline: none; }
-.sachet::backdrop { background: var(--menu-red); }
-.sachet ::selection { background: var(--cream); color: var(--menu-red); }
+.sachet::backdrop { background: var(--mustard); }
+.sachet ::selection { background: var(--menu-red); color: var(--cream); }
 .sachet button { font: inherit; color: inherit; cursor: pointer; }
 .sachet :focus-visible { outline: 2px solid currentColor; outline-offset: 6px; }
 
-/* El sobre: una caja pequeña abajo en el centro, entre el email (a la izquierda) y los enlaces (a la derecha) del pie */
+/* El sobre: una caja pequeña abajo en el centro, entre el título (a la izquierda) y los datos (a la derecha) */
 .sachet-canvas {
   position: absolute;
   left: 50%;
@@ -36,83 +38,93 @@
 .sachet.is-turning .sachet-canvas { cursor: grabbing; }
 @media (max-height: 760px) { .sachet-canvas { width: 88px; height: 126px; } }
 
-.sachet-title {
-  z-index: 3;
-  position: absolute;
-  top: max(24px, env(safe-area-inset-top));
-  left: 24px;
-  font-size: var(--fs-s);
-  font-weight: 400;
-  line-height: 44px; /* a la altura del texto de Close */
-}
 .sachet .sachet-close { z-index: 2; position: absolute; top: 24px; right: 24px; min-height: 44px; padding: 8px 0; border: 0; background: none; font-size: var(--fs-s); }
 .sachet-close:hover { text-decoration: underline; text-underline-offset: 4px; }
+.sachet-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-/* El formulario: dos columnas (una en el móvil); lo que se escribe va en Funnel Display a 24 px, como un cartel; las etiquetas, el pie y los enlaces en Funnel Sans */
-.sachet-panel {
+/* La conversación (referencia: la sección «Say hi» de wearepanico.com): de arriba abajo, lo ya contestado, la barra roja del paso actual, el aviso y, por último, una fila con el título
+   enorme (que es la pregunta y el botón), una rayita y los datos de contacto */
+.sachet-stack {
   z-index: 2;
   position: absolute;
-  inset: calc(24px + 44px + 32px) var(--bar-gutter) max(32px, env(safe-area-inset-bottom));
-  display: grid;
-  grid-template-rows: 1fr auto;
-  gap: 40px;
-  max-width: 1080px;
-  margin: 0 auto;
+  inset: calc(24px + 44px + 8px) var(--bar-gutter) 0;
+  display: flex; flex-direction: column; gap: 32px;
+  padding-bottom: 32px;
   overflow-y: auto;
-  pointer-events: none; /* el panel cubre casi toda la ventana: solo sus campos y enlaces reciben el ratón, así se puede tocar el sobre que hay detrás, abajo */
+  pointer-events: none; /* la pila cubre casi toda la ventana: solo la barra, el título y los enlaces reciben el ratón, así se puede tocar el sobre que hay detrás, abajo */
 }
-.sachet-panel :is(.sachet-field, a, button) { pointer-events: auto; }
-.sachet-form { display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 36px 40px; }
-.sachet-field { display: grid; gap: 8px; margin: 0; }
-.sachet-field:has(textarea) { grid-column: 1 / -1; }
-.sachet-field label { font-size: var(--fs-s); }
+.sachet-stack :is(.sachet-field, .sachet-title, .sachet-direct, .sachet-reset) { pointer-events: auto; }
+.sachet-preview { overflow: hidden; font-weight: var(--fw-bold); font-size: clamp(20px, 2vw, 30px); line-height: 1.25; }
+.sachet-preview:empty { display: none; }
+.sachet-preview p { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.sachet-preview p + p { margin-top: .35em; }
+.sachet-preview-name, .sachet-preview-email { font-weight: var(--fw-regular); }
+.sachet-reset { align-self: flex-start; padding: 6px 0; border: 0; background: none; color: inherit; font-size: var(--fs-s); text-decoration: underline; text-underline-offset: 4px; }
+.sachet[data-has-content="false"] .sachet-reset { display: none; }
+.sachet-form { display: block; margin: 0; }
+.sachet-field { position: relative; margin: 0; background: var(--menu-red); }   /* la barra roja del paso actual */
+.sachet-field[hidden], .sachet-sent[hidden] { display: none; }
 .sachet-field input, .sachet-field textarea {
-  width: 100%;
-  padding: 2px 0 10px;
-  border: 0;
-  border-bottom: 1.5px solid var(--cream);
-  border-radius: 0;
-  background: none;
-  color: var(--cream);
+  position: relative; z-index: 1;
+  display: block; width: 100%;
+  border: 0; border-radius: 0; background: none;
+  color: var(--mustard);                /* lo que se escribe, en amarillo sobre el rojo */
   font-family: var(--font-display);
-  font-size: var(--fs-xl); /* 24 px */
-  font-weight: var(--fw-title);
-  letter-spacing: -.02em;
-  line-height: 1.25;
-  caret-color: var(--cream);
+  font-size: clamp(30px, 5vw, 100px);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.1;
+  caret-color: var(--mustard);
 }
-.sachet-field textarea { min-height: calc(3 * 1.25em + 12px); resize: none; field-sizing: content; max-height: 40dvh; }
-.sachet-field input:focus, .sachet-field textarea:focus { outline: none; border-bottom-width: 3px; padding-bottom: 8.5px; }
+.sachet-field input { padding: .25em .4em; }
+.sachet-field textarea { padding: .25em .4em; min-height: clamp(150px, 17vw, 260px); resize: none; field-sizing: content; max-height: 38dvh; }
+.sachet-field input:focus, .sachet-field textarea:focus { outline: none; }
+.sachet-field:not(.has-value) :is(input, textarea) { caret-color: transparent; }
+/* El cursor falso: un bloque amarillo parpadeante siempre visible en la barra vacía (haya o no el foco) */
+.sachet-caret { position: absolute; z-index: 0; left: .4em; top: .25em; width: 5px; height: 1.5em; background: var(--mustard); font-size: clamp(30px, 5vw, 100px); animation: sachet-blink 1.06s steps(1) infinite; pointer-events: none; }
+.sachet-field.has-value .sachet-caret { display: none; }
+@keyframes sachet-blink { 50% { opacity: 0; } }
 /* El autocompletado de Chrome pinta el campo de amarillo: se tapa con el rojo */
-.sachet-field input:-webkit-autofill { -webkit-text-fill-color: var(--cream); -webkit-box-shadow: 0 0 0 100px var(--menu-red) inset; transition: background-color 9999s; }
+.sachet-field input:-webkit-autofill { -webkit-text-fill-color: var(--mustard); -webkit-box-shadow: 0 0 0 100px var(--menu-red) inset; transition: background-color 9999s; }
 .sachet-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-.sachet-actions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; }
-.sachet .sachet-send { min-height: 48px; padding: 0 28px; border: 0; border-radius: 999px; background: var(--cream); color: var(--menu-red); font-size: var(--fs-m); font-weight: var(--fw-bold); letter-spacing: -.01em; transition: transform .16s var(--ease-out), opacity .2s; }
-.sachet .sachet-send:hover { transform: scale(1.03); }
-.sachet .sachet-send:active { transform: scale(.97); }
-.sachet .sachet-send:disabled { opacity: .6; cursor: progress; }
-.sachet .sachet-send:focus-visible { outline: 2px solid var(--cream); outline-offset: 4px; }
-.sachet-status { margin: 0; font-size: var(--fs-s); }
-.sachet-status:empty { display: none; }
-.sachet[data-send="sent"] .sachet-status { font-weight: var(--fw-bold); }
-.sachet-direct { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 24px; margin: 0; font-size: var(--fs-s); pointer-events: none; }
-.sachet-mail { color: inherit; font-size: var(--fs-lead); font-weight: var(--fw-bold); letter-spacing: -.01em; text-decoration: none; overflow-wrap: anywhere; margin-right: auto; }
+.sachet-error { margin: 0; min-height: 0; font-size: var(--fs-m); font-weight: var(--fw-bold); }
+.sachet-error:empty { display: none; }
+.sachet-sent { margin: 0; font-size: clamp(20px, 2vw, 30px); font-weight: var(--fw-bold); }
+
+.sachet-actionable { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+.sachet-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5vw, 100px);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+}
+.sachet[data-step="sent"] .sachet-title { cursor: default; }
+.sachet-title:focus-visible { outline: 3px solid var(--menu-red); outline-offset: 8px; }
+.sachet-slash { flex: none; width: 26px; height: 3px; background: currentColor; rotate: -50deg; }
+.sachet-direct { display: grid; gap: 6px; justify-items: end; text-align: right; font-size: var(--fs-s); }
+.sachet-mail { color: inherit; font-size: var(--fs-m); font-weight: var(--fw-bold); font-style: italic; letter-spacing: -.01em; text-decoration: none; overflow-wrap: anywhere; }
 .sachet-mail:hover { text-decoration: underline; text-underline-offset: 4px; }
+.sachet-links { display: flex; gap: 8px 20px; margin: 0; }
 .sachet .sachet-copy, .sachet-in { padding: 6px 0; border: 0; background: none; color: inherit; font-size: var(--fs-s); font-weight: var(--fw-regular); text-decoration: underline; text-underline-offset: 4px; }
 
-/* Móvil: una columna; el panel tiene scroll propio (el teclado puede tapar la mitad de abajo) y deja sitio al sobre, que pasa a la esquina de abajo a la derecha */
+/* Móvil: la barra y el título algo más pequeños, y los datos de contacto debajo del título; el sobre pasa a la esquina de abajo a la derecha */
 @media (max-width: 760px) {
-  .sachet-panel { inset: calc(max(24px, env(safe-area-inset-top)) + 44px + 20px) var(--bar-gutter) max(24px, env(safe-area-inset-bottom)); gap: 32px; padding-bottom: 150px; }
-  .sachet-form { grid-template-columns: 1fr; align-content: start; gap: 26px; }
-  .sachet-field input, .sachet-field textarea { font-size: var(--fs-l); } /* 20 px */
-  .sachet-mail { flex-basis: 100%; }
+  .sachet-stack { inset: calc(max(24px, env(safe-area-inset-top)) + 44px + 4px) var(--bar-gutter) 0; gap: 24px; padding-bottom: 150px; }
+  .sachet-field input, .sachet-field textarea, .sachet-caret { font-size: clamp(24px, 7.4vw, 40px); }
+  .sachet-slash { display: none; }
+  .sachet-direct { justify-items: start; text-align: left; }
   .sachet-canvas { left: auto; right: var(--bar-gutter); translate: none; width: 92px; height: 132px; }
 }
 
 /* Entrada: la ventana aparece (0,3 s) y el formulario sube 18 px mientras se asienta (0,6 s). Salida: un fundido corto (0,18 s, js/contact-sachet.js la lanza antes de cerrar) */
 @media (prefers-reduced-motion: no-preference) {
   .sachet[open] { animation: sachet-in .3s var(--ease-out) both; }
-  .sachet[open] .sachet-panel { animation: sachet-rise .6s var(--ease-out) .08s both; }
+  .sachet[open] .sachet-stack { animation: sachet-rise .6s var(--ease-out) .08s both; }
   .sachet[open] .sachet-canvas { animation: sachet-peek .8s var(--ease-out) .2s both; }
   .sachet.is-closing { animation: sachet-out .18s var(--ease-out) both; }
 }
@@ -123,4 +135,3 @@
 
 /* Mientras está abierta, la página de debajo no se desplaza */
 html.sachet-open { overflow: hidden; }
-
