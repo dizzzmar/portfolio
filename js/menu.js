@@ -1,4 +1,4 @@
-// MENÚ · el botón «Menu» de la barra (todas las páginas con barra) abre un panel a pantalla completa con los enlaces grandes de arriba y una fila pequeña abajo.
+// MENÚ · el botón «Menu» de la barra (todas las páginas con barra) abre un panel a pantalla completa con los enlaces grandes; el panel no lleva pie (el único pie de la web es el footer grande).
 // Estilos y animación (entrada y salida iguales, una al revés de la otra): css/menu.css. Referencia: pesqueradiez.com.
 // Los enlaces del panel salen de los de la barra de cada página, y los que tienen un comportamiento propio (Projects en la portada, el sobre de Contact, la terminal)
 // lo mantienen: el panel se cierra y se pulsa el enlace original.
@@ -15,12 +15,10 @@
   const originals = [...list.querySelectorAll('li:not(.menu-li) a')];
   const find = (label) => originals.find((a) => a.textContent.trim() === label);
 
-  // Enlaces grandes (en este orden) y fila pequeña
+  // Enlaces grandes (en este orden)
   // Playground no está en la barra de las páginas (la barra tiene Projects, About, Contact y Room): su enlace se crea aquí
   const playground = { fake: true, textContent: 'Playground', href: new URL('/playground/', location.origin).href, getAttribute: () => '/playground/' };
   const big = ['Projects', 'About', 'Room', 'Playground', 'Contact'].map((l) => find(l) || (l === 'Playground' ? playground : null)).filter(Boolean);
-  // Debajo, el mismo pie que el de todas las páginas (texto de la izquierda): sin más enlaces, para que no haya un pie distinto en cada sitio
-  const small = [{ label: 'FAQs', href: '/faq/' }, { label: 'Privacy', href: '/privacy/' }];
 
   const current = location.pathname.replace(/index\.html$/, '');
   const items = big.map((orig, i) => {
@@ -35,12 +33,6 @@
   archive.style.setProperty('--i', big.length);
   if (current.startsWith('/archive/')) archive.setAttribute('aria-current', 'page');
   items.push(el('li', { className: 'menu-item menu-item--archive' }, [archive]));
-  const smallLinks = small.map((s) => {
-    const a = el('a', { href: s.href, textContent: s.label });
-    if (s.href === current) a.setAttribute('aria-current', 'page');
-    return a;
-  });
-
   const logoImg = el('img', { src: '/assets/images/tomato.webp', alt: '', width: 44, height: 47 });
   const logo = el('a', { className: 'menu-logo', href: '/' }, [logoImg]);
   logo.setAttribute('aria-label', 'Home');
@@ -48,7 +40,6 @@
   const panel = el('div', { className: 'menu', id: 'menu' }, [
     logo, close,
     el('nav', { ariaLabel: 'Menu' }, [el('ul', { className: 'menu-items' }, items)]),
-    el('p', { className: 'menu-small' }, ['Mario Diz, Madrid · ', smallLinks[0], ' · ', smallLinks[1]]),
   ]);
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-modal', 'true');
@@ -77,7 +68,7 @@
   };
 
   let isOpen = false, closeTimer = 0;
-  const focusables = () => [close, logo, ...panel.querySelectorAll('.menu-item a, .menu-small a')];
+  const focusables = () => [close, logo, ...panel.querySelectorAll('.menu-item a')];
   function open() {
     if (isOpen) return;
     isOpen = true;
