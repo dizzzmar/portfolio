@@ -31,17 +31,18 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/css/tokens.css?v=20261111menu1">
+<link rel="stylesheet" href="/css/tokens.css?v=20261113red1">
 <link rel="stylesheet" href="/css/case.css?v=20261031a">
 <link rel="stylesheet" href="/css/case-layout.css?v=20261030p">
 <link rel="stylesheet" href="/css/palettes.css?v=20261030a">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261112navdiff1">
 <link rel="stylesheet" href="/css/menu.css?v=20261111archive1">
+<link rel="stylesheet" href="/css/big-foot.css?v=20261112foot5">
   <link rel="stylesheet" href="/css/link-roll.css?v=20261110roll1">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/typography.css?v=20261031a">
-<link rel="stylesheet" href="/css/transitions.css?v=20261029j">
+<link rel="stylesheet" href="/css/transitions.css?v=20261112curtain1">
 <script>document.documentElement.classList.add('js','has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
 <script type="importmap">
   {
@@ -134,7 +135,23 @@
       </a></li>
   </ul>
 </section>
-<footer class="site-foot on-light"><span>Mario Diz, Madrid · <a href="/faq/">FAQs</a> · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
+<!-- FOOTER GRANDE · el único pie de la web (igual en todas las páginas): «DIZMAR» enorme sobre el rojo del menú, cuyas piezas se recomponen con el scroll
+     (js/big-foot.js, css/big-foot.css; referencia: wearepanico.com). EDITA: los enlaces de la fila de arriba (copia o borra un <li>). -->
+<section class="big-foot" aria-label="More links">
+  <div class="bf-top">
+    <ul class="bf-links">
+      <li><a href="/faq/">FAQs</a></li>
+      <li><a href="/privacy/">Privacy</a></li>
+      <li><a href="/archive/">Digital Archive</a></li>
+      <li><a href="https://es.linkedin.com/in/mario-diaz-aguado" target="_blank" rel="noopener">LinkedIn</a></li>
+    </ul>
+  </div>
+  <p class="bf-word" aria-label="Dizmar"><span aria-hidden="true">D</span><span aria-hidden="true">I</span><span aria-hidden="true">Z</span><span aria-hidden="true">M</span><span aria-hidden="true">A</span><span aria-hidden="true">R</span></p>
+  <div class="bf-bottom">
+    <p class="bf-legal">Mario Diz, Madrid</p>
+    <a class="bf-up" href="#top">Go up <span class="bf-up-box" aria-hidden="true"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M11 20V3M3.5 10.5 11 3l7.5 7.5"/></svg></span></a>
+  </div>
+</section>
 
 <!-- Script oficial de Instagram: convierte el bloque de arriba en el reproductor -->
 <script async src="https://www.instagram.com/embed.js"></script>
@@ -143,6 +160,7 @@
 <script src="/js/cursor.js?v=20261029b" defer></script>
 <script src="/js/smooth-scroll.js?v=20261028n" defer></script>
   <script type="module" src="/js/contact-sachet.js?v=20261108a"></script>
+<script src="/js/big-foot.js?v=20261112foot5" defer></script>
 <script src="/js/menu.js?v=20261111archive1" defer></script>
 <script src="/js/link-roll.js?v=20261110roll1" defer></script>
 <script src="/js/terminal.js?v=20261110projects" defer></script>
