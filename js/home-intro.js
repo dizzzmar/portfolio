@@ -54,7 +54,7 @@ document.addEventListener('click', (e) => { if (e.target instanceof Element && e
   const SCROLL_AT = 0.3;
   let wantWork = false, scrolling = false;
   const workEl = document.getElementById('work');
-  const footEl = document.querySelector('.site-foot');
+  const footEl = document.querySelector('.big-foot');
   let scrollToken = 0;
   // Baja o sube la página con una curva suave (650 ms) mientras el viaje del tomate sigue; si el visitante da marcha atrás (keep() falso), se para
   function animateScroll(y1, keep) {

@@ -29,6 +29,7 @@
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261025k">
 <link rel="stylesheet" href="/css/menu.css?v=20261111archive1">
+<link rel="stylesheet" href="/css/big-foot.css?v=20261112foot5">
   <link rel="stylesheet" href="/css/link-roll.css?v=20261110roll1">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/typography.css?v=20261031a">
@@ -68,12 +69,29 @@
   <div class="pg-app"><div class="pgn-root" data-sandbox data-extra="1" role="group" aria-label="Node sandbox"><noscript><p>The sandbox needs JavaScript.</p></noscript></div></div>
 </main>
 
-<footer class="site-foot"><span>Mario Diz, Madrid · <a href="/faq/">FAQs</a> · <a href="/privacy/">Privacy</a></span><a href="#top">Back to top ↑</a></footer>
+<!-- FOOTER GRANDE · el único pie de la web (igual en todas las páginas): «DIZMAR» enorme sobre el rojo del menú, cuyas piezas se recomponen con el scroll
+     (js/big-foot.js, css/big-foot.css; referencia: wearepanico.com). EDITA: los enlaces de la fila de arriba (copia o borra un <li>). -->
+<section class="big-foot" aria-label="More links">
+  <div class="bf-top">
+    <ul class="bf-links">
+      <li><a href="/faq/">FAQs</a></li>
+      <li><a href="/privacy/">Privacy</a></li>
+      <li><a href="/archive/">Digital Archive</a></li>
+      <li><a href="https://es.linkedin.com/in/mario-diaz-aguado" target="_blank" rel="noopener">LinkedIn</a></li>
+    </ul>
+  </div>
+  <p class="bf-word" aria-label="Dizmar"><span aria-hidden="true">D</span><span aria-hidden="true">I</span><span aria-hidden="true">Z</span><span aria-hidden="true">M</span><span aria-hidden="true">A</span><span aria-hidden="true">R</span></p>
+  <div class="bf-bottom">
+    <p class="bf-legal">Mario Diz, Madrid</p>
+    <a class="bf-up" href="#top">Go up <span class="bf-up-box" aria-hidden="true"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M11 20V3M3.5 10.5 11 3l7.5 7.5"/></svg></span></a>
+  </div>
+</section>
 
 
 <script type="module" src="/js/playground/mount.js?v=20261106a"></script>
 <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
   <script type="module" src="/js/contact-sachet.js?v=20261108a"></script>
+<script src="/js/big-foot.js?v=20261112foot5" defer></script>
 <script src="/js/menu.js?v=20261111archive1" defer></script>
 <script src="/js/link-roll.js?v=20261110roll1" defer></script>
 <script src="/js/cursor.js?v=20261029b" defer></script>
