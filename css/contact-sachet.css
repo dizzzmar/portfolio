@@ -80,8 +80,8 @@
 .sachet-field textarea { padding: .25em .4em; min-height: clamp(150px, 17vw, 260px); resize: none; field-sizing: content; max-height: 38dvh; }
 .sachet-field input:focus, .sachet-field textarea:focus { outline: none; }
 .sachet-field:not(.has-value) :is(input, textarea) { caret-color: transparent; }
-/* El cursor falso: un bloque amarillo parpadeante siempre visible en la barra vacía (haya o no el foco) */
-.sachet-caret { position: absolute; z-index: 0; left: .4em; top: .25em; width: 5px; height: 1.5em; background: var(--mustard); font-size: clamp(30px, 5vw, 100px); animation: sachet-blink 1.06s steps(1) infinite; pointer-events: none; }
+/* El cursor falso: una raya amarilla parpadeante siempre visible en la barra vacía (haya o no el foco). Mide lo que una línea de texto y queda dentro de la barra, sin tocar su borde de abajo */
+.sachet-caret { position: absolute; z-index: 0; left: .4em; top: .3em; width: 5px; height: 1em; background: var(--mustard); font-size: clamp(30px, 5vw, 100px); animation: sachet-blink 1.06s steps(1) infinite; pointer-events: none; }
 .sachet-field.has-value .sachet-caret { display: none; }
 @keyframes sachet-blink { 50% { opacity: 0; } }
 /* El autocompletado de Chrome pinta el campo de amarillo: se tapa con el rojo */
