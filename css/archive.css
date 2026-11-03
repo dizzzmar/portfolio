@@ -57,3 +57,36 @@ img { display: block; max-width: 100%; height: auto; }
   .archive-card { translate: none; transition: opacity .3s ease; }
   .archive-strip img { transition: none; }
 }
+
+/* ---------- Visor de una pieza (referencia: la pieza abierta en nicolo-lombardi.com/archive/la-barra) ----------
+   Pantalla negra: título enorme arriba, la pieza al centro y sus datos abajo. La pieza se inclina hacia el ratón por toda la pantalla
+   (no solo encima de ella) y un brillo la sigue; con el dedo, al arrastrar. La entrada: el título sube desde su máscara, la pieza llega con un destello
+   que se apaga y los datos aparecen uno a uno. */
+.archive-viewer { position: fixed; inset: 0; z-index: 30; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; justify-items: center; padding: clamp(40px, 6vh, 72px) var(--gutter) 0; background: var(--bg); color: var(--ink); perspective: 1100px; opacity: 0; visibility: hidden; transition: opacity .5s var(--ease-out), visibility 0s linear .5s; touch-action: none; }
+.archive-viewer[hidden] { display: none; }
+.archive-viewer:focus { outline: none; }
+.archive-viewer.is-open { opacity: 1; visibility: visible; transition: opacity .5s var(--ease-out), visibility 0s; }
+.archive-viewer-close { position: absolute; top: 0; right: var(--bar-gutter); z-index: 2; min-height: var(--nav-h); padding: 0 4px; border: 0; background: none; color: inherit; font: inherit; font-size: var(--fs-s); cursor: pointer; }
+.archive-viewer-close:hover { text-decoration: underline; text-underline-offset: 6px; }
+.archive-viewer-name { max-width: 100%; text-align: center; font-family: var(--font-display); font-size: clamp(44px, 9.5vw, 137px); font-weight: var(--fw-title); letter-spacing: -.045em; line-height: 1; text-wrap: balance; }
+.archive-viewer-name .mask { display: inline-block; overflow: hidden; padding-bottom: .12em; margin-bottom: -.12em; vertical-align: top; }
+.archive-viewer-name .mask > span { display: inline-block; translate: 0 112%; transition: translate .8s var(--ease-out) calc(.15s + var(--i, 0) * 80ms); }
+.archive-viewer.is-open .archive-viewer-name .mask > span { translate: 0 0; }
+
+.archive-stage { display: grid; place-items: center; width: 100%; min-height: 0; transform-style: preserve-3d; }
+.archive-piece { position: relative; width: min(46vh, 72vw, 560px); aspect-ratio: 1; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); will-change: transform; filter: brightness(2.4) saturate(.4); opacity: 0; scale: .94; transition: filter 1.1s var(--ease-out) .25s, opacity .6s ease .2s, scale .9s var(--ease-out) .2s; }
+.archive-viewer.is-open .archive-piece { filter: none; opacity: 1; scale: 1; }
+.archive-piece img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+.archive-gloss { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at var(--gx, 50%) var(--gy, 30%), rgba(255, 255, 255, .6), transparent 55%); mix-blend-mode: soft-light; opacity: var(--gloss, 0); -webkit-mask: var(--piece) center / contain no-repeat; mask: var(--piece) center / contain no-repeat; }
+
+.archive-facts { align-self: end; width: calc(100% + 2 * var(--gutter)); margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter) max(12px, env(safe-area-inset-bottom)); }
+.archive-facts > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--ink); opacity: 0; translate: 0 10px; transition: opacity .6s ease calc(.45s + var(--i, 0) * 70ms), translate .6s var(--ease-out) calc(.45s + var(--i, 0) * 70ms); }
+.archive-viewer.is-open .archive-facts > div { opacity: 1; translate: 0 0; }
+.archive-facts dt { font-size: var(--fs-s); letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+.archive-facts dd { font-size: clamp(18px, 1.6vw, 24px); }
+body.archive-viewing { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) {
+  .archive-viewer, .archive-viewer.is-open { transition: opacity .2s ease, visibility 0s; }
+  .archive-viewer-name .mask > span, .archive-piece, .archive-facts > div { transition: none; translate: none; scale: 1; filter: none; opacity: 1; }
+  .archive-gloss { display: none; }
+}
