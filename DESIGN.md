@@ -144,7 +144,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **Body** (400, 16 px, 1.45, measure 34 em): all running text, lists and answers, after the reference kellauren.design (one text size; hierarchy by weight and space). The first paragraph of each page and the block headings share this size in 700. Only titles and the Contact envelope are larger.
 - **Label** (400, 14 px, 1.3): bar links, buttons, footer, dates and every secondary line.
 - **Caps** (400, 11 px, 0.06 em, uppercase): small labels and credits only.
-- **Menu link** (600, 44–112 px from 821 px wide, 52–84 px below, 1, −0.05 em): the four big links in the menu (`--fs-menu`).
+- **Menu link** (600, 30–64 px from 821 px wide, 52–84 px below, 1, −0.05 em): the four big links in the menu (`--fs-menu`).
 
 ### Named Rules
 **The Weights Rule.** Text has two weights: 700 orients (first paragraph, block headings) and 400 is what you read. Large titles in Funnel Display sit one step lighter, at 600 (`--fw-title`). No 300 or 500.
@@ -157,7 +157,7 @@ A single column of content under a fixed bar (`--nav-h`: 64 px, 56 px up to 700 
 
 A project page with a single asset (`class="is-single"` on `.p-gallery`, see `templates/project-template/`) has no strip to scroll: the asset starts on the same line as the cards of the other projects (25 % of the width), is shown whole at its own ratio and never taller than the screen leaves room for the text below, and on mobile fills the width. No progress hairline and no "Go to film" link.
 
-The menu uses the whole viewport: on desktop the five big links sit on one row, spread edge to edge at the vertical centre (`--fs-menu` is `clamp(36px, 5.1vw, 96px)` so Playground fits at every width from 821 px); at 820 px and below they stack and drop to thumb height just above the footer line, so the thumb reaches them without stretching. The footer line (the same text as the page footer) is pinned to the bottom left.
+The menu uses the whole viewport: on desktop the five big links sit on one row, spread edge to edge at the vertical centre, small with wide gaps between them (`--fs-menu` is `clamp(30px, 3.4vw, 64px)`: about 130 px between words at 1440 px, 60 px at 830 px); at 820 px and below they stack and drop to thumb height just above the footer line, so the thumb reaches them without stretching. The footer line (the same text as the page footer) is pinned to the bottom left.
 
 ## Elevation & Depth
 
