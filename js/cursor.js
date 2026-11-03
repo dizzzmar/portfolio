@@ -43,6 +43,8 @@
   // Donde el cursor ya es otra cosa (vídeo con PLAY/PAUSE, deslizador del sobre): el punto se aparta
   const HIDE = '.player, .ct-slider';
   // Enlaces y botones: el punto crece y se vuelve algo transparente, y encima se ve el cursor real (la mano), solo aquí (css/cursor.css)
+  // Barras de escribir (la ventana de Contact): el punto se estira en una raya vertical amarilla, la del cursor de texto
+  const TEXT = '.sachet-field';
   const HOT = 'a[href], button, summary, label, select, [role="button"], [data-cursor="hot"]';
 
   const set = (cls, on) => dot.classList.toggle(cls, on);
@@ -65,7 +67,9 @@
     set('is-view', !!view);
     const hide = !view && !!(pe || (t && t.closest(HIDE)));
     set('is-hide', hide);
-    hot = !view && !hide && !!(t && t.closest(HOT));
+    const inField = !view && !hide && !!(t && t.closest(TEXT));
+    set('is-text', inField);                       // sobre las barras de escribir de Contact el punto se vuelve una raya, como el cursor de texto
+    hot = !view && !hide && !inField && !!(t && t.closest(HOT));
     paintHot();
   }
 
