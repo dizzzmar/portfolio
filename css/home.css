@@ -306,7 +306,6 @@ body.white-on { background-color: #fff; }
   .work-top p:not(.wt-creative) { display: none; }
 }
 
-.work-cover { position: sticky; top: 0; z-index: 5; height: var(--nav-h); margin: 0 calc(-1 * clamp(16px, 1.2vw, 24px)) calc(-1 * var(--nav-h)); background-color: inherit; } /* del color de la página (blanco o rosa; sin color mientras sigue el cielo) */
 /* Las dos columnas: un tercio y dos tercios, igual que en las páginas de proyecto */
 .work-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); column-gap: clamp(24px, 3.2vw, 48px); align-items: start; }
 .work-side { position: sticky; top: var(--nav-h); padding-top: clamp(8px, 1.2vw, 18px); } /* el título se queda fijo, a la altura de la primera imagen */
@@ -369,7 +368,6 @@ body.white-on { background-color: #fff; }
   .work-top { grid-template-columns: 1fr; height: auto; padding: var(--nav-h) clamp(16px, 1.2vw, 24px) 12px; font-size: var(--fs-s); }
   .work-top p:not(.wt-creative) { display: none; } /* en móvil la barra solo lleva «Creative ___» */
   .work-top p { grid-column: 1; }
-  .work-cover { height: calc(var(--nav-h) + 48px); margin-bottom: calc(-1 * (var(--nav-h) + 48px)); }
   .work-layout { grid-template-columns: minmax(0, 1fr); }
   .work-side { position: static; height: auto; padding: 8px 0 28px; }
   .work-title { font-size: clamp(56px, 18vw, 96px); }

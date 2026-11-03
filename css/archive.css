@@ -12,14 +12,10 @@ img { display: block; max-width: 100%; height: auto; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 .archive-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-/* ---------- Barra: la misma que en el resto de la web (logo, migas y enlaces), sin fondo ---------- */
+/* ---------- Barra: la misma que en el resto de la web (logo y enlaces), sin fondo y mezclada con «difference» (css/nav-links.css) ---------- */
 .nav { position: fixed; inset: 0 0 auto; z-index: 9; height: var(--nav-h); display: flex; align-items: center; padding: 0 var(--bar-gutter); }
 .nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s var(--ease-out); }
 .nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
-.crumbs { color: var(--ink); }
-.crumbs li { display: flex; align-items: center; }   /* una miga que es enlace mide toda la barra: sin esto la barra «/» y el enlace se apilan */
-/* En el muro las piezas pasan por debajo de la barra: un degradado del negro la deja legible sin tocar los colores del logo */
-.archive-wall::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 8; height: calc(var(--nav-h) + 28px); background: linear-gradient(var(--bg) 35%, transparent); pointer-events: none; }
 
 /* ---------- Índice: el título y, debajo, una fila por colección ---------- */
 .archive-index { padding: calc(var(--nav-h) + clamp(32px, 6vw, 96px)) var(--gutter) clamp(48px, 8vw, 120px); }
