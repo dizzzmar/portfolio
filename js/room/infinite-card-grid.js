@@ -1,7 +1,8 @@
 // Infinite card collage: a fixed pool of cards wraps around the viewport in both directions, so distance travelled never adds DOM nodes.
-// Columns are staggered in height (as in the Posters collage), every card keeps its caption, and the same card never sits next to itself.
-// One animation clock moves the 2D field and eases local card perspective around the cursor or finger.
-// The collage, captions and arrangement stay intact. Rendering stops at rest and while the tab is hidden.
+// Cards are scattered, not gridded: wide gaps, three sizes, a slight tilt and a small offset inside each cell, all fixed per cell so a
+// resize never reshuffles them. No captions. The same card never sits next to itself.
+// One animation clock moves the field; while it glides the large cards run ahead and the small ones lag (depth), and local perspective
+// eases around the cursor or finger. Rendering stops at rest and while the tab is hidden.
 const MOTION = {
   follow: 30,      // while dragging the field stays under the hand
   glide: 9,        // after wheel or release: the same rate as the page scroll (js/smooth-scroll.js, EASE = 9)
@@ -9,7 +10,14 @@ const MOTION = {
   maxSpeed: 2200, response: 16, touchRadius: 250, touchDepth: 34,
 };
 const STAGGER = [0, .42, .14, .6, .28, .74, .06];   // vertical offset of each column, as a fraction of a row
-const CAPTION = 34, CAPTION_SMALL = 52;              // caption under each card: one line, or two on a phone (css/room-pokemon.css)
+const SIZES = [.72, 1, 1.3];                         // card scale: far, middle, near
+const DEPTH = .6;                                    // how far a card runs ahead (large) or lags (small) while the field glides
+// Fixed pseudo-random number for a cell: the same row and column always give the same card size, tilt and offset.
+const noise = (row, column, salt) => {
+  let h = Math.imul(row + 1, 374761393) + Math.imul(column + 1, 668265263) + Math.imul(salt, 2147483647);
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+};
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const wrap = (value, length) => ((value % length) + length) % length;
 const approach = (value, target, rate, dt) => {
@@ -50,7 +58,7 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
   const target = { x: 0, y: 0 };
   const velocity = { x: 0, y: 0 };
   const contact = { x: 0, y: 0, active: false, touch: false, amount: 0 };
-  let columns = 0, rows = 0, stepX = 0, stepY = 0, cardWidth = 0, cardHeight = 0, caption = CAPTION;
+  let columns = 0, rows = 0, stepX = 0, stepY = 0, cardWidth = 0, cardHeight = 0;
   let width = 0, height = 0, raf = 0, lastTime = 0, drag = null, focused = null, first = entrance;
   let destroyed = false;
 
@@ -60,15 +68,15 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
 
   function place() {
     for (const tile of tiles) {
-      const x = wrap(tile.column * stepX + position.x + stepX, columns * stepX) - stepX;
-      const y = wrap((tile.row + STAGGER[tile.column % STAGGER.length]) * stepY + position.y + stepY, rows * stepY) - stepY;
+      const x = wrap(tile.column * stepX + position.x + stepX, columns * stepX) - stepX + tile.jx;
+      const y = wrap((tile.row + STAGGER[tile.column % STAGGER.length]) * stepY + position.y + stepY, rows * stepY) - stepY + tile.jy;
       if (x === tile.x && y === tile.y) continue;
       tile.x = x; tile.y = y;
-      tile.item.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
+      tile.item.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)${tile.tail}`;
     }
   }
 
-  // Depth stays local to each scan: stagger, spacing and captions never move out of their 2D layout.
+  // Depth stays local to each scan: stagger, spacing and the scatter never move out of their 2D layout.
   function poseCards(dt) {
     const calm = reduced.matches;
     contact.amount = calm ? 0 : approach(contact.amount, contact.active ? 1 : 0, 12, dt);
@@ -76,20 +84,24 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
     const nearby = contact.touch || Boolean(drag);
     const travelX = target.x - position.x, travelY = target.y - position.y;
     for (const tile of tiles) {
-      const nx = (contact.x - tile.x) / cardWidth * 2 - 1;
-      const ny = (contact.y - tile.y) / cardHeight * 2 - 1;
+      const nx = (contact.x - tile.x - cardWidth / 2) / (cardWidth * tile.scale / 2);    // -1…1 across the card as drawn (scaled)
+      const ny = (contact.y - tile.y - cardHeight / 2) / (cardHeight * tile.scale / 2);
       let rx = 0, ry = 0, z = 0, x = 0, y = 0;
+      if (!calm) {   // depth: near cards run ahead of the glide, far ones lag, and all settle together
+        x = clamp(travelX * (tile.scale - 1) * DEPTH, -60, 60);
+        y = clamp(travelY * (tile.scale - 1) * DEPTH, -60, 60);
+      }
       if (!calm && nearby) {
         const distance = Math.hypot(contact.x - tile.x - cardWidth / 2, contact.y - tile.y - cardHeight / 2);
         const influence = Math.exp(-Math.pow(distance / MOTION.touchRadius, 2)) * contact.amount;
         rx = (clamp(-ny, -1, 1) * 13 + clamp(travelY * .12, -6, 6)) * influence;
         ry = (clamp(nx, -1, 1) * 18 + clamp(-travelX * .12, -6, 6)) * influence;
         z = MOTION.touchDepth * influence;
-        x = clamp(-nx, -1, 1) * 5 * influence;
-        y = clamp(-ny, -1, 1) * 7 * influence;
+        x += clamp(-nx, -1, 1) * 5 * influence;
+        y += clamp(-ny, -1, 1) * 7 * influence;
       } else if (!calm && contact.active && Math.abs(nx) <= 1 && Math.abs(ny) <= 1) {
-        rx = -ny * 10; ry = nx * 14; z = 22; y = -5;
-      } else if (!calm && focused === tile) { rx = -3; ry = 6; z = 18; y = -5; }
+        rx = -ny * 10; ry = nx * 14; z = 22; y -= 5;
+      } else if (!calm && focused === tile) { rx = -3; ry = 6; z = 18; y -= 5; }
       const pose = tile.pose;
       for (const [key, value] of Object.entries({ x, y, z, rx, ry })) {
         pose[key] = calm ? 0 : approach(pose[key], value, MOTION.response, dt);
@@ -143,11 +155,10 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
     const focusedId = document.activeElement?.closest?.('.pokemon-card')?.dataset.card;
     width = nextWidth; height = nextHeight; focused = null;
     const small = width < 700;
-    cardWidth = small ? clamp(width * .38, 118, 190) : clamp(width * .15, 150, 236);
+    cardWidth = small ? clamp(width * .3, 100, 140) : clamp(width * .105, 128, 200);
     cardHeight = cardWidth * 88 / 63;
-    const gap = small ? 18 : clamp(width * .032, 28, 56);
-    caption = small ? CAPTION_SMALL : CAPTION;
-    stepX = cardWidth + gap; stepY = cardHeight + caption + gap * 1.3;
+    // A cell is much larger than its card: the biggest card (×1.3) still leaves a wide gap, and the offsets below stay inside it.
+    stepX = cardWidth * (small ? 1.75 : 1.9); stepY = cardHeight * 1.7;
     columns = Math.max(4, Math.ceil(width / stepX) + 2);
     rows = Math.max(3, Math.ceil(height / stepY) + 3);   // one more row than needed: the staggered columns start lower
     list.style.setProperty('--card-width', `${cardWidth}px`);
@@ -164,11 +175,18 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
         element.tabIndex = duplicate ? -1 : 0;
         if (duplicate) item.setAttribute('aria-hidden', 'true');
         accessible.add(card.id); item.append(element); list.append(item);
-        const tile = { item, element, turn: element.querySelector('.pokemon-turn'), column, row, x: NaN, y: NaN, pose: { x: 0, y: 0, z: 0, rx: 0, ry: 0 } };
+        const pick = noise(row, column, 1);
+        const scale = pick < .3 ? SIZES[0] : pick < .68 ? SIZES[1] : SIZES[2];
+        const tilt = (noise(row, column, 2) - .5) * 12;   // ±6°
+        const tile = {
+          item, element, turn: element.querySelector('.pokemon-turn'), column, row, x: NaN, y: NaN, scale,
+          jx: (noise(row, column, 3) - .5) * .4 * cardWidth, jy: (noise(row, column, 4) - .5) * .24 * cardHeight,
+          tail: ` rotate(${tilt.toFixed(2)}deg) scale(${scale})`, pose: { x: 0, y: 0, z: 0, rx: 0, ry: 0 },
+        };
         tiles.push(tile);
         element.addEventListener('focus', () => {
           focused = tile;
-          if (tile.x < 0 || tile.y < 0 || tile.x + cardWidth > width || tile.y + cardHeight + caption > height) {
+          if (tile.x < 0 || tile.y < 0 || tile.x + cardWidth > width || tile.y + cardHeight > height) {
             move(cx - cardWidth / 2 - tile.x, cy - cardHeight / 2 - tile.y);
           }
           wake();
