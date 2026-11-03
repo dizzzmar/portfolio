@@ -11,7 +11,7 @@ const MOTION = {
 };
 // Lattice, in card widths (measured on the reference at 1440 px: card ≈ 165 wide, steps of (252, -58) along a row and (73, 325) between rows).
 const ROW_STEP = { x: 1.53, y: -.35 };      // from one card to the next in a row: right and slightly up
-const COLUMN_STEP = { x: .44, y: 1.98 };    // from a row to the next: down and a little to the right (≈ 1.4 card heights)
+const COLUMN_STEP = { x: .44, y: 1.41 };    // from a row to the next: down and a little to the right (y in card heights)
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const wrap = (value, length) => ((value % length) + length) % length;
 const approach = (value, target, rate, dt) => {
@@ -46,7 +46,9 @@ function arrange(cards, columns, rows) {
   return grid;
 }
 
-export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced, entrance = true }) {
+// Lo usan el álbum de Pokémon (cartas 63 × 88, clases «pokemon-…») y el archivo digital (pegatinas cuadradas, clases «archive-…»):
+// `prefix` da los nombres de las clases (<prefix>-item, <prefix>-card, <prefix>-turn), `aspect` es alto / ancho de cada pieza y `size` la escala de su tamaño.
+export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced, entrance = true, prefix = 'pokemon', aspect = 88 / 63, size = 1 }) {
   const tiles = [];
   const position = { x: 0, y: 0 };
   const target = { x: 0, y: 0 };
@@ -146,12 +148,13 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
     if (!surface.clientWidth || destroyed) return;
     const nextWidth = surface.clientWidth, nextHeight = surface.clientHeight;
     if (width === nextWidth && height === nextHeight) return;
-    const focusedId = document.activeElement?.closest?.('.pokemon-card')?.dataset.card;
+    const focusedId = document.activeElement?.closest?.(`.${prefix}-card`)?.dataset.card;
     width = nextWidth; height = nextHeight; focused = null;
     const small = width < 700;
     cardWidth = small ? clamp(width * .34, 100, 150) : clamp(width * .115, 120, 190);
-    cardHeight = cardWidth * 88 / 63;
-    A = { x: ROW_STEP.x * cardWidth, y: ROW_STEP.y * cardWidth }; B = { x: COLUMN_STEP.x * cardWidth, y: COLUMN_STEP.y * cardWidth };
+    cardWidth *= size;
+    cardHeight = cardWidth * aspect;
+    A = { x: ROW_STEP.x * cardWidth, y: ROW_STEP.y * cardWidth }; B = { x: COLUMN_STEP.x * cardWidth, y: COLUMN_STEP.y * cardHeight };
     det = A.x * B.y - B.x * A.y; stepX = A.x; stepY = B.y;
     // How many cells the pool needs: the screen's four corners, in cell coordinates, plus a whole cell of margin on every side
     // (the cards that wrap round are always a full cell outside the screen, so they never pop in view).
@@ -170,13 +173,13 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
     for (let row = 0; row < rows; row++) {
       for (let column = 0; column < columns; column++) {
         const card = order[row][column];
-        const item = document.createElement('li'); item.className = 'pokemon-item';
+        const item = document.createElement('li'); item.className = `${prefix}-item`;
         const element = makeCard(card);
         const duplicate = accessible.has(card.id);
         element.tabIndex = duplicate ? -1 : 0;
         if (duplicate) item.setAttribute('aria-hidden', 'true');
         accessible.add(card.id); item.append(element); list.append(item);
-        const tile = { item, element, turn: element.querySelector('.pokemon-turn'), column, row, x: NaN, y: NaN, pose: { x: 0, y: 0, z: 0, rx: 0, ry: 0 } };
+        const tile = { item, element, turn: element.querySelector(`.${prefix}-turn`), column, row, x: NaN, y: NaN, pose: { x: 0, y: 0, z: 0, rx: 0, ry: 0 } };
         tiles.push(tile);
         element.addEventListener('focus', () => {
           focused = tile;

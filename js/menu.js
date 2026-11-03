@@ -30,6 +30,11 @@
     if (orig.getAttribute('aria-current') === 'page' || (orig.fake && current === '/playground/')) a.setAttribute('aria-current', 'page');
     return el('li', { className: 'menu-item' }, [a]);
   });
+  // Digital Archive: un enlace más pequeño bajo los cinco grandes (en el móvil, al final de la lista). Mismo panel, misma animación (--i = 5)
+  const archive = el('a', { href: '/archive/' }, [el('span', { textContent: 'Digital Archive' })]);
+  archive.style.setProperty('--i', big.length);
+  if (current.startsWith('/archive/')) archive.setAttribute('aria-current', 'page');
+  items.push(el('li', { className: 'menu-item menu-item--archive' }, [archive]));
   const smallLinks = small.map((s) => {
     const a = el('a', { href: s.href, textContent: s.label });
     if (s.href === current) a.setAttribute('aria-current', 'page');
