@@ -1,0 +1,59 @@
+/* DIGITAL ARCHIVE (/archive/ y /archive/fruit-stickers/) · negro liso con texto crema, como el álbum de Pokémon de The room.
+   Referencia: nicolo-lombardi.com/archive/la-barra. El índice lista las colecciones; cada colección es un muro infinito de piezas
+   (js/archive-wall.js, que usa el mismo motor que el álbum: js/room/infinite-card-grid.js). Sin textos de ayuda: las piezas no llevan pie.
+   Orden: base · barra · índice · muro · estados · movimiento. */
+:root { --bg: #0c0c0b; --ink: var(--cream); --hair: rgba(244, 239, 230, .18); --gutter: clamp(16px, 1.2vw, 24px); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--bg); }
+body { min-height: 100vh; min-height: 100svh; color: var(--ink); background: var(--bg); font-family: var(--font-ui); font-size: var(--fs-read); font-weight: var(--fw-regular); line-height: var(--lh-body); overflow-x: clip; }
+a { color: inherit; text-underline-offset: 4px; }
+img { display: block; max-width: 100%; height: auto; }
+::selection { background: var(--ink); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+.archive-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- Barra: la misma que en el resto de la web (logo, migas y enlaces), sin fondo ---------- */
+.nav { position: fixed; inset: 0 0 auto; z-index: 9; height: var(--nav-h); display: flex; align-items: center; padding: 0 var(--bar-gutter); }
+.nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s var(--ease-out); }
+.nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
+.crumbs { color: var(--ink); }
+.crumbs li { display: flex; align-items: center; }   /* una miga que es enlace mide toda la barra: sin esto la barra «/» y el enlace se apilan */
+/* En el muro las piezas pasan por debajo de la barra: un degradado del negro la deja legible sin tocar los colores del logo */
+.archive-wall::before { content: ""; position: fixed; inset: 0 0 auto; z-index: 8; height: calc(var(--nav-h) + 28px); background: linear-gradient(var(--bg) 35%, transparent); pointer-events: none; }
+
+/* ---------- Índice: el título y, debajo, una fila por colección ---------- */
+.archive-index { padding: calc(var(--nav-h) + clamp(32px, 6vw, 96px)) var(--gutter) clamp(48px, 8vw, 120px); }
+.archive-heading { max-width: 11ch; font-family: var(--font-display); font-size: var(--fs-h1); font-weight: var(--fw-title); letter-spacing: -.055em; line-height: .95; }
+.archive-list { margin-top: clamp(48px, 9vw, 140px); list-style: none; border-bottom: 1px solid var(--hair); }
+.archive-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: clamp(20px, 2.4vw, 36px) 0; color: inherit; text-decoration: none; border-top: 1px solid var(--hair); }
+.archive-name { font-family: var(--font-display); font-size: clamp(32px, 4.4vw, 72px); font-weight: var(--fw-title); letter-spacing: -.04em; line-height: 1; }
+.archive-name sup { margin-left: .12em; font-family: var(--font-ui); font-size: .3em; font-weight: var(--fw-regular); letter-spacing: 0; vertical-align: top; position: relative; top: .1em; }
+.archive-strip { display: flex; flex: none; }
+.archive-strip img { width: clamp(44px, 6vw, 96px); height: auto; margin-left: clamp(-14px, -1vw, -8px); transition: translate .5s var(--ease-out) calc(var(--i, 0) * 30ms); }
+.archive-strip img:first-child { margin-left: 0; }
+@media (hover: hover) and (pointer: fine) { .archive-row:hover .archive-strip img { translate: 0 -10px; } }
+@media (max-width: 700px) { .archive-strip img:nth-child(n+4) { display: none; } }
+
+/* ---------- Muro: ocupa toda la pantalla; las piezas pasan por debajo de la barra ---------- */
+.archive-wall { height: 100vh; height: 100svh; overflow: hidden; overscroll-behavior: none; }
+.archive-surface { position: fixed; inset: 0; overflow: hidden; touch-action: none; cursor: grab; }
+.archive-surface.is-dragging { cursor: grabbing; }
+.archive-cards { position: absolute; inset: 0; list-style: none; }
+.archive-item { position: absolute; left: 0; top: 0; width: var(--card-width); will-change: transform; }
+.archive-card { display: block; margin: 0; perspective: 800px; outline: none; -webkit-tap-highlight-color: transparent; }
+.archive-turn { display: block; aspect-ratio: 1; }
+.archive-turn img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+.archive-card:focus-visible .archive-turn { outline: 2px solid var(--ink); outline-offset: 6px; border-radius: 50%; }
+
+/* ---------- Estados ---------- */
+.archive-status { position: absolute; z-index: 2; left: var(--bar-gutter); top: calc(var(--nav-h) + 40px); font-size: var(--fs-read); }
+.archive-retry { position: absolute; z-index: 2; top: calc(var(--nav-h) + 88px); left: var(--bar-gutter); min-height: 44px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.archive-status[hidden], .archive-retry[hidden] { display: none; }
+
+/* ---------- Movimiento: al abrir, las piezas suben a su sitio del centro hacia fuera ---------- */
+.archive-card { opacity: 0; translate: 0 28px; transition: opacity .6s var(--ease-out), translate .8s var(--ease-out); }
+.archive-card.is-in { opacity: 1; translate: 0 0; }
+@media (prefers-reduced-motion: reduce) {
+  .archive-card { translate: none; transition: opacity .3s ease; }
+  .archive-strip img { transition: none; }
+}
