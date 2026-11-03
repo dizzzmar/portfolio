@@ -20,16 +20,12 @@ img { display: block; max-width: 100%; height: auto; }
 /* ---------- Índice: el título y, debajo, una fila por colección ---------- */
 .archive-index { padding: calc(var(--nav-h) + clamp(32px, 6vw, 96px)) var(--gutter) clamp(48px, 8vw, 120px); }
 .archive-heading { max-width: 11ch; font-family: var(--font-display); font-size: var(--fs-h1); font-weight: var(--fw-title); letter-spacing: -.055em; line-height: .95; }
+.archive-sub { max-width: 52ch; text-wrap: balance; margin-top: clamp(16px, 2vw, 28px); font-size: var(--fs-l); line-height: 1.35; }
+.archive-sub a { color: inherit; text-underline-offset: 4px; }
 .archive-list { margin-top: clamp(48px, 9vw, 140px); list-style: none; border-bottom: 1px solid var(--hair); }
 .archive-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: clamp(20px, 2.4vw, 36px) 0; color: inherit; text-decoration: none; border-top: 1px solid var(--hair); }
 .archive-name { font-family: var(--font-display); font-size: clamp(32px, 4.4vw, 72px); font-weight: var(--fw-title); letter-spacing: -.04em; line-height: 1; }
 .archive-name sup { margin-left: .12em; font-family: var(--font-ui); font-size: .3em; font-weight: var(--fw-regular); letter-spacing: 0; vertical-align: top; position: relative; top: .1em; }
-.archive-strip { display: flex; flex: none; }
-.archive-strip img { width: clamp(52px, 7vw, 112px); height: auto; margin-left: clamp(8px, 1vw, 16px); transition: translate .5s var(--ease-out) calc(var(--i, 0) * 30ms); }
-.archive-strip { align-items: center; }
-.archive-strip img:first-child { margin-left: 0; }
-@media (hover: hover) and (pointer: fine) { .archive-row:hover .archive-strip img { translate: 0 -10px; } }
-@media (max-width: 700px) { .archive-strip img:nth-child(n+4) { display: none; } }
 
 /* ---------- Muro: ocupa toda la pantalla; las piezas pasan por debajo de la barra ---------- */
 .archive-wall { height: 100vh; height: 100svh; overflow: hidden; overscroll-behavior: none; }
@@ -52,7 +48,6 @@ img { display: block; max-width: 100%; height: auto; }
 .archive-card.is-in { opacity: 1; translate: 0 0; }
 @media (prefers-reduced-motion: reduce) {
   .archive-card { translate: none; transition: opacity .3s ease; }
-  .archive-strip img { transition: none; }
 }
 
 /* ---------- Visor de una pieza (referencia: la pieza abierta en nicolo-lombardi.com/archive/la-barra) ----------
