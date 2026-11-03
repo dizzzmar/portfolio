@@ -1,4 +1,4 @@
-import { createInfiniteCardGrid } from './infinite-card-grid.js?v=20261103scatter1';
+import { createInfiniteCardGrid } from './infinite-card-grid.js?v=20261103scatter2';
 
 // A finite DOM pool keeps the Room's WebGL renderer asleep. Cards are just the scan (its name is the image's alt text); clicking one opens nothing.
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)'; // var(--ease-out), the site's curve for arrivals and exits

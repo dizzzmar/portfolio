@@ -1,6 +1,6 @@
-/* POKÉMON ALBUM (Room) · an infinite scatter of cards on black (js/room/infinite-card-grid.js).
-   Wide gaps, three sizes and a slight tilt per card, no captions. The field moves in 2D; depth drift and local card
-   perspective respond to the glide, the cursor and the finger. Clicking a card opens nothing. Order: dialog · bar · collage · card · states · motion. */
+/* POKÉMON ALBUM (Room) · an infinite wall of cards on black (js/room/infinite-card-grid.js).
+   Same layout as nicolo-lombardi.com/archive/la-barra: a skewed lattice (rows climb to the right, each row shifted sideways),
+   upright cards with wide gaps and no captions. The field moves in 2D; local card perspective responds to the cursor and the finger. Clicking a card opens nothing. Order: dialog · bar · collage · card · states · motion. */
 .pokemon-album {
   box-sizing: border-box; position: fixed; inset: 0; width: 100%; height: 100%;
   max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
@@ -26,7 +26,7 @@
 .pokemon-cards { position: absolute; inset: 0; list-style: none; margin: 0; padding: 0; }
 .pokemon-item { position: absolute; left: 0; top: 0; width: var(--card-width); will-change: transform; }
 
-/* ---------- Card: the scan alone (its name is the alt text); size and tilt are set per cell in JS ---------- */
+/* ---------- Card: the scan alone (its name is the alt text); its place on the lattice is set in JS ---------- */
 .pokemon-card { display: block; margin: 0; perspective: 800px; outline: none; -webkit-tap-highlight-color: transparent; }
 .pokemon-turn { display: block; aspect-ratio: 63 / 88; border-radius: 4.6% / 3.3%; overflow: hidden; background: #1c1c1a; }
 .pokemon-turn img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
