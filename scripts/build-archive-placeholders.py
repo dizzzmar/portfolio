@@ -66,6 +66,6 @@ items = []
 for i, (name, bg, g) in enumerate(SET, 1):
     f = f'sticker-{i:02d}.webp'
     sticker(bg + (255,), g).save(os.path.join(OUT, f), 'WEBP', quality=88, method=6)
-    items.append({'id': f'sticker-{i:02d}', 'name': f'{name} sticker', 'src': f})
+    items.append({'id': f'sticker-{i:02d}', 'name': f'{name} sticker', 'src': f, 'facts': [['Category', 'Fruit sticker']]})
 json.dump({'collection': 'Fruit stickers', 'placeholder': True, 'items': items}, open(os.path.join(OUT, 'items.json'), 'w'), indent=2)
 print(len(items), 'stickers')
