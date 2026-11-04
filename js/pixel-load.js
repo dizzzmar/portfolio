@@ -16,6 +16,10 @@
     try { await (img.decode ? img.decode() : Promise.resolve()); } catch (e) { reveal(box); return; }   // si la imagen falla, se muestra tal cual
     const W = box.clientWidth, H = box.clientHeight;
     if (!W || !H || !img.naturalWidth) { reveal(box); return; }
+    // Los píxeles REALES de la imagen. Con srcset + sizes, naturalWidth viene corregido por la densidad elegida (p. ej. 321 en vez de 600) y el recorte salía ampliado:
+    // un ImageBitmap tiene siempre las medidas verdaderas.
+    let source = img, nw = img.naturalWidth, nh = img.naturalHeight;
+    try { if (window.createImageBitmap) { source = await createImageBitmap(img); nw = source.width; nh = source.height; } } catch (e) { /* se usa la imagen tal cual */ }
     const canvas = document.createElement('canvas');
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d');
@@ -24,16 +28,17 @@
     // El recorte «cover» con la misma posición que la imagen (object-position)
     const pos = getComputedStyle(img).objectPosition.split(' ').map((v) => parseFloat(v) / 100);
     const fx = Number.isFinite(pos[0]) ? pos[0] : 0.5, fy = Number.isFinite(pos[1]) ? pos[1] : 0.5;
-    const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
-    const sw = W / scale, sh = H / scale, sx = (img.naturalWidth - sw) * fx, sy = (img.naturalHeight - sh) * fy;
+    const scale = Math.max(W / nw, H / nh);
+    const sw = W / scale, sh = H / scale, sx = (nw - sw) * fx, sy = (nh - sh) * fy;
     const small = document.createElement('canvas'), sctx = small.getContext('2d');
     ctx.imageSmoothingEnabled = false;
     for (const step of STEPS) {
       small.width = step; small.height = Math.max(1, Math.round(step * H / W));
-      sctx.drawImage(img, sx, sy, sw, sh, 0, 0, small.width, small.height);
+      sctx.drawImage(source, sx, sy, sw, sh, 0, 0, small.width, small.height);
       ctx.drawImage(small, 0, 0, small.width, small.height, 0, 0, W, H);
       await new Promise((ok) => setTimeout(ok, GAP));
     }
+    if (source !== img) source.close?.();
     reveal(box);
   };
 
