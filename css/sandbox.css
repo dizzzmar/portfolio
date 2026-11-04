@@ -13,7 +13,8 @@ button { cursor: pointer; }
 body.pg-black { background: var(--sb-black); color: #fff; }
 body.pg-black .case-head { position: fixed; inset: 0 0 auto; height: var(--nav-h); padding: 0; display: block; } /* en móvil la cabecera de proyecto es una fila de la página; aquí es la barra fija de siempre y el lienzo empieza justo debajo */
 .pg-app { position: relative; height: calc(100dvh - var(--nav-h)); margin-top: var(--nav-h); }
-.pg-app .pgn-root { position: absolute; inset: 0; }
+.pg-app .pgn-root { position: absolute; inset: 0; background: transparent; }   /* el fondo lo pone el campo de puntos de la página (js/dot-bg.js) */
+.pg-app .pgn-viewport { background-image: none; }          /* y su rejilla de puntos fija sustituye a la del editor */
 
 /* ---------- Ficha de Plant Lab: el sandbox es un bloque negro de esquinas blandas a todo el ancho de la columna de imágenes ---------- */
 .st-sandbox { position: relative; height: min(80dvh, 800px); overflow: hidden; background: var(--sb-black); border-radius: calc(var(--sb-radius) + 8px); }
