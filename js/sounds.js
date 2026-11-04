@@ -1,5 +1,5 @@
 // SONIDOS · un «tic» muy suave al pasar el ratón por un enlace o botón y un «clic» al pulsarlo.
-// Apagado por defecto: quien visita lo enciende con «Sound off / Sound on» en el pie grande (se acuerda la elección en este navegador).
+// Encendido por defecto; quien visita lo apaga (o lo vuelve a encender) con «Sound on / Sound off» en el pie grande, y se acuerda la elección en este navegador.
 // Detalles: solo con ratón (no en táctil); los navegadores no dejan sonar hasta el primer clic en la página, así que el «tic» suena a partir de ahí;
 // volumen bajo, con un pequeño cambio de tono al azar para que no suene idéntico; los archivos son locales (assets/sounds/, Kenney, CC0).
 // Sin Web Audio o sin ratón no hace nada. EDITA aquí el volumen (VOLUME) y los sonidos (SOUNDS).
@@ -15,8 +15,8 @@
   const MIN_GAP = 55;                                                 // ms mínimos entre dos «tic»
   const ext = document.createElement('audio').canPlayType('audio/ogg; codecs="vorbis"') ? 'ogg' : 'm4a';
 
-  let on = false;
-  try { on = localStorage.getItem(KEY) === '1'; } catch (e) { /* storage blocked */ }
+  let on = true;                                                      // sin elección guardada, encendido
+  try { const saved = localStorage.getItem(KEY); if (saved !== null) on = saved === '1'; } catch (e) { /* storage blocked */ }
   let ctx = null, loading = null, lastTarget = null, lastTick = 0, turn = 0;
   const buffers = {};
 
@@ -25,12 +25,16 @@
     if (ctx.state === 'suspended') ctx.resume().catch(() => {});
     return ctx;
   };
+  const names = [...SOUNDS.tick, ...SOUNDS.click];
+  const raw = {};                                                     // los datos se bajan al reposo (son ~15 KB) y se decodifican en el primer gesto
+  const prefetch = () => names.forEach((n) => { raw[n] = raw[n] || fetch(`/assets/sounds/${n}.${ext}`).then((r) => r.arrayBuffer()).catch(() => null); });
   const load = () => {
     if (loading) return loading;
-    const names = [...SOUNDS.tick, ...SOUNDS.click];
-    loading = Promise.all(names.map((n) => fetch(`/assets/sounds/${n}.${ext}`).then((r) => r.arrayBuffer()).then((b) => new Promise((ok, no) => ctx.decodeAudioData(b, ok, no))).then((buf) => { buffers[n] = buf; }))).catch(() => { loading = null; });
+    prefetch();
+    loading = Promise.all(names.map((n) => raw[n].then((b) => b && new Promise((ok, no) => ctx.decodeAudioData(b.slice(0), ok, no))).then((buf) => { if (buf) buffers[n] = buf; }))).catch(() => { loading = null; });
     return loading;
   };
+  if (on) { if ('requestIdleCallback' in window) requestIdleCallback(prefetch, { timeout: 2500 }); else setTimeout(prefetch, 800); }
   const play = (kind) => {
     if (!on || !ctx || ctx.state !== 'running') return;
     const list = SOUNDS[kind], name = kind === 'tick' ? list[turn++ % list.length] : list[0], buf = buffers[name];
@@ -54,8 +58,9 @@
   // Pulsar: un «clic»; además, el primer gesto despierta el audio si el sonido ya estaba encendido
   addEventListener('pointerdown', (e) => {
     if (!on || e.pointerType !== 'mouse') return;
-    awake(); load();
-    if (e.target instanceof Element && e.target.closest(HOT)) play('click');
+    awake();
+    const hot = e.target instanceof Element && e.target.closest(HOT);
+    if (buffers[SOUNDS.click[0]]) { if (hot) play('click'); } else load().then(() => { if (hot) play('click'); });
   }, { passive: true, capture: true });
 
   // El interruptor: «Sound off / Sound on», dentro de la fila de enlaces del pie grande (solo en las páginas que lo llevan)
