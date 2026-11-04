@@ -9,7 +9,7 @@ index.html · room.html · 404.html      Home (el tomate gira con su nombre y ba
 about/ · faq/ · privacy/               About, FAQs y Privacidad (cada una, un index.html)
 playground/index.html                  Playground: el sandbox de nodos (Plant Lab y Brush Lab) a pantalla completa; el dibujo se hace en el navegador
 posters/index.html                     Collage de trabajos personales y ficticios; cada pieza abre un visor con todo su mini-proyecto (js/posters.js)
-js/dot-field.js · js/dot-bg.js   Fondo de puntos (motor de React Bits en JavaScript puro + montaje): Posters, Playground y muros del Digital Archive; se activa con data-dot-bg="white|ink" en <body> y los valores se editan arriba de dot-bg.js
+js/dot-field.js · js/dot-bg.js   Fondo de puntos (motor de React Bits en JavaScript puro + montaje): Posters y Playground; se activa con data-dot-bg="white|ink" en <body> y los valores se editan arriba de dot-bg.js
 js/pixel-trail.js · js/archive-trail.js   Estela de píxeles blancos del Digital Archive (motor de React Bits en JavaScript puro + montaje; los valores se editan arriba de archive-trail.js)
 archive/index.html · archive/<colección>/index.html   Digital Archive: el índice de colecciones y el muro de cada colección (ahora fruit-stickers y fave-album-covers); piezas en assets/archive/<colección>/items.json
 machine/index.html                     Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
