@@ -2,11 +2,86 @@
   "collection": "Fave album covers",
   "items": [
     {
-      "id": "cover-01",
-      "name": "Album cover 01",
-      "src": "cover-01.webp",
-      "width": 1000,
-      "height": 1000,
+      "id": "rubber-soul",
+      "name": "Rubber Soul",
+      "src": "rubber-soul.webp",
+      "width": 180,
+      "height": 180,
+      "facts": [
+        [
+          "Artist",
+          "The Beatles"
+        ],
+        [
+          "Album",
+          "Rubber Soul"
+        ],
+        [
+          "Year",
+          "1965"
+        ],
+        [
+          "Designer",
+          "—"
+        ]
+      ]
+    },
+    {
+      "id": "ram",
+      "name": "Ram",
+      "src": "ram.webp",
+      "width": 320,
+      "height": 320,
+      "facts": [
+        [
+          "Artist",
+          "Paul & Linda McCartney"
+        ],
+        [
+          "Album",
+          "Ram"
+        ],
+        [
+          "Year",
+          "1971"
+        ],
+        [
+          "Designer",
+          "—"
+        ]
+      ]
+    },
+    {
+      "id": "romance",
+      "name": "Romance",
+      "src": "romance.webp",
+      "width": 894,
+      "height": 894,
+      "facts": [
+        [
+          "Artist",
+          "Fontaines D.C."
+        ],
+        [
+          "Album",
+          "Romance"
+        ],
+        [
+          "Year",
+          "2024"
+        ],
+        [
+          "Designer",
+          "—"
+        ]
+      ]
+    },
+    {
+      "id": "dopamine",
+      "name": "Dopamine",
+      "src": "dopamine.webp",
+      "width": 225,
+      "height": 225,
       "facts": [
         [
           "Artist",
@@ -14,7 +89,7 @@
         ],
         [
           "Album",
-          "—"
+          "Dopamine"
         ],
         [
           "Year",
@@ -27,123 +102,23 @@
       ]
     },
     {
-      "id": "cover-02",
-      "name": "Album cover 02",
-      "src": "cover-02.webp",
-      "width": 1000,
-      "height": 1000,
+      "id": "mccartney",
+      "name": "McCartney",
+      "src": "mccartney.webp",
+      "width": 300,
+      "height": 300,
       "facts": [
         [
           "Artist",
-          "—"
+          "Paul McCartney"
         ],
         [
           "Album",
-          "—"
+          "McCartney"
         ],
         [
           "Year",
-          "—"
-        ],
-        [
-          "Designer",
-          "—"
-        ]
-      ]
-    },
-    {
-      "id": "cover-03",
-      "name": "Album cover 03",
-      "src": "cover-03.webp",
-      "width": 1000,
-      "height": 1000,
-      "facts": [
-        [
-          "Artist",
-          "—"
-        ],
-        [
-          "Album",
-          "—"
-        ],
-        [
-          "Year",
-          "—"
-        ],
-        [
-          "Designer",
-          "—"
-        ]
-      ]
-    },
-    {
-      "id": "cover-04",
-      "name": "Album cover 04",
-      "src": "cover-04.webp",
-      "width": 1000,
-      "height": 1000,
-      "facts": [
-        [
-          "Artist",
-          "—"
-        ],
-        [
-          "Album",
-          "—"
-        ],
-        [
-          "Year",
-          "—"
-        ],
-        [
-          "Designer",
-          "—"
-        ]
-      ]
-    },
-    {
-      "id": "cover-05",
-      "name": "Album cover 05",
-      "src": "cover-05.webp",
-      "width": 1000,
-      "height": 1000,
-      "facts": [
-        [
-          "Artist",
-          "—"
-        ],
-        [
-          "Album",
-          "—"
-        ],
-        [
-          "Year",
-          "—"
-        ],
-        [
-          "Designer",
-          "—"
-        ]
-      ]
-    },
-    {
-      "id": "cover-06",
-      "name": "Album cover 06",
-      "src": "cover-06.webp",
-      "width": 1000,
-      "height": 1000,
-      "facts": [
-        [
-          "Artist",
-          "—"
-        ],
-        [
-          "Album",
-          "—"
-        ],
-        [
-          "Year",
-          "—"
+          "1970"
         ],
         [
           "Designer",
