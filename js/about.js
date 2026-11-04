@@ -71,7 +71,7 @@
   if (!btn) return;
   const back = card.querySelector('.scene-back'), canvas = card.querySelector('.scene-canvas');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const URL_SCENE = '/js/about-scene.js?v=20261127flip2';
+  const URL_SCENE = '/js/about-scene.js?v=20261104life1';
   let scene = null, loading = null, flipped = false, inView = true;
   const ensure = () => loading || (loading = import(URL_SCENE).then((m) => (scene = m.startScene(canvas, { still: reduced }))).catch(() => null));
   card.addEventListener('pointerenter', () => { import(URL_SCENE).catch(() => {}); }, { once: true });   // se adelanta la descarga
