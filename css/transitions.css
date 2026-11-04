@@ -32,6 +32,11 @@
 
 /* Hacia About: la página nueva (foto y texto) se desliza desde la derecha sobre la anterior, que se desenfoca y se apaga, como la ficha «Information» de
    jacoblindblad.dk. Al salir de About, al revés: About se va hacia la derecha y la página de debajo recupera el foco. */
+:root:active-view-transition-type(dive) {   /* desde la zambullida del Digital Archive: las dos pantallas ya son negras */
+  &::view-transition-group(root) { background: none; }
+  &::view-transition-old(root) { animation: none; }
+  &::view-transition-new(root) { animation: 250ms linear both vt-fade; }
+}
 :root:active-view-transition-type(to-about) {
   &::view-transition-group(root) { background: none; }
   &::view-transition-old(root) { animation: 700ms cubic-bezier(.32, .72, 0, 1) both vt-blur-back; }
