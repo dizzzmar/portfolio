@@ -18,9 +18,9 @@ const motion = matchMedia('(prefers-reduced-motion: reduce)');
 
   // ---------- Mancha: máscara dibujada con WebGL (referencia: la portada de podium.global) ----------
   // Una capa del color de la página cubre el recuadro y deja ver lo de debajo (el muro) solo dentro de una forma líquida: ~14 círculos de distintos
-  // tamaños que se funden entre sí (cadena diagonal, un gancho y gotas sueltas) y flotan despacio. El borde no es una línea: es un degradado largo,
-  // como en la referencia. Al pasar el cursor por encima deja una estela que ensucia el borde con grano y lo arrastra un momento, y al elegir otra
-  // fila la mancha se hincha y su borde se suaviza todavía más antes de asentarse. Si el navegador no tiene WebGL no hay mancha: queda la lista.
+  // tamaños que se funden entre sí (cadena diagonal, un gancho y gotas sueltas) y flotan despacio. El borde no es una línea ni un degradado: es ruido
+  // (puntos que están o no están al azar). Al pasar el cursor por encima deja una estela que lo arrastra y lo hace más ancho y granulado un momento, y al elegir otra
+  // fila la mancha se hincha y su borde se deshace un poco más antes de asentarse. Si el navegador no tiene WebGL no hay mancha: queda la lista.
   const canvas = document.createElement('canvas'); canvas.className = 'archive-blob-mask';
   const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: 'low-power' });
   if (!gl) return;
@@ -35,7 +35,7 @@ const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const circles = new Float32Array(COUNT * 3), trail = new Float32Array(TRAIL * 4);
   const vertex = 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0., 1.); }';
   const fragment = `precision highp float;
-uniform vec2 uRes; uniform float uPulse; uniform vec3 uBg; uniform vec3 uC[${COUNT}]; uniform vec4 uT[${TRAIL}];
+uniform vec2 uRes; uniform float uPulse; uniform float uTime; uniform vec3 uBg; uniform vec3 uC[${COUNT}]; uniform vec4 uT[${TRAIL}];
 float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float noise(vec2 x){ vec2 i = floor(x), f = fract(x), u = f * f * (3. - 2. * f);
   return mix(mix(hash(i), hash(i + vec2(1., 0.)), u.x), mix(hash(i + vec2(0., 1.)), hash(i + vec2(1., 1.)), u.x), u.y); }
@@ -43,13 +43,16 @@ float smin(float a, float b, float k){ float h = max(k - abs(a - b), 0.) / k; re
 void main(){
   vec2 uv = gl_FragCoord.xy / uRes; uv.y = 1. - uv.y;
   vec2 p = (uv - .5) * vec2(uRes.x / uRes.y, 1.);
-  vec2 push = vec2(0.);                                   // la estela del cursor arrastra el borde, con grano
-  for (int i = 0; i < ${TRAIL}; i++) { vec2 q = p - uT[i].xy; push += uT[i].zw * exp(-dot(q, q) / .011); }
+  vec2 push = vec2(0.); float heat = 0.;                                   // la estela del cursor arrastra el borde, con grano
+  for (int i = 0; i < ${TRAIL}; i++) { vec2 q = p - uT[i].xy; float w = exp(-dot(q, q) / .011); push += uT[i].zw * w; heat += length(uT[i].zw) * w * 14.; }
   p -= push * (.25 + 1.3 * noise(gl_FragCoord.xy * .55));
   float s = 1e5;
   for (int i = 0; i < ${COUNT}; i++) s = smin(s, length(p - uC[i].xy) - uC[i].z * (1. + .1 * uPulse), ${KNEAD.toFixed(3)});
-  float band = .03 + .06 * uPulse;                       // ancho del degradado del borde
-  float a = smoothstep(-.035, band, s);
+  // El borde es ruido, no degradado: cada punto del borde está o no está, al azar, y la franja de puntos se ensancha donde pasa el cursor (heat)
+  float band = .03 + .05 * uPulse + .09 * min(heat, 1.);
+  float cover = 1. - smoothstep(-.02, band, s);           // 1 dentro, 0 fuera, intermedio en el borde
+  float grain = hash(gl_FragCoord.xy + floor(uTime * 14.) * 17.31);
+  float a = cover >= 1. ? 0. : (cover <= 0. ? 1. : 1. - step(grain, cover));   // dentro y fuera, sin puntos sueltos
   gl_FragColor = vec4(uBg * a, a);
 }`;
   const compile = (type, src) => { const sh = gl.createShader(type); gl.shaderSource(sh, src); gl.compileShader(sh); return gl.getShaderParameter(sh, gl.COMPILE_STATUS) ? sh : null; };
@@ -62,12 +65,12 @@ void main(){
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(program, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   const u = (name) => gl.getUniformLocation(program, name);
-  const U = { res: u('uRes'), pulse: u('uPulse'), bg: u('uBg'), c: u('uC'), t: u('uT') };
+  const U = { time: u('uTime'), res: u('uRes'), pulse: u('uPulse'), bg: u('uBg'), c: u('uC'), t: u('uT') };
   const bg = (getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g) || [12, 12, 11]).slice(0, 3).map((n) => n / 255);
   gl.uniform3f(U.bg, bg[0], bg[1], bg[2]);
   blob.append(canvas); blob.classList.add('is-ready');
 
-  const SCALE = .6;                                       // la máscara es suave: se dibuja a menos resolución y el navegador la estira
+  const SCALE = .8;                                       // el grano se dibuja a algo menos que la resolución real
   let pulse = 0, aspect = 1, raf = 0, clock = 0, visible = true;
   const points = [];                                      // estela: { x, y, vx, vy, born }
   const place = (t) => CIRCLES.forEach(([x, y, r, ax, ay, sp, ph], i) => {
@@ -89,7 +92,7 @@ void main(){
       trail[i * 4] = pt ? pt.x : 9; trail[i * 4 + 1] = pt ? pt.y : 9; trail[i * 4 + 2] = pt ? pt.vx * life * life : 0; trail[i * 4 + 3] = pt ? pt.vy * life * life : 0;
     }
     while (points.length && now - points[0].born > 600) points.shift();
-    gl.uniform3fv(U.c, circles); gl.uniform4fv(U.t, trail); gl.uniform1f(U.pulse, pulse);
+    gl.uniform3fv(U.c, circles); gl.uniform4fv(U.t, trail); gl.uniform1f(U.pulse, pulse); gl.uniform1f(U.time, motion.matches ? 0 : now * .001);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     if (!motion.matches && !document.hidden && visible) raf = requestAnimationFrame(frame); else clock = 0;
   }
