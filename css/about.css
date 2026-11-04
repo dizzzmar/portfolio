@@ -91,46 +91,58 @@ body .nav-links a, body .site-foot.on-green, body .site-foot.on-green a { color:
   opacity: var(--o, 0);
 }
 
-/* About follows the project pages: running title, sticky reading column and media. */
-:root { --margin: clamp(16px, 1.2vw, 24px); }
+/* ABOUT · cuadrícula de 12 columnas como locomotive.ca/en/agency: la frase grande con el retrato y, debajo, filas con regla (etiqueta a la izquierda, contenido a la derecha).
+   Las imágenes cargan en mosaico y se afinan (js/pixel-load.js). Con «reducir movimiento» (o sin JavaScript) no hay clase «fx» en <html> y todo se ve de golpe. */
+:root { --margin: clamp(16px, 1.2vw, 24px); --rule: color-mix(in srgb, var(--ink) 45%, transparent); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.about { padding-bottom: clamp(64px, 9vw, 140px); }
-.about-marquee { overflow: hidden; padding: calc(var(--nav-h) + clamp(8px, 2vw, 24px)) 0 clamp(12px, 2vw, 28px); }
-.about-run { display: inline-flex; white-space: nowrap; font-family: var(--font-display); font-size: clamp(72px, 13vw, 220px); font-weight: var(--fw-title); letter-spacing: -.04em; line-height: 1; animation: about-run 40s linear infinite; }
-.about-run > span { padding-right: .25em; }
-@keyframes about-run { to { transform: translateX(-50%); } }
-.about-layout { display: grid; grid-template-columns: minmax(260px, 28%) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); padding: 24px var(--margin) 0; }
-.about-bio { position: sticky; top: calc(var(--nav-h) + 24px); align-self: start; }
-.statement { max-width: 48ch; font-size: var(--fs-read); font-weight: var(--fw-regular); line-height: var(--lh-body); letter-spacing: -.01em; }
-.contact-row { display: flex; flex-direction: column; align-items: start; gap: 12px; margin-top: 32px; }
-.contact-row a { overflow-wrap: anywhere; text-underline-offset: 4px; }
-.faq-link { margin-top: 32px; font-size: var(--fs-s); }
-.about-content { min-width: 0; }
-.about-photo { width: min(100%, 620px); margin: 0 auto; }
-.portrait { width: 100%; aspect-ratio: 4 / 5; }
-.facts:not(.contact-row) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 32px; margin-top: clamp(48px, 6vw, 88px); }
-.fact h2, .clients h2 { font-family: var(--font-display); font-weight: var(--fw-title); font-size: var(--fs-l); line-height: 1.2; letter-spacing: -.015em; margin-bottom: 16px; }
-.fact p, .fact li { max-width: 48ch; }
-.fact li + li { margin-top: 4px; }
-.now-playing { grid-column: 1 / -1; text-decoration: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
-.now-playing h2 { grid-column: 1 / -1; }
-.np-row { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 16px; align-items: center; }
-.np-row img { width: 84px; height: 84px; object-fit: cover; }
-.np-row .np-film { height: 120px; }
+.about { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); padding: calc(var(--nav-h) + clamp(24px, 5vw, 72px)) var(--margin) clamp(64px, 9vw, 140px); }
+/* Portada de la página: retrato (columnas 1-4) y la presentación en grande (columnas 5-12) */
+.a-hero { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: start; row-gap: 32px; margin-bottom: clamp(72px, 9vw, 150px); }
+.portrait { grid-column: 1 / span 4; width: 100%; aspect-ratio: 4 / 5; }
+.statement { grid-column: 5 / -1; font-family: var(--font-display); font-size: clamp(24px, 2.55vw, 40px); font-weight: var(--fw-title); line-height: 1.14; letter-spacing: -.022em; text-wrap: pretty; }
+/* Filas: regla arriba, etiqueta en las columnas 1-3 y contenido en las 4-12 */
+.a-row { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: start; padding: 14px 0 clamp(48px, 6vw, 96px); border-top: 1px solid var(--rule); color: inherit; text-decoration: none; }
+.a-label { grid-column: 1 / span 3; font-family: var(--font-ui); font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.4; letter-spacing: 0; }
+.a-list, .a-values, .np-grid, .client-list { grid-column: 4 / -1; min-width: 0; }
+.a-list li { padding: 0 0 10px; font-size: var(--fs-s); line-height: 1.4; }
+.a-list li + li { padding-top: 10px; border-top: 1px solid var(--rule); }
+.a-list a { text-underline-offset: 4px; overflow-wrap: anywhere; }
+.a-values { max-width: 34ch; font-family: var(--font-display); font-size: clamp(20px, 1.9vw, 28px); font-weight: var(--fw-title); line-height: 1.2; letter-spacing: -.015em; }
+/* Now playing: dos portadas con su texto */
+.np-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px var(--gutter); }
+.np-row { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
+.np-cover { width: 96px; height: 96px; }
+.np-cover.np-film { height: 137px; }
 .np-row p { font-size: var(--fs-s); line-height: 1.4; }
 .np-row strong { font-weight: 600; font-size: var(--fs-read); }
 .np-more { text-decoration: underline; text-underline-offset: 4px; }
-.clients { margin-top: clamp(48px, 6vw, 88px); }
-.client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 32px; }
+.now-playing:hover .np-more { text-decoration-thickness: 2px; }
+.client-list { display: flex; flex-wrap: wrap; align-items: center; gap: 28px 32px; }
 .client-list a { display: block; }
 .client-logo { display: block; height: var(--h, 28px); aspect-ratio: var(--ratio, 3); background: currentColor; mask: var(--logo) center / contain no-repeat; -webkit-mask: var(--logo) center / contain no-repeat; }
-@media (max-width: 1000px) { .now-playing { grid-template-columns: 1fr; row-gap: 16px; } }
-@media (max-width: 760px) {
-  .about-layout { grid-template-columns: minmax(0, 1fr); gap: 40px; }
-  .about-bio { position: static; }
-  .about-photo { max-width: 520px; }
-  .facts:not(.contact-row) { grid-template-columns: 1fr; gap: 32px; }
-  .now-playing { grid-column: auto; }
+
+/* Carga en mosaico (js/pixel-load.js): el mosaico incrustado en --lq se ve ampliado y pixelado hasta que llega la imagen y se afina por pasos */
+.px { position: relative; display: block; overflow: hidden; background: var(--lq) center / cover; image-rendering: pixelated; }
+.px img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; }
+.px canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
+.fx .px:not(.is-loaded) img { opacity: 0; }
+.fx .px.is-loaded img { transition: opacity .3s ease; }
+.holo-card .px { width: 100%; height: 100%; }
+.np-cover img { object-position: center; }
+
+/* Aparición de cada fila al entrar en pantalla (js/about.js) */
+.fx [data-reveal] { opacity: 0; translate: 0 18px; transition: opacity .7s var(--ease-out) var(--d, 0ms), translate .7s var(--ease-out) var(--d, 0ms); }
+.fx [data-reveal].is-in { opacity: 1; translate: 0 0; }
+
+@media (max-width: 1000px) {
+  .np-grid { grid-template-columns: 1fr; }
 }
-@media (pointer: coarse) { .contact-row a, .faq-link a { display: inline-block; padding-block: 10px; } }
-@media (prefers-reduced-motion: reduce) { .about-run { animation: none; } }
+@media (max-width: 760px) {
+  .a-hero { row-gap: 28px; }
+  .portrait { grid-column: 1 / span 9; }
+  .statement { grid-column: 1 / -1; font-size: clamp(22px, 6.2vw, 32px); }
+  .a-label { grid-column: 1 / -1; margin-bottom: 16px; }
+  .a-list, .a-values, .np-grid, .client-list { grid-column: 1 / -1; }
+}
+@media (pointer: coarse) { .a-list a { display: inline-block; padding-block: 10px; } }
+@media (prefers-reduced-motion: reduce) { .fx [data-reveal] { transition: none; } }
