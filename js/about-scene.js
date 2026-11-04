@@ -220,7 +220,17 @@ export function startScene(canvas, { still = false } = {}) {
     raf = requestAnimationFrame(frame);
   }
   animate(0.016); renderer.render(scene, camera);
+  // ¿Cae este punto de la pantalla sobre la isla? (para cerrar la escena a pantalla completa al tocar fuera de ella)
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), ground = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hitAt = new THREE.Vector3();
+  function onIsland(clientX, clientY) {
+    const r = canvas.getBoundingClientRect();
+    ndc.set((clientX - r.left) / r.width * 2 - 1, -((clientY - r.top) / r.height * 2 - 1));
+    ray.setFromCamera(ndc, camera);
+    if (!ray.ray.intersectPlane(ground, hitAt)) return false;
+    return Math.max(Math.abs(hitAt.x), Math.abs(hitAt.z)) < SIZE * 0.56;
+  }
   return {
+    onIsland,
     play() { if (still || running) return; running = true; last = 0; raf = requestAnimationFrame(frame); },
     pause() { running = false; cancelAnimationFrame(raf); raf = 0; },
     destroy() { this.pause(); ro.disconnect(); renderer.dispose(); },

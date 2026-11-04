@@ -305,4 +305,9 @@ html.menu-arriving:not(.menu-arriving-out) :is(.about-card, .about-card > *, .ab
 .scene-canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 .flip-btn { position: absolute; inset: 0; z-index: 3; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .flip-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
-@media (prefers-reduced-motion: reduce) { .flip-inner { transition: none; } }
+/* Móvil: la carta vuelta llena la pantalla (js/about.js pone las medidas y quita la clase al volver) */
+html.scene-full { overflow: hidden; }
+html.scene-full .about-photo { z-index: 1000; }
+.portrait.is-full { position: fixed; z-index: 1000; margin: 0; aspect-ratio: auto; transition: left .5s cubic-bezier(.77, 0, .175, 1), top .5s cubic-bezier(.77, 0, .175, 1), width .5s cubic-bezier(.77, 0, .175, 1), height .5s cubic-bezier(.77, 0, .175, 1); }
+.portrait.is-full .scene-back { box-shadow: none; }
+@media (prefers-reduced-motion: reduce) { .flip-inner, .portrait.is-full { transition: none; } }
