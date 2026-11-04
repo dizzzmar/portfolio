@@ -63,6 +63,8 @@ img { display: block; max-width: 100%; height: auto; }
 .archive-viewer-close { position: absolute; top: 0; right: var(--bar-gutter); z-index: 2; min-height: var(--nav-h); padding: 0 4px; border: 0; background: none; color: inherit; font: inherit; font-size: var(--fs-s); cursor: pointer; }
 .archive-viewer-close:hover { text-decoration: underline; text-underline-offset: 6px; }
 .archive-viewer-name { max-width: 100%; text-align: center; font-family: var(--font-display); font-size: clamp(44px, 9.5vw, 137px); font-weight: var(--fw-title); letter-spacing: -.045em; line-height: 1; text-wrap: balance; }
+.archive-viewer-name[data-len="long"] { font-size: clamp(34px, 6.2vw, 88px); }
+.archive-viewer-name[data-len="xl"] { font-size: clamp(28px, 4.6vw, 64px); }
 .archive-viewer-name .mask { display: inline-block; overflow: hidden; padding-bottom: .12em; margin-bottom: -.12em; vertical-align: top; }
 .archive-viewer-name .mask > span { display: inline-block; translate: 0 112%; transition: translate .8s var(--ease-out) calc(.15s + var(--i, 0) * 80ms); }
 .archive-viewer.is-open .archive-viewer-name .mask > span { translate: 0 0; }
