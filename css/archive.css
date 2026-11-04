@@ -2,7 +2,7 @@
    Referencia: nicolo-lombardi.com/archive/la-barra. El índice lista las colecciones; cada colección es un muro infinito de piezas
    (js/archive-wall.js, que usa el mismo motor que el álbum: js/room/infinite-card-grid.js). Sin textos de ayuda: las piezas no llevan pie.
    Orden: base · barra · índice · muro · estados · movimiento. */
-:root { --bg: #0c0c0b; --ink: var(--cream); --hair: rgba(244, 239, 230, .18); --gutter: clamp(16px, 1.2vw, 24px); }
+:root { --bg: #0c0c0b; --ink: var(--cream); --hair: rgba(244, 239, 230, .18); --tick: rgba(244, 239, 230, .4); --gutter: clamp(16px, 1.2vw, 24px); }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { background: var(--bg); }
 body { min-height: 100vh; min-height: 100svh; color: var(--ink); background: var(--bg); font-family: var(--font-ui); font-size: var(--fs-read); font-weight: var(--fw-regular); line-height: var(--lh-body); overflow-x: clip; }
@@ -24,10 +24,32 @@ img { display: block; max-width: 100%; height: auto; }
 .archive-sub { flex: none; max-width: 34ch; margin: 0; font-size: var(--fs-l); line-height: 1.3; text-wrap: balance; }
 .archive-head { align-items: last baseline; }   /* la última línea del subtítulo sobre la misma línea de base que el título */
 .archive-sub a { color: inherit; text-underline-offset: 4px; }
-.archive-list { margin-top: clamp(48px, 9vw, 140px); list-style: none; border-bottom: 1px solid var(--hair); }
-.archive-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: clamp(20px, 2.4vw, 36px) 0; color: inherit; text-decoration: none; border-top: 1px solid var(--hair); }
+.archive-list { position: relative; z-index: 1; margin-top: clamp(48px, 9vw, 140px); list-style: none; }
+.archive-list > li { position: relative; }
+/* Rayas entre filas con un cuadradito en cada punta (como la lista de podium.global): arriba de cada fila y debajo de la última */
+.archive-list > li::before, .archive-list::after { content: ""; position: absolute; left: -4px; right: -4px; top: 0; height: 4px; pointer-events: none;
+  background: linear-gradient(var(--tick), var(--tick)) 0 0 / 4px 4px no-repeat, linear-gradient(var(--tick), var(--tick)) 100% 0 / 4px 4px no-repeat, linear-gradient(var(--hair), var(--hair)) 4px 2px / calc(100% - 8px) 1px no-repeat; }
+.archive-list::after { top: auto; bottom: -4px; }
+.archive-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: clamp(20px, 2.4vw, 36px) 0; color: inherit; text-decoration: none; transition: opacity .35s var(--ease-out); }
 .archive-name { font-family: var(--font-display); font-size: clamp(32px, 4.4vw, 72px); font-weight: var(--fw-title); letter-spacing: -.04em; line-height: 1; }
 .archive-name sup { margin-left: .12em; font-family: var(--font-ui); font-size: .3em; font-weight: var(--fw-regular); letter-spacing: 0; vertical-align: top; position: relative; top: .1em; }
+
+/* ---------- Mancha (solo con ratón): una forma orgánica que respira; dentro se ve el muro de la fila elegida, hasta que se elija otra ----------
+   (js/archive-index.js dibuja el contorno en clip-path; sin JavaScript o en el móvil la mancha no existe y queda la lista.) */
+.archive-landing { position: relative; }
+.archive-blob { display: none; }
+@media (hover: hover) and (pointer: fine) and (min-width: 821px) {
+  .archive-landing { display: grid; grid-template-columns: minmax(0, 46%) minmax(0, 1fr); column-gap: var(--gutter); align-items: start; }
+  .archive-head { grid-column: 1 / -1; }
+  .archive-list { grid-column: 1; margin-top: clamp(32px, 4vw, 64px); }
+  .archive-list:has(.archive-row:hover) .archive-row:not(:hover), .archive-list:has(.archive-row:focus-visible) .archive-row:not(:focus-visible) { opacity: .3; }
+  .archive-blob { display: block; grid-column: 2; grid-row: 2; position: relative; z-index: 0; width: 100%; height: min(74svh, 780px); margin-right: calc(-1 * var(--gutter)); background: var(--cream); visibility: hidden; }
+  .archive-blob.is-ready { visibility: visible; }
+  .archive-blob .archive-surface { position: absolute; inset: 0; }
+  .archive-layer { position: absolute; inset: 0; opacity: 0; transition: opacity .5s var(--ease-out); pointer-events: none; }
+  .archive-layer.is-on { opacity: 1; pointer-events: auto; }
+  .archive-blob .archive-card { translate: none; }
+}
 
 /* ---------- Muro: ocupa toda la pantalla; las piezas pasan por debajo de la barra ---------- */
 .archive-wall { height: 100vh; height: 100svh; overflow: hidden; overscroll-behavior: none; }
