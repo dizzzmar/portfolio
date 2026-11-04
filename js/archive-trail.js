@@ -11,7 +11,7 @@ if (fine.matches && !calm.matches && !navigator.connection?.saveData) {
   host.setAttribute('aria-hidden', 'true');
   document.body.append(host);
   const trail = createPixelTrail(host, {
-    gridSize: 40, trailSize: 0.1, maxAge: 1000, interpolate: 5,   // gridSize: cuántos puntos caben a lo ancho (menos = puntos más grandes)
+    gridSize: 240, trailSize: 0.1, maxAge: 1000, interpolate: 5,   // gridSize: cuántos puntos caben a lo ancho (más = puntos más pequeños)
     color: '#ffffff', shape: 'circle', gap: 0.5, decay: 'dither', shine: 0, glow: 0, gooeyFilter: false,
   });
   if (!trail) host.remove();
