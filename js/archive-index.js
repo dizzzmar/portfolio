@@ -45,13 +45,13 @@ void main(){
   vec2 p = (uv - .5) * vec2(uRes.x / uRes.y, 1.);
   vec2 push = vec2(0.); float heat = 0.;                                   // la estela del cursor arrastra el borde, con grano
   for (int i = 0; i < ${TRAIL}; i++) { vec2 q = p - uT[i].xy; float w = exp(-dot(q, q) / .011); push += uT[i].zw * w; heat += length(uT[i].zw) * w * 14.; }
-  p -= push * (.15 + .7 * noise(gl_FragCoord.xy * .55));
+  p -= push * (.1 + .45 * noise(gl_FragCoord.xy * .55));
   float s = 1e5;
   for (int i = 0; i < ${COUNT}; i++) s = smin(s, length(p - uC[i].xy) - uC[i].z * (1. + .1 * uPulse), ${KNEAD.toFixed(3)});
   // El borde es ruido, no degradado: cada punto del borde está o no está, al azar, y la franja de puntos se ensancha donde pasa el cursor (heat)
-  float band = .016 + .028 * uPulse + .05 * min(heat, 1.);
-  float cover = 1. - smoothstep(-.012, band, s);           // 1 dentro, 0 fuera, intermedio en el borde
-  float grain = hash(gl_FragCoord.xy + floor(uTime * 8.) * 17.31);
+  float band = .007 + .012 * uPulse + .03 * min(heat, 1.);
+  float cover = 1. - smoothstep(-.005, band, s);           // 1 dentro, 0 fuera, intermedio en el borde
+  float grain = hash(gl_FragCoord.xy + floor(uTime * 8. * min(heat * 3. + uPulse, 1.)) * 17.31);
   float a = cover >= 1. ? 0. : (cover <= 0. ? 1. : 1. - step(grain, cover));   // dentro y fuera, sin puntos sueltos
   gl_FragColor = vec4(uBg * a, a);
 }`;
@@ -70,7 +70,7 @@ void main(){
   gl.uniform3f(U.bg, bg[0], bg[1], bg[2]);
   blob.append(canvas); blob.classList.add('is-ready');
 
-  const SCALE = .8;                                       // el grano se dibuja a algo menos que la resolución real
+  const SCALE = 1;                                       // el grano se dibuja a algo menos que la resolución real
   let pulse = 0, aspect = 1, raf = 0, clock = 0, visible = true;
   const points = [];                                      // estela: { x, y, vx, vy, born }
   const place = (t) => CIRCLES.forEach(([x, y, r, ax, ay, sp, ph], i) => {
