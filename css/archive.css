@@ -34,35 +34,22 @@ img { display: block; max-width: 100%; height: auto; }
 .archive-name { font-family: var(--font-display); font-size: clamp(32px, 4.4vw, 72px); font-weight: var(--fw-title); letter-spacing: -.04em; line-height: 1; }
 .archive-name sup { margin-left: .12em; font-family: var(--font-ui); font-size: .3em; font-weight: var(--fw-regular); letter-spacing: 0; vertical-align: top; position: relative; top: .1em; }
 
-/* ---------- Mancha (solo con ratón y pantalla ancha) · copia de la portada de podium.global ----------
-   La portada ocupa la pantalla entera. js/archive-index.js pinta encima una capa crema (WebGL) que solo deja ver, dentro de una forma líquida grande,
-   el muro de la colección elegida: desenfocado y con grano, para que mande la interacción y no el contenido. El cursor deshace el borde en polvo al pasar.
-   Pulsar una entrada (o dentro de la forma) hace la «zambullida»: la forma crece hasta llenar la pantalla con el borde cada vez más difuso y se entra
-   en la colección. Los textos van en crema con «difference»: negros sobre la capa crema y crema sobre el muro. En el móvil, la lista de siempre. */
+/* ---------- Mancha (solo con ratón): una forma orgánica que respira; dentro se ve el muro de la fila elegida, hasta que se elija otra ----------
+   (js/archive-index.js dibuja el contorno en clip-path; sin JavaScript o en el móvil la mancha no existe y queda la lista.) */
 .archive-landing { position: relative; }
 .archive-blob { display: none; }
 @media (hover: hover) and (pointer: fine) and (min-width: 821px) {
-  .archive-index.is-live { padding: 0; }
-  .archive-index.is-live .archive-landing { height: 100vh; height: 100svh; min-height: 560px; padding: calc(var(--nav-h) + clamp(24px, 4vw, 64px)) var(--gutter) var(--gutter); overflow: hidden; }
-  .archive-index.is-live .archive-head { display: block; }
-  .archive-index.is-live .archive-heading, .archive-index.is-live .archive-sub, .archive-index.is-live .archive-list { position: relative; z-index: 2; mix-blend-mode: difference; color: var(--cream); }
-  .archive-index.is-live .archive-sub { position: absolute; right: var(--gutter); bottom: calc(var(--gutter) + 6px); max-width: 30ch; font-size: var(--fs-read); text-align: right; }   /* abajo a la derecha, como «Scroll down» en la referencia */
-  .archive-index.is-live .archive-list { position: absolute; left: var(--gutter); bottom: var(--gutter); width: min(40%, 640px); margin: 0; }
+  .archive-landing { display: grid; grid-template-columns: minmax(0, 46%) minmax(0, 1fr); column-gap: var(--gutter); align-items: start; }
+  .archive-head { grid-column: 1 / -1; }
+  .archive-list { grid-column: 1; margin-top: clamp(32px, 4vw, 64px); }
   .archive-list:has(.archive-row:hover) .archive-row:not(:hover), .archive-list:has(.archive-row:focus-visible) .archive-row:not(:focus-visible) { opacity: .3; }
-  .archive-blob { display: block; position: absolute; inset: 0; z-index: 1; visibility: hidden; }
+  .archive-blob { display: block; grid-column: 2; grid-row: 2; position: relative; z-index: 0; width: 100%; height: min(68svh, 720px); margin-right: calc(-1 * var(--gutter)); background: var(--cream); visibility: hidden; }
   .archive-blob.is-ready { visibility: visible; }
-  .archive-blob.is-inside { cursor: pointer; }
   .archive-blob-mask { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; }
-  .archive-blob .archive-surface { position: absolute; inset: 0; cursor: inherit; }
-  /* El muro de dentro: quieto, desenfocado y algo apagado; al zambullirse se acerca y se enfoca, y llega igual que se ve en su página */
-  .archive-layer { position: absolute; inset: 0; opacity: 0; pointer-events: none; filter: blur(7px) brightness(.85); scale: 1; transition: opacity .5s var(--ease-out), filter 1.2s cubic-bezier(.65, 0, .35, 1), scale 1.2s cubic-bezier(.65, 0, .35, 1); }
-  .archive-layer.is-on { opacity: 1; }
-  .archive-index.is-diving .archive-layer.is-on { filter: blur(0) brightness(1); scale: 1.12; }
-  .archive-blob .archive-card { opacity: 1; translate: none; transition: none; }
-  /* Al zambullirse, las letras se apagan al azar (como «We offer creative direction» en la referencia) */
-  .archive-index .dive-char { transition: opacity .12s linear var(--d, 0s); }
-  .archive-index.is-diving .dive-char { opacity: 0; }
-  .archive-index.is-diving .archive-list::after, .archive-index.is-diving .archive-list > li::before { opacity: 0; transition: opacity .3s linear .2s; }
+  .archive-blob .archive-surface { position: absolute; inset: 0; }
+  .archive-layer { position: absolute; inset: 0; opacity: 0; transition: opacity .5s var(--ease-out); pointer-events: none; }
+  .archive-layer.is-on { opacity: 1; pointer-events: auto; }
+  .archive-blob .archive-card { translate: none; }
 }
 
 /* ---------- Muro: ocupa toda la pantalla; las piezas pasan por debajo de la barra ---------- */
