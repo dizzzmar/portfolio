@@ -10,52 +10,108 @@ const rows = [...document.querySelectorAll('.archive-row[data-items]')];
 const live = matchMedia('(hover: hover) and (pointer: fine) and (min-width: 821px)');
 const motion = matchMedia('(prefers-reduced-motion: reduce)');
 
-if (blob && rows.length) {
+(function main() {
+  if (!blob || !rows.length) return;
   const layers = new Map();     // fila → { layer, grid }
   let active = null;
   let started = false;
 
-  // ---------- Contorno: curva cerrada suave por 9 puntos que respiran ----------
-  const N = 9, shape = { w: 0, h: 0 }, lean = { a: 0, k: 0, ta: 0, tk: 0 };
-  let pulse = 0, raf = 0, clock = 0;
-  const radius = (angle, t) => {
-    let r = .72 + .1 * Math.sin(angle * 2 + t * .00042) + .07 * Math.sin(angle * 3 - t * .00057 + 1.3) + .05 * Math.sin(angle * 5 + t * .0003 + .4);
-    r += lean.k * .07 * Math.max(0, Math.cos(angle - lean.a));             // se abulta hacia el cursor
-    return r * (1 + pulse * .05);
+  // ---------- Mancha: máscara dibujada con WebGL (referencia: la portada de podium.global) ----------
+  // Una capa del color de la página cubre el recuadro y deja ver lo de debajo (el muro) solo dentro de una forma líquida: ~14 círculos de distintos
+  // tamaños que se funden entre sí (cadena diagonal, un gancho y gotas sueltas) y flotan despacio. El borde no es una línea: es un degradado largo,
+  // como en la referencia. Al pasar el cursor por encima deja una estela que ensucia el borde con grano y lo arrastra un momento, y al elegir otra
+  // fila la mancha se hincha y su borde se suaviza todavía más antes de asentarse. Si el navegador no tiene WebGL no hay mancha: queda la lista.
+  const canvas = document.createElement('canvas'); canvas.className = 'archive-blob-mask';
+  const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: 'low-power' });
+  if (!gl) return;
+  // x, y, radio, amplitud x, amplitud y, velocidad, fase (unidades: 1 = alto de la mancha; el centro es 0, 0)
+  const CIRCLES = [
+    [.30, -.27, .065, .012, .014, .50, 0.0], [.21, -.18, .085, .014, .012, .42, 1.1], [.10, -.07, .110, .012, .016, .36, 2.3], [-.02, .05, .130, .016, .012, .31, 3.0],
+    [-.13, .17, .105, .014, .016, .44, 4.2], [-.20, .29, .070, .016, .014, .55, 5.0], [-.31, -.06, .085, .018, .016, .38, 0.7], [-.22, -.19, .062, .014, .018, .47, 1.9],
+    [-.08, -.30, .050, .020, .016, .60, 2.8], [.22, .08, .075, .020, .018, .33, 3.7], [.36, .12, .045, .030, .026, .52, 4.4], [.30, .31, .032, .030, .030, .66, 5.3],
+    [-.40, -.30, .036, .026, .030, .58, 0.3], [.06, .39, .026, .030, .024, .70, 1.6],
+  ];
+  const COUNT = CIRCLES.length, TRAIL = 10, KNEAD = .11;           // KNEAD: lo que se funden dos círculos al acercarse
+  const circles = new Float32Array(COUNT * 3), trail = new Float32Array(TRAIL * 4);
+  const vertex = 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0., 1.); }';
+  const fragment = `precision highp float;
+uniform vec2 uRes; uniform float uPulse; uniform vec3 uBg; uniform vec3 uC[${COUNT}]; uniform vec4 uT[${TRAIL}];
+float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float noise(vec2 x){ vec2 i = floor(x), f = fract(x), u = f * f * (3. - 2. * f);
+  return mix(mix(hash(i), hash(i + vec2(1., 0.)), u.x), mix(hash(i + vec2(0., 1.)), hash(i + vec2(1., 1.)), u.x), u.y); }
+float smin(float a, float b, float k){ float h = max(k - abs(a - b), 0.) / k; return min(a, b) - h * h * k * .25; }
+void main(){
+  vec2 uv = gl_FragCoord.xy / uRes; uv.y = 1. - uv.y;
+  vec2 p = (uv - .5) * vec2(uRes.x / uRes.y, 1.);
+  vec2 push = vec2(0.);                                   // la estela del cursor arrastra el borde, con grano
+  for (int i = 0; i < ${TRAIL}; i++) { vec2 q = p - uT[i].xy; push += uT[i].zw * exp(-dot(q, q) / .011); }
+  p -= push * (.25 + 1.3 * noise(gl_FragCoord.xy * .55));
+  float s = 1e5;
+  for (int i = 0; i < ${COUNT}; i++) s = smin(s, length(p - uC[i].xy) - uC[i].z * (1. + .1 * uPulse), ${KNEAD.toFixed(3)});
+  float band = .03 + .06 * uPulse;                       // ancho del degradado del borde
+  float a = smoothstep(-.035, band, s);
+  gl_FragColor = vec4(uBg * a, a);
+}`;
+  const compile = (type, src) => { const sh = gl.createShader(type); gl.shaderSource(sh, src); gl.compileShader(sh); return gl.getShaderParameter(sh, gl.COMPILE_STATUS) ? sh : null; };
+  const vs = compile(gl.VERTEX_SHADER, vertex), fs = compile(gl.FRAGMENT_SHADER, fragment);
+  const program = gl.createProgram();
+  if (!vs || !fs) return;
+  gl.attachShader(program, vs); gl.attachShader(program, fs); gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+  gl.useProgram(program);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(program, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const u = (name) => gl.getUniformLocation(program, name);
+  const U = { res: u('uRes'), pulse: u('uPulse'), bg: u('uBg'), c: u('uC'), t: u('uT') };
+  const bg = (getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g) || [12, 12, 11]).slice(0, 3).map((n) => n / 255);
+  gl.uniform3f(U.bg, bg[0], bg[1], bg[2]);
+  blob.append(canvas); blob.classList.add('is-ready');
+
+  const SCALE = .6;                                       // la máscara es suave: se dibuja a menos resolución y el navegador la estira
+  let pulse = 0, aspect = 1, raf = 0, clock = 0, visible = true;
+  const points = [];                                      // estela: { x, y, vx, vy, born }
+  const place = (t) => CIRCLES.forEach(([x, y, r, ax, ay, sp, ph], i) => {
+    circles[i * 3] = x + ax * Math.sin(t * .001 * sp + ph); circles[i * 3 + 1] = y + ay * Math.cos(t * .001 * sp * .83 + ph * 1.7); circles[i * 3 + 2] = r * 1.22;
+  });
+  const knead = (a, b, k) => { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * .25; };
+  const inside = (x, y) => {                              // la misma forma, para saber si un clic cae dentro (sin estela)
+    let d = 1e5;
+    for (let i = 0; i < COUNT; i++) d = knead(d, Math.hypot(x - circles[i * 3], y - circles[i * 3 + 1]) - circles[i * 3 + 2] * (1 + .1 * pulse), KNEAD);
+    return d < .0;
   };
-  function outline(t) {
-    const pts = [];
-    for (let i = 0; i < N; i++) {
-      const a = (i / N) * Math.PI * 2, r = radius(a, t);
-      pts.push([shape.w / 2 + Math.cos(a) * r * shape.w / 2, shape.h / 2 + Math.sin(a) * r * shape.h / 2]);
-    }
-    const at = (i) => pts[(i + N) % N];
-    let d = `M${at(0)[0].toFixed(1)} ${at(0)[1].toFixed(1)}`;
-    for (let i = 0; i < N; i++) {      // Catmull-Rom cerrada convertida a curvas de Bézier
-      const p0 = at(i - 1), p1 = at(i), p2 = at(i + 1), p3 = at(i + 2);
-      d += `C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
-    }
-    return d + 'Z';
-  }
-  function draw(now) {
+  function frame(now) {
     raf = 0;
     const dt = Math.min((now - (clock || now - 16)) / 1000, .05); clock = now;
-    const k = 1 - Math.exp(-5 * dt);
-    lean.a += Math.atan2(Math.sin(lean.ta - lean.a), Math.cos(lean.ta - lean.a)) * k; lean.k += (lean.tk - lean.k) * k;
-    pulse += (0 - pulse) * (1 - Math.exp(-3 * dt));
-    blob.style.clipPath = `path("${outline(now)}")`;
-    if (!motion.matches && !document.hidden && visible) raf = requestAnimationFrame(draw); else clock = 0;
+    pulse += (0 - pulse) * (1 - Math.exp(-2.6 * dt));
+    place(motion.matches ? 0 : now);
+    for (let i = 0; i < TRAIL; i++) {
+      const pt = points[points.length - 1 - i], life = pt ? Math.max(0, 1 - (now - pt.born) / 600) : 0;
+      trail[i * 4] = pt ? pt.x : 9; trail[i * 4 + 1] = pt ? pt.y : 9; trail[i * 4 + 2] = pt ? pt.vx * life * life : 0; trail[i * 4 + 3] = pt ? pt.vy * life * life : 0;
+    }
+    while (points.length && now - points[0].born > 600) points.shift();
+    gl.uniform3fv(U.c, circles); gl.uniform4fv(U.t, trail); gl.uniform1f(U.pulse, pulse);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    if (!motion.matches && !document.hidden && visible) raf = requestAnimationFrame(frame); else clock = 0;
   }
-  let visible = true;
-  const wake = () => { if (!raf) raf = requestAnimationFrame(draw); };
+  const wake = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  const size = () => {
+    const w = Math.max(2, Math.round(blob.clientWidth * SCALE)), h = Math.max(2, Math.round(blob.clientHeight * SCALE));
+    canvas.width = w; canvas.height = h; aspect = w / h; gl.viewport(0, 0, w, h); gl.uniform2f(U.res, w, h); wake();
+  };
+  new ResizeObserver(size).observe(blob);
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(blob);
   document.addEventListener('visibilitychange', wake);
-  new ResizeObserver(() => { shape.w = blob.clientWidth; shape.h = blob.clientHeight; wake(); }).observe(blob);
-  addEventListener('pointermove', (e) => {
-    if (motion.matches) return;
-    const r = blob.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
-    lean.ta = Math.atan2(dy, dx); lean.tk = Math.min(1, Math.hypot(dx, dy) / (r.width * .9)); wake();
-  }, { passive: true });
+  const toShape = (event) => { const r = blob.getBoundingClientRect(); return [((event.clientX - r.left) / r.width - .5) * aspect, (event.clientY - r.top) / r.height - .5]; };
+  let last = null;
+  blob.addEventListener('pointermove', (e) => {
+    if (motion.matches || e.pointerType !== 'mouse') return;
+    const [x, y] = toShape(e), now = performance.now();
+    if (last) { const vx = Math.max(-.07, Math.min(.07, (x - last.x) * .9)), vy = Math.max(-.07, Math.min(.07, (y - last.y) * .9)); points.push({ x, y, vx, vy, born: now }); }
+    last = { x, y }; wake();
+  });
+  blob.addEventListener('pointerenter', () => { pulse = Math.max(pulse, .5); wake(); });
+  blob.addEventListener('pointerleave', () => { last = null; });
+  blob.insideShape = (event) => { const [x, y] = toShape(event); return inside(x, y); };
 
   // ---------- Capas: cada colección tiene su muro, que se crea la primera vez que se elige ----------
   async function mount(row) {
@@ -88,7 +144,7 @@ if (blob && rows.length) {
       const moved = Math.hypot(e.clientX - press.x, e.clientY - press.y), quick = performance.now() - press.t < 600; press = null;
       if (moved > 5 || !quick) return;
       const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.archive-card');
-      if (card) location.href = row.getAttribute('href') + '#' + card.dataset.card;
+      if (card && blob.insideShape(e)) location.href = row.getAttribute('href') + '#' + card.dataset.card;
     });
     if (active === row) layer.classList.add('is-on');
   }
@@ -103,7 +159,7 @@ if (blob && rows.length) {
 
   function start() {
     if (started || !live.matches) return;
-    started = true; blob.classList.add('is-ready');
+    started = true;
     activate(rows[0]);                                  // al llegar, ya se ve la primera colección
     rows.forEach((row) => {
       row.addEventListener('pointerenter', () => activate(row));
@@ -112,4 +168,4 @@ if (blob && rows.length) {
   }
   live.addEventListener('change', start);
   start();
-}
+})();
