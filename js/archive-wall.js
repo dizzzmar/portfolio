@@ -55,6 +55,7 @@ const PAIRS = [['rx', 'tx'], ['ry', 'ty'], ['gx', 'tgx'], ['gy', 'tgy'], ['gloss
 const tilt = { rx: 0, ry: 0, tx: 0, ty: 0, gx: 50, gy: 30, tgx: 50, tgy: 30, gloss: 0, tgloss: 0 };
 
 function fillViewer(item) {
+  nameEl.dataset.len = item.name.length > 30 ? 'xl' : item.name.length > 20 ? 'long' : '';   // los títulos largos se componen más pequeños (css/archive.css)
   nameEl.replaceChildren(...item.name.split(' ').flatMap((word, i) => {
     const mask = document.createElement('span'); mask.className = 'mask';
     const inner = document.createElement('span'); inner.style.setProperty('--i', i); inner.textContent = word; mask.append(inner);
