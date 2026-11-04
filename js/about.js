@@ -62,3 +62,27 @@
     new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(card);
   }
 })();
+
+// LA FOTO SE DA LA VUELTA · al pulsarla (es un botón: también con Enter o Espacio) la tarjeta gira y por detrás aparece la escena isométrica en pixel art
+// (js/about-scene.js). La escena (y three.js) se piden la primera vez que el ratón se acerca a la foto o al girarla, y solo se dibuja mientras se ve.
+(() => {
+  const card = document.querySelector('[data-holo]');
+  const btn = card && card.querySelector('.flip-btn');
+  if (!btn) return;
+  const back = card.querySelector('.scene-back'), canvas = card.querySelector('.scene-canvas');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const URL_SCENE = '/js/about-scene.js?v=20261127flip1';
+  let scene = null, loading = null, flipped = false, inView = true;
+  const ensure = () => loading || (loading = import(URL_SCENE).then((m) => (scene = m.startScene(canvas, { still: reduced }))).catch(() => null));
+  card.addEventListener('pointerenter', () => { import(URL_SCENE).catch(() => {}); }, { once: true });   // se adelanta la descarga
+  btn.addEventListener('click', () => {
+    flipped = !flipped;
+    card.classList.toggle('is-flipped', flipped);
+    btn.setAttribute('aria-pressed', String(flipped));
+    btn.setAttribute('aria-label', flipped ? 'Turn the photo back' : 'Turn the photo over');
+    back.setAttribute('aria-hidden', String(!flipped));
+    if (flipped) ensure().then((s) => { if (flipped && inView) s && s.play(); });
+    else setTimeout(() => { if (!flipped && scene) scene.pause(); }, reduced ? 0 : 900);   // deja de dibujar cuando ya no se ve
+  });
+  new IntersectionObserver(([e]) => { inView = e.isIntersecting; if (!scene) return; if (inView && flipped) scene.play(); else scene.pause(); }).observe(card);
+})();
