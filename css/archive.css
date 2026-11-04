@@ -16,6 +16,13 @@ img { display: block; max-width: 100%; height: auto; }
 .nav { position: fixed; inset: 0 0 auto; z-index: 9; height: var(--nav-h); display: flex; align-items: center; padding: 0 var(--bar-gutter); }
 .nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s var(--ease-out); }
 .nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
+/* Botón «Back» de las páginas de colección: a la derecha del tomate, en la barra (hereda la mezcla «difference» de la barra); lleva al índice del archivo */
+.archive-back { display: flex; align-items: center; gap: 8px; align-self: stretch; margin-left: 44px; padding: 0 16px; color: rgba(255, 255, 255, .7); font-size: var(--fs-s); line-height: 1.4; text-decoration: none; transition: color .2s; }
+.archive-back:hover, .archive-back:focus-visible { color: #fff; }
+.archive-back svg { flex: none; transition: transform .3s var(--ease-out); }
+.archive-back:hover svg { transform: translateX(-3px); }
+@media (max-width: 700px) { .archive-back { margin-left: 36px; padding: 0 12px; } }
+@media (prefers-reduced-motion: reduce) { .archive-back svg { transition: none; } .archive-back:hover svg { transform: none; } }
 
 /* ---------- Estela de píxeles blancos (js/archive-trail.js): fija a pantalla completa, POR DETRÁS del contenido (piezas, textos) y por encima del fondo; no recibe clics.
    Para que quede detrás, el color de fondo lo pinta <html> y <body> es transparente (si <body> pintara el fondo taparía la estela). ---------- */
