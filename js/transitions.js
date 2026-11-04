@@ -30,7 +30,10 @@
   // Desde el menú la llegada ya tiene su propia cortina roja (js/menu.js): ahí no se añade el deslizamiento, o se pisarían los dos.
   const isAbout = (p) => /^\/about\/?$/.test(p);
   const viaMenu = () => { try { return Date.now() - sessionStorage.getItem('dizmar-menu-arrive') < 4000; } catch (e) { return false; } };
+  // Desde la portada del Digital Archive, la «zambullida» (js/archive-index.js) ya lleva a la pantalla negra de la colección: sin cortina, solo un fundido corto
+  const viaDive = () => { try { return Date.now() - sessionStorage.getItem('dizmar-dive') < 4000; } catch (e) { return false; } };
   addEventListener('pageswap', (e) => {
+    if (e.viewTransition && viaDive()) { e.viewTransition.types.add('dive'); return; }
     if (!e.viewTransition || !e.activation || viaMenu()) return;
     const to = new URL(e.activation.entry.url).pathname;
     if (isAbout(to)) e.viewTransition.types.add('to-about');
@@ -40,6 +43,7 @@
     if (!e.viewTransition) return;
     root.classList.add('is-vt'); // se queda puesta mientras dure esta página (quitarla reiniciaría animaciones)
     if (root.classList.contains('menu-arriving')) return;
+    if (viaDive()) { e.viewTransition.types.add('dive'); try { sessionStorage.removeItem('dizmar-dive'); } catch (err) { /* storage blocked */ } return; }
     if (isAbout(location.pathname)) { e.viewTransition.types.add('to-about'); root.classList.add('vt-about'); }
     else if (document.referrer && isAbout(new URL(document.referrer).pathname)) e.viewTransition.types.add('from-about');
   });
