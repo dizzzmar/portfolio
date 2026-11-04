@@ -150,6 +150,106 @@
           "—"
         ]
       ]
+    },
+    {
+      "id": "sgt-peppers-lonely-hearts-club-band",
+      "name": "Sgt. Pepper's Lonely Hearts Club Band",
+      "src": "sgt-peppers-lonely-hearts-club-band.webp",
+      "width": 648,
+      "height": 653,
+      "facts": [
+        [
+          "Artist",
+          "The Beatles"
+        ],
+        [
+          "Album",
+          "Sgt. Pepper's Lonely Hearts Club Band"
+        ],
+        [
+          "Year",
+          "1967"
+        ],
+        [
+          "Designer",
+          "Peter Blake, Jann Haworth"
+        ]
+      ]
+    },
+    {
+      "id": "beatles-1",
+      "name": "1",
+      "src": "beatles-1.webp",
+      "width": 500,
+      "height": 500,
+      "facts": [
+        [
+          "Artist",
+          "The Beatles"
+        ],
+        [
+          "Album",
+          "1"
+        ],
+        [
+          "Year",
+          "2000"
+        ],
+        [
+          "Designer",
+          "Rick Ward"
+        ]
+      ]
+    },
+    {
+      "id": "ambient-1-music-for-airports",
+      "name": "Ambient 1: Music for Airports",
+      "src": "ambient-1-music-for-airports.webp",
+      "width": 301,
+      "height": 300,
+      "facts": [
+        [
+          "Artist",
+          "Brian Eno"
+        ],
+        [
+          "Album",
+          "Ambient 1: Music for Airports"
+        ],
+        [
+          "Year",
+          "1979"
+        ],
+        [
+          "Designer",
+          "Brian Eno"
+        ]
+      ]
+    },
+    {
+      "id": "music-for-nine-post-cards",
+      "name": "Music for Nine Post Cards",
+      "src": "music-for-nine-post-cards.webp",
+      "width": 800,
+      "height": 800,
+      "facts": [
+        [
+          "Artist",
+          "Hiroshi Yoshimura"
+        ],
+        [
+          "Album",
+          "Music for Nine Post Cards"
+        ],
+        [
+          "Year",
+          "1982"
+        ],
+        [
+          "Designer",
+          "—"
+        ]
+      ]
     }
   ]
 }
