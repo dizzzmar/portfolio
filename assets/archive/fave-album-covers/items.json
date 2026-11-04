@@ -1,0 +1,155 @@
+{
+  "collection": "Fave album covers",
+  "items": [
+    {
+      "id": "cover-01",
+      "name": "Album cover 01",
+      "src": "cover-01.webp",
+      "width": 1000,
+      "height": 1000,
+      "facts": [
+        [
+          "Artist",
+          "—"
+        ],
+        [
+          "Album",
+          "—"
+        ],
+        [
+          "Year",
+          "—"
+        ],
+        [
+          "Designer",
+          "—"
+        ]
+      ]
+    },
+    {
+      "id": "cover-02",
+      "name": "Album cover 02",
+      "src": "cover-02.webp",
+      "width": 1000,
+      "height": 1000,
+      "facts": [
+        [
+          "Artist",
+          "—"
+        ],
+        [
+          "Album",
+          "—"
+        ],
+        [
+          "Year",
+          "—"
+        ],
+        [
+          "Designer",
+          "—"
+        ]
+      ]
+    },
+    {
+      "id": "cover-03",
+      "name": "Album cover 03",
+      "src": "cover-03.webp",
+      "width": 1000,
+      "height": 1000,
+      "facts": [
+        [
+          "Artist",
+          "—"
+        ],
+        [
+          "Album",
+          "—"
+        ],
+        [
+          "Year",
+          "—"
+        ],
+        [
+          "Designer",
+          "—"
+        ]
+      ]
+    },
+    {
+      "id": "cover-04",
+      "name": "Album cover 04",
+      "src": "cover-04.webp",
+      "width": 1000,
+      "height": 1000,
+      "facts": [
+        [
+          "Artist",
+          "—"
+        ],
+        [
+          "Album",
+          "—"
+        ],
+        [
+          "Year",
+          "—"
+        ],
+        [
+          "Designer",
+          "—"
+        ]
+      ]
+    },
+    {
+      "id": "cover-05",
+      "name": "Album cover 05",
+      "src": "cover-05.webp",
+      "width": 1000,
+      "height": 1000,
+      "facts": [
+        [
+          "Artist",
+          "—"
+        ],
+        [
+          "Album",
+          "—"
+        ],
+        [
+          "Year",
+          "—"
+        ],
+        [
+          "Designer",
+          "—"
+        ]
+      ]
+    },
+    {
+      "id": "cover-06",
+      "name": "Album cover 06",
+      "src": "cover-06.webp",
+      "width": 1000,
+      "height": 1000,
+      "facts": [
+        [
+          "Artist",
+          "—"
+        ],
+        [
+          "Album",
+          "—"
+        ],
+        [
+          "Year",
+          "—"
+        ],
+        [
+          "Designer",
+          "—"
+        ]
+      ]
+    }
+  ]
+}
