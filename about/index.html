@@ -20,11 +20,11 @@
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/assets/images/favicon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<script>document.documentElement.classList.add('js','has-menu');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
+<script>document.documentElement.classList.add('js','has-menu');if('IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('fx');try{if(Date.now()-sessionStorage.getItem('dizmar-menu-arrive')<4000)document.documentElement.classList.add('menu-arriving')}catch(e){}</script>
 <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261113mustard1">
-<link rel="stylesheet" href="/css/about.css?v=20261112navdiff1">
+<link rel="stylesheet" href="/css/about.css?v=20261125about1">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261112navdiff1">
@@ -63,64 +63,59 @@
 
 <main class="about">
   <h1 class="sr-only">Mario Diz</h1>
-  <div class="about-marquee" aria-hidden="true"><div class="about-run"><span>Mario Diz / Mario Diz / </span><span>Mario Diz / Mario Diz / </span></div></div>
-  <div class="about-layout">
-    <aside class="about-bio" aria-label="About Mario">
-<header class="intro">
-    <!-- EDITA: tu presentación (resumen de la biografía en un párrafo) -->
-    <p class="statement" data-reveal>Mario’s taste was formed in front of Almodóvar films. An art director with three years of experience, a background in art history and a love of maximalism, he follows every idea from the first spark to the final image. In the AI team at WPP Production Madrid he blends the leading image and video AI tools with traditional craft and high-quality retouching, and he is a self-taught 3D artist.</p>
-  </header>
-<section class="facts contact-row" aria-label="Contact details">
-    <p class="fact" data-reveal><a href="https://es.linkedin.com/in/mario-diaz-aguado" target="_blank" rel="noopener">LinkedIn</a></p>
-    <p class="fact fact-values" data-reveal><a href="mailto:contact@dizmar.xyz">contact@dizmar.xyz</a></p>
-  </section>
-<p class="faq-link" data-reveal><a href="/faq/">FAQs →</a></p>
-    </aside>
-    <div class="about-content">
-  <div class="about-photo">
+
+  <!-- ABOUT · cuadrícula de 12 columnas como locomotive.ca/en/agency: la frase grande con el retrato, y debajo filas con regla (etiqueta a la izquierda, contenido a la derecha).
+       Las imágenes cargan en mosaico y se afinan (js/pixel-load.js). EDITA: el texto de cada fila; para otra fila copia una <section class="a-row">. -->
+  <section class="a-hero">
     <!-- Foto holográfica: se inclina en 3D siguiendo el ratón y un brillo con los colores de la foto recorre el fondo, como una carta coleccionable (js/about.js) -->
     <div class="portrait holo" data-holo>
       <div class="holo-card">
-        <img src="/assets/images/mario-600.webp" srcset="/assets/images/mario-600.webp 600w, /assets/images/mario-956.webp 956w" sizes="(max-width: 760px) calc(100vw - 32px), 55vw" width="956" height="1280" alt="Portrait of Mario Diz, smiling, in a green knitted sweater against a blue-green painted backdrop">
+        <span class="px" style="--lq: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAANCAIAAAAfVWhSAAABh0lEQVR42gXBS0/UQAAA4Hl1+tilTd1dSGBFNFFCeiHxoCFoPJmYcNGbN/03Jp78HZzwpolw1oMciIgLiCBhwS3T7gydaafTjt8H377/sLw4F/tuDVDVNnNhcF3XxJKUF6OjKzKIur5Hog5RLZoc/rGXzcJK4iJfaXNnvkfmexEAlrrB9ubm149bK8PZ4smzBxsvvS7ttzWJO57jwevGsCx/9+ZVsvpwa/eHT51ea/aZRNJobdvbgZcsDs9Oz4HWz9ceh5hqYXxMEROctjZEztMXG5mSPnVOu4Ob2nY8r2kQwrICtU2lOvj56/tlepIzw1NWqbSsLEbkgsk0G33b+cIn49friQDNaO/zOVP9u48svoV795PdnU8d2izfCyVUR//+qtLd25/8Pj6JZpewnolBNl5aGPoUDfqY5SDnwVQ0EOASEFRxzpg6uxAHx2NK4VQU1DEZr6F1BcuIo4t4EBYyiyOT87qQynWQLKZXRiADiWAcBtQ2EgI05e0k1WV5I1WpjevPqP9hVNYAz+3gZAAAAABJRU5ErkJggg==)">
+          <img src="/assets/images/mario-600.webp" srcset="/assets/images/mario-600.webp 600w, /assets/images/mario-956.webp 956w" sizes="(max-width: 760px) calc(100vw - 32px), 55vw" width="956" height="1280" alt="Portrait of Mario Diz, smiling, in a green knitted sweater against a blue-green painted backdrop">
+        </span>
         <span class="holo-shine" aria-hidden="true"></span>
         <span class="holo-glare" aria-hidden="true"></span>
       </div>
     </div>
-  </div>
+    <!-- EDITA: tu presentación (resumen de la biografía en un párrafo) -->
+    <p class="statement" data-reveal>Mario’s taste was formed in front of Almodóvar films. An art director with three years of experience, a background in art history and a love of maximalism, he follows every idea from the first spark to the final image. In the AI team at WPP Production Madrid he blends the leading image and video AI tools with traditional craft and high-quality retouching, and he is a self-taught 3D artist.</p>
+  </section>
 
+  <section class="a-row" aria-labelledby="caps-title" data-reveal>
+    <h2 id="caps-title" class="a-label">Art direction &amp; visual design</h2>
+    <!-- EDITA: una <li> por capacidad -->
+    <ul class="a-list">
+      <li>Key visuals</li>
+      <li>AI creative</li>
+      <li>3D &amp; product imagery</li>
+      <li>Audiovisual</li>
+    </ul>
+  </section>
 
-<section class="facts" aria-label="About Mario">
-    <div class="fact" data-reveal>
-      <!-- EDITA: una <li> por capacidad -->
-      <h2>Art direction &amp; visual design</h2>
-      <ul>
-        <li>Key visuals</li>
-        <li>AI creative</li>
-        <li>3D &amp; product imagery</li>
-        <li>Audiovisual</li>
-      </ul>
-    </div>
+  <section class="a-row" aria-labelledby="values-title" data-reveal>
+    <h2 id="values-title" class="a-label">Values</h2>
     <!-- EDITA: el resto de la biografía -->
-    <div class="fact fact-values" data-reveal>
-      <h2>Values</h2>
-      <p>For him, design and advertising should be a safe space that reflects inclusion and human rights. His work is pro-LGBTQ+, anti-racist, and feminist. No question.</p>
-    </div>
-    <!-- Lo mismo que la estantería de The room: actualízalo a la vez que js/room.js -->
-    <a class="fact now-playing" href="/room.html" data-reveal>
-      <h2>Now playing</h2>
+    <p class="a-values">For him, design and advertising should be a safe space that reflects inclusion and human rights. His work is pro-LGBTQ+, anti-racist, and feminist. No question.</p>
+  </section>
+
+  <!-- Lo mismo que la estantería de The room: actualízalo a la vez que js/room.js -->
+  <a class="a-row now-playing" href="/room.html" data-reveal>
+    <h2 class="a-label">Now playing</h2>
+    <div class="np-grid">
       <div class="np-row">
-        <img src="/assets/room/vinyl-cover.webp" width="400" height="400" alt="Romance, by Fontaines D.C." loading="lazy">
+        <span class="px np-cover" style="--lq: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAABOUlEQVR42gXBwStDcRwA8O/v+/2+vTe/996eZi5mJGJckUjKJC7KgZty9ecoKTk4SLk6cJKQw4oiqbWl5W3JJMOYPXt77+fzEbx+QMSICAIVITALZtL0UIsqZrYdyUgM0BH/TaaqCrRyJfn2J+tEtkCeMCKbvd2dln9acnfzqYoRU7qxQl8LZB1jyGvQ1lf7BhVZHkjP5i+3HrP9prU6l4FCA3MP/Gp60CiDMoOrnO3IDU1p8NPKFp9vLk56EnhuqWqzFVbucSjR+CxSq5Z9dY9yh36sjqPjiJrY7u3zIPpevPPa+cmERBwHY7GduGPHJXbZds0x9iYmm07H9Uuh4LmRUJ7VfSczL7mFEcNXolGicH9qxh6edj7oT1r+0qJpgE5NVoEnSUgKdBHcjqXbRlJuVLeIQPgC4B/P/HJaELxjWwAAAABJRU5ErkJggg==)"><img src="/assets/room/vinyl-cover.webp" width="400" height="400" alt="Romance, by Fontaines D.C." loading="lazy"></span>
         <p><strong>Bug</strong><br>Fontaines D.C. — Romance</p>
       </div>
       <div class="np-row">
-        <img class="np-film" src="/assets/room/film-poster.webp" width="400" height="571" alt="La Bola Negra poster" loading="lazy">
+        <span class="px np-cover np-film" style="--lq: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAIAAACZwRr8AAABh0lEQVR42gXB4W6TQAAA4DuO69E7yhUY2Brbbp1bXdBoU2uyB/DtjTNG96NGY5yuoVAYHFfoQcHvgx8/zMf+8FDIqiy9Zz4d2PJQIA0ipMei1ilsri9mCJOBxauDbGp1Nn5DKE2i8CHc61KWSZTkQoK27gBCGkx2W8ZNyx29uArQYuqBVoV/HwDEjuPgnpZmRS6K+U3gTC911QJicsYPjmtC1AKoGQSrpiuqU7T5gW7Xr4N3y7Yuh57nsRFh9NQpiBCzbP58phFmGSYfz877A+5xl2Jq+6NeD4PulMc7bTy96FOKSR9C7akSlmk2TdMBUMp8+/unNrDdplYAgCyTCgI2mWRpVpXVfhenUYyCq1kahd7kvKqqP782Ws94+f4W6WSxXGdCopvFHAEgchGH8eZ+c1Ly/vPd9XIlsmwf7dF6FZy5PE+fGCPHskqTYnI5//bpDmHy/ctXuHr7ihGsAahjzKiRZblBqRRSNbUsjxAA4Ni273uWZT1utwghdVTDIf/3uBVC/Ac2sLhKLFYEVQAAAABJRU5ErkJggg==)"><img src="/assets/room/film-poster.webp" width="400" height="571" alt="La Bola Negra poster" loading="lazy"></span>
         <p><strong>La Bola Negra</strong><br><span class="np-more">See the room →</span></p>
       </div>
-    </a>
-  </section>
-<section class="clients" aria-labelledby="clients-title">
-    <h2 id="clients-title" data-reveal>Selected clients</h2>
-    <ul class="client-list" data-reveal>
+    </div>
+  </a>
+
+  <section class="a-row clients" aria-labelledby="clients-title" data-reveal>
+    <h2 id="clients-title" class="a-label">Selected clients</h2>
+    <ul class="client-list">
       <li><span class="client-logo" role="img" aria-label="The Coca-Cola Company" style="--logo: url(/assets/brands/coca-cola-company.svg); --ratio: 6.2; --h: 24px"></span></li>
       <li><span class="client-logo" role="img" aria-label="Heineken" style="--logo: url(/assets/brands/heineken.svg); --ratio: 5.77; --h: 21px"></span></li>
       <li><span class="client-logo" role="img" aria-label="Verizon" style="--logo: url(/assets/brands/verizon.svg); --ratio: 4.51; --h: 24px"></span></li>
@@ -136,8 +131,15 @@
       <li><a href="/project/soap-and-glory-vanilla/"><span class="client-logo" role="img" aria-label="Soap &amp; Glory" style="--logo: url(/assets/brands/soap-and-glory.svg); --ratio: 4.67; --h: 23px"></span></a></li>
     </ul>
   </section>
-    </div>
-  </div>
+
+  <section class="a-row" aria-labelledby="contact-title" data-reveal>
+    <h2 id="contact-title" class="a-label">Contact</h2>
+    <ul class="a-list a-contact">
+      <li><a href="https://es.linkedin.com/in/mario-diaz-aguado" target="_blank" rel="noopener">LinkedIn</a></li>
+      <li><a href="mailto:contact@dizmar.xyz">contact@dizmar.xyz</a></li>
+      <li><a href="/faq/">FAQs →</a></li>
+    </ul>
+  </section>
 </main>
 
 <!-- FOOTER GRANDE · el único pie de la web (igual en todas las páginas): «DIZMAR» enorme sobre el rojo del menú, cuyas piezas se recomponen con el scroll
@@ -158,7 +160,8 @@
   </div>
 </section>
 
-<script src="/js/about.js?v=20261030q" defer></script>
+<script src="/js/about.js?v=20261125about1" defer></script>
+<script src="/js/pixel-load.js?v=20261125about1" defer></script>
 <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
 <script src="/js/cursor.js?v=20261120pic3" defer></script>
 <script src="/js/smooth-scroll.js?v=20261028n" defer></script>

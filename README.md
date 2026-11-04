@@ -41,7 +41,7 @@ js/                                    Comportamiento (sin dependencias ni compi
   case.js · case-index.js · posters.js Fichas (aparición, reproductor, volver, índice de ENMAD) y visor de posters
   room.js · room/                      La habitación 3D; room/ agrupa la Wii, la «Pokémon collection», la iluminación y la carga
   menu.js · link-roll.js · cursor.js · smooth-scroll.js · transitions.js · terminal.js · nav-tomato.js · contact-sachet.js · sachet.js   Comunes a casi todas las páginas
-  about.js · not-found-*.js · mode-switch.js   Páginas sueltas; mode-switch.js es la píldora HUMAN | MACHINE, aparcada (ver «Modo máquina»)
+  about.js · pixel-load.js (carga en mosaico: .px) · not-found-*.js · mode-switch.js   Páginas sueltas; mode-switch.js es la píldora HUMAN | MACHINE, aparcada (ver «Modo máquina»)
 
 assets/                                Imágenes, vídeos y modelos 3D
   fonts/ · images/ · brands/ · loading/   Tipografías, imágenes comunes, logos de clientes y animaciones de la pantalla de carga
