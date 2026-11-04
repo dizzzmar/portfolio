@@ -2,6 +2,31 @@
   "collection": "Fave album covers",
   "items": [
     {
+      "id": "lost-weekend",
+      "name": "Lost Weekend",
+      "src": "lost-weekend.webp",
+      "width": 700,
+      "height": 700,
+      "facts": [
+        [
+          "Artist",
+          "Phoebe Bridgers"
+        ],
+        [
+          "Album",
+          "Lost Weekend"
+        ],
+        [
+          "Year",
+          "2026"
+        ],
+        [
+          "Designer",
+          "—"
+        ]
+      ]
+    },
+    {
       "id": "rubber-soul",
       "name": "Rubber Soul",
       "src": "rubber-soul.webp",
