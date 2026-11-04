@@ -62,3 +62,52 @@
     new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(card);
   }
 })();
+
+// LA FOTO SE DA LA VUELTA · al pulsarla (es un botón: también con Enter o Espacio) la tarjeta gira y por detrás aparece la escena isométrica en pixel art
+// (js/about-scene.js). La escena (y three.js) se piden la primera vez que el ratón se acerca a la foto o al girarla, y solo se dibuja mientras se ve.
+(() => {
+  const card = document.querySelector('[data-holo]');
+  const btn = card && card.querySelector('.flip-btn');
+  if (!btn) return;
+  const back = card.querySelector('.scene-back'), canvas = card.querySelector('.scene-canvas');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const URL_SCENE = '/js/about-scene.js?v=20261127flip2';
+  let scene = null, loading = null, flipped = false, inView = true;
+  const ensure = () => loading || (loading = import(URL_SCENE).then((m) => (scene = m.startScene(canvas, { still: reduced }))).catch(() => null));
+  card.addEventListener('pointerenter', () => { import(URL_SCENE).catch(() => {}); }, { once: true });   // se adelanta la descarga
+  // En el móvil, al darle la vuelta la carta crece hasta llenar la pantalla; se vuelve a su sitio al tocar fuera de la isla (o con Escape)
+  const phone = matchMedia('(max-width: 760px)'), root = document.documentElement;
+  let full = false, home = null;
+  const place = (r) => Object.assign(card.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+  function grow() {
+    home = card.getBoundingClientRect(); full = true;
+    root.classList.add('scene-full'); place(home); card.classList.add('is-full');
+    void card.offsetWidth;
+    place({ left: 0, top: 0, width: innerWidth, height: innerHeight });
+  }
+  function shrink() {
+    full = false; place(home);
+    const done = () => { if (full) return; card.classList.remove('is-full'); root.classList.remove('scene-full'); card.removeAttribute('style'); };
+    if (reduced) done(); else setTimeout(done, 520);
+  }
+  function turn(on) {
+    flipped = on;
+    card.classList.toggle('is-flipped', flipped);
+    btn.setAttribute('aria-pressed', String(flipped));
+    btn.setAttribute('aria-label', flipped ? 'Turn the photo back' : 'Turn the photo over');
+    back.setAttribute('aria-hidden', String(!flipped));
+    if (flipped) ensure().then((s) => { if (flipped && inView) s && s.play(); });
+    else setTimeout(() => { if (!flipped && scene) scene.pause(); }, reduced ? 0 : 900);   // deja de dibujar cuando ya no se ve
+  }
+  btn.addEventListener('click', (e) => {
+    if (full) {                                                  // a pantalla completa, tocar la isla no hace nada; fuera, la cierra
+      if (e.detail && scene && scene.onIsland(e.clientX, e.clientY)) return;
+      turn(false); shrink(); return;
+    }
+    turn(!flipped);
+    if (flipped && phone.matches) grow();
+  });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && full) { turn(false); shrink(); btn.focus(); } });
+  addEventListener('resize', () => { if (full) place({ left: 0, top: 0, width: innerWidth, height: innerHeight }); });
+  new IntersectionObserver(([e]) => { inView = e.isIntersecting; if (!scene) return; if (inView && flipped) scene.play(); else scene.pause(); }).observe(card);
+})();
