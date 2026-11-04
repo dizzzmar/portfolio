@@ -20,22 +20,37 @@
   document.body.appendChild(pic);
   const picImg = pic.querySelector('img');
   const lists = new Map();
-  let picEl = null, picToken = 0;
+  const loaded = new Map();                                        // ruta → <img> ya pedida (se queda en memoria: la segunda vez es instantánea)
+  let picEl = null, picToken = 0, picReady = false;
   const loadList = (url) => { if (!lists.has(url)) lists.set(url, fetch(url).then((r) => r.json()).then((d) => ({ base: url.replace(/[^/]*$/, ''), items: d.items || [] })).catch(() => ({ base: '', items: [] }))); return lists.get(url); };
+  const preload = (src) => { if (!loaded.has(src)) { const im = new Image(); im.decoding = 'async'; im.src = src; loaded.set(src, im); } return loaded.get(src); };
+  // La carga empieza al abrir la página, sin esperar a que el ratón llegue: la imagen del enlace y todas las piezas de las listas «random:».
+  // (Antes se pedía al pasar por encima: hasta que llegaba, el punto ya se había apartado y no se veía nada.)
+  const warm = () => document.querySelectorAll('[data-cursor-pic]').forEach((el) => {
+    const spec = el.dataset.cursorPic;
+    if (spec.startsWith('random:')) loadList(spec.slice(7)).then(({ base, items }) => items.forEach((it) => preload(base + it.src)));
+    else preload(spec);
+  });
+  if (navigator.connection?.saveData) { /* con ahorro de datos no se precarga: se pide al pasar */ } else if ('requestIdleCallback' in window) requestIdleCallback(warm, { timeout: 1500 }); else setTimeout(warm, 300);
   async function showPic(spec) {
     const token = ++picToken;
+    picReady = false;
     let src = spec, rot = 0;
     if (spec.startsWith('random:')) {
       const { base, items } = await loadList(spec.slice(7));
       if (token !== picToken || !items.length) return;
-      src = base + items[Math.floor(Math.random() * items.length)].src;
+      const ready = items.filter((it) => loaded.get(base + it.src)?.complete);   // mejor una pieza que ya esté lista que una que aún se está bajando
+      const pool = ready.length ? ready : items;
+      src = base + pool[Math.floor(Math.random() * pool.length)].src;
       rot = Math.round(Math.random() * 28 - 14);                   // cada pegatina llega con un giro distinto
     }
     pic.style.setProperty('--rot', rot + 'deg');
     pic.dataset.kind = spec.startsWith('random:') ? 'sticker' : 'icon';   // las pegatinas se ven más grandes que un icono
-    const show = () => { if (token === picToken) pic.classList.add('is-on'); };
+    // El punto solo se aparta cuando la imagen ya está lista: mientras se carga, el cursor sigue siendo el punto (nunca queda sin cursor)
+    const show = () => { if (token !== picToken || picReady) return; picReady = true; pic.classList.add('is-on'); set('is-hide', true); };
+    const im = preload(src);
     picImg.onload = show; picImg.src = src;
-    if (picImg.complete) show();
+    if (im.complete || picImg.complete) show();
   }
 
   // Proyectos: el punto se abre en una píldora con este texto
@@ -59,13 +74,13 @@
     const pe = t && t.closest('[data-cursor-pic]');
     if (pe !== picEl) {
       picEl = pe;
-      if (pe) showPic(pe.dataset.cursorPic); else { picToken++; pic.classList.remove('is-on'); }
+      if (pe) showPic(pe.dataset.cursorPic); else { picToken++; picReady = false; pic.classList.remove('is-on'); }
     }
     let view = null, text = '';
     for (const [sel, fixed] of VIEW) { const el = t && t.closest(sel); if (el) { view = el; text = fixed || el.dataset.cursorLabel || 'View'; break; } }
     if (view) label.textContent = text;
     set('is-view', !!view);
-    const hide = !view && !!(pe || (t && t.closest(HIDE)));
+    const hide = !view && !!((pe && picReady) || (t && t.closest(HIDE)));   // sobre una imagen-cursor el punto se aparta solo cuando la imagen ya se ve (showPic)
     set('is-hide', hide);
     const inField = !view && !hide && !!(t && t.closest(TEXT));
     set('is-text', inField);                       // sobre las barras de escribir de Contact el punto se vuelve una raya, como el cursor de texto
@@ -92,7 +107,7 @@
   }, { passive: true });
   addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') { set('is-down', true); pic.classList.add('is-down'); } }, { passive: true });
   addEventListener('pointerup', () => { set('is-down', false); pic.classList.remove('is-down'); }, { passive: true });
-  root.addEventListener('pointerleave', () => { set('is-on', false); set('is-down', false); pic.classList.remove('is-on', 'is-down'); picEl = null; picToken++; });
+  root.addEventListener('pointerleave', () => { set('is-on', false); set('is-down', false); pic.classList.remove('is-on', 'is-down'); picEl = null; picToken++; picReady = false; });
 
   // La sala 3D marca dot-hot sobre un objeto (js/room.js): el punto crece un poco
   new MutationObserver(paintHot).observe(root, { attributes: true, attributeFilter: ['class'] });
