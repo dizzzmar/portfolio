@@ -24,7 +24,7 @@
 <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261113mustard1">
-<link rel="stylesheet" href="/css/archive.css?v=20261117podium5">
+<link rel="stylesheet" href="/css/archive.css?v=20261114idx5">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261112navdiff1">
@@ -63,22 +63,17 @@
 <!-- DIGITAL ARCHIVE · índice de colecciones. EDITA: para una colección nueva copia un <li> y cambia su enlace, nombre, recuento y miniaturas
      (y crea su carpeta en archive/ y en assets/archive/, ver README). -->
 <main class="archive-index">
-  <div class="archive-landing">
-    <div class="archive-head">
-      <h1 class="archive-heading">Digital Archive</h1>
-      <p class="archive-sub" data-cursor-pic="/assets/archive/nicolo-eye.webp">Inspired by my friend Nicolò&nbsp;Lombardi’s <a href="https://nicolo-lombardi.com/archive/" target="_blank" rel="noopener">digital archive</a></p>
-    </div>
-    <!-- Una fila por colección. Al pasar el ratón (o el foco) por una, su muro aparece dentro de la mancha de la derecha y se queda hasta que se elija otra
-         (js/archive-index.js; solo con ratón: en el móvil es la lista sola). EDITA: copia un <li> y cambia el enlace, el nombre, el recuento y data-items (carpeta de sus piezas). -->
-    <ol class="archive-list">
-      <li>
-        <a class="archive-row" href="/archive/fruit-stickers/" data-items="/assets/archive/fruit-stickers/" data-cursor-pic="random:/assets/archive/fruit-stickers/items.json">
-          <span class="archive-name">Fruit stickers<sup aria-hidden="true">(2)</sup></span>
-        </a>
-      </li>
-    </ol>
-    <div class="archive-blob" aria-hidden="true"></div>
+  <div class="archive-head">
+    <h1 class="archive-heading">Digital Archive</h1>
+    <p class="archive-sub" data-cursor-pic="/assets/archive/nicolo-eye.webp">Inspired by my friend Nicolò&nbsp;Lombardi’s <a href="https://nicolo-lombardi.com/archive/" target="_blank" rel="noopener">digital archive</a></p>
   </div>
+  <ol class="archive-list">
+    <li>
+      <a class="archive-row" href="/archive/fruit-stickers/" data-cursor-pic="random:/assets/archive/fruit-stickers/items.json">
+        <span class="archive-name">Fruit stickers<sup aria-hidden="true">(2)</sup></span>
+      </a>
+    </li>
+  </ol>
 </main>
 
 <!-- FOOTER GRANDE · el único pie de la web (igual en todas las páginas): «DIZMAR» enorme sobre el rojo del menú, cuyas piezas se recomponen con el scroll
@@ -100,7 +95,6 @@
 </section>
 <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
 <script src="/js/cursor.js?v=20261115pic2" defer></script>
-<script type="module" src="/js/archive-index.js?v=20261117podium5"></script>
 <script src="/js/smooth-scroll.js?v=20261028n" defer></script>
   <script type="module" src="/js/contact-sachet.js?v=20261116audit3"></script>
 <script src="/js/big-foot.js?v=20261112foot5" defer></script>
