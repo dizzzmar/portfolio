@@ -22,7 +22,7 @@
         ],
         [
           "Designer",
-          "—"
+          "Robert Freeman (photo), Charles Front (lettering)"
         ]
       ]
     },
@@ -47,7 +47,7 @@
         ],
         [
           "Designer",
-          "—"
+          "Paul McCartney (art), Linda McCartney (photo)"
         ]
       ]
     },
@@ -72,32 +72,32 @@
         ],
         [
           "Designer",
-          "—"
+          "Lulu Lin (image), Carlos O’Connell, Texas Maragh (design)"
         ]
       ]
     },
     {
-      "id": "dopamine",
-      "name": "Dopamine",
-      "src": "dopamine.webp",
+      "id": "dopamine-chamber",
+      "name": "Dopamine Chamber",
+      "src": "dopamine-chamber.webp",
       "width": 225,
       "height": 225,
       "facts": [
         [
           "Artist",
-          "—"
+          "Fontaines D.C."
         ],
         [
           "Album",
-          "Dopamine"
+          "Dopamine Chamber"
         ],
         [
           "Year",
-          "—"
+          "2026"
         ],
         [
           "Designer",
-          "—"
+          "Texas Maragh (design), Elizaveta Porodina (photo)"
         ]
       ]
     },
@@ -119,6 +119,31 @@
         [
           "Year",
           "1970"
+        ],
+        [
+          "Designer",
+          "Gordon House, Roger Huggett (from a concept by Paul McCartney)"
+        ]
+      ]
+    },
+    {
+      "id": "minecraft-volume-alpha",
+      "name": "Minecraft – Volume Alpha",
+      "src": "minecraft-volume-alpha.webp",
+      "width": 316,
+      "height": 316,
+      "facts": [
+        [
+          "Artist",
+          "C418"
+        ],
+        [
+          "Album",
+          "Minecraft – Volume Alpha"
+        ],
+        [
+          "Year",
+          "2011"
         ],
         [
           "Designer",
