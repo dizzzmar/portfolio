@@ -5,7 +5,7 @@
 :root { --bg: #0c0c0b; --ink: var(--cream); --hair: rgba(244, 239, 230, .18); --gutter: clamp(16px, 1.2vw, 24px); }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { background: var(--bg); }
-body { min-height: 100vh; min-height: 100svh; color: var(--ink); background: var(--bg); font-family: var(--font-ui); font-size: var(--fs-read); font-weight: var(--fw-regular); line-height: var(--lh-body); overflow-x: clip; }
+body { min-height: 100vh; min-height: 100svh; color: var(--ink); background: transparent; font-family: var(--font-ui); font-size: var(--fs-read); font-weight: var(--fw-regular); line-height: var(--lh-body); overflow-x: clip; }
 a { color: inherit; text-underline-offset: 4px; }
 img { display: block; max-width: 100%; height: auto; }
 ::selection { background: var(--ink); color: var(--bg); }
@@ -17,8 +17,9 @@ img { display: block; max-width: 100%; height: auto; }
 .nav-logo { flex: none; display: block; width: 44px; height: 47px; transition: transform .3s var(--ease-out); }
 .nav-logo:hover { transform: rotate(-8deg) scale(1.06); }
 
-/* ---------- Estela de píxeles blancos (js/archive-trail.js): fija a pantalla completa, sobre el contenido y bajo la barra (9) y el visor (30); no recibe clics ---------- */
-.archive-trail { position: fixed; inset: 0; z-index: 8; pointer-events: none; }
+/* ---------- Estela de píxeles blancos (js/archive-trail.js): fija a pantalla completa, POR DETRÁS del contenido (piezas, textos) y por encima del fondo; no recibe clics.
+   Para que quede detrás, el color de fondo lo pinta <html> y <body> es transparente (si <body> pintara el fondo taparía la estela). ---------- */
+.archive-trail { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
 /* ---------- Índice: el título y, debajo, una fila por colección ---------- */
 .archive-index { padding: calc(var(--nav-h) + clamp(32px, 6vw, 96px)) var(--gutter) clamp(48px, 8vw, 120px); }
