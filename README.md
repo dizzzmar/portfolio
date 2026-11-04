@@ -9,7 +9,7 @@ index.html · room.html · 404.html      Home (el tomate gira con su nombre y ba
 about/ · faq/ · privacy/               About, FAQs y Privacidad (cada una, un index.html)
 playground/index.html                  Playground: el sandbox de nodos (Plant Lab y Brush Lab) a pantalla completa; el dibujo se hace en el navegador
 posters/index.html                     Collage de trabajos personales y ficticios; cada pieza abre un visor con todo su mini-proyecto (js/posters.js)
-archive/index.html · archive/<colección>/index.html   Digital Archive: el índice de colecciones y el muro de cada colección (ahora solo fruit-stickers); piezas en assets/archive/<colección>/items.json
+archive/index.html · archive/<colección>/index.html   Digital Archive: el índice de colecciones (con ratón, una mancha líquida de WebGL que muestra el muro de la fila elegida: js/archive-index.js) y el muro de cada colección (ahora solo fruit-stickers); piezas en assets/archive/<colección>/items.json
 machine/index.html                     Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 project/<nombre>/index.html            Una ficha por proyecto → www.dizmar.xyz/project/<nombre>/
                                        (lexus-electrified · schweppes · schweppes-the-gentlemen · soap-and-glory-vanilla · enmad · plant-lab, que lleva el sandbox dentro)
