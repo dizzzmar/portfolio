@@ -1,0 +1,2 @@
+Sounds: "Interface Sounds" by Kenney (www.kenney.nl), licence Creative Commons Zero (CC0).
+tick-1 = tick_001, tick-2 = tick_002, click = click_004. The .m4a files are the same sounds converted for browsers that cannot play .ogg.
