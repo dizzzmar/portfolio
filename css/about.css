@@ -117,10 +117,10 @@ main { padding: 0 var(--margin); }
   width: 100%;
   height: 100%;
   overflow: hidden;
-  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  box-shadow: var(--sx, 0px) calc(18px + var(--sy, 0px)) 40px -18px rgba(0, 25, 0, .6); /* la sombra se mueve con la inclinación */
-  will-change: transform;
 }
+/* La inclinación va en .tilt, que envuelve las dos caras: así el dorso se inclina y brilla igual que la foto. Las variables las pone js/about.js en .tilt y las heredan las dos caras. */
+.tilt { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); will-change: transform; }
+.holo-card, .scene-back { box-shadow: var(--sx, 0px) calc(18px + var(--sy, 0px)) 40px -18px rgba(0, 25, 0, .6); } /* la sombra se mueve con la inclinación */
 .holo-card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; } /* la cara arriba */
 .holo-shine, .holo-glare {
   position: absolute;
@@ -129,6 +129,9 @@ main { padding: 0 var(--margin); }
   -webkit-mask: url("/assets/images/mario-bg-mask.png") 50% 25% / cover no-repeat;
   mask: url("/assets/images/mario-bg-mask.png") 50% 25% / cover no-repeat;
 }
+.scene-back .holo-shine, .scene-back .holo-glare { -webkit-mask: none; mask: none; }   /* en el dorso el brillo cubre toda la cara */
+/* Sobre el blanco, «color-dodge» no se ve: en el dorso las franjas del holograma se tiñen encima (multiply), como el papel de aluminio de una carta */
+.scene-back .holo-shine { mix-blend-mode: multiply; filter: saturate(1.4) brightness(1.15); opacity: calc(var(--o, 0) * .4); }
 .holo-shine {
   background: repeating-linear-gradient(115deg, #3fa7b0 0%, #7fe0d6 6%, #c8f0e0 12%, #9fd0ea 18%, #2c5f86 24%, #8fb04a 30%, #3fa7b0 36%);
   background-size: 400% 400%;
@@ -301,7 +304,7 @@ html.menu-arriving:not(.menu-arriving-out) :is(.about-card, .about-card > *, .ab
 .flip-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .9s cubic-bezier(.77, 0, .175, 1); }
 .portrait.is-flipped .flip-inner { transform: rotateY(180deg); }
 .flip-inner > .holo-card, .scene-back { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
-.scene-back { transform: rotateY(180deg); overflow: hidden; background: #fff; box-shadow: 0 18px 40px -18px rgba(0, 25, 0, .6); }
+.scene-back { transform: rotateY(180deg); overflow: hidden; background: #fff; }
 .scene-canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 .flip-btn { position: absolute; inset: 0; z-index: 3; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .flip-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
@@ -309,6 +312,8 @@ html.menu-arriving:not(.menu-arriving-out) :is(.about-card, .about-card > *, .ab
 html.scene-full { overflow: hidden; }
 html.scene-full .about-photo { z-index: 1000; }
 .portrait.is-full { position: fixed; z-index: 1000; margin: 0; aspect-ratio: auto; transition: left .5s cubic-bezier(.77, 0, .175, 1), top .5s cubic-bezier(.77, 0, .175, 1), width .5s cubic-bezier(.77, 0, .175, 1), height .5s cubic-bezier(.77, 0, .175, 1); }
+.portrait.is-full .tilt { transform: none; }   /* a pantalla completa, quieta y sin brillo */
+.portrait.is-full :is(.holo-shine, .holo-glare) { display: none; }
 .portrait.is-full .scene-back { box-shadow: none; background: #ffa2d4; }   /* a pantalla completa, sobre rosa (el rosa de la web: ENMAD) */
 .scene-back { transition: background-color .5s ease; }
 @media (prefers-reduced-motion: reduce) { .flip-inner, .portrait.is-full { transition: none; } }

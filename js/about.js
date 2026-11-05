@@ -18,13 +18,13 @@
   items.forEach((el) => io.observe(el));
 })();
 
-// FOTO HOLOGRÁFICA · como una carta coleccionable: con ratón, la foto se inclina hacia el cursor, el brillo del fondo se desplaza
+// FOTO HOLOGRÁFICA · como una carta coleccionable: con ratón, la carta (por las dos caras) se inclina hacia el cursor, el brillo del fondo se desplaza
 // y un reflejo de luz lo sigue; al salir vuelve a su sitio. En pantallas táctiles se mueve sola, despacio, mientras se ve.
 // Con "reducir movimiento" no se hace nada (la foto se ve normal). Los estilos están en css/about.css (.holo).
 (() => {
   const card = document.querySelector('[data-holo]');
   if (!card || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const inner = card.querySelector('.holo-card');
+  const inner = card.querySelector('.tilt') || card.querySelector('.holo-card');   // la carta entera: foto y dorso
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   let x = 0.5, y = 0.5, o = 0, tx = 0.5, ty = 0.5, to = 0, raf = 0, visible = false;
   const paint = (t) => {

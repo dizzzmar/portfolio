@@ -24,7 +24,7 @@
 <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261113mustard1">
-<link rel="stylesheet" href="/css/about.css?v=20261105full1">
+<link rel="stylesheet" href="/css/about.css?v=20261105holo1">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261112navdiff1">
@@ -64,16 +64,18 @@
 <main class="about">
   <!-- La foto se queda quieta a la izquierda (con su efecto holográfico, js/about.js) y la tarjeta con el texto entra por la derecha y se recorre por dentro (css/about.css) -->
   <div class="about-photo">
-    <!-- Foto holográfica: se inclina en 3D siguiendo el ratón y un brillo con los colores de la foto recorre el fondo, como una carta coleccionable (js/about.js) -->
+    <!-- Foto holográfica: la carta entera (.tilt) se inclina en 3D siguiendo el ratón y un brillo holográfico recorre sus dos caras, como una carta coleccionable (js/about.js) -->
     <!-- Al pulsar la foto, la tarjeta se da la vuelta y por detrás hay una escena isométrica en pixel art: un equipo trabajando en un campo verde (js/about-scene.js, se carga al girarla) -->
     <div class="portrait holo" data-holo data-cursor="view" data-cursor-label="Flip">
+      <div class="tilt">
       <div class="flip-inner">
         <div class="holo-card">
           <span class="px" style="--lq: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAANCAIAAAAfVWhSAAABh0lEQVR42gXBS0/UQAAA4Hl1+tilTd1dSGBFNFFCeiHxoCFoPJmYcNGbN/03Jp78HZzwpolw1oMciIgLiCBhwS3T7gydaafTjt8H377/sLw4F/tuDVDVNnNhcF3XxJKUF6OjKzKIur5Hog5RLZoc/rGXzcJK4iJfaXNnvkfmexEAlrrB9ubm149bK8PZ4smzBxsvvS7ttzWJO57jwevGsCx/9+ZVsvpwa/eHT51ea/aZRNJobdvbgZcsDs9Oz4HWz9ceh5hqYXxMEROctjZEztMXG5mSPnVOu4Ob2nY8r2kQwrICtU2lOvj56/tlepIzw1NWqbSsLEbkgsk0G33b+cIn49friQDNaO/zOVP9u48svoV795PdnU8d2izfCyVUR//+qtLd25/8Pj6JZpewnolBNl5aGPoUDfqY5SDnwVQ0EOASEFRxzpg6uxAHx2NK4VQU1DEZr6F1BcuIo4t4EBYyiyOT87qQynWQLKZXRiADiWAcBtQ2EgI05e0k1WV5I1WpjevPqP9hVNYAz+3gZAAAAABJRU5ErkJggg==)"><img src="/assets/images/mario-600.webp" srcset="/assets/images/mario-600.webp 600w, /assets/images/mario-956.webp 956w" sizes="(max-width: 760px) 55vw, 25vw" width="956" height="1280" alt="Portrait of Mario Diz, smiling, in a green knitted sweater against a blue-green painted backdrop"></span>
           <span class="holo-shine" aria-hidden="true"></span>
           <span class="holo-glare" aria-hidden="true"></span>
         </div>
-        <div class="scene-back" aria-hidden="true"><canvas class="scene-canvas" role="img" aria-label="Pixel-art isometric scene: a small team working with laptops on a green field, chatting at desks and in front of a whiteboard"></canvas></div>
+        <div class="scene-back" aria-hidden="true"><canvas class="scene-canvas" role="img" aria-label="Pixel-art isometric scene: a small team working with laptops on a green field, chatting at desks and in front of a whiteboard"></canvas><span class="holo-shine" aria-hidden="true"></span><span class="holo-glare" aria-hidden="true"></span></div>
+      </div>
       </div>
       <button class="flip-btn" type="button" aria-pressed="false" aria-label="Turn the photo over"></button>
     </div>
@@ -169,7 +171,7 @@
   </div>
 </section>
 
-<script src="/js/about.js?v=20261105full1" defer></script>
+<script src="/js/about.js?v=20261105holo1" defer></script>
 <script src="/js/pixel-load.js?v=20261126pxfix1" defer></script>
 <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
 <script src="/js/cursor.js?v=20261105label1" defer></script>
