@@ -159,10 +159,35 @@ function cliffTexture(heightUnits) {
     for (let k = 0; k < W * 1.5; k++) { g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(Math.floor(rnd() * W), Math.floor(rnd() * Hh), 1, 2); }  // grietas
   }, true);
 }
-const roofTex = () => canvasTexture(32, 32, (g) => {                   // tejas: hileras alternas
-  for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) {
-    const row = Math.floor(y / 4), edge = y % 4 === 3 || (x + row * 3) % 6 === 0;
-    g.fillStyle = edge ? '#6e2b1c' : ['#a8462c', '#b5532f', '#9b3f28', '#bf5c36'][Math.floor(rnd() * 4)]; g.fillRect(x, y, 1, 1);
+const roofTex = () => canvasTexture(64, 64, (g) => {                   // tejas: hileras desiguales, cada teja de un tono, con su borde oscuro y algo de musgo
+  const TILE = ['#a8462c', '#b5532f', '#9b3f28', '#bf5c36', '#a04a30', '#c46a3e'];
+  for (let row = 0; row < 8; row++) for (let col = -1; col < 9; col++) {
+    const x0 = col * 8 + (row % 2 ? 4 : 0) + Math.floor(rnd() * 2), base = TILE[Math.floor(rnd() * TILE.length)];
+    for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+      const px = x0 + x, py = row * 8 + y; if (px < 0 || px > 63) continue;
+      const edge = y === 7 || x === 0 || (y === 6 && (x === 1 || x === 7));
+      g.fillStyle = edge ? '#6e2b1c' : y < 2 ? shade(base, 1.12) : rnd() < 0.08 ? shade(base, 0.85) : base; g.fillRect(px, py, 1, 1);
+    }
+  }
+  for (let k = 0; k < 40; k++) { g.fillStyle = ['#5d7a2e', '#6f8f36', '#4c6a28'][k % 3]; const x = Math.floor(rnd() * 64), y = Math.floor(rnd() * 64); g.fillRect(x, y, 1 + Math.floor(rnd() * 2), 1); }
+}, true);
+const plasterTex = () => canvasTexture(64, 64, (g) => {                // cal pintada a mano: manchas suaves, grietas y motas
+  for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+    const n = Math.sin(x * 0.21 + Math.sin(y * 0.17) * 2) + Math.cos(y * 0.13 - x * 0.07) + (rnd() - 0.5) * 0.8;
+    g.fillStyle = n > 1.1 ? '#f6efdf' : n > 0.2 ? '#efe6d2' : n > -0.8 ? '#e6dcc6' : '#dccfb6'; g.fillRect(x, y, 1, 1);
+  }
+  for (let k = 0; k < 5; k++) { let x = Math.floor(rnd() * 64), y = Math.floor(rnd() * 64); g.fillStyle = '#c9b99c'; for (let s = 0; s < 6; s++) { g.fillRect(x, y, 1, 1); x += rnd() < 0.5 ? 1 : 0; y += 1; } }
+  for (let k = 0; k < 30; k++) { g.fillStyle = '#d2c4a8'; g.fillRect(Math.floor(rnd() * 64), Math.floor(rnd() * 64), 1, 1); }
+}, true);
+const stoneTex = () => canvasTexture(32, 32, (g) => {                  // piedras redondeadas con su junta y su brillo
+  g.fillStyle = '#6e685f'; g.fillRect(0, 0, 32, 32);
+  const STONES = ['#a9a39a', '#9a948b', '#b6b0a6', '#8d877e', '#a39b8c'];
+  for (let row = 0; row < 4; row++) for (let col = -1; col < 5; col++) {
+    const w = 6 + Math.floor(rnd() * 3), x0 = col * 8 + (row % 2 ? 4 : 0), y0 = row * 8 + 1, c = STONES[Math.floor(rnd() * STONES.length)];
+    for (let y = 0; y < 6; y++) for (let x = 0; x < w; x++) {
+      if ((y === 0 || y === 5) && (x === 0 || x === w - 1)) continue;        // esquinas redondeadas
+      g.fillStyle = y === 0 || x === 0 ? shade(c, 1.12) : y === 5 || x === w - 1 ? shade(c, 0.82) : c; g.fillRect((x0 + x + 32) % 32, y0 + y, 1, 1);
+    }
   }
 }, true);
 const plankTex = (base) => canvasTexture(16, 16, (g) => {
@@ -297,6 +322,8 @@ const PAL = {
   fern: ['#173d1a', '#245526', '#336e30', '#4b8a3e', '#71aa55'],
   lavender: ['#3c2c66', '#57448f', '#7a63b9', '#a18bdb', '#cdbdf4'],
   cloud: ['#9ba8c4', '#c0cae0', '#dfe6f3', '#f4f7fc', '#ffffff'],
+  stone: ['#4a4640', '#66615a', '#837d74', '#a39d93', '#c8c2b8'],
+  moss: ['#2a4a1c', '#3d6526', '#557f30', '#77a043', '#a3c562'],
 };
 
 // ---------- Personas: cajas con articulaciones (cadera, rodilla, hombro, codo, cintura, cuello) ----------
@@ -345,9 +372,11 @@ function person({ shirt, pants, skin, hair, style = 'short', shorts = false, sle
     stick: (() => { const g = new THREE.Group(); const s = box(0.025, 0.025, 0.7, mat('#7a5530')); s.position.z = 0.35; g.add(s); const m = box(0.07, 0.07, 0.07, mat('#fff4e0')); m.position.z = 0.7; g.add(m); g.rotation.x = 0.9; return hold(g, 0, -0.26, 0.03); })(),
     book: hold(box(0.26, 0.2, 0.05, mat(['#c8322f', '#2d4f9e', '#f2c230'][Math.floor(rnd() * 3)])), 0, 0.16, 0.24, p.spine),
     log: hold(box(0.5, 0.16, 0.16, mat('#8a5a32')), 0, 0.12, 0.26, p.spine),
+    laptop: hold(box(0.36, 0.05, 0.26, mat('#30343c')), 0, 0.06, 0.26, p.spine),
     rod: (() => { const g = new THREE.Group(); const r = box(0.03, 0.03, 1.7, mat('#5a3d22')); r.position.z = 0.85; g.add(r); const line = box(0.012, 1.25, 0.012, mat('#e8e8e8')); line.position.set(0, -0.62, 1.7); line.rotation.x = 0.55; g.add(line); g.line = line; g.rotation.x = -0.55; return hold(g, 0.24, 0.98, 0.18); })(),
     can: (() => { const g = new THREE.Group(); const b = box(0.2, 0.18, 0.13, mat('#4f8f5a')); g.add(b); const s = box(0.04, 0.04, 0.22, mat('#4f8f5a')); s.position.set(0, 0.05, 0.16); s.rotation.x = -0.6; g.add(s); return hold(g, 0.26, 0.62, 0.26); })(),
-    brolly: (() => { const g = new THREE.Group(); const s = box(0.03, 1.0, 0.03, mat('#2b2b2b')); s.position.y = -0.5; g.add(s); const m = mat(brolly); const lo = box(1.0, 0.1, 1.0, m); lo.position.y = 0.02; g.add(lo); const hi = box(0.6, 0.1, 0.6, m); hi.position.y = 0.12; g.add(hi); return hold(g, 0.16, 2.12, 0.08); })(),
+    brolly: (() => { const g = new THREE.Group(); const s = box(0.03, 1.0, 0.03, mat('#2b2b2b')); s.position.y = -0.5; g.add(s); const pos = [], nor = []; for (let k = 0; k < 260; k++) { const u = rnd(), a = rnd() * Math.PI * 2, r = Math.sqrt(1 - u * u); const dx = r * Math.cos(a), dy = u, dz = r * Math.sin(a); pos.push(dx * 0.55, dy * 0.32, dz * 0.55); nor.push(dx, dy, dz); }
+      const dome = new THREE.Points(pointsOf(pos, nor), foliageMaterial('puff', [0.55, 0.75, 0.92, 1.08, 1.25].map((k) => shade(brolly, k)), 0.13)); dome.frustumCulled = false; g.add(dome); return hold(g, 0.16, 2.12, 0.08); })(),
   };
   p.add(p.props.rod, p.props.can, p.props.brolly);
   p.pose = { tl: 0, tr: 0, kl: 0, kr: 0, al: 0, ar: 0, alz: 0, arz: 0, el: 0, er: 0, sp: 0, spy: 0, hx: 0, hy: 0, lift: 0, lie: 0 };
@@ -460,7 +489,7 @@ export function startScene(canvas, { still = false } = {}) {
     for (let i = 0; i < pos.count; i++) uv.setXY(i, (pos.getX(i) + H) / (2 * H), (H - pos.getZ(i)) / (2 * H));
     const tm = new THREE.Mesh(top, groundMat); tm.receiveShadow = true; add(tm); }
   // Escaleras de piedra hasta la terraza
-  const stone = mapMat(noiseTex(['#a9a39a', '#9a948b', '#b6b0a6', '#8d877e'], 32));
+  const stone = mapMat(stoneTex());
   for (let i = 0; i < 8; i++) B(STAIRS.x1 - STAIRS.x0, 0.2 * (i + 1), 0.2, stone, (STAIRS.x0 + STAIRS.x1) / 2, 0.1 * (i + 1), STAIRS.zBot - 0.1 - 0.2 * i);
   // Valla de madera en el borde de la terraza (con hueco para las escaleras)
   const fenceWood = mat('#8a5a32');
@@ -473,6 +502,7 @@ export function startScene(canvas, { still = false } = {}) {
   fence(STAIRS.x1 + 0.05, TERR.z1 - 0.12, TERR.x1 - 0.12, TERR.z1 - 0.12);
   fence(TERR.x1 - 0.12, TERR.z1 - 0.12, TERR.x1 - 0.12, -6.75);
 
+  const boulders = [];                                 // cantos rodados: [x, y, z, radio]
   // ---------- Agua: estanque, arroyo, cascada que cae por el acantilado ----------
   const pondTex = waterTex(false), streamTex = waterTex(true), fallTex = waterTex(true);
   streamTex.repeat.set(2, 1); fallTex.repeat.set(1, 3);
@@ -485,10 +515,11 @@ export function startScene(canvas, { still = false } = {}) {
   for (let k = 0; k < 26; k++) {                                       // piedras en la orilla
     const a = k / 26 * Math.PI * 2, r = POND.r + 0.12 + rnd() * 0.15, x = POND.x + Math.cos(a) * r, z = POND.z + Math.sin(a) * r;
     if (inStream(x, z)) continue;
-    const s = 0.14 + rnd() * 0.14; B(s * 1.4, s, s * 1.2, stone, x, -0.04, z, rnd() < 0.5 ? 0 : Math.PI / 2);
+    const s = 0.1 + rnd() * 0.1; boulders.push([x, -0.06, z, s]);
   }
   // Puente de madera sobre el arroyo
   const plank = mapMat(plankTex('#9c6a3c'));
+
   for (let i = 0; i < 9; i++) { const z = BRIDGE.z0 + 0.09 + i * (BRIDGE.z1 - BRIDGE.z0 - 0.18) / 8; B(BRIDGE.x1 - BRIDGE.x0, 0.07, 0.16, plank, (BRIDGE.x0 + BRIDGE.x1) / 2, heightAt(6.4, z) - 0.04, z); }
   for (const x of [BRIDGE.x0 + 0.04, BRIDGE.x1 - 0.04]) {
     for (const z of [BRIDGE.z0, (BRIDGE.z0 + BRIDGE.z1) / 2, BRIDGE.z1]) B(0.08, 0.7, 0.08, fenceWood, x, heightAt(6.4, z) + 0.3, z);
@@ -496,7 +527,7 @@ export function startScene(canvas, { still = false } = {}) {
   }
 
   // ---------- La casa: paredes de cal con entramado, tejado de tejas, chimenea, ventanas que se encienden ----------
-  const plaster = mapMat(noiseTex(['#efe6d2', '#e6dcc6', '#f4ecdb'], 8)), beam = mat('#5b3b24');
+  const plaster = mapMat(plasterTex()), beam = mapMat(plankTex('#5b3b24'));
   const hx = (HOUSE.x0 + HOUSE.x1) / 2, hz = (HOUSE.z0 + HOUSE.z1) / 2, hw = HOUSE.x1 - HOUSE.x0, hd = HOUSE.z1 - HOUSE.z0, W = HOUSE.wall;
   B(hw + 0.2, 0.3, hd + 0.2, stone, hx, 0.13, hz);                              // zócalo de piedra
   B(hw, W, hd, plaster, hx, W / 2 + 0.25, hz);
@@ -558,13 +589,17 @@ export function startScene(canvas, { still = false } = {}) {
   // ---------- La oficina al aire libre ----------
   const wood = mapMat(noiseTex(['#b98352', '#a87447', '#c38c59'], 32));
   const slots = [];                                    // sitios donde hacer algo: { kind, x, z, face, seat?, from?, by }
+  const laptops = [];                                 // { g, state: 'desk' | 'carried' | 'inside', by }
   const desk = (x, z, r) => {
     const g = new THREE.Group();
     const top = box(1.3, 0.06, 0.66, wood); top.position.y = 0.74; g.add(top);
     for (const [lx, lz] of [[-0.58, -0.27], [0.58, -0.27], [-0.58, 0.27], [0.58, 0.27]]) { const l = box(0.05, 0.74, 0.05, mat('#3b3b3b')); l.position.set(lx, 0.37, lz); g.add(l); }
-    const base = box(0.4, 0.025, 0.28, mat('#30343c')); base.position.set(0, 0.785, 0.08); g.add(base);
-    const scr = box(0.4, 0.26, 0.02, mat('#30343c')); scr.position.set(0, 0.92, -0.06); scr.rotation.x = -0.2; g.add(scr);
-    const glow = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.2), new THREE.MeshBasicMaterial({ color: '#8fd0ff' })); glow.position.set(0, 0.92, -0.045); glow.rotation.x = -0.2; g.add(glow);
+    // El portátil va aparte: si llueve, alguien lo mete en casa (y lo vuelve a sacar al trabajar)
+    const lg = new THREE.Group();
+    const base = box(0.4, 0.025, 0.28, mat('#30343c')); base.position.set(0, 0.785, 0.08); lg.add(base);
+    const scr = box(0.4, 0.26, 0.02, mat('#30343c')); scr.position.set(0, 0.92, -0.06); scr.rotation.x = -0.2; lg.add(scr);
+    const glow = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.2), new THREE.MeshBasicMaterial({ color: '#8fd0ff' })); glow.position.set(0, 0.92, -0.045); glow.rotation.x = -0.2; lg.add(glow);
+    add(at(lg, x, z, heightAt(x, z), r)); laptops.push({ g: lg, state: 'desk', by: null });
     const mug = box(0.07, 0.09, 0.07, mat('#e7e2d6')); mug.position.set(0.45, 0.82, 0.15); g.add(mug);
     keep(at(g, x, z, heightAt(x, z), r));
   };
@@ -580,7 +615,7 @@ export function startScene(canvas, { still = false } = {}) {
     desk(DX, z, r);
     const out = r ? -1 : 1, cz = z + out * 0.62;
     chair(DX, cz, r);
-    slots.push({ kind: 'desk', x: DX, z: cz, face: r ? 0 : Math.PI, seat: 0.48, from: [DX, cz + out * 0.55] });
+    slots.push({ kind: 'desk', x: DX, z: cz, face: r ? 0 : Math.PI, seat: 0.48, from: [DX, cz + out * 0.55], laptop: laptops[laptops.length - 1] });
   });
   // Pizarra con notas de colores
   const BX = -1.5, BZ = 4.8, BR = Math.PI / 5;
@@ -740,7 +775,37 @@ export function startScene(canvas, { still = false } = {}) {
     }
     const rg = new THREE.BufferGeometry(); rg.setAttribute('position', new THREE.Float32BufferAttribute(rope, 3)); add(new THREE.LineSegments(rg, new THREE.LineBasicMaterial({ color: '#3a2a1e' })));
   }
-  for (const [x, z, s] of [[-4.8, 6.6, 0.4], [2.2, -0.2, 0.25], [5.3, 5.6, 0.3], [-2.8, -5.3, 0.35], [6.6, 3.6, 0.3], [-0.6, -1.0, 0.2]]) { const y = heightAt(x, z); B(s * 1.5, s, s * 1.2, stone, x, y + s / 2 - 0.05, z, rnd() < 0.5 ? 0 : Math.PI / 2); B(s * 0.8, s * 0.5, s * 0.7, stone, x + s * 0.3, y + s * 1.1 - 0.05, z - s * 0.1); }
+  for (const [x, z, s] of [[-4.8, 6.6, 0.4], [2.2, -0.2, 0.25], [5.3, 5.6, 0.3], [-2.8, -5.3, 0.35], [6.6, 3.6, 0.3], [-0.6, -1.0, 0.2]]) { const y = heightAt(x, z); boulders.push([x, y + s * 0.3, z, s * 0.75], [x + s * 0.45, y + s * 0.15, z - s * 0.2, s * 0.5]); }
+  // Cantos rodados, musgo y flecos de hierba: lo duro también en racimos, como la vegetación
+  {
+    const stoneMat = foliageMaterial('puff', PAL.stone, 0.14), mossMat = foliageMaterial('leaf', PAL.moss, 0.12), fringeMat = foliageMaterial('leaf', PAL.grass, 0.17);
+    for (const [x, y, z, r] of boulders) { const sp = [[x, y, z, r]]; add(foliage(sp, stoneMat, 260, { flat: y - r * 0.25 })); if (r > 0.15) add(shadowCaster(sp)); }
+    const pos = [], nor = [], mpos = [], mnor = [];
+    // Fleco de hierba que cuelga por el borde de la isla y de la terraza (el borde deja de ser una arista recta)
+    const edge = (ax, az, bx, bz, y, ox, oz) => {
+      const len = Math.hypot(bx - ax, bz - az);
+      for (let d = 0; d < len; d += 0.05) {
+        const x = ax + (bx - ax) * d / len, z = az + (bz - az) * d / len;
+        if (Math.abs(z - STREAM.z) < STREAM.w + 0.1 && x > H - 0.3) continue;   // por donde cae la cascada no
+        const drop = rnd() < 0.3 ? rnd() * 0.22 : rnd() * 0.06;
+        pos.push(x + ox * (0.03 + rnd() * 0.05), y - drop, z + oz * (0.03 + rnd() * 0.05)); nor.push(ox, 0.6, oz);
+      }
+    };
+    edge(-H, H, H, H, 0, 0, 1); edge(H, H, H, -H, 0, 1, 0); edge(-H, -H, -H, H, 0, -1, 0); edge(-H, -H, H, -H, 0, 0, -1);
+    edge(-H, TERR.z1, STAIRS.x0, TERR.z1, TERR.h, 0, 1); edge(STAIRS.x1, TERR.z1, TERR.x1, TERR.z1, TERR.h, 0, 1); edge(TERR.x1, TERR.z1, TERR.x1, -H, TERR.h, 1, 0);
+    const fr = new THREE.Points(pointsOf(pos, nor), fringeMat); fr.frustumCulled = false; add(fr);
+    // Musgo en el borde de los tejados, en la cumbrera y en los escalones
+    const RISE2 = 1.35, ov = 0.35, half = (HOUSE.z1 - HOUSE.z0) / 2 + ov, hzz = (HOUSE.z0 + HOUSE.z1) / 2;
+    for (let x = HOUSE.x0 - 0.35; x < HOUSE.x1 + 0.35; x += 0.06) {
+      for (const f of [0.92 + rnd() * 0.08, rnd() < 0.25 ? rnd() : -1, rnd() < 0.4 ? rnd() * 0.08 : -1]) {
+        if (f < 0) continue;
+        mpos.push(x, HOUSE.wall + 0.25 + RISE2 * (1 - f) + 0.09, hzz + half * f); mnor.push(0, 0.8, 0.6);
+      }
+    }
+    for (let x = SHED.x0 - 0.2; x < SHED.x1 + 0.2; x += 0.07) if (rnd() < 0.8) { mpos.push(x, 1.82, SHED.z1 + 0.25); mnor.push(0, 0.8, 0.6); }
+    for (let i = 0; i < 8; i++) for (let x = STAIRS.x0; x < STAIRS.x1; x += 0.06) if (rnd() < 0.35) { mpos.push(x, 0.2 * (i + 1) + 0.03, STAIRS.zBot - 0.2 * i - 0.02); mnor.push(0, 0.7, 0.7); }
+    const ms = new THREE.Points(pointsOf(mpos, mnor), mossMat); ms.frustumCulled = false; add(ms);
+  }
   for (const [x, z] of [[-5.9, -6.0], [-6.0, 2.5], [5.9, 4.2], [-1.0, 6.0], [3.4, -6.0], [-6.1, -5.8], [5.95, 4.35]]) { const y = heightAt(x, z); B(0.04, 0.1, 0.04, mat('#f2ead8'), x, y + 0.05, z); B(0.14, 0.06, 0.14, mat(rnd() < 0.6 ? '#c8322f' : '#e8a33a'), x, y + 0.12, z); }
   // Flores del prado, matas de hierba, helechos y lavanda (todo en racimos o puntitos)
   {
@@ -993,6 +1058,9 @@ export function startScene(canvas, { still = false } = {}) {
     release(a);
     if (a.next) { const n = a.next; a.next = null; go(a, n.x, n.z, n); return; }
     if (asleepTime(a, h) && !a.owl) { goHome(a, true); return; }
+    // Llueve y hay un portátil fuera: lo primero, meterlo en casa
+    const wet = laptops.find((l) => l.state === 'desk' && !l.by);
+    if (w.rain && wet) { const s = slots.find((x) => x.laptop === wet); wet.by = a; go(a, s.from[0], s.from[1], { kind: 'grab', laptop: wet }); return; }
     const options = [];
     for (const kind in ACT) {
       if (a.owl && !['campfire', 'stargaze', 'lookout', 'view', 'cat', 'porch', 'fish'].includes(kind)) continue;
@@ -1014,6 +1082,9 @@ export function startScene(canvas, { still = false } = {}) {
     if (kind === 'cat') { cat.petted = a; cat.state = 'sit'; cat.until = t + 30; const spot = talkSpot(cat.x, cat.z, a, 0.45); go(a, spot[0], spot[1], { kind: 'cat' }); return; }
     const list = slots.filter((s) => s.kind === kind && !s.by), s = pick(list);
     if (!s) { a.kind = 'idle'; a.state = 'act'; a.until = t + 1.5; return; }
+    if (s.laptop && s.laptop.state === 'inside') {                    // el portátil está en casa: primero va a por él
+      s.by = a; s.laptop.by = a; go(a, DOOR.x, DOOR.z, { kind: 'fetch', laptop: s.laptop, slot: s }); return;
+    }
     s.by = a; const target = s.from || [s.x, s.z];
     go(a, target[0], target[1], { kind, slot: s });
   }
@@ -1030,13 +1101,23 @@ export function startScene(canvas, { still = false } = {}) {
     a.plan = plan; if (plan.slot) a.slot = plan.slot;
     if (a.inside) { a.inside = false; a.asleep = false; a.p.visible = true; a.x = DOOR.x; a.z = DOOR.z; a.yaw = 0; }
     a.path = findPath(a.x, a.z, x, z); a.state = a.sitting ? 'standup' : 'walk'; a.blend = 0;
-    if (a.carry && a.carry !== 'log') a.carry = null;
+    if (a.carry && a.carry !== 'log' && a.carry !== 'laptop') a.carry = null;
   }
   function goHome(a, sleep) { go(a, DOOR.x, DOOR.z, { kind: 'home', sleep }); }
   function arrive(a) {
     const { kind, slot } = a.plan;
     a.kind = kind; a.until = t + (ACT[kind] ? span(kind) : 2); a.t0 = t; a.variant = null;
     if (kind === 'deliver') { a.carry = null; a.state = 'act'; a.yawTo = Math.PI; a.until = t + 1.5; return; }
+    if (kind === 'grab') {                                             // cierra el portátil, lo coge y se lo lleva a casa
+      const l = a.plan.laptop; l.state = 'carried'; l.g.visible = false; a.carry = 'laptop'; a.state = 'act'; a.until = t + 0.9;
+      a.next = { kind: 'stash', x: DOOR.x, z: DOOR.z, carry: 'laptop', laptop: l }; return;
+    }
+    if (kind === 'stash') { const l = a.plan.laptop; l.state = 'inside'; l.by = null; a.carry = null; a.plan = { kind: 'home', sleep: false }; arrive(a); return; }
+    if (kind === 'fetch') {                                            // sale de casa con el portátil y lo lleva a su mesa
+      const l = a.plan.laptop; l.state = 'carried'; a.carry = 'laptop'; a.state = 'act'; a.until = t + 0.6;
+      const s = a.plan.slot; a.next = { kind: 'desk', slot: s, x: s.from[0], z: s.from[1], carry: 'laptop' }; return;
+    }
+    if (kind === 'desk' && slot.laptop && slot.laptop.state === 'carried') { slot.laptop.state = 'desk'; slot.laptop.by = null; slot.laptop.g.visible = true; a.carry = null; }
     if (kind === 'home') {                                             // entra en casa: de noche a dormir, de día a leer o a comer algo
       a.inside = true; a.p.visible = false; a.state = 'act'; a.carry = null;
       a.asleep = a.plan.sleep; a.until = a.plan.sleep ? Infinity : t + span('home');
@@ -1064,6 +1145,7 @@ export function startScene(canvas, { still = false } = {}) {
   // Al empezar, cada uno ya está haciendo algo que encaja con la hora (así la primera imagen ya cuenta la historia)
   function settleAtStart() {
     const h = logicHour(), w = weatherNow();
+    if (w.rain) laptops.forEach((l) => { l.state = 'inside'; l.g.visible = false; });   // si ya llovía, los portátiles están dentro
     agents.forEach((a, i) => {
       release(a); a.state = 'act'; a.sitting = false; a.talk = null; a.carry = null; a.next = null;
       if (asleepTime(a, h)) { a.x = DOOR.x; a.z = DOOR.z; a.plan = { kind: 'home', sleep: true }; arrive(a); return; }
@@ -1089,7 +1171,7 @@ export function startScene(canvas, { still = false } = {}) {
       const s = Math.sin(t * 9 + a.seed);
       Object.assign(P, { tl: s * 0.55, tr: -s * 0.55, kl: Math.max(0, -s) * 0.7, kr: Math.max(0, s) * 0.7, al: -s * 0.45, ar: s * 0.45, el: -0.25, er: -0.25, sp: 0.06 });
       if (a.carry === 'cup') Object.assign(P, { ar: -0.35, er: -1.3 });
-      if (a.carry === 'log') Object.assign(P, { al: -1.1, ar: -1.1, el: -0.9, er: -0.9 });
+      if (a.carry === 'log' || a.carry === 'laptop') Object.assign(P, { al: -1.1, ar: -1.1, el: -0.9, er: -0.9 });
       P.lift = Math.abs(Math.cos(t * 9 + a.seed)) * 0.035;
       return P;
     }
@@ -1224,7 +1306,7 @@ export function startScene(canvas, { still = false } = {}) {
     a.p.rotation.y = a.yaw;
     const pr = a.p.props;
     pr.cup.visible = a.carry === 'cup'; pr.phone.visible = a.carry === 'phone' && a.p.pose.er < -0.6; pr.book.visible = a.carry === 'book';
-    pr.axe.visible = a.carry === 'axe'; pr.stick.visible = a.carry === 'stick' && a.state === 'act'; pr.log.visible = a.carry === 'log';
+    pr.axe.visible = a.carry === 'axe'; pr.stick.visible = a.carry === 'stick' && a.state === 'act'; pr.log.visible = a.carry === 'log'; pr.laptop.visible = a.carry === 'laptop';
     pr.rod.visible = a.carry === 'rod' && a.state === 'act'; pr.can.visible = a.carry === 'can';
     pr.can.rotation.x = a.kind === 'garden' && a.state === 'act' ? 0.5 + Math.sin(t * 2) * 0.1 : 0;
     pr.brolly.visible = brolly;
@@ -1513,6 +1595,7 @@ export function startScene(canvas, { still = false } = {}) {
     onIsland,
     // Qué hace cada persona ahora mismo (para comprobar la escena; no se muestra)
     stats() { return { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }; },
+    laptopState() { return laptops.map((l) => l.state); },
     describe() { return agents.map((a) => ({ kind: a.inside ? (a.asleep ? 'sleep' : 'home') : a.kind, state: a.state, x: +a.x.toFixed(2), z: +a.z.toFixed(2), owl: a.owl })); },
     zoomAt, zoomBy, panBy, resetView, get zoomed() { return zstep > 0; },
     setFull(on) {
