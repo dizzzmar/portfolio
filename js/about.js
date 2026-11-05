@@ -77,7 +77,7 @@
   const back = card.querySelector('.scene-back'), canvas = card.querySelector('.scene-canvas');
   const ui = document.querySelector('.scene-ui');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const URL_SCENE = '/js/about-scene.js?v=20261127world3';
+  const URL_SCENE = '/js/about-scene.js?v=20261128fit1';
   let scene = null, loading = null, flipped = false, inView = true, full = false, home = null;
   const ensure = () => loading || (loading = import(URL_SCENE).then((m) => {
     scene = m.startScene(canvas, { still: reduced });
