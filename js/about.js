@@ -77,7 +77,7 @@
   const back = card.querySelector('.scene-back'), canvas = card.querySelector('.scene-canvas');
   const panel = document.querySelector('.scene-panel'), opener = document.querySelector('.sp-open');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const URL_SCENE = '/js/about-scene.js?v=20261126pixel2';
+  const URL_SCENE = '/js/about-scene.js?v=20261127fast1';
   let scene = null, loading = null, flipped = false, inView = true, full = false, home = null, panelHidden = false;
   const ensure = () => loading || (loading = import(URL_SCENE).then((m) => {
     scene = m.startScene(canvas, { still: reduced });
@@ -85,7 +85,13 @@
     if (panel) wirePanel(m);
     return scene;
   }).catch(() => null));
-  card.addEventListener('pointerenter', () => { import(URL_SCENE).catch(() => {}); }, { once: true });   // se adelanta la descarga
+  // La escena se monta antes de girar la foto (al acercar el ratón, o en un rato libre en pantallas táctiles), para que el giro vaya fluido
+  card.addEventListener('pointerenter', () => { ensure(); }, { once: true });
+  if (!matchMedia('(hover: hover)').matches) {
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1200));
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); idle(() => ensure(), { timeout: 2500 }); } });
+    io.observe(card);
+  }
   const root = document.documentElement;
   const label = () => {
     btn.setAttribute('aria-pressed', String(flipped));
@@ -155,7 +161,7 @@
     if (moved > 6 || performance.now() - downAt > 600) return;
     const island = scene.onIsland(e.clientX, e.clientY);
     if (!island) { shrink(); return; }
-    if (performance.now() - lastTap < 320) { scene.zoomed ? scene.resetView() : scene.zoomAt(2, e.clientX, e.clientY); lastTap = 0; }   // doble toque: acercar o volver
+    if (performance.now() - lastTap < 320) { scene.zoomed ? scene.resetView() : scene.zoomBy(2, e.clientX, e.clientY); lastTap = 0; }   // doble toque: acercar o volver
     else lastTap = performance.now();
   };
   back.addEventListener('pointerup', up); back.addEventListener('pointercancel', (e) => pts.delete(e.pointerId));
@@ -165,7 +171,7 @@
     if (!flipped) return;
     if (e.key === 'Escape') { if (full) shrink(); else turn(false); btn.focus(); return; }
     if (!full || !scene || e.target.closest?.('.scene-panel')) return;
-    const keys = { '+': () => scene.zoomAt(1.4), '=': () => scene.zoomAt(1.4), '-': () => scene.zoomAt(1 / 1.4), ArrowLeft: () => scene.panBy(60, 0), ArrowRight: () => scene.panBy(-60, 0), ArrowUp: () => scene.panBy(0, 60), ArrowDown: () => scene.panBy(0, -60) };
+    const keys = { '+': () => scene.zoomBy(1), '=': () => scene.zoomBy(1), '-': () => scene.zoomBy(-1), ArrowLeft: () => scene.panBy(60, 0), ArrowRight: () => scene.panBy(-60, 0), ArrowUp: () => scene.panBy(0, 60), ArrowDown: () => scene.panBy(0, -60) };
     if (keys[e.key]) { e.preventDefault(); keys[e.key](); }
   });
   addEventListener('resize', () => { if (full) place({ left: 0, top: 0, width: innerWidth, height: innerHeight }); });

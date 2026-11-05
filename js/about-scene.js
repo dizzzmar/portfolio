@@ -14,7 +14,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 // Un solo tamaño de píxel para todo: cada «píxel» de la escena mide de 1 a 2 píxeles de pantalla (unos 380 de ancho en la tarjeta, unos 900 a pantalla completa),
 // y todas las texturas tienen la misma densidad (DENS píxeles por metro), así la hierba, la madera, las tejas y la roca se ven del mismo grano.
 // Al acercar, los píxeles crecen (como al ampliar un dibujo en pixel art): nunca se mezclan píxeles de tamaños distintos.
-const PIXEL_MIN = 1, PIXEL_MAX = 2, WIDE_CARD = 380, WIDE_FULL = 900, DENS = 32;
+const WIDE_CARD = 380, WIDE_FULL = 900, DENS = 32;
 const seeded = (seed) => { let s = seed; return () => ((s = (s * 16807) % 2147483647) / 2147483647); };
 const rnd = seeded(7);                           // el mundo (árboles, flores, piedras) es siempre el mismo
 const rand = Math.random;                        // lo que hacen las personas, no: cada visita es distinta
@@ -56,9 +56,35 @@ function heightAt(x, z) {
 }
 
 // ---------- Texturas pintadas píxel a píxel (sin imágenes externas) ----------
-function canvasTexture(w, h, draw, repeat) {
+// Se pinta en memoria (un píxel cada vez sería lentísimo con el lienzo normal) y se vuelca de una vez. Admite '#rrggbb' y 'rgba(r,g,b,a)'.
+const COLOR_CACHE = new Map();
+function parseColor(s) {
+  let c = COLOR_CACHE.get(s);
+  if (!c) {
+    if (s[0] === '#') c = [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16), 1];
+    else { const m = s.match(/[\d.]+/g).map(Number); c = [m[0], m[1], m[2], m[3] ?? 1]; }
+    COLOR_CACHE.set(s, c);
+  }
+  return c;
+}
+function pixelPainter(w, h) {
+  const img = new ImageData(w, h), d = img.data;
+  return {
+    img, fillStyle: '#000000',
+    fillRect(x, y, rw, rh) {
+      const [r, g, b, a] = parseColor(this.fillStyle);
+      for (let j = Math.max(0, y); j < Math.min(h, y + rh); j++) for (let i = Math.max(0, x); i < Math.min(w, x + rw); i++) {
+        const k = (j * w + i) * 4;
+        if (a >= 1) { d[k] = r; d[k + 1] = g; d[k + 2] = b; d[k + 3] = 255; }
+        else { d[k] = d[k] * (1 - a) + r * a; d[k + 1] = d[k + 1] * (1 - a) + g * a; d[k + 2] = d[k + 2] * (1 - a) + b * a; d[k + 3] = Math.max(d[k + 3], 255 * a); }
+      }
+    },
+  };
+}
+function canvasTexture(w, h, draw, repeat, { real = false } = {}) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
-  draw(c.getContext('2d'), w, h);
+  if (real) draw(c.getContext('2d'), w, h);            // degradados: con el lienzo de verdad
+  else { const p = pixelPainter(w, h); draw(p, w, h); c.getContext('2d').putImageData(p.img, 0, 0); }
   const t = new THREE.CanvasTexture(c);
   t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.colorSpace = THREE.SRGBColorSpace; t.generateMipmaps = false;
   if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; }
@@ -369,12 +395,12 @@ export function startScene(canvas, { still = false } = {}) {
   const OFFSET = new THREE.Vector3(R * Math.cos(EL) * Math.sin(AZ), R * Math.sin(EL), R * Math.cos(EL) * Math.cos(AZ));
   const LOOK = new THREE.Vector3(0, -0.6, 0), pan = new THREE.Vector3(), panTo = new THREE.Vector3();
   const right = new THREE.Vector3(Math.cos(AZ), 0, -Math.sin(AZ)), up = new THREE.Vector3().crossVectors(OFFSET.clone().normalize(), right);
-  let zoom = 1, zoomTo = 1;
+  let zoom = 1;                                          // cuánto se ha acercado (1 = la isla entera); siempre da píxeles enteros
   const snapped = new THREE.Vector3();
   const placeCamera = () => {
-    const unit = 2 * viewH / zoom / (renderH || 1), r = Math.round(pan.dot(right) / unit) * unit, u = Math.round(pan.dot(up) / unit) * unit;   // a píxeles enteros
+    const r = Math.round(pan.dot(right) / unitPx) * unitPx, u = Math.round(pan.dot(up) / unitPx) * unitPx;   // a píxeles enteros: la imagen no tiembla al moverse
     snapped.copy(right).multiplyScalar(r).addScaledVector(up, u);
-    camera.position.copy(LOOK).add(snapped).add(OFFSET); camera.lookAt(LOOK.clone().add(snapped)); camera.zoom = zoom; camera.updateProjectionMatrix();
+    camera.position.copy(LOOK).add(snapped).add(OFFSET); camera.lookAt(LOOK.clone().add(snapped));
   };
 
   // Luz: sol (o luna) con sombras largas, cielo y suelo; y cuatro luces cálidas que se encienden de noche
@@ -413,7 +439,11 @@ export function startScene(canvas, { still = false } = {}) {
   groundGeo.computeVertexNormals();
   const ground = add(new THREE.Mesh(groundGeo, groundMat)); ground.receiveShadow = true;
   const DEPTH = 3.2;
-  const cliff = (len, hgt) => { const t = cliffTexture(hgt); t.repeat.set(len * DENS / 64, 1); return mapMat(t); };
+  const CLIFF_TEX = new Map();                         // se pinta una vez por altura y se reutiliza (con su propia repetición)
+  const cliff = (len, hgt) => {
+    const key = hgt.toFixed(2); if (!CLIFF_TEX.has(key)) CLIFF_TEX.set(key, cliffTexture(hgt));
+    const t = CLIFF_TEX.get(key).clone(); t.needsUpdate = true; t.repeat.set(len * DENS / 64, 1); return mapMat(t);
+  };
   const sideMats = (w, d, hgt) => [cliff(d, hgt), cliff(d, hgt), mat('#5d8f2e'), mat('#2e2018'), cliff(w, hgt), cliff(w, hgt)];
   { const base = new THREE.Mesh(new THREE.BoxGeometry(2 * H, DEPTH, 2 * H), sideMats(2 * H, 2 * H, DEPTH)); base.position.y = -DEPTH / 2 - 0.02; add(base); }   // los acantilados no reciben sombras: las copas del borde dibujaban manchas raras
   // Bajo la isla, bloques de roca escalonados: así flota y tiene volumen por debajo
@@ -449,7 +479,7 @@ export function startScene(canvas, { still = false } = {}) {
   const waterMat = mapMat(pondTex, { transparent: true, opacity: 0.92 });
   { const w = new THREE.Mesh(new THREE.CircleGeometry(POND.r + 0.08, 28).rotateX(-Math.PI / 2), waterMat); w.position.set(POND.x, POND.y, POND.z); w.receiveShadow = true; add(w); }
   { const s = new THREE.Mesh(new THREE.PlaneGeometry(H - STREAM.x0 + 0.5, STREAM.w * 2 + 0.1).rotateX(-Math.PI / 2), mapMat(streamTex)); s.position.set((STREAM.x0 - 0.5 + H) / 2, POND.y - 0.01, STREAM.z); s.receiveShadow = true; add(s); }
-  const fallMat = new THREE.MeshToonMaterial({ map: fallTex, gradientMap: TOON, transparent: true, alphaMap: canvasTexture(4, 32, (g) => { const gr = g.createLinearGradient(0, 0, 0, 32); gr.addColorStop(0, '#fff'); gr.addColorStop(0.7, '#ccc'); gr.addColorStop(1, '#000'); g.fillStyle = gr; g.fillRect(0, 0, 4, 32); }) });
+  const fallMat = new THREE.MeshToonMaterial({ map: fallTex, gradientMap: TOON, transparent: true, alphaMap: canvasTexture(4, 32, (g) => { const gr = g.createLinearGradient(0, 0, 0, 32); gr.addColorStop(0, '#fff'); gr.addColorStop(0.7, '#ccc'); gr.addColorStop(1, '#000'); g.fillStyle = gr; g.fillRect(0, 0, 4, 32); }, false, { real: true }) });
   { const f = new THREE.Mesh(new THREE.PlaneGeometry(STREAM.w * 2, 6.2), fallMat); f.rotation.y = Math.PI / 2; f.position.set(H + 0.03, POND.y - 3.1, STREAM.z); add(f);
     const foam = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.08, STREAM.w * 2 + 0.1), mat('#e8f6fb')); foam.position.set(H - 0.05, POND.y, STREAM.z); add(foam); }
   for (let k = 0; k < 26; k++) {                                       // piedras en la orilla
@@ -1383,49 +1413,58 @@ export function startScene(canvas, { still = false } = {}) {
     for (const a of agents) step(a, dt);
     separate(); nightOwl(dt); stepCat(dt); stepDucks(dt);
     stepAmbient(dt, shownHour); applyLight(shownHour, dt);
-    zoom = lerp(zoom, zoomTo, 1 - Math.exp(-12 * dt)); if (Math.abs(zoom - zoomTo) < 0.004) zoom = zoomTo; pan.lerp(panTo, 1 - Math.exp(-12 * dt));
-    if (Math.abs(zoom - sizedZoom) > 0.002) size(); else placeCamera();
+    pan.lerp(panTo, 1 - Math.exp(-12 * dt)); placeCamera();
   }
 
   // ---------- Tamaño: la escena se dibuja a muy baja resolución y se amplía sin suavizar ----------
   let raf = 0, running = false, last = 0;
-  let viewH = 10, cssW = 300, cssH = 375, renderW = 300, renderH = 375, sizedZoom = 1;
+  // Píxeles perfectos: cada píxel de la escena ocupa un número entero de píxeles reales de la pantalla (base), así todos miden lo mismo y no «bailan».
+  // Al acercar se suma un píxel real cada vez (base, base+1, base+2...): los píxeles crecen de golpe y nítidos, sin estirarse a medias.
+  let cssW = 300, cssH = 375, renderW = 300, renderH = 375, unitPx = 0.05, base = 1, zstep = 0, viewH = 10;
+  const box0 = canvas.parentElement || canvas;
   function size() {
-    cssW = canvas.clientWidth || 300; cssH = canvas.clientHeight || 375;
-    const px = clamp(cssW / (isFull ? WIDE_FULL : WIDE_CARD), PIXEL_MIN, PIXEL_MAX) * zoom;   // al acercar, cada píxel se hace más grande
-    renderW = Math.max(40, Math.round(cssW / px)); renderH = Math.max(40, Math.round(cssH / px)); sizedZoom = zoom;
+    cssW = box0.clientWidth || 300; cssH = box0.clientHeight || 375;
+    const dpr = window.devicePixelRatio || 1, target = isFull ? WIDE_FULL : WIDE_CARD;
+    base = Math.max(1, Math.round(cssW * dpr / target)); if (cssW * dpr / base > target * 1.35) base++;
+    zstep = clamp(zstep, 0, Math.max(2, base * 2));
+    const m = base + zstep; zoom = m / base;
+    renderW = Math.ceil(cssW * dpr / m); renderH = Math.ceil(cssH * dpr / m);
     renderer.setSize(renderW, renderH, false);
+    Object.assign(canvas.style, { width: renderW * m / dpr + 'px', height: renderH * m / dpr + 'px', marginLeft: (cssW - renderW * m / dpr) / 2 + 'px', marginTop: (cssH - renderH * m / dpr) / 2 + 'px' });
     const aspect = cssW / cssH, diag = 2 * H * Math.SQRT2;
-    viewH = Math.max(diag * 1.04 / (2 * aspect), (diag * 0.5 * 0.5 + 5.4) * 1.04);   // cabe la isla entera, con los árboles y las rocas de debajo
-    Object.assign(camera, { left: -viewH * aspect, right: viewH * aspect, top: viewH, bottom: -viewH });
-    const ppu = renderH / (2 * viewH / zoom);                        // píxeles de la escena por metro: los racimos miden siempre lo mismo
-    for (const m of FOLIAGE) m.uniforms.uSize.value = Math.max(2, Math.round(m.worldSize * ppu));
-    if (flowersMat) flowersMat.size = Math.max(1, Math.round(0.07 * ppu));
-    if (bulbsMat) bulbsMat.size = Math.max(2, Math.round(0.09 * ppu));
+    viewH = Math.max(diag * 1.04 / (2 * aspect), (diag * 0.5 * 0.5 + 5.4) * 1.04);   // con la isla entera, con los árboles y las rocas de debajo
+    unitPx = 2 * viewH * base / (cssH * dpr);                         // metros por píxel de la escena (no cambia al acercar)
+    Object.assign(camera, { left: -renderW * unitPx / 2, right: renderW * unitPx / 2, top: renderH * unitPx / 2, bottom: -renderH * unitPx / 2, zoom: 1 });
+    camera.updateProjectionMatrix();
+    for (const mm of FOLIAGE) mm.uniforms.uSize.value = Math.max(2, Math.round(mm.worldSize / unitPx));   // los racimos miden siempre lo mismo
+    if (flowersMat) flowersMat.size = Math.max(1, Math.round(0.07 / unitPx));
+    if (bulbsMat) bulbsMat.size = Math.max(2, Math.round(0.09 / unitPx));
     placeCamera();
   }
-  const ro = new ResizeObserver(() => { size(); renderer.render(scene, camera); }); ro.observe(canvas);
+  const ro = new ResizeObserver(() => { size(); if (ready) renderer.render(scene, camera); }); ro.observe(box0);
 
   function frame(now) {
     raf = 0;
     if (!running) return;
     const dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
-    animate(dt); renderer.render(scene, camera);
+    animate(dt); if (ready) renderer.render(scene, camera);
     raf = requestAnimationFrame(frame);
   }
   const renderOnce = () => {
     if (running) return;
-    shownHour = logicHour(); const tg = skyTarget(); sky.cloud = tg.cloud; sky.rain = tg.rain; zoom = zoomTo; pan.copy(panTo);
-    animate(0.016); applyLight(shownHour, 10); size(); renderer.render(scene, camera);
+    shownHour = logicHour(); const tg = skyTarget(); sky.cloud = tg.cloud; sky.rain = tg.rain; pan.copy(panTo);
+    animate(0.016); applyLight(shownHour, 10); size(); if (ready) renderer.render(scene, camera);
   };
 
   settleAtStart();
   shownHour = logicHour();
   { const tg = skyTarget(); sky.cloud = tg.cloud; sky.rain = tg.rain; }
   size();
-  for (let k = 0; k < 40; k++) animate(0.016);
+  for (let k = 0; k < 12; k++) animate(0.016);
   applyLight(shownHour, 10);
-  renderer.render(scene, camera);
+  let ready = false;
+  const whenReady = () => { ready = true; renderer.render(scene, camera); };
+  (renderer.compileAsync ? renderer.compileAsync(scene, camera) : Promise.resolve()).then(whenReady, whenReady);
 
   // ---------- Panel y gestos (los usa js/about.js) ----------
   const listeners = new Set();
@@ -1444,31 +1483,38 @@ export function startScene(canvas, { still = false } = {}) {
     plane.constant = 0; return false;
   }
   // Acercar hacia un punto de la pantalla (rueda, pellizco o doble clic) y desplazar arrastrando, sin salirse de la isla
-  const ZMIN = 1, ZMAX = 3.5;
-  function clampPan(v) { const lim = 7.5 * (1 - 1 / zoomTo); const r = v.dot(right), u = v.dot(up); v.copy(right).multiplyScalar(clamp(r, -lim * 1.4, lim * 1.4)).addScaledVector(up, clamp(u, -lim, lim)); return v; }
-  function zoomAt(factor, clientX, clientY) {
-    const before = zoomTo; zoomTo = clamp(zoomTo * factor, ZMIN, ZMAX);
-    if (clientX !== undefined) {
+  function clampPan(v) { const lim = 7.5 * (1 - 1 / zoom); const r = v.dot(right), u = v.dot(up); v.copy(right).multiplyScalar(clamp(r, -lim * 1.4, lim * 1.4)).addScaledVector(up, clamp(u, -lim, lim)); return v; }
+  let wheel = 1;
+  function setStep(s, clientX, clientY) {
+    const before = zoom; zstep = clamp(s, 0, Math.max(2, base * 2)); size();
+    if (zoom === before) return;
+    if (clientX !== undefined) {                                     // el punto bajo el dedo o el ratón se queda donde estaba
       const r = canvas.getBoundingClientRect(), nx = (clientX - r.left) / r.width * 2 - 1, ny = -((clientY - r.top) / r.height * 2 - 1);
-      const wx = nx * viewH * (cssW / cssH), wy = ny * viewH;                    // el punto, en unidades de la vista
-      const k = 1 / before - 1 / zoomTo;
-      panTo.addScaledVector(right, wx * k).addScaledVector(up, wy * k);
+      const k = 1 - before / zoom, hw = renderW * unitPx / 2 * zoom / before, hh = renderH * unitPx / 2 * zoom / before;
+      panTo.addScaledVector(right, nx * hw * k).addScaledVector(up, ny * hh * k);
     }
-    clampPan(panTo); renderOnce();
+    clampPan(panTo); pan.copy(panTo); renderOnce();
+  }
+  // factor > 1 acerca; se acumula y da un paso entero cuando pasa de un umbral (la rueda y el pellizco van poco a poco)
+  function zoomAt(factor, clientX, clientY) {
+    wheel *= factor;
+    if (wheel > 1.15) { wheel = 1; setStep(zstep + Math.max(1, Math.round(base / 3)), clientX, clientY); }
+    else if (wheel < 1 / 1.15) { wheel = 1; setStep(zstep - Math.max(1, Math.round(base / 3)), clientX, clientY); }
   }
   function panBy(dxPx, dyPx) {
-    const perPx = (2 * viewH / zoom) / cssH;
+    const perPx = unitPx * renderH / cssH;                           // metros por píxel CSS
     panTo.addScaledVector(right, -dxPx * perPx).addScaledVector(up, dyPx * perPx);
     clampPan(panTo); pan.copy(panTo); renderOnce();
   }
-  function resetView() { zoomTo = 1; panTo.set(0, 0, 0); renderOnce(); }
+  function resetView() { panTo.set(0, 0, 0); setStep(0); }
+  function zoomBy(steps, clientX, clientY) { setStep(zstep + steps * Math.max(1, Math.round(base / 3)), clientX, clientY); }
 
   return {
     onIsland,
     // Qué hace cada persona ahora mismo (para comprobar la escena; no se muestra)
     stats() { return { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }; },
     describe() { return agents.map((a) => ({ kind: a.inside ? (a.asleep ? 'sleep' : 'home') : a.kind, state: a.state, x: +a.x.toFixed(2), z: +a.z.toFixed(2), owl: a.owl })); },
-    zoomAt, panBy, resetView, get zoomed() { return zoomTo > 1.02; },
+    zoomAt, zoomBy, panBy, resetView, get zoomed() { return zstep > 0; },
     setFull(on) {
       isFull = on; size(); if (!on) resetView(); lastBg = '';
       const s = on ? 2048 : 1024;                                     // sombras más finas solo a pantalla completa (en la tarjeta no se notan y pesan)
