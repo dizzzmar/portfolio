@@ -1,14 +1,15 @@
 // ABOUT · el dorso de la foto: una escena isométrica en «pixel art», como «Small plays – Basketball» de shawn. (x.com/zzzzshawn).
 // Es una escena 3D de verdad (three.js) dibujada a muy baja resolución y ampliada sin suavizar, así cada píxel se ve como un cuadrado.
 // Una isla de césped con lomitas flota sobre el fondo blanco: el borde se deshace en píxeles sueltos, un camino de tierra la rodea y dentro hay franjas de campo segado.
-// Encima trabaja un equipo al aire libre, y cada persona decide sola qué hacer a continuación (sentarse a teclear, explicar algo en la pizarra, ir a por café,
+// Encima trabajan tres personas al aire libre, y cada una decide sola qué hacer a continuación (sentarse a teclear, explicar algo en la pizarra, ir a por café,
 // descansar en el banco o en lo alto de una loma, estirarse, llamar por teléfono o acercarse a charlar con alguien) y busca el camino entre los muebles.
 // Nunca se repite igual.
 // Se carga solo al dar la vuelta a la foto (js/about.js) y solo dibuja mientras se ve. Con «reducir movimiento», la escena queda quieta.
 import * as THREE from 'three';
 
-const PIXELS_WIDE = 196;           // ancho de la escena en «píxeles» gordos (menos = más gordos)
-const BG = 0xffffff;               // fondo blanco, como la referencia
+// Cada «píxel» de la escena mide entre 1,5 y 3 píxeles de pantalla (unos 260 de ancho en la tarjeta; más a pantalla completa, para que se vea más definida).
+// El fondo es transparente: lo pone el CSS (blanco en la tarjeta, rosa a pantalla completa).
+const PIXEL_MIN = 1.5, PIXEL_MAX = 3, PIXELS_WIDE = 260;
 const rnd = (() => { let s = 7; return () => ((s = (s * 16807) % 2147483647) / 2147483647); })();   // azar repetible: la escena es siempre la misma
 
 // ---------- Texturas de ruido (cada píxel un color), como el asfalto y la hierba de la referencia ----------
@@ -27,21 +28,21 @@ function noiseTexture(colors, size = 32, stripes = 0) {
 }
 // El suelo de la isla en una sola textura (1 texel ≈ 1 píxel de pantalla): césped por fuera con el borde «deshilachado» en píxeles sueltos,
 // un camino de tierra alrededor y el campo segado por dentro. Los píxeles del borde son transparentes al azar (alphaTest), como el contorno de la referencia.
-function islandMaterial(N = 144) {
+function islandMaterial(N = 240) {
   const c = document.createElement('canvas'); c.width = c.height = N;
   const g = c.getContext('2d');
   const pick = (a) => a[Math.floor(rnd() * a.length)];
   const GRASS = ['#5f8f2c', '#6e9e35', '#4f7d25', '#7fae41', '#3f6a1f', '#6a9a32'];
   const FIELD = [['#6c9c33', '#76a63a', '#629130', '#80af44'], ['#5d8c2b', '#689832', '#557f28', '#71a039']];
   const DIRT = ['#8b6a47', '#7a5b3c', '#9a7752', '#6e5136'];
-  const FRAY = N * 0.055, PATH = N * 0.1, PATHW = 2.2;            // ancho del borde roto, dónde va el camino y su grosor (en texels)
+  const FRAY = N * 0.055, PATH = N * 0.1, PATHW = N / 60;            // ancho del borde roto, dónde va el camino y su grosor (en texels)
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const d = Math.min(x, y, N - 1 - x, N - 1 - y);
     if (d < FRAY && rnd() > (d / FRAY) ** 1.6) continue;          // píxel suelto o hueco: cada vez más huecos hacia fuera
     let col;
     if (Math.abs(d - PATH) < PATHW) col = pick(DIRT);
     else if (d < PATH) col = pick(GRASS);
-    else col = pick(FIELD[Math.floor((x + y) / 9) % 2]);           // franjas en diagonal, como un césped recién cortado
+    else col = pick(FIELD[Math.floor((x + y) / 15) % 2]);           // franjas en diagonal, como un césped recién cortado
     if (rnd() < 0.04) col = '#a8c86a';                              // brillos sueltos
     g.fillStyle = col; g.fillRect(x, y, 1, 1);
   }
@@ -134,10 +135,10 @@ function chair() {
 }
 
 export function startScene(canvas, { still = false } = {}) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'low-power' });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'low-power' });
   renderer.setPixelRatio(1);
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.setClearColor(BG, 1);
+  renderer.setClearColor(0x000000, 0);
   const scene = new THREE.Scene();
 
   // Cámara isométrica (vista 2:1 del pixel art: 30° de elevación, 45° de giro)
@@ -150,7 +151,7 @@ export function startScene(canvas, { still = false } = {}) {
   scene.add(new THREE.HemisphereLight(0xeef3ff, 0x3d4a2c, 0.75));
   const sun = new THREE.DirectionalLight(0xfff0d8, 2.8);
   sun.position.set(-9, 6.5, 2.5); sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
+  sun.shadow.mapSize.set(2048, 2048);
   Object.assign(sun.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8, near: 1, far: 30 });
   sun.shadow.radius = 1.5; sun.shadow.bias = -0.0015;
   scene.add(sun);
@@ -188,14 +189,14 @@ export function startScene(canvas, { still = false } = {}) {
   const place = (o, x, z) => { o.position.set(x, heightAt(x, z), z); scene.add(o); return o; };
   const wood = mat(null, noiseTexture(['#b98352', '#a87447', '#c38c59'], 8));
   const slots = [];                              // sitios donde se puede hacer algo: { kind, x, z, face, seat?, from?, by }
-  // Cuatro mesas en bloque, con las pantallas espalda con espalda; cada una con su silla por fuera
-  [[-2.3, -0.95, Math.PI], [-0.95, -0.95, Math.PI], [-2.3, -0.29, 0], [-0.95, -0.29, 0]].forEach(([x, z, r]) => {
+  // Dos mesas juntas, con las pantallas espalda con espalda; cada una con su silla por fuera
+  [[-1.6, -0.95, Math.PI], [-1.6, -0.29, 0]].forEach(([x, z, r]) => {
     const d = place(desk(wood), x, z); d.rotation.y = r;
     const out = r ? -1 : 1, cz = z + out * 0.62;
     const c = place(chair(), x, cz); c.rotation.y = r; round(x, cz, 0.3);
     slots.push({ kind: 'desk', x, z: cz, face: r ? 0 : Math.PI, seat: 0.48, from: [x, cz + out * 0.55] });
   });
-  rect(-1.625, -0.62, 1.35, 0.66, 0.12);
+  rect(-1.6, -0.62, 0.65, 0.66, 0.12);
   // Pizarra con notas de colores
   const BX = 2.5, BZ = -2.5, BR = Math.PI / 6;                  // de cara a la cámara
   const board = new THREE.Group();
@@ -267,20 +268,16 @@ export function startScene(canvas, { still = false } = {}) {
   }
 
   // ---------- El equipo ----------
-  const LOOKS = [
-    { shirt: '#c8322f', pants: '#2b3140', style: 'short' },
-    { shirt: '#f2c230', pants: '#3a4a6b', style: 'long', shorts: true },
-    { shirt: '#2f8f4e', pants: '#e6dcc6', style: 'bun', sleeves: 'long' },
-    { shirt: '#f3f1ea', pants: '#1d1d1d', style: 'cap', shoes: '#c8322f' },
-    { shirt: '#2d4f9e', pants: '#d9cdb4', style: 'short', shorts: true },
-    { shirt: '#1d1d1d', pants: '#5a6a7a', style: 'long', sleeves: 'long', shoes: '#1d1d1d' },
-    { shirt: '#e98a3a', pants: '#2b3140', style: 'bun' },
+  const LOOKS = [                                 // tres personas, cada una con un color fuerte que se reconoce de lejos, como en la referencia
+    { shirt: '#c8322f', pants: '#2b3140', style: 'short', skin: SKINS[2], hair: HAIRS[2] },
+    { shirt: '#f2c230', pants: '#3a4a6b', style: 'long', shorts: true, skin: SKINS[0], hair: HAIRS[1] },
+    { shirt: '#f3f1ea', pants: '#1d1d1d', style: 'cap', sleeves: 'long', shoes: '#c8322f', skin: SKINS[3], hair: HAIRS[0] },
   ];
-  const agents = LOOKS.map((look, i) => {
-    const p = person({ ...look, skin: SKINS[i], hair: HAIRS[i] }); scene.add(p);
+  const agents = LOOKS.map((look) => {
+    const p = person(look); scene.add(p);
     return { p, x: 0, z: 0, yaw: 0, state: 'act', slot: null, kind: 'idle', until: 0, path: [], t0: rnd() * 10, seed: rnd() * 6.28, talk: null, talkUntil: 0, carry: null };
   });
-  const WEIGHTS = { desk: 4, board: 1.6, coffee: 1.4, bench: 1, hill: 1.2, phone: 0.8, chat: 1.8 };
+  const WEIGHTS = { desk: 2.5, board: 1.6, coffee: 1.4, bench: 1, hill: 1.2, phone: 0.8, chat: 1.8 };
   const LENGTH = { desk: [9, 18], board: [6, 11], coffee: [4, 7], bench: [6, 11], hill: [6, 11], phone: [5, 9], chat: [4, 7], idle: [1, 2] };
   const span = (k) => LENGTH[k][0] + rnd() * (LENGTH[k][1] - LENGTH[k][0]);
   let t = 0;
@@ -338,7 +335,7 @@ export function startScene(canvas, { still = false } = {}) {
     a.variant = kind === 'hill' ? (rnd() < 0.6 ? 'sit' : 'stretch') : null;
   }
   // Al empezar, cada uno ya está haciendo algo (así la primera imagen, y la escena quieta, ya cuentan la historia)
-  const startKinds = ['desk', 'desk', 'board', 'board', 'coffee', 'desk', 'hill'];
+  const startKinds = ['desk', 'board', 'coffee'];
   agents.forEach((a, i) => {
     const s = slots.find((x) => x.kind === startKinds[i] && !x.by); s.by = a; a.slot = s; a.plan = { kind: s.kind, slot: s };
     a.x = s.x; a.z = s.z; a.yaw = s.face; arrive(a);
@@ -347,7 +344,7 @@ export function startScene(canvas, { still = false } = {}) {
   });
   // La última empieza charlando con alguien que teclea, para que se vea una conversación desde el primer momento
   {
-    const a = agents[6]; release(a); const b = agents[5];
+    const a = agents[2]; release(a); const b = agents[0];
     const [x, z] = talkSpot(a, b); a.x = x; a.z = z; a.plan = { kind: 'chat', with: b }; arrive(a); a.yaw = Math.atan2(b.x - a.x, b.z - a.z);
   }
 
@@ -472,9 +469,11 @@ export function startScene(canvas, { still = false } = {}) {
   let raf = 0, running = false, last = 0;
   function size() {
     const W = canvas.clientWidth || 300, H = canvas.clientHeight || 375;
-    const px = Math.max(1.25, W / PIXELS_WIDE);                    // el mismo dibujo en cualquier tamaño de tarjeta: ~196 píxeles de ancho
+    const px = Math.min(PIXEL_MAX, Math.max(PIXEL_MIN, W / PIXELS_WIDE));
     renderer.setSize(Math.round(W / px), Math.round(H / px), false);
-    const aspect = W / H, view = SIZE * 1.12 * Math.SQRT2 / (2 * Math.min(1, aspect)) * 1.06;   // la isla entera cabe con un margen alrededor
+    // La isla entera cabe con un margen: a lo ancho (su diagonal) o, en pantallas apaisadas, a lo alto (la mitad de la diagonal más lo que sobresale)
+    const aspect = W / H, diag = SIZE * 1.12 * Math.SQRT2;
+    const view = Math.max(diag * 1.06 / (2 * aspect), (diag * 0.5 + 2.6) * 0.62);
     Object.assign(camera, { left: -view * aspect, right: view * aspect, top: view, bottom: -view });
     camera.updateProjectionMatrix();
   }
