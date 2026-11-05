@@ -97,7 +97,6 @@
     if (!e.persisted) return;
     isOpen = false;
     clearTimeout(closeTimer);
-    delete panel.dataset.leaving;
     panel.style.transition = 'none';
     panel.dataset.open = 'false';
     panel.inert = true;
@@ -128,28 +127,8 @@
     const samePage = url.protocol === 'mailto:' || (url.origin === location.origin && url.pathname.replace(/index\.html$/, '') === current);
     if (samePage && orig) { after(() => orig.click()); return; }
     if (samePage) { e.preventDefault(); shut(false); return; } // por ejemplo FAQs estando en FAQs: solo se cierra
-    // Otra página: el panel NO se cierra. Los textos salen hacia arriba (el que has elegido, el último), el rojo se queda llenando la pantalla y la página
-    // nueva nace tapada por ese mismo rojo; cuando ha cargado, la cortina sube y la descubre (como en la referencia). Con «reducir movimiento», sin esto.
-    if (reduced || !a.href) return;
-    e.preventDefault();
-    if (panel.dataset.leaving) return;
-    a.closest('.menu-item')?.style.setProperty('--leave', '1');
-    panel.dataset.leaving = 'true';
-    try { sessionStorage.setItem('dizmar-menu-arrive', String(Date.now())); } catch (err) { /* sin esto la página nueva simplemente aparece */ }
-    setTimeout(() => { location.href = a.href; }, 560);
+    // Otra página: navega sin más y la cortina de color (css/transitions.css) hace el resto, igual que con cualquier otro enlace. El panel se queda
+    // abierto: es lo que se ve irse hacia arriba bajo la cortina.
   });
 
-  // Llegada desde el menú: la página nace tapada de rojo (script del <head> + css/menu.css) y, ya cargada, la cortina sube
-  if (root.classList.contains('menu-arriving')) {
-    try { sessionStorage.removeItem('dizmar-menu-arrive'); } catch (err) { /* nada */ }
-    let lifted = false;
-    const lift = () => {
-      if (lifted) return;
-      lifted = true;
-      root.classList.add('menu-arriving-out');
-      setTimeout(() => root.classList.remove('menu-arriving', 'menu-arriving-out'), 750);
-    };
-    if (document.readyState === 'complete') setTimeout(lift, 150);
-    else { addEventListener('load', () => setTimeout(lift, 150), { once: true }); setTimeout(lift, 2200); }
-  }
 })();

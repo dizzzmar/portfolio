@@ -13,7 +13,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, html.menu-arriving:has(.theme-green, .about) { background: var(--bg); } /* también llegando desde el menú (que pinta <html> de rojo): si no, el fondo pasaba de rojo a verde de golpe al quitarse la cortina */ /* el fondo también en <html>: la captura de la transición de página lo necesita para llevar el verde consigo */
+html { background: var(--bg); } /* el fondo también en <html>: la captura de la transición de página lo necesita para llevar el verde consigo */
 body {
   overflow-x: clip;
   color: var(--ink);
@@ -275,13 +275,10 @@ main { padding: 0 var(--margin); }
 
 /* La tarjeta entra por la derecha (0,7 s, frenando al final); su contenido aparece al terminar */
 @media (prefers-reduced-motion: no-preference) {
-  /* Si se llega desde otra página con transición, es la transición (css/transitions.css) la que desliza la página; aquí solo en la carga directa */
-  html:not(.vt-about) .about-card { animation: card-from-right .8s var(--ease-out) both; }
-  html:not(.vt-about) .about-card > * { animation: card-content .5s var(--ease-out) .35s both; }
-  html:not(.vt-about) .about-photo .portrait { animation: photo-in .8s var(--ease-out) .1s both; }
+  html .about-card { animation: card-from-right .8s var(--ease-out) both; }
+  html .about-card > * { animation: card-content .5s var(--ease-out) .35s both; }
+  html .about-photo .portrait { animation: photo-in .8s var(--ease-out) .1s both; }
 }
-/* Llegando desde el menú, la cortina roja tapa la página: la tarjeta y la foto esperan a que la cortina empiece a subir (js/menu.js pone menu-arriving-out) */
-html.menu-arriving:not(.menu-arriving-out) :is(.about-card, .about-card > *, .about-photo .portrait) { animation-play-state: paused; }
 @keyframes card-from-right { from { transform: translateX(110%); } }
 @keyframes card-content { from { opacity: 0; } }
 @keyframes photo-in { from { opacity: 0; transform: scale(.97); } }

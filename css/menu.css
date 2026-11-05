@@ -97,22 +97,9 @@ html.menu-open { overflow: hidden; scrollbar-gutter: stable; background: var(--m
   .menu-items { flex-direction: row; flex-wrap: wrap; justify-content: space-between; top: 50%; bottom: auto; translate: 0 -50%; font-size: clamp(2rem, 7vw, 3.5rem); }
 }
 
-/* Al elegir una opción de otra página: los textos salen hacia arriba (el elegido, el último) y el rojo se queda */
-.menu[data-leaving="true"] .menu-item a > span { transform: translateY(-112%); transition: transform .4s var(--menu-ease) calc(var(--i) * 40ms + var(--leave, 0) * 120ms); }
-.menu[data-leaving="true"] .menu-close span { opacity: 0; transition: opacity .25s ease 0s; }
-.menu[data-leaving="true"] .menu-close span { transform: translateY(-110%); transition: transform .3s var(--menu-ease) 0s; }
-
-/* La página nueva llega tapada por el mismo rojo (html.menu-arriving la pone un script del <head>, antes de pintar nada) y la cortina sube al cargar (js/menu.js).
-   Por si el script no llega a cargar, el rojo se quita solo a los 3 s. */
-html.menu-arriving { overflow: hidden; background: var(--menu-bg); }
-html.menu-arriving body::before { content: ""; position: fixed; inset: 0; z-index: 59; background: var(--menu-bg); clip-path: inset(0); animation: menu-cover-off .01s linear 3s forwards; }
-html.menu-arriving-out body::before { clip-path: inset(0 0 100% 0); transition: clip-path .6s var(--menu-ease); }
-@keyframes menu-cover-off { to { visibility: hidden; } }
-
 /* Con «reducir movimiento»: sin cortina ni textos que suben; solo un fundido corto */
 @media (prefers-reduced-motion: reduce) {
   .menu { clip-path: none; opacity: 0; transition: opacity .15s linear, visibility 0s linear .15s; }
   .menu[data-open="true"] { opacity: 1; transition: opacity .15s linear, visibility 0s; }
   .menu-item a > span, .menu[data-open="true"] .menu-item a > span, .menu-close span, .menu[data-open="true"] .menu-close span { transform: none; transition: none; }
-  html.menu-arriving body::before { display: none; }
 }
