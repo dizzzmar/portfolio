@@ -24,7 +24,7 @@
 <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261113mustard1">
-<link rel="stylesheet" href="/css/about.css?v=20261126world1">
+<link rel="stylesheet" href="/css/about.css?v=20261128ui1">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261112navdiff1">
@@ -80,31 +80,30 @@
       </div>
       <button class="flip-btn" type="button" aria-pressed="false" aria-label="Turn the photo over"></button>
     </div>
-    <!-- Panel de la escena a pantalla completa (js/about.js): la hora del día y el tiempo. Solo se ve con la escena a pantalla completa -->
-    <div class="scene-panel" role="group" aria-label="Scene settings" hidden>
-      <div class="sp-col">
-        <span class="sp-label">Time of day</span>
-        <span class="sp-icon" data-sp-icon="time" aria-hidden="true"></span>
-        <div class="sp-pick">
-          <button class="sp-arrow" type="button" data-sp="time" data-step="-1" aria-label="Earlier"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>
-          <output class="sp-value" data-sp-value="time" aria-live="polite">Daytime</output>
-          <button class="sp-arrow" type="button" data-sp="time" data-step="1" aria-label="Later"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
+    <!-- Controles de la escena a pantalla completa (js/about.js): hora, tiempo, zoom y cerrar. Sin cajas ni textos de ayuda: píldoras como el resto de la web.
+         Solo se ven con la escena a pantalla completa; los nombres para lectores de pantalla van en aria-label -->
+    <div class="scene-ui" role="group" aria-label="Scene controls" hidden>
+      <button class="sui-close" type="button">Close</button>
+      <div class="sui-dock">
+        <div class="sui-row" role="group" aria-label="Time of day">
+          <button class="sui-pill" type="button" data-time="0" aria-pressed="false">Morning</button>
+          <button class="sui-pill" type="button" data-time="1" aria-pressed="false">Day</button>
+          <button class="sui-pill" type="button" data-time="2" aria-pressed="false">Sunset</button>
+          <button class="sui-pill" type="button" data-time="3" aria-pressed="false">Night</button>
+          <button class="sui-pill sui-live" type="button" data-follow aria-pressed="true" aria-label="Follow the time in Madrid">Now</button>
         </div>
-        <label class="sp-switch"><span>Madrid time</span><input type="checkbox" role="switch" data-sp-switch="follow" checked></label>
-      </div>
-      <div class="sp-col">
-        <span class="sp-label">Weather</span>
-        <span class="sp-icon" data-sp-icon="weather" aria-hidden="true"></span>
-        <div class="sp-pick">
-          <button class="sp-arrow" type="button" data-sp="weather" data-step="-1" aria-label="Previous weather"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>
-          <output class="sp-value" data-sp-value="weather" aria-live="polite">Clear skies</output>
-          <button class="sp-arrow" type="button" data-sp="weather" data-step="1" aria-label="Next weather"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
+        <div class="sui-row" role="group" aria-label="Weather">
+          <button class="sui-pill" type="button" data-weather="0" aria-pressed="false">Clear</button>
+          <button class="sui-pill" type="button" data-weather="1" aria-pressed="false">Cloudy</button>
+          <button class="sui-pill" type="button" data-weather="2" aria-pressed="false">Rain</button>
+          <button class="sui-pill sui-live" type="button" data-auto aria-pressed="true" aria-label="Let the weather change by itself">Auto</button>
         </div>
-        <label class="sp-switch"><span>Let it change</span><input type="checkbox" role="switch" data-sp-switch="auto" checked></label>
       </div>
-      <button class="sp-close" type="button" aria-label="Hide scene settings"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg></button>
+      <div class="sui-zoom" role="group" aria-label="Zoom">
+        <button class="sui-pill sui-round" type="button" data-zoom="-1" aria-label="Zoom out"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9"/></svg></button>
+        <button class="sui-pill sui-round" type="button" data-zoom="1" aria-label="Zoom in"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9M8 3.5v9"/></svg></button>
+      </div>
     </div>
-    <button class="sp-open" type="button" aria-label="Show scene settings" hidden><span data-sp-icon="mini" aria-hidden="true"></span></button>
   </div>
 
   <div class="about-card" id="about-card" tabindex="-1" role="region" aria-label="About Mario">
@@ -197,7 +196,7 @@
   </div>
 </section>
 
-<script src="/js/about.js?v=20261127world3" defer></script>
+<script src="/js/about.js?v=20261128ui1" defer></script>
 <script src="/js/pixel-load.js?v=20261126pxfix1" defer></script>
 <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
 <script src="/js/cursor.js?v=20261105label1" defer></script>
