@@ -69,7 +69,7 @@
   const paint = () => { raf = 0; const m = `translate3d(${x}px, ${y}px, 0)`; dot.style.transform = m; pic.style.transform = m; };
 
   function look(t) {
-    if (t === lastTarget) return;
+    if (t === lastTarget && !(t && t.closest('[data-cursor-label]'))) return;   // con data-cursor-label se vuelve a mirar: la etiqueta puede cambiar sin mover el ratón de sitio (la foto de About: Flip → Open → Close)
     lastTarget = t;
     const pe = t && t.closest('[data-cursor-pic]');
     if (pe !== picEl) {
