@@ -435,7 +435,7 @@ export function startScene(canvas, { still = false } = {}) {
   let zoom = 1;                                          // cuánto se ha acercado (1 = la isla entera); siempre da píxeles enteros
   const snapped = new THREE.Vector3();
   const placeCamera = () => {
-    if (isFull) LOOK.set(0, -0.6, 0); else LOOK.set(0, 0.9, 0).addScaledVector(right, -1.6);   // en la tarjeta, la isla (con la isleta) queda justo en el centro
+    if (isFull) LOOK.set(0, -0.6, 0).addScaledVector(right, -1.75); else LOOK.set(0, 0.9, 0).addScaledVector(right, -1.6);   // en la tarjeta, la isla (con la isleta) queda justo en el centro
     const r = Math.round(pan.dot(right) / unitPx) * unitPx, u = Math.round(pan.dot(up) / unitPx) * unitPx;   // a píxeles enteros: la imagen no tiembla al moverse
     snapped.copy(right).multiplyScalar(r).addScaledVector(up, u);
     camera.position.copy(LOOK).add(snapped).add(OFFSET); camera.lookAt(LOOK.clone().add(snapped));
@@ -1725,7 +1725,8 @@ export function startScene(canvas, { still = false } = {}) {
     renderer.setSize(renderW, renderH, false);
     Object.assign(canvas.style, { width: renderW * m / dpr + 'px', height: renderH * m / dpr + 'px', marginLeft: (cssW - renderW * m / dpr) / 2 + 'px', marginTop: (cssH - renderH * m / dpr) / 2 + 'px' });
     const aspect = cssW / cssH, diag = 2 * H * Math.SQRT2;
-    viewH = Math.max(diag * 1.04 / (2 * aspect), (diag * 0.5 * 0.5 + 5.4) * 1.04);   // con la isla entera, con los árboles y las rocas de debajo
+    // Cabe la isla entera, con los árboles y las rocas de debajo. A pantalla completa cabe también la isleta de la izquierda (de -13,4 a 9,9 de ancho, con margen): así en un móvil en vertical se ve entera
+    viewH = Math.max((isFull ? 13.6 : diag * 1.04 / 2) / aspect, (diag * 0.5 * 0.5 + 5.4) * 1.04);
     if (!isFull) viewH *= 1.55;                                       // en la tarjeta, pequeña y en el centro, como el emblema del dorso de una carta
     unitPx = 2 * viewH * base / (cssH * dpr);                         // metros por píxel de la escena (no cambia al acercar)
     Object.assign(camera, { left: -renderW * unitPx / 2, right: renderW * unitPx / 2, top: renderH * unitPx / 2, bottom: -renderH * unitPx / 2, zoom: 1 });
