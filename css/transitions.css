@@ -1,31 +1,40 @@
 /* TRANSICIONES ENTRE PÁGINAS · View Transitions entre documentos (Chrome, Edge y Safari 18.2+; en Firefox la página cambia sin animación).
-   Una sola transición para todo el sitio (menú, enlaces, terminal, sala, About y la 404), para que navegar se sienta igual en todas partes:
-   · Una cortina de color sube y tapa la página que se va, y sin esperar a que termine, otra sube desde abajo y destapa la nueva.
+   Una sola idea para todo el sitio, con sentido de espacio: las páginas son capas apiladas, como en una app.
+   · Ir hacia delante (cualquier enlace, el menú, la terminal): la página nueva sube desde abajo, como una hoja con las esquinas redondeadas,
+     y la vieja se queda debajo, se encoge un poco, sube un pelín y se oscurece.
+   · Volver (el botón atrás del navegador, el tomate, ir a la portada): al revés. La hoja de arriba baja y se va, y la de debajo recupera tamaño y luz.
+   La portada es la capa de abajo: llegar a ella es «volver»; salir de ella, «avanzar».
    · El tomate del menú se queda quieto: tiene el mismo tamaño y sitio en todas las páginas.
-   Las animaciones de entrada de cada página (las imágenes que se destapan una a una, los textos que suben...) se mantienen tal cual:
-   la transición solo cuida el paso de una página a otra. */
+   Las animaciones de entrada de cada página (las imágenes que se destapan una a una, los textos que suben...) se mantienen tal cual: la transición solo cuida el paso entre páginas.
+   Referencia de movimiento (guía de emil-design-eng): una sola curva fuerte que arranca rápido y frena largo (la de los cajones de iOS), 0,38 s, solo transform, clip y brillo. */
 @view-transition { navigation: auto; }
 
-/* CORTINA DE COLOR (referencia: wearepanico.com para la cortina; la curva de entrada, de gregorylalle.com y de la guía de movimiento) ·
-   La página vieja se recoge hacia arriba (0,24 s, curva de ir y venir) y a los 0,12 s empieza a subir la nueva (0,42 s, sale rápido y frena largo),
-   así que entre las dos se ve una franja de color que se mueve y nunca una pantalla lisa quieta. Dura 0,54 s en total, y la nueva ya se ve a los 0,3 s.
-   El color es el de la página a la que se llega (--curtain, abajo): rojo del menú por defecto, lima en las páginas verdes y crema en las negras.
-   Se anima solo recorte y desplazamiento (no pesan en el móvil). Nunca se ven dos páginas a medias, solo el color entre ellas. */
 :root {
-  --curtain: var(--menu-red);
-  --curtain-out: 240ms;                          /* lo que tarda en irse la página vieja */
-  --curtain-in: 420ms;                           /* lo que tarda en abrirse la nueva */
-  --curtain-gap: 120ms;                          /* cuándo empieza la nueva, desde que empieza la vieja */
-  --curtain-ease: cubic-bezier(.76, 0, .24, 1);  /* moverse por la pantalla: arranca y frena */
-  --curtain-ease-out: cubic-bezier(.19, 1, .22, 1); /* entrar: sale rápido, frena largo */
+  --sheet-time: 380ms;                                  /* lo que dura todo: corto y directo */
+  --sheet-ease: cubic-bezier(.32, .72, 0, 1);           /* arranca rápido y frena largo, como un cajón de iOS */
+  --sheet-radius: 28px;                                 /* esquinas de arriba de la hoja mientras se mueve */
+  --under-scale: .94;                                   /* cuánto se encoge la página que queda debajo */
+  --under-shift: -3.5%;                                 /* y cuánto sube */
+  --under-dim: .55;                                     /* y cuánto se oscurece (1 = nada) */
 }
-:root:has(.theme-green, .about) { --curtain: var(--lime); }
-:root:has(.theme-black) { --curtain: var(--cream); }
-::view-transition-group(root) { background: var(--curtain); }
-::view-transition-old(root) { animation: var(--curtain-out) var(--curtain-ease) both vt-curtain-up; mix-blend-mode: normal; }
-::view-transition-new(root) { animation: var(--curtain-in) var(--curtain-ease-out) var(--curtain-gap) both vt-curtain-open; mix-blend-mode: normal; }
-@keyframes vt-curtain-up { to { clip-path: inset(0 0 100% 0); transform: translateY(-28px); } }
-@keyframes vt-curtain-open { from { clip-path: inset(100% 0 0 0); transform: translateY(40px); } }
+
+/* El fondo que se ve por los bordes de la página que se encoge: oscuro, para que lo de abajo parezca una capa y no un hueco */
+::view-transition-group(root) { background: #0c0c0b; }
+::view-transition-old(root), ::view-transition-new(root) { mix-blend-mode: normal; animation-duration: var(--sheet-time); animation-timing-function: var(--sheet-ease); animation-fill-mode: both; }
+
+/* ADELANTE: la nueva sube sobre la vieja */
+::view-transition-old(root) { animation-name: vt-under; z-index: 1; }
+::view-transition-new(root) { animation-name: vt-sheet-in; z-index: 2; }
+@keyframes vt-sheet-in { from { transform: translateY(100%); clip-path: inset(0 round var(--sheet-radius) var(--sheet-radius) 0 0); } to { transform: none; clip-path: inset(0 round 0 0 0 0); } }
+@keyframes vt-under { to { transform: translateY(var(--under-shift)) scale(var(--under-scale)); filter: brightness(var(--under-dim)); } }
+
+/* ATRÁS: la de arriba baja y se va; la de debajo recupera tamaño y luz */
+:root:active-view-transition-type(back) {
+  &::view-transition-old(root) { animation-name: vt-sheet-out; z-index: 2; }
+  &::view-transition-new(root) { animation-name: vt-under-in; z-index: 1; }
+}
+@keyframes vt-sheet-out { from { clip-path: inset(0 round 0 0 0 0); } to { transform: translateY(100%); clip-path: inset(0 round var(--sheet-radius) var(--sheet-radius) 0 0); } }
+@keyframes vt-under-in { from { transform: translateY(var(--under-shift)) scale(var(--under-scale)); filter: brightness(var(--under-dim)); } to { transform: none; filter: none; } }
 
 /* El tomate del menú no se mueve entre páginas (mismo tamaño y sitio: css/nav-logo.css) */
 .nav-logo, .case-logo { view-transition-name: site-logo; }
@@ -37,6 +46,7 @@
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(root) { background: none; }
   ::view-transition-old(root) { animation: none; }
-  ::view-transition-new(root) { animation: 150ms linear both vt-fade; }
+  ::view-transition-new(root), :root:active-view-transition-type(back)::view-transition-new(root) { animation: 150ms linear both vt-fade; z-index: 2; }
+  :root:active-view-transition-type(back)::view-transition-old(root) { animation: none; z-index: 1; }
   @keyframes vt-fade { from { opacity: 0; } }
 }

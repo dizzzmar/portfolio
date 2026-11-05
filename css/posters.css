@@ -4,6 +4,8 @@
    Orden: aviso · collage · pieza · visor · móvil · movimiento. */
 
 .pz { padding-bottom: clamp(64px, 9vw, 140px); }
+/* Estela de píxeles de tinta (js/archive-trail.js): fija a pantalla completa, por detrás de las piezas y por encima del fondo; no recibe clics */
+.archive-trail { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
 /* ---------- Aviso ---------- */
 .pz-note { max-width: 52ch; padding: clamp(24px, 3.5vh, 40px) var(--edge) 0; font-size: var(--fs-read); line-height: var(--lh-body); letter-spacing: -.01em; }
