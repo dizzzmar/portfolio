@@ -164,6 +164,43 @@ const mat = (color, opts = {}) => {
 const mapMat = (map, opts = {}) => new THREE.MeshLambertMaterial({ map, ...opts });
 const box = (w, h, d, material) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material); m.castShadow = true; m.receiveShadow = true; return m; };
 
+// ---------- Vóxeles: volúmenes hechos de cubitos, como píxeles con fondo (copas de árbol, pinos, arbustos, nubes) ----------
+// Solo se dibujan las caras que se ven (las de dentro se quitan) y cada cubito lleva su color: arriba más claro, abajo más oscuro.
+const FACES = [
+  { n: [-1, 0, 0], c: [[0, 1, 0], [0, 0, 0], [0, 1, 1], [0, 0, 1]], k: 0.92 }, { n: [1, 0, 0], c: [[1, 1, 1], [1, 0, 1], [1, 1, 0], [1, 0, 0]], k: 0.92 },
+  { n: [0, -1, 0], c: [[1, 0, 1], [0, 0, 1], [1, 0, 0], [0, 0, 0]], k: 0.7 }, { n: [0, 1, 0], c: [[0, 1, 1], [1, 1, 1], [0, 1, 0], [1, 1, 0]], k: 1.12 },
+  { n: [0, 0, -1], c: [[1, 0, 0], [0, 0, 0], [1, 1, 0], [0, 1, 0]], k: 0.92 }, { n: [0, 0, 1], c: [[0, 0, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1]], k: 1 },
+];
+function voxels(cells, v) {                         // cells: Map «i,j,k» → color; v: lado del cubito
+  const pos = [], nor = [], col = [], c = new THREE.Color();
+  for (const [key, hex] of cells) {
+    const [i, j, k] = key.split(',').map(Number);
+    for (const f of FACES) {
+      if (cells.has(`${i + f.n[0]},${j + f.n[1]},${k + f.n[2]}`)) continue;
+      c.set(hex).multiplyScalar(f.k);
+      for (const q of [0, 1, 2, 2, 1, 3]) { const p = f.c[q]; pos.push((i + p[0]) * v, (j + p[1]) * v, (k + p[2]) * v); nor.push(...f.n); col.push(c.r, c.g, c.b); }
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  return g;
+}
+// Una masa redondeada: la unión de varias esferas (x, y, z, radio), con el borde algo irregular; el color lo decide paint(altura 0..1, al azar)
+function blob(spheres, v, paint, { flat = -Infinity, rough = 0.18 } = {}) {
+  const cells = new Map();
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+  for (const [x, y, z, r] of spheres) { x0 = Math.min(x0, x - r); x1 = Math.max(x1, x + r); y0 = Math.min(y0, y - r); y1 = Math.max(y1, y + r); z0 = Math.min(z0, z - r); z1 = Math.max(z1, z + r); }
+  for (let i = Math.floor(x0 / v); i <= Math.ceil(x1 / v); i++) for (let j = Math.floor(y0 / v); j <= Math.ceil(y1 / v); j++) for (let k = Math.floor(z0 / v); k <= Math.ceil(z1 / v); k++) {
+    const px = (i + 0.5) * v, py = (j + 0.5) * v, pz = (k + 0.5) * v;
+    if (py < flat) continue;
+    if (spheres.some(([x, y, z, r]) => Math.hypot(px - x, (py - y) * 1.15, pz - z) < r * (1 - rough * rnd()))) cells.set(`${i},${j},${k}`, paint((py - y0) / (y1 - y0 || 1), rnd()));
+  }
+  return voxels(cells, v);
+}
+const VOX = new THREE.MeshLambertMaterial({ vertexColors: true });
+const LEAF = (h, r) => (r < 0.08 ? '#86c652' : r < 0.2 ? '#2f6420' : h > 0.7 ? ['#5fa83b', '#6fb544', '#4f9233'][Math.floor(r * 30) % 3] : h > 0.35 ? ['#4f9233', '#3f7a2a', '#5fa83b'][Math.floor(r * 30) % 3] : ['#3f7a2a', '#2f6420', '#355e22'][Math.floor(r * 30) % 3]);
+const PINE_LEAF = (h, r) => (r < 0.1 ? '#4f8a3e' : r < 0.25 ? '#1f4520' : ['#2f5e2a', '#3a6e31', '#2a5426'][Math.floor(r * 30) % 3]);
+
 // ---------- Personas: cajas con articulaciones (cadera, rodilla, hombro, codo, cintura, cuello) ----------
 const S = 1.2, HIP = 0.62 * S;
 const joint = (x, y, z) => { const g = new THREE.Group(); g.position.set(x, y, z); return g; };
@@ -212,7 +249,7 @@ function person({ shirt, pants, skin, hair, style = 'short', shorts = false, sle
     log: hold(box(0.5, 0.16, 0.16, mat('#8a5a32')), 0, 0.12, 0.26, p.spine),
     rod: (() => { const g = new THREE.Group(); const r = box(0.03, 0.03, 1.7, mat('#5a3d22')); r.position.z = 0.85; g.add(r); const line = box(0.012, 1.25, 0.012, mat('#e8e8e8')); line.position.set(0, -0.62, 1.7); line.rotation.x = 0.55; g.add(line); g.line = line; g.rotation.x = -0.55; return hold(g, 0.24, 0.98, 0.18); })(),
     can: (() => { const g = new THREE.Group(); const b = box(0.2, 0.18, 0.13, mat('#4f8f5a')); g.add(b); const s = box(0.04, 0.04, 0.22, mat('#4f8f5a')); s.position.set(0, 0.05, 0.16); s.rotation.x = -0.6; g.add(s); return hold(g, 0.26, 0.62, 0.26); })(),
-    brolly: (() => { const g = new THREE.Group(); const s = box(0.03, 1.0, 0.03, mat('#2b2b2b')); s.position.y = -0.5; g.add(s); const top = new THREE.Mesh(new THREE.ConeGeometry(0.62, 0.26, 8), mat(brolly, { flatShading: true })); top.castShadow = true; top.position.y = 0.08; g.add(top); return hold(g, 0.16, 2.12, 0.08); })(),
+    brolly: (() => { const g = new THREE.Group(); const s = box(0.03, 1.0, 0.03, mat('#2b2b2b')); s.position.y = -0.5; g.add(s); const m = mat(brolly); const lo = box(1.0, 0.1, 1.0, m); lo.position.y = 0.02; g.add(lo); const hi = box(0.6, 0.1, 0.6, m); hi.position.y = 0.12; g.add(hi); return hold(g, 0.16, 2.12, 0.08); })(),
   };
   p.add(p.props.rod, p.props.can, p.props.brolly);
   p.pose = { tl: 0, tr: 0, kl: 0, kr: 0, al: 0, ar: 0, alz: 0, arz: 0, el: 0, er: 0, sp: 0, spy: 0, hx: 0, hy: 0, lift: 0, lie: 0 };
@@ -279,7 +316,7 @@ export function startScene(canvas, { still = false } = {}) {
     mesh.traverse((m) => {
       if (!m.isMesh) return;
       const g = (m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone()).applyMatrix4(m.matrixWorld);
-      for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(k)) g.deleteAttribute(k);
+      for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'uv', 'color'].includes(k)) g.deleteAttribute(k);
       if (!statics.has(m.material)) statics.set(m.material, { list: [], cast: m.castShadow });
       statics.get(m.material).list.push(g);
     });
@@ -339,7 +376,7 @@ export function startScene(canvas, { still = false } = {}) {
   for (let k = 0; k < 26; k++) {                                       // piedras en la orilla
     const a = k / 26 * Math.PI * 2, r = POND.r + 0.12 + rnd() * 0.15, x = POND.x + Math.cos(a) * r, z = POND.z + Math.sin(a) * r;
     if (inStream(x, z)) continue;
-    const s = 0.14 + rnd() * 0.14; B(s * 1.4, s, s * 1.2, stone, x, -0.04, z, rnd() * 3);
+    const s = 0.14 + rnd() * 0.14; B(s * 1.4, s, s * 1.2, stone, x, -0.04, z, rnd() < 0.5 ? 0 : Math.PI / 2);
   }
   // Puente de madera sobre el arroyo
   const plank = mapMat(plankTex('#9c6a3c'));
@@ -472,46 +509,48 @@ export function startScene(canvas, { still = false } = {}) {
   }
   slots.push({ kind: 'hives', x: -5.3, z: -4.3, face: Math.atan2(-0.6, -0.3) }, { kind: 'hives', x: -4.7, z: -5.3, face: -Math.PI / 2 });
 
-  // ---------- Árboles con volumen (copas de facetas), pinos, arbustos, rocas, setas y flores ----------
+  // ---------- Árboles con volumen (copas de cubitos, como en pixel art; nada de facetas), pinos, arbustos, rocas, setas y flores ----------
   const trunkMat = mat('#6b4528');
-  const LEAVES = [mat('#3f7a2a', { flatShading: true }), mat('#4f9233', { flatShading: true }), mat('#5fa83b', { flatShading: true }), mat('#2f6420', { flatShading: true })];
-  const PINE = [mat('#2f5e2a', { flatShading: true }), mat('#3a6e31', { flatShading: true })];
   const trees = [];                                    // { x, z, r, sway: grupo que se mece }
-  const leafBall = (r) => {                          // una bola de facetas algo deformada (igual en los vértices que se tocan: sin grietas)
-    const g = new THREE.IcosahedronGeometry(r, 1), p = g.attributes.position, seed = rnd() * 100;
-    const k = (x, y, z) => 0.88 + 0.24 * (Math.sin(x * 12.9 + y * 78.2 + z * 37.7 + seed) * 0.5 + 0.5);
-    for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), z = p.getZ(i), s = k(Math.round(x * 100), Math.round(y * 100), Math.round(z * 100)); p.setXYZ(i, x * s, y * s * 0.9, z * s); }
-    g.computeVertexNormals(); return g;
-  };
+  const V = 0.2;                                        // lado del cubito: unos 4-5 píxeles a pantalla completa
   function tree(x, z, s, kind = 'oak') {
     const y = heightAt(x, z), sway = new THREE.Group(); sway.position.set(x, y, z); add(sway);
+    let crown;
     if (kind === 'pine') {
       const t = box(0.22 * s, 1.0 * s, 0.22 * s, trunkMat); t.position.y = 0.5 * s; sway.add(t);
-      for (let k = 0; k < 4; k++) { const c = new THREE.Mesh(new THREE.ConeGeometry((1.15 - k * 0.24) * s, 1.1 * s, 7), PINE[k % 2]); c.position.y = (1.2 + k * 0.62) * s; c.rotation.y = rnd() * 3; c.castShadow = c.receiveShadow = true; sway.add(c); }
+      const cells = new Map(), Hh = Math.round(3.4 * s / V), R = 1.15 * s / V, tier = Math.max(3, Math.round(0.6 * s / V));
+      for (let j = 0; j < Hh; j++) {                                 // pisos que se estrechan hacia arriba, con el borde en escalón
+        const step = 1 - (j % tier) / tier * 0.45, r = R * (1 - j / Hh) * step + 0.6;
+        for (let i = -Math.ceil(R); i <= Math.ceil(R); i++) for (let k = -Math.ceil(R); k <= Math.ceil(R); k++) if (Math.hypot(i, k) < r - rnd() * 0.5) cells.set(`${i},${j},${k}`, PINE_LEAF(j / Hh, rnd()));
+      }
+      crown = new THREE.Mesh(voxels(cells, V), VOX); crown.position.set(-V / 2, 0.85 * s, -V / 2);
     } else {
       const t = box(0.28 * s, 1.5 * s, 0.28 * s, trunkMat); t.position.y = 0.75 * s; sway.add(t);
-      for (const [rx, rz, ry] of [[-0.3, 0.1, 1], [0.35, -0.1, 1.1], [0, 0, 1.25]]) { const r = box(0.12 * s, 0.1 * s, 0.4 * s, trunkMat); r.position.set(rx * s, 0.05, rz * s); r.rotation.y = ry; sway.add(r); }
-      const n = kind === 'round' ? 3 : 6;
+      for (const [rx, rz, ry] of [[-0.3, 0.1, 0], [0.35, -0.1, Math.PI / 2], [0, 0.32, 0]]) { const r = box(0.12 * s, 0.1 * s, 0.4 * s, trunkMat); r.position.set(rx * s, 0.05, rz * s); r.rotation.y = ry; sway.add(r); }
+      const n = kind === 'round' ? 3 : 6, spheres = [];
       for (let k = 0; k < n; k++) {
         const a = k / n * Math.PI * 2 + rnd(), rr = (kind === 'round' ? 0.25 : 0.55) * s;
-        const ball = new THREE.Mesh(leafBall((kind === 'round' ? 0.62 : 0.78) * s * (0.85 + rnd() * 0.3)), LEAVES[Math.floor(rnd() * 3)]);
-        ball.position.set(Math.cos(a) * rr, (1.75 + rnd() * 0.5) * s, Math.sin(a) * rr); ball.castShadow = ball.receiveShadow = true; sway.add(ball);
+        spheres.push([Math.cos(a) * rr, (1.75 + rnd() * 0.5) * s, Math.sin(a) * rr, (kind === 'round' ? 0.62 : 0.78) * s * (0.85 + rnd() * 0.3)]);
       }
-      const top = new THREE.Mesh(leafBall((kind === 'round' ? 0.6 : 0.8) * s), LEAVES[2]); top.position.y = (kind === 'round' ? 2.3 : 2.45) * s; top.castShadow = top.receiveShadow = true; sway.add(top);
+      spheres.push([0, (kind === 'round' ? 2.3 : 2.45) * s, 0, (kind === 'round' ? 0.6 : 0.8) * s]);
+      crown = new THREE.Mesh(blob(spheres, V, LEAF), VOX);
     }
+    crown.castShadow = crown.receiveShadow = true; sway.add(crown);
     trees.push({ x, z, r: (kind === 'pine' ? 0.25 : 0.32) * s, sway, s, phase: rnd() * 6 });
   }
   [[-6.2, -6.2, 1.25, 'oak'], [-2.3, -6.4, 0.95, 'oak'], [-3.4, -4.6, 0.7, 'round'], [3.7, -6.5, 1.05, 'oak'], [6.4, -6.4, 1.0, 'pine'], [6.35, -0.7, 0.95, 'oak'],
    [6.2, 4.6, 1.25, 'oak'], [4.4, 6.35, 0.85, 'pine'], [-6.3, 6.2, 1.0, 'pine'], [-6.45, 3.0, 0.9, 'oak'], [-0.8, 6.4, 0.85, 'oak'], [-0.2, 3.1, 0.62, 'round'], [0.9, 3.7, 0.58, 'round'],
    [5.9, 2.7, 0.65, 'round'], [2.9, 6.5, 0.6, 'round'], [-5.6, -6.6, 0.8, 'pine']]
     .forEach(([x, z, s, k]) => tree(x, z, s, k));
-  // Arbustos, rocas, setas
+  // Arbustos (con alguna flor encima), rocas, setas
+  const BLOOM = ['#ff7a6b', '#ffd23f', '#f2f0e6', '#c9a2ff', '#ff9fd0'];
   for (const [x, z, s] of [[-2.4, 6.5, 0.5], [3.5, 4.8, 0.45], [6.5, 1.6, 0.4], [-6.5, 1.6, 0.4], [-2.1, -3.4, 0.45], [-6.6, -3.4, 0.4], [3.4, -2.2, 0.35], [0.3, 1.5, 0.35]]) {
-    const y = heightAt(x, z);
-    for (let k = 0; k < 3; k++) { const b = new THREE.Mesh(leafBall(s * (0.7 + rnd() * 0.4)), LEAVES[k % 3]); b.position.set(x + (rnd() - 0.5) * s, y + s * 0.45, z + (rnd() - 0.5) * s); b.castShadow = b.receiveShadow = true; keep(b); }
-    for (let k = 0; k < 4; k++) B(0.06, 0.06, 0.06, mat(['#ff7a6b', '#ffd23f', '#f2f0e6', '#c9a2ff'][k]), x + (rnd() - 0.5) * s * 1.3, y + s * 0.8, z + (rnd() - 0.5) * s * 1.3);
+    const y = heightAt(x, z), bloom = BLOOM[Math.floor(rnd() * BLOOM.length)];
+    const spheres = [0, 1, 2].map(() => [(rnd() - 0.5) * s, s * 0.45, (rnd() - 0.5) * s, s * (0.7 + rnd() * 0.4)]);
+    const m = new THREE.Mesh(blob(spheres, V * 0.8, (h, r) => (h > 0.75 && r < 0.12 ? bloom : LEAF(h, r)), { flat: 0 }), VOX);
+    m.position.set(x, y - 0.02, z); m.castShadow = m.receiveShadow = true; keep(m);
   }
-  for (const [x, z, s] of [[-4.8, 6.6, 0.4], [2.2, -0.2, 0.25], [5.3, 5.6, 0.3], [-2.8, -5.3, 0.35], [6.6, 3.6, 0.3], [-0.6, -1.0, 0.2]]) { const y = heightAt(x, z); B(s * 1.5, s, s * 1.2, stone, x, y + s / 2 - 0.05, z, rnd() * 3); }
+  for (const [x, z, s] of [[-4.8, 6.6, 0.4], [2.2, -0.2, 0.25], [5.3, 5.6, 0.3], [-2.8, -5.3, 0.35], [6.6, 3.6, 0.3], [-0.6, -1.0, 0.2]]) { const y = heightAt(x, z); B(s * 1.5, s, s * 1.2, stone, x, y + s / 2 - 0.05, z, rnd() < 0.5 ? 0 : Math.PI / 2); B(s * 0.8, s * 0.5, s * 0.7, stone, x + s * 0.3, y + s * 1.1 - 0.05, z - s * 0.1); }
   for (const [x, z] of [[-5.9, -6.0], [-6.0, 2.5], [5.9, 4.2], [-1.0, 6.0], [3.4, -6.0]]) { const y = heightAt(x, z); B(0.04, 0.1, 0.04, mat('#f2ead8'), x, y + 0.05, z); B(0.14, 0.06, 0.14, mat('#c8322f'), x, y + 0.12, z); }
   // Flores con volumen (instancias: miles de piezas en una sola llamada)
   {
@@ -642,12 +681,16 @@ export function startScene(canvas, { still = false } = {}) {
   });
 
   // ---------- Cielo: nubes con volumen que pasan, lluvia, luciérnagas, mariposas, abejas, humo, Zzz ----------
-  const cloudMat = new THREE.MeshLambertMaterial({ color: '#ffffff', emissive: '#ffffff', emissiveIntensity: 0.25, flatShading: true });
+  const cloudMat = new THREE.MeshLambertMaterial({ vertexColors: true, emissive: '#ffffff', emissiveIntensity: 0.3 });
+  const CLOUD = (h, r) => (h < 0.3 ? (r < 0.5 ? '#dfe4f0' : '#e8ecf6') : h > 0.75 && r < 0.3 ? '#ffffff' : r < 0.15 ? '#f0f3fa' : '#fbfcff');
   const clouds = Array.from({ length: 7 }, (_, i) => {
-    const g = new THREE.Group();
-    for (let k = 0; k < 6; k++) { const m = new THREE.Mesh(leafBall(0.7 + rnd() * 0.6), cloudMat); m.position.set((k - 2.5) * 0.7 + rnd() * 0.3, rnd() * 0.5, (rnd() - 0.5) * 1.2); m.castShadow = true; g.add(m); }
+    const n = 4 + Math.floor(rnd() * 3), spheres = [];                 // una fila de bultos, el del medio más alto, y otra fila detrás
+    for (let k = 0; k < n; k++) { const mid = 1 - Math.abs(k - (n - 1) / 2) / n; spheres.push([(k - (n - 1) / 2) * 0.75 + (rnd() - 0.5) * 0.3, 0.15 + mid * 0.55 + rnd() * 0.2, (rnd() - 0.5) * 0.5, 0.5 + mid * 0.45 + rnd() * 0.2]); }
+    for (let k = 0; k < n - 2; k++) spheres.push([(k - (n - 3) / 2) * 0.8, 0.3 + rnd() * 0.3, -0.6 + rnd() * 0.2, 0.55 + rnd() * 0.2]);
+    const m = new THREE.Mesh(blob(spheres, 0.25, CLOUD, { flat: 0, rough: 0.08 }), cloudMat); m.castShadow = true;
+    const g = new THREE.Group(); g.add(m);
     g.position.set(-16 + i * 5 + rnd() * 2, 7 + rnd() * 1.5, -8 + rnd() * 16); g.scale.setScalar(0.001); add(g);
-    return { g, speed: 0.25 + rnd() * 0.15, size: 0.8 + rnd() * 0.6, k: 0 };
+    return { g, speed: 0.25 + rnd() * 0.15, size: 1.2 + rnd() * 0.7, k: 0 };
   });
   const RAIN_N = 700, rainGeo = new THREE.BufferGeometry(), rainPos = new Float32Array(RAIN_N * 6);
   const rainDrops = Array.from({ length: RAIN_N }, () => ({ x: (rnd() - 0.5) * 24, y: rnd() * 18 - 4, z: (rnd() - 0.5) * 24 }));
@@ -1053,7 +1096,7 @@ export function startScene(canvas, { still = false } = {}) {
       c.g.position.x += dt * c.speed * (1 + sky.rain); if (c.g.position.x > 17) { c.g.position.x = -17; c.g.position.z = -8 + rnd() * 16; }
       c.g.scale.setScalar(Math.max(0.001, c.k * c.size));
     });
-    cloudMat.color.set('#ffffff').lerp(new THREE.Color('#9aa4b8'), sky.rain * 0.8).multiplyScalar(lerp(1, 0.35, nightK)); cloudMat.emissiveIntensity = lerp(0.3, 0.05, Math.max(nightK, sky.rain * 0.7));
+    cloudMat.color.set('#ffffff').lerp(new THREE.Color('#7f8aa0'), sky.rain * 0.85).multiplyScalar(lerp(1, 0.35, nightK)); cloudMat.emissiveIntensity = lerp(0.3, 0.05, Math.max(nightK, sky.rain * 0.7));
     // Lluvia
     rainMat.opacity = sky.rain * 0.55; rain.visible = sky.rain > 0.02;
     if (rain.visible) {
