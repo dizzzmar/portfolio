@@ -22,6 +22,11 @@ Si algo es seguro y reversible (cambios de diseño en una rama, PRs sin fusionar
 - **UX, DX y AX a la vez, sin romper nada.** Ante varias opciones, elige la que mejore a la vez la experiencia de la persona que visita (UX), de quien mantiene el código (DX: simple, comentado, sin dependencias nuevas) y de los agentes e IA (AX: HTML con significado, enlaces reales, `machine/`, `llms.txt` y `sitemap.xml` al día). Si dos chocan, explícalo en una frase y propón la que no rompa nada.
 - **Sin eslóganes, textos de ayuda ni etiquetas secundarias.** Si una pantalla los necesita para entenderse, se arregla el diseño, no se añade texto. Se mantienen solo el texto legal (privacidad, créditos), los nombres accesibles para lectores de pantalla, y los errores y estados de carga que informan de verdad.
 
+## Documentación: qué leer y dónde escribir
+- Lo que se carga solo es poco: este archivo, `PRODUCT.md` (qué es la web) y `DESIGN.md` (el sistema: colores, tipografía, layout, reglas). Mantenlos cortos.
+- El detalle de cada zona está en `docs/design/` (`chrome` menú/barra/enlaces/footer/cursor/sonidos, `projects`, `about`, `playground`, `archive`, `contact`, `room`). Léelo solo cuando trabajes en esa zona.
+- Al cambiar algo de una página, documéntalo en su archivo de `docs/design/`, no en `DESIGN.md`. En `DESIGN.md` solo entra lo que valga para todo el sitio (un token, una regla).
+
 ## Convenciones del proyecto
 - Explica los cambios al usuario en español y sin jerga técnica.
 - Trabaja en una rama y abre una PR; enseña capturas de escritorio y móvil cuando cambie algo visual.

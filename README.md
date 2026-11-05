@@ -24,6 +24,7 @@ scripts/                               Utilidades de Blender para generar archiv
 robots.txt · sitemap.xml · llms.txt    Para buscadores y agentes de IA
 CNAME · favicon.ico · apple-touch-icon.png
 CLAUDE.md · PRODUCT.md · DESIGN.md     Reglas para Claude, contexto del producto y sistema de diseño
+docs/design/                            Detalle del diseño por zona (chrome, projects, about, playground, archive, contact, room); DESIGN.md solo lleva el sistema
 .github/workflows/secret-scan.yml      Comprueba en cada cambio que no se suba ninguna clave (gitleaks)
 
 css/                                   Aspecto. Un archivo por zona; los comunes se cargan en todas las páginas
