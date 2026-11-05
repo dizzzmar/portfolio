@@ -107,7 +107,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 ### Primary
 - **Accent** (#0c0c0b, `--accent`): near-black. The "View project" button, text selection and focus rings in Projects. There is no coloured accent on text or buttons.
 - **Cursor** (#f83d0c, `--cursor`): tomato red, used for the tomato itself. The cursor dot follows donut-studio.com instead: 16 px of #fff70d in `mix-blend-mode: difference` (blue on white, yellow on black), glued to the mouse with no lag, shrinking on press and opening into a "View" / "View project" pill over projects.
-- **Menu Red** (#df1f1f): the full-screen menu panel, the bars of the Contact form, the page curtain and the big footer. A vivid pure red (the reference site's #ff1a1f is brighter but gives cream text only 3.6:1); this is the brightest red that keeps cream text at 4.51:1 (WCAG AA for small text).
+- **Menu Red** (#df1f1f): the full-screen menu panel, the bars of the Contact form and the big footer. A vivid pure red (the reference site's #ff1a1f is brighter but gives cream text only 3.6:1); this is the brightest red that keeps cream text at 4.51:1 (WCAG AA for small text).
 
 ### Secondary
 - **Lincoln Green** (#125603): background of About, Privacy, FAQs and Machine, paired with Lime.
@@ -161,7 +161,7 @@ The menu uses the whole viewport: on desktop the five big links sit on one row, 
 
 ## Elevation & Depth
 
-Flat. There are no shadows at rest and none are added on interaction. Depth comes from colour fields and movement: when you change page, the new page rises 12 px over the old one, which recedes (scale 0.985, 82 % brightness); the menu panel is a curtain that covers the page.
+Flat. There are no shadows at rest and none are added on interaction. Depth comes from colour fields and movement: when you change page, the new page rises from below as a sheet over the old one, which recedes (scale 0.94, 55 % brightness), and going back reverses it (0.38 s, one iOS-drawer curve; detail in `docs/design/chrome.md`); the menu panel is a curtain that covers the page.
 
 ## Shapes
 
