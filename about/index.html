@@ -24,7 +24,7 @@
 <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261113mustard1">
-<link rel="stylesheet" href="/css/about.css?v=20261126curtain2">
+<link rel="stylesheet" href="/css/about.css?v=20261126world1">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261112navdiff1">
@@ -66,7 +66,7 @@
   <!-- La foto se queda quieta a la izquierda (con su efecto holográfico, js/about.js) y la tarjeta con el texto entra por la derecha y se recorre por dentro (css/about.css) -->
   <div class="about-photo">
     <!-- Foto holográfica: la carta entera (.tilt) se inclina en 3D siguiendo el ratón y un brillo holográfico recorre sus dos caras, como una carta coleccionable (js/about.js) -->
-    <!-- Al pulsar la foto, la tarjeta se da la vuelta y por detrás hay una escena isométrica en pixel art: un equipo trabajando en un campo verde (js/about-scene.js, se carga al girarla) -->
+    <!-- Al pulsar la foto, la tarjeta se da la vuelta y por detrás hay un pequeño mundo isométrico en pixel art donde viven tres personas (js/about-scene.js, se carga al girarla) -->
     <div class="portrait holo" data-holo data-cursor="view" data-cursor-label="Flip">
       <div class="tilt">
       <div class="flip-inner">
@@ -75,11 +75,36 @@
           <span class="holo-shine" aria-hidden="true"></span>
           <span class="holo-glare" aria-hidden="true"></span>
         </div>
-        <div class="scene-back" aria-hidden="true"><canvas class="scene-canvas" role="img" aria-label="Pixel-art isometric scene: a small team working with laptops on a green field, chatting at desks and in front of a whiteboard"></canvas><span class="holo-shine" aria-hidden="true"></span><span class="holo-glare" aria-hidden="true"></span></div>
+        <div class="scene-back" aria-hidden="true"><canvas class="scene-canvas" role="img" aria-label="Pixel-art isometric scene: a floating island with a cottage, a vegetable garden, a pond with ducks and a waterfall, a terrace with beehives, a campfire and an outdoor office, where three people work, garden, fish, chat and go to sleep at night, following the time and weather in Madrid"></canvas><span class="holo-shine" aria-hidden="true"></span><span class="holo-glare" aria-hidden="true"></span></div>
       </div>
       </div>
       <button class="flip-btn" type="button" aria-pressed="false" aria-label="Turn the photo over"></button>
     </div>
+    <!-- Panel de la escena a pantalla completa (js/about.js): la hora del día y el tiempo. Solo se ve con la escena a pantalla completa -->
+    <div class="scene-panel" role="group" aria-label="Scene settings" hidden>
+      <div class="sp-col">
+        <span class="sp-label">Time of day</span>
+        <span class="sp-icon" data-sp-icon="time" aria-hidden="true"></span>
+        <div class="sp-pick">
+          <button class="sp-arrow" type="button" data-sp="time" data-step="-1" aria-label="Earlier"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>
+          <output class="sp-value" data-sp-value="time" aria-live="polite">Daytime</output>
+          <button class="sp-arrow" type="button" data-sp="time" data-step="1" aria-label="Later"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
+        </div>
+        <label class="sp-switch"><span>Madrid time</span><input type="checkbox" role="switch" data-sp-switch="follow" checked></label>
+      </div>
+      <div class="sp-col">
+        <span class="sp-label">Weather</span>
+        <span class="sp-icon" data-sp-icon="weather" aria-hidden="true"></span>
+        <div class="sp-pick">
+          <button class="sp-arrow" type="button" data-sp="weather" data-step="-1" aria-label="Previous weather"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>
+          <output class="sp-value" data-sp-value="weather" aria-live="polite">Clear skies</output>
+          <button class="sp-arrow" type="button" data-sp="weather" data-step="1" aria-label="Next weather"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
+        </div>
+        <label class="sp-switch"><span>Let it change</span><input type="checkbox" role="switch" data-sp-switch="auto" checked></label>
+      </div>
+      <button class="sp-close" type="button" aria-label="Hide scene settings"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg></button>
+    </div>
+    <button class="sp-open" type="button" aria-label="Show scene settings" hidden><span data-sp-icon="mini" aria-hidden="true"></span></button>
   </div>
 
   <div class="about-card" id="about-card" tabindex="-1" role="region" aria-label="About Mario">
@@ -172,7 +197,7 @@
   </div>
 </section>
 
-<script src="/js/about.js?v=20261105holo1" defer></script>
+<script src="/js/about.js?v=20261126pixel2" defer></script>
 <script src="/js/pixel-load.js?v=20261126pxfix1" defer></script>
 <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
 <script src="/js/cursor.js?v=20261105label1" defer></script>
