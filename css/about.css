@@ -175,7 +175,8 @@ main { padding: 0 var(--margin); }
 /* Now playing: el disco y la película de The room, en pequeño */
 .now-playing { text-decoration: none; }
 .np-row { display: grid; grid-template-columns: 84px 1fr; gap: 16px; align-items: center; }
-.np-row + .np-row { margin-top: 12px; }
+.np-item + .np-item { margin-top: 20px; }
+.np-date { margin-left: .5em; font-weight: var(--fw-regular); opacity: .6; }   /* la fecha de la última vez que se cambió: se edita a mano en about/index.html */
 .np-row img { width: 84px; height: 84px; object-fit: cover; }
 .np-row .np-film { height: 120px; }
 .np-row p { font-size: var(--fs-s); line-height: 1.35; }
@@ -251,7 +252,7 @@ main { padding: 0 var(--margin); }
 .about-card .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .about-card .fact-values { grid-column: 2; }
 .about-card .now-playing { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gutter); }
-.about-card .now-playing h2 { grid-column: 1 / -1; }
+.about-card .now-playing .np-item + .np-item { margin-top: 0; }
 .about-card .np-row + .np-row { margin-top: 0; }
 .about-card .clients { max-width: none; }
 .about-card .client-list { max-width: none; }
@@ -271,6 +272,7 @@ main { padding: 0 var(--margin); }
   .about-card .facts { grid-template-columns: 1fr; }
   .about-card .fact-values, .about-card .now-playing { grid-column: auto; }
   .about-card .now-playing { grid-template-columns: 1fr; }
+  .about-card .now-playing .np-item + .np-item { margin-top: 20px; }
 }
 
 /* La tarjeta entra por la derecha (0,7 s, frenando al final); su contenido aparece al terminar */
