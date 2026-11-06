@@ -419,7 +419,7 @@ function person({ shirt, pants, skin, hair, style = 'short', shorts = false, sle
 // ---------- Personas en pixel art, como en Stardew Valley ----------
 // El esqueleto de cajas (person) sigue moviéndose con todas sus posturas y da la sombra, pero no se ve: en cada fotograma se dibuja encima,
 // píxel a píxel y al tamaño exacto de los píxeles de la escena, un muñeco plano: cabeza redondeada con cara y ojos (o el pelo, si mira hacia
-// atrás), brazos y piernas como trazos gruesos, el cuerpo con luz y sombra, lo que lleva en las manos, y un contorno oscuro de un píxel alrededor.
+// atrás), brazos y piernas como trazos gruesos, el cuerpo con luz y sombra y lo que lleva en las manos (sin contorno oscuro).
 const PXW = 128, PXH = 136, FOOT_Y = 104;                          // lienzo de cada persona (en píxeles de la escena) y dónde caen los pies
 const OUTLINE = [43, 29, 22];
 const rgbOf = (hex) => { const h = hex.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };   // colores en sRGB (la textura también)
@@ -814,7 +814,7 @@ export function startScene(canvas, { still = false } = {}) {
   [[-6.2, -6.2, 1.25, 'oak'], [-2.3, -6.4, 0.95, 'oak'], [-6.1, -3.9, 0.75, 'cherry'], [3.55, -6.3, 1.0, 'willow'], [6.4, -6.4, 1.0, 'pine'],
    [6.2, 4.6, 1.25, 'oak'], [4.4, 6.35, 0.85, 'pine'], [-4.6, 6.6, 1.0, 'pine'], [-6.45, 3.0, 0.9, 'oak'], [-0.8, 6.4, 0.85, 'oak'], [-0.2, 3.1, 0.7, 'cherry'], [0.9, 3.7, 0.6, 'round'],
    [5.9, 2.7, 0.7, 'cherry'], [2.9, 6.5, 0.7, 'autumn'], [-5.6, -6.6, 0.8, 'pine'], [-3.9, 6.45, 0.6, 'autumn'],
-   [ISLET.x - 0.85, ISLET.z - 0.55, 0.7, 'round'], [ISLET.x + 0.75, ISLET.z + 0.6, 0.65, 'cherry'], [ISLET.x - 0.2, ISLET.z + 1.8, 0.95, 'oak']]
+   [ISLET.x + 0.1, ISLET.z + 1.5, 0.82, 'round'], [ISLET.x + 1.2, ISLET.z + 0.4, 0.78, 'cherry'], [ISLET.x - 0.8, ISLET.z - 1.1, 0.95, 'oak']]
     .forEach(([x, z, s, k]) => tree(x, z, s, k));
   // Arbustos con flores encima
   const bushMat = foliageMaterial('leaf', PAL.round, 0.2);
@@ -957,11 +957,18 @@ export function startScene(canvas, { still = false } = {}) {
     const { x: ix, z: iz, r: ir, y: iy } = ISLET;
     const side = cliffTexture(1.4); side.repeat.set(2 * Math.PI * ir * DENS / 64, 1);
     const rock = new THREE.Mesh(new THREE.CylinderGeometry(ir, ir * 0.88, 1.4, 28, 1, true), mapMat(side)); rock.position.set(ix, iy - 0.7, iz); add(rock);
-    const under = new THREE.Mesh(new THREE.ConeGeometry(ir * 0.88, 2.4, 28, 1, true), mapMat(side)); under.rotation.x = Math.PI; under.position.set(ix, iy - 1.4 - 1.2, iz); add(under);
+    const under = new THREE.Mesh(new THREE.ConeGeometry(ir * 0.88, 1.5, 28, 1, true), mapMat(side)); under.rotation.x = Math.PI; under.position.set(ix, iy - 1.4 - 0.75, iz); add(under);
+    { // terrones y raíces colgando por debajo, como en la isla grande (sin punta de corazón)
+      const dirt = foliageMaterial('puff', ['#22170f', '#33231a', '#4a3324', '#5f4330', '#7a5a40'], 0.2), cl = [];
+      for (let a = 0; a < Math.PI * 2; a += 0.22) { if (rnd() < 0.25) continue; let r = 0.08 + rnd() * rnd() * 0.24, y = iy - 1.4 + r * 0.2, rr = ir * 0.88; for (let c = 0, len = rnd() < 0.4 ? 2 + Math.floor(rnd() * 2) : 1; c < len; c++) { cl.push([ix + Math.cos(a) * rr, y, iz + Math.sin(a) * rr, r]); y -= r * 1.3; r *= 0.62; rr *= 0.97; } }
+      for (let a = 0; a < Math.PI * 2; a += 0.4) { const rr = ir * 0.88 * 0.45, r = 0.12 + rnd() * 0.15; cl.push([ix + Math.cos(a) * rr, iy - 1.4 - 1.5 * 0.55 + r * 0.3, iz + Math.sin(a) * rr, r]); }
+      cl.push([ix, iy - 1.4 - 1.5 + 0.1, iz, 0.2], [ix + 0.1, iy - 1.4 - 1.5 - 0.15, iz - 0.05, 0.12]);
+      add(foliage(cl, dirt, 70));
+    }
     const grassTop = canvasTexture(64, 64, (g) => { const GR = ['#5d8f2e', '#669a33', '#548429', '#6fa53a', '#4d7a26']; for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) { g.fillStyle = GR[Math.floor(rnd() * GR.length)]; g.fillRect(x, y, 1, 1); } }, true);
     grassTop.repeat.set(2 * ir * DENS / 64, 2 * ir * DENS / 64);
     const topGeo = new THREE.CircleGeometry(ir, 40).rotateX(-Math.PI / 2), tp = topGeo.attributes.position;
-    for (let i = 0; i < tp.count; i++) tp.setY(i, heightAt(ix + tp.getX(i), iz + tp.getZ(i)) - iy);
+    for (let i = 0; i < tp.count; i++) { const x = tp.getX(i), z = tp.getZ(i); tp.setY(i, 0.12 * Math.exp(-(x * x + z * z) / 1.6)); }   // la loma suave de la isleta (antes el borde tomaba la altura de la isla grande y salían picos)
     topGeo.computeVertexNormals();
     const top = new THREE.Mesh(topGeo, mapMat(grassTop)); top.position.set(ix, iy, iz); top.receiveShadow = true; add(top);
     // fleco de hierba por el borde y matas por encima
@@ -979,7 +986,8 @@ export function startScene(canvas, { still = false } = {}) {
     const rg = new THREE.BufferGeometry(); rg.setAttribute('position', new THREE.Float32BufferAttribute(rope, 3)); add(new THREE.LineSegments(rg, new THREE.LineBasicMaterial({ color: '#c9a66b' })));
   }
   // Hamaca de rayas entre dos árboles de la isleta
-  const HAM = { a: [ISLET.x - 0.85, ISLET.z - 0.55], b: [ISLET.x + 0.75, ISLET.z + 0.6] };
+  // de lado a la cámara (si no, se ve de canto, como una torre de rayas), entre dos árboles de copa alta para que no la tapen
+  const HAM = { a: [ISLET.x + 0.1, ISLET.z + 1.5], b: [ISLET.x + 1.2, ISLET.z + 0.4] };
   {
     const [ax, az] = HAM.a, [bx, bz] = HAM.b, y0 = heightAt(ax, az) + 1.0, len = Math.hypot(bx - ax, bz - az), ry = Math.atan2(bx - ax, bz - az);
     const STRIPES = ['#c8322f', '#f3f1ea', '#f2c230', '#f3f1ea', '#2d4f9e', '#f3f1ea'];
@@ -990,7 +998,7 @@ export function startScene(canvas, { still = false } = {}) {
     HAM.mid = [(ax + bx) / 2, (az + bz) / 2]; HAM.y = y0 - 0.48; HAM.ry = ry;
   }
   // Columpio colgado de la rama de un árbol grande
-  const SWING = { x: ISLET.x - 0.2, z: ISLET.z + 1.35, top: heightAt(ISLET.x - 0.2, ISLET.z + 1.35) + 2.15, len: 1.6 };
+  const SWING = { x: ISLET.x - 0.8, z: ISLET.z - 0.2, top: heightAt(ISLET.x - 0.8, ISLET.z - 0.2) + 2.15, len: 1.6 };   // colgado del roble de atrás, delante de él
   const swingG = new THREE.Group(); swingG.position.set(SWING.x, SWING.top, SWING.z); add(swingG);
   { for (const x of [-0.22, 0.22]) { const r = box(0.02, SWING.len, 0.02, mat('#c9a66b')); r.position.set(x, -SWING.len / 2, 0); swingG.add(r); } const seat = box(0.55, 0.05, 0.22, plank); seat.position.y = -SWING.len; swingG.add(seat);
     B(0.12, 0.12, 1.2, trunkMat, SWING.x, SWING.top, SWING.z - 0.45); }
@@ -1953,7 +1961,7 @@ export function startScene(canvas, { still = false } = {}) {
           R.set(top[0] + x, top[1] + y, tone(C.brolly, y < -w * 0.3 ? 1.15 : (Math.floor((x + w) / (w / 2)) % 2 ? 0.85 : 1)));
         }
       }
-      R.outline(); R.flush();
+      R.flush();   // sin contorno oscuro: las figuras se separan del fondo por su propio color y su sombra
       // El lienzo se coloca donde toca, mirando a la cámara y un poco adelantado (no cambia dónde se ve, pero así no lo corta una ladera que tenga detrás)
       _w.set(Lx + PXW * unitPx / 2, By + PXH * unitPx / 2, fz + 0.35).applyMatrix4(camera.matrixWorld);
       R.mesh.position.copy(_w); R.mesh.quaternion.copy(camera.quaternion); R.mesh.scale.set(PXW * unitPx, PXH * unitPx, 1);
