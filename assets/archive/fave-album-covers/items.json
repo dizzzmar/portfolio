@@ -30,8 +30,8 @@
       "id": "rubber-soul",
       "name": "Rubber Soul",
       "src": "rubber-soul.webp",
-      "width": 180,
-      "height": 180,
+      "width": 1000,
+      "height": 1000,
       "facts": [
         [
           "Artist",
@@ -55,8 +55,8 @@
       "id": "ram",
       "name": "Ram",
       "src": "ram.webp",
-      "width": 320,
-      "height": 320,
+      "width": 894,
+      "height": 894,
       "facts": [
         [
           "Artist",
@@ -105,8 +105,8 @@
       "id": "dopamine-chamber",
       "name": "Dopamine Chamber",
       "src": "dopamine-chamber.webp",
-      "width": 225,
-      "height": 225,
+      "width": 2000,
+      "height": 2000,
       "facts": [
         [
           "Artist",
@@ -130,8 +130,8 @@
       "id": "mccartney",
       "name": "McCartney",
       "src": "mccartney.webp",
-      "width": 300,
-      "height": 300,
+      "width": 500,
+      "height": 500,
       "facts": [
         [
           "Artist",
@@ -155,8 +155,8 @@
       "id": "minecraft-volume-alpha",
       "name": "Minecraft – Volume Alpha",
       "src": "minecraft-volume-alpha.webp",
-      "width": 316,
-      "height": 316,
+      "width": 1900,
+      "height": 1900,
       "facts": [
         [
           "Artist",
@@ -180,8 +180,8 @@
       "id": "sgt-peppers-lonely-hearts-club-band",
       "name": "Sgt. Pepper's Lonely Hearts Club Band",
       "src": "sgt-peppers-lonely-hearts-club-band.webp",
-      "width": 648,
-      "height": 653,
+      "width": 2000,
+      "height": 2000,
       "facts": [
         [
           "Artist",
@@ -205,8 +205,8 @@
       "id": "beatles-1",
       "name": "1",
       "src": "beatles-1.webp",
-      "width": 500,
-      "height": 500,
+      "width": 721,
+      "height": 721,
       "facts": [
         [
           "Artist",
@@ -230,8 +230,8 @@
       "id": "ambient-1-music-for-airports",
       "name": "Ambient 1: Music for Airports",
       "src": "ambient-1-music-for-airports.webp",
-      "width": 301,
-      "height": 300,
+      "width": 1043,
+      "height": 1050,
       "facts": [
         [
           "Artist",
@@ -255,8 +255,8 @@
       "id": "music-for-nine-post-cards",
       "name": "Music for Nine Post Cards",
       "src": "music-for-nine-post-cards.webp",
-      "width": 800,
-      "height": 800,
+      "width": 1900,
+      "height": 1900,
       "facts": [
         [
           "Artist",
