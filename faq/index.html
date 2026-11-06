@@ -25,7 +25,7 @@
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261113mustard1">
 <link rel="stylesheet" href="/css/privacy.css?v=20261112navdiff1">
-<link rel="stylesheet" href="/css/faq.css?v=20261029a">
+<link rel="stylesheet" href="/css/faq.css?v=20261208nolines2">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261112navdiff1">
@@ -68,10 +68,10 @@
     <p class="faq-ask">Have any other question? <a href="mailto:contact@dizmar.xyz?subject=Hi%20Mario%2C%20I%20have%20a%20question">Write to me →</a></p>
   </div>
 
-  <!-- EDITA: una pregunta por bloque <details>; el número (01, 02…) va a mano. Estilos en css/faq.css. -->
+  <!-- EDITA: una pregunta por bloque <details> (name="faq": al abrir una se cierra la otra). Estilos en css/faq.css. -->
   <div class="faq-list">
-    <details class="faq-item" style="--i:1">
-      <summary><span class="faq-n" aria-hidden="true">01</span><h2 id="inspires">What inspires Mario?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
+    <details class="faq-item" name="faq" style="--i:1">
+      <summary><h2 id="inspires">What inspires Mario?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
       <div class="faq-a"><ul>
       <li>Almodóvar</li>
       <li>Colors</li>
@@ -80,28 +80,28 @@
       <li>Stickers</li>
     </ul></div>
     </details>
-    <details class="faq-item" style="--i:2">
-      <summary><span class="faq-n" aria-hidden="true">02</span><h2 id="position">What is Mario’s current position?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
+    <details class="faq-item" name="faq" style="--i:2">
+      <summary><h2 id="position">What is Mario’s current position?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
       <div class="faq-a"><p>Art director and creative technologist at WPP Production Madrid. Comfortably seated.</p></div>
     </details>
-    <details class="faq-item" style="--i:3">
-      <summary><span class="faq-n" aria-hidden="true">03</span><h2 id="based">Where is Mario based?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
+    <details class="faq-item" name="faq" style="--i:3">
+      <summary><h2 id="based">Where is Mario based?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
       <div class="faq-a"><p>Madrid, Spain. Postcards welcome.</p></div>
     </details>
-    <details class="faq-item" style="--i:4">
-      <summary><span class="faq-n" aria-hidden="true">04</span><h2 id="brands">Which brands has Mario worked with?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
+    <details class="faq-item" name="faq" style="--i:4">
+      <summary><h2 id="brands">Which brands has Mario worked with?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
       <div class="faq-a"><p>Coca-Cola, Heineken, Verizon, Ogilvy, WPP, Desperados, Toyota, Schweppes, Nestlé, Mondelēz, Lexus, Soap &amp; Glory and more.</p></div>
     </details>
-    <details class="faq-item" style="--i:5">
-      <summary><span class="faq-n" aria-hidden="true">05</span><h2 id="contact">How can I contact Mario Diz?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
+    <details class="faq-item" name="faq" style="--i:5">
+      <summary><h2 id="contact">How can I contact Mario Diz?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
       <div class="faq-a"><p><a href="https://es.linkedin.com/in/mario-diaz-aguado" target="_blank" rel="noopener">LinkedIn</a> or <a href="mailto:contact@dizmar.xyz">email</a>, preferably. Smoke signals are not monitored.</p></div>
     </details>
-    <details class="faq-item" style="--i:6">
-      <summary><span class="faq-n" aria-hidden="true">06</span><h2 id="spanish">Is the website available in Spanish?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
+    <details class="faq-item" name="faq" style="--i:6">
+      <summary><h2 id="spanish">Is the website available in Spanish?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
       <div class="faq-a"><p lang="es">Solo esta respuesta.</p></div>
     </details>
-    <details class="faq-item" style="--i:7">
-      <summary><span class="faq-n" aria-hidden="true">07</span><h2 id="tomatoes">Does Dizmar sell tomatoes and/or ketchup?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
+    <details class="faq-item" name="faq" style="--i:7">
+      <summary><h2 id="tomatoes">Does Dizmar sell tomatoes and/or ketchup?</h2><span class="faq-plus" aria-hidden="true"></span></summary>
       <div class="faq-a"><p>Digitally only. For the real ones, visit your local greengrocer.</p></div>
     </details>
   </div>
