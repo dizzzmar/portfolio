@@ -26,8 +26,9 @@ const smooth = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t
 const lerp = (a, b, k) => a + (b - a) * k;
 const pick = (a) => a[Math.floor(rand() * a.length)];
 
-// ---------- El mundo, en metros (la isla mide 14 × 14; la cámara mira desde la esquina +x +z) ----------
-const H = 7;                                                         // media isla
+// ---------- El mundo, en metros (la isla mide 19 × 19; la cámara mira desde la esquina +x +z) ----------
+// (de 14 × 14 pasó a 19 × 19 para las zonas nuevas del borde: horno y mesa larga, gallinero, tendedero, taller e invernadero)
+const H = 9.5;                                                         // media isla
 const TERR = { x1: -1.6, z1: -2.6, h: 1.6 };                         // terraza alta: x < -1,6 y z < -2,6
 const STAIRS = { x0: -3.55, x1: -2.65, zTop: -2.6, zBot: -1.0 };     // 8 escalones de 20 cm
 const POND = { x: 4.55, z: -4.3, r: 1.5, y: -0.18 };                 // estanque; el agua sale por un arroyo hasta el borde (+x)
@@ -39,8 +40,13 @@ const BEDS = [[-0.25, 0.95, -2.65, -1.75], [1.55, 2.75, -2.65, -1.75]]; // huert
 const FIRE = { x: 3.8, z: 2.3 };
 const HILLS = [[-5.4, 4.7, 0.6, 1.15], [1.7, 5.9, 0.5, 0.95], [5.0, 0.4, 0.28, 0.8]];   // x, z, alto, radio
 // La isleta de la izquierda (hamaca y columpio), unida por un puente de cuerda que baja un poco hasta ella
-const ISLET = { x: -10.7, z: 5.1, r: 2.25, y: -0.45 };
-const ROPE = { x0: -8.55, x1: -6.5, z: 5.1, w: 0.36 };
+const ISLET = { x: -13.2, z: 5.1, r: 2.25, y: -0.45 };
+const ROPE = { x0: -11.05, x1: -H + 0.5, z: 5.1, w: 0.36 };
+// El islote alto, detrás de la casa y más alto que la isla, con el observatorio; se sube por una rampa de tablas
+const ISLE2 = { x: 4.0, z: -13.6, r: 2.1, y: 1.3 };
+const RAMP = { x: 4.0, w: 0.4, z0: -H + 0.4, z1: ISLE2.z + ISLE2.r - 0.15 };
+const onIsle2 = (x, z) => Math.hypot(x - ISLE2.x, z - ISLE2.z) < ISLE2.r;
+const onRamp = (x, z) => Math.abs(x - RAMP.x) < RAMP.w && z <= RAMP.z0 && z >= RAMP.z1;
 const onIslet = (x, z) => Math.hypot(x - ISLET.x, z - ISLET.z) < ISLET.r;
 const onRope = (x, z) => x >= ROPE.x0 && x <= ROPE.x1 && Math.abs(z - ROPE.z) < ROPE.w;
 
@@ -52,6 +58,8 @@ const inStream = (x, z) => x > STREAM.x0 - 0.3 && Math.abs(z - STREAM.z) < STREA
 function heightAt(x, z) {
   if (onRope(x, z) && x < -H + 0.2) { const f = clamp((-H - x) / (-H - ROPE.x0), 0, 1); return lerp(0, ISLET.y, f) - Math.sin(f * Math.PI) * 0.16; }
   if (onIslet(x, z)) return ISLET.y + 0.12 * Math.exp(-((x - ISLET.x) ** 2 + (z - ISLET.z) ** 2) / 1.6);
+  if (onRamp(x, z) && z < -H + 0.2) return lerp(0, ISLE2.y, clamp((-H - z) / (-H - RAMP.z1), 0, 1));   // la rampa sube del borde al islote
+  if (onIsle2(x, z)) return ISLE2.y + 0.12 * Math.exp(-((x - ISLE2.x) ** 2 + (z - ISLE2.z) ** 2) / 1.6);
   if (onBridge(x, z)) return BRIDGE.y + 0.12 * Math.cos(((z - (BRIDGE.z0 + BRIDGE.z1) / 2) / (BRIDGE.z1 - BRIDGE.z0)) * Math.PI);
   if (onStairs(x, z)) return clamp((STAIRS.zBot - z) / (STAIRS.zBot - STAIRS.zTop), 0, 1) * TERR.h;
   if (onTerrace(x, z)) return TERR.h;
@@ -111,6 +119,11 @@ const PATHS = [
   [[1.25, -1.2], [-0.6, 0.0], [-2.6, 0.5], [-3.1, -0.9]],
   [[-0.6, 0.0], [-1.6, 1.0]],
   [[2.6, 0.6], [4.6, -1.6], [6.2, -2.7], [6.4, -3.5]],
+  // a las zonas nuevas: la mesa larga y el tendedero (delante), el gallinero (izquierda), el invernadero (derecha) y la rampa del islote alto (detrás)
+  [[3.3, 1.5], [2.2, 4.0], [1.0, 6.6]], [[2.2, 4.0], [4.6, 6.4], [6.3, 7.0]],
+  [[-1.6, 1.0], [-3.2, 4.2], [-3.9, 7.6]],
+  [[4.6, -1.6], [6.4, 0.4], [7.1, 0.4]],
+  [[1.1, -3.5], [3.0, -3.0], [3.4, -6.9], [4.0, -8.9]],
 ];
 function pathDist(x, z) {
   let best = 9;
@@ -122,7 +135,7 @@ function pathDist(x, z) {
   return best;
 }
 // El suelo entero en una textura: hierba con matas oscuras y brillos, tierra gastada bajo el camino y bajo la hoguera, flores sueltas
-function groundTexture(T = 14 * DENS) {
+function groundTexture(T = Math.round(2 * H * DENS)) {
   const GRASS = ['#5d8f2e', '#669a33', '#548429', '#6fa53a', '#4d7a26', '#77ad41'];
   const DARK = ['#3c6420', '#355a1c', '#43702a'];
   const DIRT = ['#9c7a4f', '#8a6a44', '#a98656', '#7d5e3c'];
@@ -484,7 +497,8 @@ const EMOTE_OF = {
   coffee: ['heart', 'sparkle'], picnic: ['heart', 'happy'], campfire: ['happy', 'heart', 'music'], stargaze: ['sparkle', 'heart'], lookout: ['sparkle', 'heart'],
   hammock: ['zzz'], tree: ['zzz', 'heart'], ducks: ['heart', 'happy'], hives: ['sparkle'], paint: ['idea', 'heart', 'sparkle'], kite: ['happy', 'sparkle'],
   swing: ['happy', 'heart'], dance: ['music', 'heart'], juggle: ['happy'], porch: ['heart', 'dots'], phone: ['dots', 'happy', 'question'], hill: ['sparkle', 'heart'],
-  shelter: ['dots'], puddle: ['happy', 'sparkle'], view: ['sparkle', 'dots'], cat: ['heart'], chat: ['dots', 'happy', 'idea', 'question', 'heart'],
+  shelter: ['dots'], puddle: ['happy', 'sparkle'], meal: ['heart', 'happy', 'dots'], bake: ['sparkle', 'heart'], chickens: ['heart', 'happy'], laundry: ['sparkle'],
+  greenhouse: ['sparkle', 'heart'], craft: ['idea', 'sweat'], pottery: ['idea', 'sparkle'], telescope: ['sparkle', 'question', 'heart'], view: ['sparkle', 'dots'], cat: ['heart'], chat: ['dots', 'happy', 'idea', 'question', 'heart'],
 };
 function drawEmote(R, cx, cy, name, pop) {
   const e = EMOTES[name]; if (!e) return;
@@ -545,7 +559,7 @@ export function startScene(canvas, { still = false } = {}) {
   let zoom = 1;                                          // cuánto se ha acercado (1 = la isla entera); siempre da píxeles enteros
   const snapped = new THREE.Vector3();
   const placeCamera = () => {
-    if (isFull) LOOK.set(0, -0.6, 0).addScaledVector(right, -1.75); else LOOK.set(0, 0.9, 0).addScaledVector(right, -1.6);   // en la tarjeta, la isla (con la isleta) queda justo en el centro
+    if (isFull) LOOK.set(0, -0.6, 0).addScaledVector(right, -0.35); else LOOK.set(0, 0.9, 0).addScaledVector(right, -1.6);   // en la tarjeta, la isla (con la isleta) queda justo en el centro
     const r = Math.round(pan.dot(right) / unitPx) * unitPx, u = Math.round(pan.dot(up) / unitPx) * unitPx;   // a píxeles enteros: la imagen no tiembla al moverse
     snapped.copy(right).multiplyScalar(r).addScaledVector(up, u);
     camera.position.copy(LOOK).add(snapped).add(OFFSET); camera.lookAt(LOOK.clone().add(snapped));
@@ -581,7 +595,7 @@ export function startScene(canvas, { still = false } = {}) {
   // ---------- La isla: suelo, acantilados con capas y rocas que cuelgan ----------
   const groundTex = groundTexture();
   const groundMat = mapMat(groundTex);
-  const groundGeo = new THREE.PlaneGeometry(2 * H, 2 * H, 140, 140).rotateX(-Math.PI / 2);
+  const groundGeo = new THREE.PlaneGeometry(2 * H, 2 * H, 190, 190).rotateX(-Math.PI / 2);
   const gp = groundGeo.attributes.position;
   for (let i = 0; i < gp.count; i++) { const x = gp.getX(i), z = gp.getZ(i); gp.setY(i, onTerrace(x, z) || onStairs(x, z) || onBridge(x, z) ? 0 : heightAt(x, z)); }
   groundGeo.computeVertexNormals();
@@ -596,8 +610,10 @@ export function startScene(canvas, { still = false } = {}) {
   { const base = new THREE.Mesh(new THREE.BoxGeometry(2 * H, DEPTH, 2 * H), sideMats(2 * H, 2 * H, DEPTH).map((mm, i) => (i === 2 ? new THREE.MeshBasicMaterial({ visible: false }) : mm))); base.position.y = -DEPTH / 2 - 0.02; add(base); }   // sin tapa (el suelo ya lo es; la tapa tapaba el estanque y el arroyo, que están más hondos). Los acantilados no reciben sombras: las copas del borde dibujaban manchas raras
   // Bajo la isla, bloques de roca escalonados: así flota y tiene volumen por debajo
   const steps = [];
-  for (const [x, z, w, d, hh, below] of [[0, 0, 11, 11, 1.4, 0], [-1, 0.5, 8, 8.5, 1.3, 1.4], [-1.5, 1, 5, 5.5, 1.2, 2.7], [1.8, -1.5, 4.5, 4, 1.4, 1.4], [-2, 1.2, 2.4, 2.6, 1.1, 3.9], [2.2, -1.8, 2, 1.8, 1.0, 2.8]]) {
+  const SK = H / 7;                                                    // los escalones de debajo crecen con la isla
+  for (let [x, z, w, d, hh, below] of [[0, 0, 11, 11, 1.4, 0], [-1, 0.5, 8, 8.5, 1.3, 1.4], [-1.5, 1, 5, 5.5, 1.2, 2.7], [1.8, -1.5, 4.5, 4, 1.4, 1.4], [-2, 1.2, 2.4, 2.6, 1.1, 3.9], [2.2, -1.8, 2, 1.8, 1.0, 2.8]]) {
     const y0 = -DEPTH - below;
+    [x, z, w, d] = [x * SK, z * SK, w * SK, d * SK];
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, hh, d), sideMats(w, d, hh).map((mm, i) => (i === 2 ? mat('#4a3422') : mm)));
     m.position.set(x, y0 - hh / 2, z); add(m);
     steps.push([x, z, w, d, y0 - hh]);
@@ -847,9 +863,9 @@ export function startScene(canvas, { still = false } = {}) {
     if (kind !== 'cherry') for (let k = 0; k < (kind === 'pine' ? 6 : 9); k++) { const a = rnd() * 6.28, r = (0.35 + rnd() * 0.5) * s; ferns.push([x + Math.cos(a) * r, z + Math.sin(a) * r]); }
     trees.push({ x, z, r: (kind === 'pine' ? 0.25 : 0.32) * s, sway, s, phase: rnd() * 6 });
   }
-  [[-6.2, -6.2, 1.25, 'oak'], [-2.3, -6.4, 0.95, 'oak'], [-6.1, -3.9, 0.75, 'cherry'], [3.55, -6.3, 1.0, 'willow'], [6.4, -6.4, 1.0, 'pine'],
+  [[-3.4, -8.9, 1.25, 'oak'], [-2.3, -6.4, 0.95, 'oak'], [-6.1, -3.9, 0.75, 'cherry'], [3.55, -6.3, 1.0, 'willow'], [6.4, -6.4, 1.0, 'pine'],
    [6.2, 4.6, 1.25, 'oak'], [4.4, 6.35, 0.85, 'pine'], [-4.6, 6.6, 1.0, 'pine'], [-6.45, 3.0, 0.9, 'oak'], [-0.8, 6.4, 0.85, 'oak'], [-0.2, 3.1, 0.7, 'cherry'], [0.9, 3.7, 0.6, 'round'],
-   [5.9, 2.7, 0.7, 'cherry'], [2.9, 6.5, 0.7, 'autumn'], [-5.6, -6.6, 0.8, 'pine'], [-3.9, 6.45, 0.6, 'autumn'],
+   [5.9, 2.7, 0.7, 'cherry'], [2.9, 6.5, 0.7, 'autumn'], [-8.9, -5.0, 0.8, 'pine'], [-3.9, 6.45, 0.6, 'autumn'],
    [ISLET.x + 0.1, ISLET.z + 1.5, 0.82, 'round'], [ISLET.x + 1.2, ISLET.z + 0.4, 0.78, 'cherry'], [ISLET.x - 0.8, ISLET.z - 1.1, 0.95, 'oak']]
     .forEach(([x, z, s, k]) => tree(x, z, s, k));
   // Arbustos con flores encima
@@ -939,6 +955,7 @@ export function startScene(canvas, { still = false } = {}) {
         const x = ax + (bx - ax) * d / len, z = az + (bz - az) * d / len;
         if (Math.abs(z - STREAM.z) < STREAM.w + 0.1 && x > H - 0.3) continue;   // por donde cae la cascada no
         if (Math.abs(z - ROPE.z) < ROPE.w + 0.05 && x < -H + 0.3) continue;      // ni donde llega el puente de cuerda
+        if (Math.abs(x - RAMP.x) < RAMP.w + 0.05 && z < -H + 0.3) continue;      // ni donde sale la rampa del islote alto
         const drop = rnd() < 0.3 ? rnd() * 0.22 : rnd() * 0.06;
         pos.push(x + ox * (0.03 + rnd() * 0.05), y - drop, z + oz * (0.03 + rnd() * 0.05)); nor.push(ox, 0.6, oz);
       }
@@ -962,8 +979,8 @@ export function startScene(canvas, { still = false } = {}) {
   // Flores del prado, matas de hierba, helechos y lavanda (todo en racimos o puntitos)
   {
     const FC = ['#f2f0e6', '#ffd23f', '#ff7a6b', '#c9a2ff', '#ff9fd0', '#e2532d', '#8fd0ff'];
-    const PATCHES = [[-4.5, -3.6, 1.2], [-6.0, -3.3, 0.8], [-2.6, -5.0, 0.9], [-5.6, 2.0, 1.0], [1.0, 5.2, 1.0], [4.9, 4.3, 1.1], [5.5, -0.8, 0.8], [-2.9, 3.6, 0.6], [2.6, -2.9, 0.5], [-1.3, -1.8, 0.4], [6.0, -5.9, 0.6], [-4.0, 5.5, 0.7], [3.6, 0.2, 0.5]];
-    for (let k = 0; k < 1700; k++) {
+    const PATCHES = [[-8.0, 5.0, 1.0], [6.4, 5.4, 1.0], [8.2, -3.8, 0.8], [-5.6, -8.6, 0.9], [2.0, -8.6, 0.8], [-8.4, -4.8, 0.8], [-5.8, 6.0, 0.8], [8.4, 7.4, 0.7], [-2.6, 8.6, 0.6], [-4.5, -3.6, 1.2], [-6.0, -3.3, 0.8], [-2.6, -5.0, 0.9], [-5.6, 2.0, 1.0], [1.0, 5.2, 1.0], [4.9, 4.3, 1.1], [5.5, -0.8, 0.8], [-2.9, 3.6, 0.6], [2.6, -2.9, 0.5], [-1.3, -1.8, 0.4], [6.0, -5.9, 0.6], [-4.0, 5.5, 0.7], [3.6, 0.2, 0.5]];
+    for (let k = 0; k < 2600; k++) {
       const [px, pz, pr] = PATCHES[k % PATCHES.length], a = rnd() * 6.28, r = Math.sqrt(rnd()) * pr, x = px + Math.cos(a) * r, z = pz + Math.sin(a) * r;
       if (pathDist(x, z) < 0.45 || pondDist(x, z) < POND.r + 0.3 || onStairs(x, z) || Math.abs(x) > H - 0.2 || Math.abs(z) > H - 0.2) continue;
       accent(x, heightAt(x, z) + 0.06 + rnd() * 0.12, z, FC[Math.floor(rnd() * FC.length)]);
@@ -979,7 +996,7 @@ export function startScene(canvas, { still = false } = {}) {
     const okGround = (x, z) => onIslet(x, z) ? Math.hypot(x - ISLET.x, z - ISLET.z) < ISLET.r - 0.05 : !(pathDist(x, z) < 0.42 || pondDist(x, z) < POND.r + 0.25 || inStream(x, z) || onStairs(x, z) || Math.hypot(x - FIRE.x, z - FIRE.z) < 1.1 || Math.abs(x) > H - 0.12 || Math.abs(z) > H - 0.12
       || (x > HOUSE.x0 - 0.1 && x < HOUSE.x1 + 0.1 && z > HOUSE.z0 - 0.1 && z < HOUSE.z1 + 0.1) || BEDS.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1));
     const tufts = [];
-    for (let k = 0; k < 4200; k++) { const x = (rnd() * 2 - 1) * (H - 0.15), z = (rnd() * 2 - 1) * (H - 0.15); if (okGround(x, z)) tufts.push([x, z]); }
+    for (let k = 0; k < Math.round(4200 * (H / 7) ** 2); k++) { const x = (rnd() * 2 - 1) * (H - 0.15), z = (rnd() * 2 - 1) * (H - 0.15); if (okGround(x, z)) tufts.push([x, z]); }
     for (let k = 0; k < 260; k++) { const a = rnd() * 6.28, d = Math.sqrt(rnd()) * ISLET.r, x = ISLET.x + Math.cos(a) * d, z = ISLET.z + Math.sin(a) * d; if (okGround(x, z)) tufts.push([x, z]); }
     ground(tufts, foliageMaterial('tuft', PAL.grass, 0.2));
     ground(ferns.filter(([x, z]) => okGround(x, z)).map(([x, z]) => [x, z, 0.12]), fernMat);
@@ -989,8 +1006,8 @@ export function startScene(canvas, { still = false } = {}) {
   }
 
   // ---------- La isleta: roca flotante con hierba, puente de cuerda, hamaca entre dos árboles y un columpio ----------
-  {
-    const { x: ix, z: iz, r: ir, y: iy } = ISLET;
+  function floatingIslet(I, gapA, gapW) {                             // gapA: hacia dónde llega el puente (sin fleco de hierba ahí)
+    const { x: ix, z: iz, r: ir, y: iy } = I;
     const side = cliffTexture(1.4); side.repeat.set(2 * Math.PI * ir * DENS / 64, 1);
     const rock = new THREE.Mesh(new THREE.CylinderGeometry(ir, ir * 0.88, 1.4, 28, 1, true), mapMat(side)); rock.position.set(ix, iy - 0.7, iz); add(rock);
     const under = new THREE.Mesh(new THREE.ConeGeometry(ir * 0.88, 1.5, 28, 1, true), mapMat(side)); under.rotation.x = Math.PI; under.position.set(ix, iy - 1.4 - 0.75, iz); add(under);
@@ -1009,8 +1026,18 @@ export function startScene(canvas, { still = false } = {}) {
     const top = new THREE.Mesh(topGeo, mapMat(grassTop)); top.position.set(ix, iy, iz); top.receiveShadow = true; add(top);
     // fleco de hierba por el borde y matas por encima
     const fpos = [], fnor = [];
-    for (let a = 0; a < Math.PI * 2; a += 0.03) { const c = Math.cos(a), s = Math.sin(a); if (c > 0.9 && Math.abs(s * ir) < ROPE.w) continue; fpos.push(ix + c * (ir + 0.04), iy - (rnd() < 0.3 ? rnd() * 0.2 : rnd() * 0.05), iz + s * (ir + 0.04)); fnor.push(c, 0.6, s); }
+    for (let a = 0; a < Math.PI * 2; a += 0.03) { const c = Math.cos(a), s = Math.sin(a); if (Math.cos(a - gapA) > 0.9 && Math.abs(Math.sin(a - gapA) * ir) < gapW) continue; fpos.push(ix + c * (ir + 0.04), iy - (rnd() < 0.3 ? rnd() * 0.2 : rnd() * 0.05), iz + s * (ir + 0.04)); fnor.push(c, 0.6, s); }
     const fr = new THREE.Points(pointsOf(fpos, fnor), foliageMaterial('leaf', PAL.grass, 0.17)); fr.frustumCulled = false; add(fr);
+  }
+  floatingIslet(ISLET, 0, ROPE.w); floatingIslet(ISLE2, Math.PI / 2, RAMP.w);
+  {
+    // la rampa de tablas que sube al islote alto, con barandillas
+    const plankR2 = mapMat(plankTex('#8a5a32'));
+    for (let z = RAMP.z0 - 0.1; z >= RAMP.z1 - 0.05; z -= 0.17) B(RAMP.w * 2, 0.05, 0.13, plankR2, RAMP.x, heightAt(RAMP.x, z) - 0.02, z);
+    for (const xx of [RAMP.x - RAMP.w, RAMP.x + RAMP.w]) {
+      for (const z of [-H + 0.15, (RAMP.z1 - H) / 2, RAMP.z1]) B(0.07, 0.8, 0.07, mat('#6b4528'), xx, heightAt(RAMP.x, z) + 0.36, z);
+      const len = Math.hypot(RAMP.z1 + H, ISLE2.y), rail = box(0.05, 0.05, len, mat('#8a5a32')); rail.position.set(xx, ISLE2.y / 2 + 0.72, (RAMP.z1 - H) / 2); rail.rotation.x = Math.atan2(ISLE2.y, -H - RAMP.z1); keep(rail);
+    }
     // puente de cuerda: tablas que bajan colgando y dos cuerdas de barandilla
     const plankR = mapMat(plankTex('#8a5a32')), rope = [];
     for (let x = ROPE.x0; x <= ROPE.x1 + 0.01; x += 0.17) B(0.12, 0.04, ROPE.w * 2, plankR, x, heightAt(x, ROPE.z) - 0.02, ROPE.z);
@@ -1066,6 +1093,144 @@ export function startScene(canvas, { still = false } = {}) {
   const noteTex = canvasTexture(8, 8, (g) => { g.fillStyle = '#ffffff'; g.fillRect(4, 0, 1, 6); g.fillRect(5, 1, 2, 1); g.fillRect(6, 2, 1, 1); g.fillRect(2, 5, 3, 2); g.fillRect(1, 6, 1, 1); });
   const notes = Array.from({ length: 8 }, () => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: noteTex, color: '#ffffff', transparent: true, opacity: 0, depthWrite: false })); s.scale.setScalar(0.22); add(s); return { s, life: 1 }; });
 
+  // ---------- Zonas nuevas del borde (fase 4): horno y mesa larga, gallinero, tendedero, invernadero, taller y observatorio ----------
+  // Lo bajo va delante (más cerca de la cámara) y lo alto detrás, para que nada tape lo que pasa.
+  // Mesa larga para comer todos juntos, con dos bancos, y el horno de leña al lado (de cúpula, hecho de racimos de barro)
+  const TABLE = { x: -0.2, z: 7.6, len: 2.6 };
+  {
+    const t = new THREE.Group();
+    const top = box(TABLE.len, 0.07, 0.8, plank); top.position.y = 0.76; t.add(top);
+    for (const lx of [-TABLE.len / 2 + 0.15, TABLE.len / 2 - 0.15]) for (const lz of [-0.3, 0.3]) { const l = box(0.08, 0.74, 0.08, beam); l.position.set(lx, 0.37, lz); t.add(l); }
+    for (const bz of [-0.55, 0.55]) { const bn = box(TABLE.len, 0.06, 0.3, plank); bn.position.set(0, 0.42, bz); t.add(bn); for (const lx of [-TABLE.len / 2 + 0.2, TABLE.len / 2 - 0.2]) { const l = box(0.06, 0.4, 0.22, beam); l.position.set(lx, 0.2, bz); t.add(l); } }
+    // la comida: un mantel, una hogaza, un cuenco, jarras y platos (puntitos y piezas pequeñas)
+    const cloth = new THREE.Mesh(new THREE.PlaneGeometry(TABLE.len - 0.4, 0.5).rotateX(-Math.PI / 2), mat('#f3efe4')); cloth.position.y = 0.8; t.add(cloth);
+    for (const [x, c] of [[-0.9, '#c98a4a'], [0.1, '#d9473a'], [0.8, '#f2c230']]) { const d = box(0.22, 0.06, 0.16, mat(c)); d.position.set(x, 0.84, 0); t.add(d); }
+    for (let k = 0; k < 6; k++) { const pl = box(0.16, 0.02, 0.16, mat('#e7e2d6')); pl.position.set(-1.0 + (k % 3) * 0.95, 0.81, k < 3 ? -0.2 : 0.2); t.add(pl); }
+    keep(at(t, TABLE.x, TABLE.z));
+    for (let k = 0; k < 3; k++) for (const s of [-1, 1]) {
+      const x = TABLE.x - 0.9 + k * 0.9, z = TABLE.z + s * 0.55;
+      slots.push({ kind: 'meal', x, z, face: s < 0 ? 0 : Math.PI, seat: 0.45, from: [x, z + s * 0.5] });
+    }
+  }
+  const OVEN = { x: 2.6, z: 8.1 };
+  const ovenGlow = new THREE.Mesh(new THREE.CircleGeometry(0.17, 10), new THREE.MeshBasicMaterial({ color: '#ff9a3a', transparent: true, opacity: 0 }));
+  {
+    const clay = foliageMaterial('puff', ['#6e3a24', '#8f4a2c', '#ad6038', '#c97a48', '#e09a64'], 0.14), y = heightAt(OVEN.x, OVEN.z);
+    B(1.2, 0.45, 1.1, stone, OVEN.x, y + 0.22, OVEN.z);                                       // la base de piedra
+    const dome = [[OVEN.x, y + 0.65, OVEN.z, 0.5], [OVEN.x, y + 0.92, OVEN.z, 0.34], [OVEN.x, y + 1.1, OVEN.z, 0.16]];
+    add(foliage(dome, clay, 150, { flat: y + 0.45 })); add(shadowCaster(dome));
+    B(0.08, 0.32, 0.36, mat('#1c120c'), OVEN.x + 0.5, y + 0.66, OVEN.z);                      // la boca, mirando a la cámara
+    ovenGlow.rotation.y = Math.PI / 2; ovenGlow.position.set(OVEN.x + 0.545, y + 0.64, OVEN.z); add(ovenGlow);
+    B(0.16, 0.5, 0.16, stone, OVEN.x - 0.15, y + 1.3, OVEN.z - 0.2);                           // chimenea
+    for (let k = 0; k < 5; k++) B(0.38, 0.12, 0.12, mat(k % 2 ? '#8a5a32' : '#7a4d2a'), OVEN.x + 0.35, y + 0.06 + Math.floor(k / 2) * 0.12, OVEN.z + 0.75 - (k % 2) * 0.05);   // leña
+    slots.push({ kind: 'bake', x: OVEN.x + 0.95, z: OVEN.z, face: -Math.PI / 2 });
+  }
+  // Gallinero: una caseta con rampa, una valla baja y cuatro gallinas sueltas que picotean
+  const PEN = { x0: -7.9, x1: -4.4, z0: 6.9, z1: 9.0 };
+  const COOP = { x: -7.2, z: 7.6 };
+  {
+    const y = heightAt(COOP.x, COOP.z);
+    B(1.0, 0.7, 0.9, mapMat(plankTex('#a8743f')), COOP.x, y + 0.55, COOP.z); for (const [lx, lz] of [[-0.42, -0.36], [0.42, -0.36], [-0.42, 0.36], [0.42, 0.36]]) B(0.08, 0.3, 0.08, beam, COOP.x + lx, y + 0.15, COOP.z + lz);
+    for (const s of [1, -1]) { const r = box(1.2, 0.08, 0.62, roof); r.position.set(COOP.x, y + 1.05, COOP.z + s * 0.24); r.rotation.x = s * 0.55; keep(r); }
+    B(0.2, 0.26, 0.04, mat('#2a1a0e'), COOP.x + 0.2, y + 0.45, COOP.z + 0.46);                  // la puerta de las gallinas
+    { const rp = box(0.22, 0.03, 0.7, plank); rp.position.set(COOP.x + 0.2, y + 0.18, COOP.z + 0.75); rp.rotation.x = 0.55; keep(rp); }
+    // la valla: postes y dos tablones, con la puerta en el lado derecho
+    const post = (x, z) => B(0.07, 0.6, 0.07, fenceWood, x, heightAt(x, z) + 0.3, z);
+    const rail = (ax, az, bx, bz) => { for (const hh of [0.25, 0.5]) { const len = Math.hypot(bx - ax, bz - az), r = box(0.04, 0.06, len, fenceWood); r.position.set((ax + bx) / 2, heightAt((ax + bx) / 2, (az + bz) / 2) + hh, (az + bz) / 2); r.rotation.y = Math.atan2(bx - ax, bz - az); keep(r); } };
+    const pts = [[PEN.x0, PEN.z0], [PEN.x1, PEN.z0], [PEN.x1, PEN.z1], [PEN.x0, PEN.z1]];
+    pts.forEach(([x, z]) => post(x, z));
+    rail(PEN.x0, PEN.z0, PEN.x1, PEN.z0); rail(PEN.x0, PEN.z1, PEN.x1, PEN.z1); rail(PEN.x0, PEN.z0, PEN.x0, PEN.z1);
+    rail(PEN.x1, PEN.z0, PEN.x1, 7.6); rail(PEN.x1, 8.4, PEN.x1, PEN.z1); post(PEN.x1, 7.6); post(PEN.x1, 8.4);
+    for (let k = 0; k < 60; k++) accent(PEN.x0 + 0.3 + rnd() * (PEN.x1 - PEN.x0 - 0.6), heightAt(-6, 8) + 0.03, PEN.z0 + 0.3 + rnd() * (PEN.z1 - PEN.z0 - 0.6), rnd() < 0.5 ? '#e8c46a' : '#c9a24a');   // grano por el suelo
+    slots.push({ kind: 'chickens', x: PEN.x1 + 0.45, z: 8.0, face: -Math.PI / 2 }, { kind: 'chickens', x: PEN.x1 + 0.4, z: 7.0, face: -Math.PI / 2 - 0.4 });
+  }
+  const hen = foliageMaterial('puff', ['#b8ab9a', '#d6cbbd', '#ece4d8', '#f8f3ea', '#ffffff'], 0.09), brownHen = foliageMaterial('puff', ['#5a3418', '#7a4a22', '#9a6230', '#b87a40', '#d49a5a'], 0.09);
+  const chickens = [0, 1, 2, 3].map((i) => {
+    const g = new THREE.Group(), m = i === 2 ? brownHen : hen;
+    g.add(foliage([[0, 0.17, 0, 0.13], [0, 0.22, -0.1, 0.08]], m, 300));
+    const head = new THREE.Group(); head.position.set(0, 0.3, 0.12); g.add(head);
+    head.add(foliage([[0, 0, 0, 0.065]], m, 300));
+    const comb = box(0.03, 0.05, 0.06, mat('#d8332a')); comb.position.set(0, 0.07, 0); head.add(comb);
+    const beak = box(0.03, 0.03, 0.05, mat('#f2b830')); beak.position.set(0, 0, 0.07); head.add(beak);
+    for (const lx of [-0.04, 0.04]) { const l = box(0.02, 0.1, 0.02, mat('#e0a030')); l.position.set(lx, 0.05, 0); g.add(l); }
+    add(g);
+    return { g, head, x: PEN.x0 + 1.2 + i * 0.6, z: 7.8 + (i % 2) * 0.5, tx: 0, tz: 0, yaw: rnd() * 6, until: 0, peck: 0 };
+  });
+  // Tendedero: dos postes y una cuerda con ropa de colores que se mueve con el viento (más con lluvia)
+  const LINE = { x0: 5.0, x1: 7.6, z: 7.9, y: 1.55 };
+  const clothes = [];
+  {
+    for (const x of [LINE.x0, LINE.x1]) { B(0.07, LINE.y + 0.1, 0.07, beam, x, heightAt(x, LINE.z) + (LINE.y + 0.1) / 2, LINE.z); B(0.4, 0.05, 0.05, beam, x, heightAt(x, LINE.z) + LINE.y + 0.05, LINE.z, Math.PI / 2); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute([LINE.x0, LINE.y + 0.02, LINE.z, LINE.x1, LINE.y + 0.02, LINE.z], 3)); add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: '#e8e2d2' })));
+    const COLS = ['#c8322f', '#f3f1ea', '#2d4f9e', '#f2c230', '#9fd0ea', '#f3f1ea', '#e07aa0'];
+    for (let k = 0; k < 7; k++) {
+      const w = 0.22 + rnd() * 0.12, hgt = 0.3 + rnd() * 0.2, x = LINE.x0 + 0.25 + k * (LINE.x1 - LINE.x0 - 0.5) / 6;
+      const piv = new THREE.Group(); piv.position.set(x, heightAt(x, LINE.z) + LINE.y, LINE.z);
+      const c = new THREE.Mesh(new THREE.PlaneGeometry(w, hgt), mat(COLS[k], { side: THREE.DoubleSide })); c.position.y = -hgt / 2; c.castShadow = true; piv.add(c);
+      for (const px of [-w / 2 + 0.03, w / 2 - 0.03]) { const pin = box(0.02, 0.05, 0.02, mat('#c9a66b')); pin.position.set(px, 0.01, 0.01); piv.add(pin); }
+      add(piv); clothes.push({ piv, ph: rnd() * 6 });
+    }
+    slots.push({ kind: 'laundry', x: 5.8, z: 8.45, face: Math.PI }, { kind: 'laundry', x: 6.9, z: 8.45, face: Math.PI });
+  }
+  // Invernadero de cristal, en el lado derecho: armazón de madera, cristal muy claro y dos filas de tomateras y flores dentro; se entra por la izquierda
+  const GH = { x0: 7.1, x1: 8.95, z0: -0.9, z1: 1.7, h: 1.6 };
+  {
+    const glass = new THREE.MeshBasicMaterial({ color: '#d8f0f4', transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide });
+    const gx = (GH.x0 + GH.x1) / 2, gz = (GH.z0 + GH.z1) / 2, gw = GH.x1 - GH.x0, gd = GH.z1 - GH.z0, y = heightAt(gx, gz);
+    const pane = (w, hh, x, yy, z, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, hh), glass); m.position.set(x, yy, z); m.rotation.y = ry; m.renderOrder = 3; add(m); };
+    pane(gw, GH.h, gx, y + GH.h / 2, GH.z1, 0); pane(gw, GH.h, gx, y + GH.h / 2, GH.z0, 0); pane(gd, GH.h, GH.x1, y + GH.h / 2, gz, Math.PI / 2);
+    pane(gd / 2 - 0.45, GH.h, GH.x0, y + GH.h / 2, GH.z0 + (gd / 2 - 0.45) / 2, Math.PI / 2); pane(gd / 2 - 0.45, GH.h, GH.x0, y + GH.h / 2, GH.z1 - (gd / 2 - 0.45) / 2, Math.PI / 2);   // con la puerta abierta en medio
+    const ang = 0.5, ry = Math.hypot(gw / 2, Math.tan(ang) * gw / 2);
+    for (const s of [1, -1]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(ry, gd).rotateX(-Math.PI / 2).rotateZ(-s * ang), glass); m.position.set(gx + s * gw / 4, y + GH.h + Math.tan(ang) * gw / 4, gz); m.renderOrder = 3; add(m); }   // el tejado de cristal, a dos aguas
+    // el armazón
+    for (const x of [GH.x0, gx, GH.x1]) for (const z of [GH.z0, GH.z1]) B(0.06, GH.h, 0.06, mapMat(plankTex('#f3efe4')), x, y + GH.h / 2, z);
+    for (const z of [GH.z0, GH.z0 + gd / 3, GH.z0 + gd * 2 / 3, GH.z1]) { B(0.05, 0.05, 0.05, mat('#f3efe4'), GH.x0, y + GH.h, z); B(0.05, 0.05, 0.05, mat('#f3efe4'), GH.x1, y + GH.h, z); }
+    B(0.05, 0.05, gd, mat('#f3efe4'), gx, y + GH.h + Math.tan(ang) * gw / 2, gz); B(0.05, 0.05, gd, mat('#f3efe4'), GH.x0, y + GH.h, gz); B(0.05, 0.05, gd, mat('#f3efe4'), GH.x1, y + GH.h, gz);
+    // dentro: dos bancales con tomateras y flores
+    for (const z of [GH.z0 + 0.4, GH.z1 - 0.4]) { B(gw - 0.5, 0.25, 0.4, mapMat(plankTex('#7b5230')), gx + 0.1, y + 0.12, z); bushAt(gx - 0.2, z, 0.26, y + 0.25, '#d8332a'); bushAt(gx + 0.45, z, 0.24, y + 0.25, rnd() < 0.5 ? '#f2c230' : '#ff7a6b'); }
+    slots.push({ kind: 'greenhouse', x: gx + 0.1, z: gz - 0.05, face: Math.PI / 2 });
+  }
+  // Taller en la terraza de atrás: un tejadillo sobre cuatro postes, el banco de trabajo con herramientas y un torno de alfarero
+  const SHOP = { x: -7.4, z: -7.9 };
+  const potWheel = new THREE.Group();
+  {
+    const y = TERR.h;
+    for (const [px, pz] of [[-1.2, -0.8], [1.2, -0.8], [-1.2, 0.8], [1.2, 0.8]]) B(0.12, 1.9, 0.12, beam, SHOP.x + px, y + 0.95, SHOP.z + pz);
+    for (const s of [1, -1]) { const r = box(2.8, 0.1, 1.15, roof); r.position.set(SHOP.x, y + 2.05, SHOP.z + s * 0.48); r.rotation.x = s * 0.42; keep(r); }
+    B(2.2, 0.08, 0.6, plank, SHOP.x, y + 0.85, SHOP.z - 0.55); for (const lx of [-1.0, 1.0]) B(0.08, 0.84, 0.5, beam, SHOP.x + lx, y + 0.42, SHOP.z - 0.55);
+    B(0.06, 0.4, 0.3, mat('#9aa3ad'), SHOP.x - 0.6, y + 1.2, SHOP.z - 0.8); B(0.5, 0.05, 0.05, mat('#7a5030'), SHOP.x + 0.1, y + 1.4, SHOP.z - 0.8);   // herramientas colgadas
+    B(0.3, 0.12, 0.18, mat('#8a5a32'), SHOP.x - 0.2, y + 0.95, SHOP.z - 0.5); B(0.18, 0.2, 0.18, mat('#c97a48'), SHOP.x + 0.6, y + 0.99, SHOP.z - 0.5);   // tablón y un jarrón recién hecho
+    for (let k = 0; k < 4; k++) B(0.14, 0.18 + (k % 2) * 0.06, 0.14, mat(['#c97a48', '#e0a070', '#ad6038', '#d9b48a'][k]), SHOP.x - 1.6 + k * 0.2, y + 0.1, SHOP.z + 1.15);   // cacharros secándose
+    potWheel.add(new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.05, 14), mat('#7a5030'))); { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.12, 10), mat('#c97a48')); c.position.y = 0.08; potWheel.add(c); }
+    potWheel.position.set(SHOP.x + 0.75, y + 0.55, SHOP.z + 0.25); add(potWheel); B(0.1, 0.5, 0.1, beam, SHOP.x + 0.75, y + 0.27, SHOP.z + 0.25);
+    B(0.3, 0.06, 0.3, plank, SHOP.x + 0.75, y + 0.4, SHOP.z + 0.75); B(0.06, 0.38, 0.06, beam, SHOP.x + 0.75, y + 0.19, SHOP.z + 0.75);   // taburete
+    slots.push({ kind: 'craft', x: SHOP.x - 0.3, z: SHOP.z - 0.05, face: Math.PI });
+    slots.push({ kind: 'pottery', x: SHOP.x + 0.75, z: SHOP.z + 0.75, face: Math.PI, seat: 0.43, from: [SHOP.x + 0.75, SHOP.z + 1.3] });
+  }
+  // Observatorio en el islote alto: una torre redonda encalada con su cúpula (que gira despacio de noche) y un telescopio fuera para mirar las estrellas
+  const OBS = { x: ISLE2.x + 0.5, z: ISLE2.z - 0.55 };
+  const dome = new THREE.Group();
+  {
+    const y = heightAt(OBS.x, OBS.z);
+    const tower = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.9, 1.6, 20), plaster); tower.position.set(OBS.x, y + 0.8, OBS.z); tower.castShadow = tower.receiveShadow = true; add(tower);
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.88, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), mat('#8fa3b8')); cap.castShadow = true; dome.add(cap);
+    const slit = box(0.2, 0.75, 0.12, mat('#1c2030')); slit.position.set(0, 0.45, 0.78); slit.rotation.x = -0.6; dome.add(slit);
+    const tube = box(0.12, 0.12, 0.7, mat('#d9d4c8')); tube.position.set(0, 0.55, 0.8); tube.rotation.x = -0.7; dome.add(tube);
+    dome.position.set(OBS.x, y + 1.6, OBS.z); add(dome);
+    B(0.5, 0.9, 0.08, mapMat(plankTex('#6e4325')), OBS.x - 0.1, y + 0.45, OBS.z + 0.86);   // puerta
+    // el telescopio de fuera, sobre su trípode
+    const TX = ISLE2.x - 0.6, TZ = ISLE2.z + 0.6, ty = heightAt(TX, TZ);
+    for (const a of [0, 2.1, 4.2]) { const l = box(0.03, 1.1, 0.03, mat('#5a3d22')); l.position.set(TX + Math.cos(a) * 0.2, ty + 0.5, TZ + Math.sin(a) * 0.2); l.rotation.set(Math.sin(a) * 0.2, 0, -Math.cos(a) * 0.2); keep(l); }
+    const tl = box(0.1, 0.1, 0.75, mat('#c8322f')); tl.position.set(TX, ty + 1.15, TZ - 0.1); tl.rotation.x = 0.7; keep(tl);
+    slots.push({ kind: 'telescope', x: TX, z: TZ + 0.45, face: Math.PI });
+    bushAt(ISLE2.x + 1.1, ISLE2.z + 0.7, 0.3); bushAt(ISLE2.x - 1.2, ISLE2.z - 0.6, 0.32);
+    for (let k = 0; k < 120; k++) { const a = rnd() * 6.28, d = Math.sqrt(rnd()) * (ISLE2.r - 0.2), x = ISLE2.x + Math.cos(a) * d, z = ISLE2.z + Math.sin(a) * d; if (Math.hypot(x - OBS.x, z - OBS.z) > 1.0) accent(x, heightAt(x, z) + 0.06, z, ['#ff9fd0', '#ffd23f', '#f2f0e6', '#c9a2ff'][k % 4]); }
+  }
+  // Más árboles y arbustos en el borde nuevo (lejos de lo que hay que ver)
+  [[-8.7, 8.6, 1.0, 'oak'], [-8.9, 3.2, 1.0, 'pine'], [-8.7, -1.2, 0.85, 'round'], [8.8, 4.2, 0.8, 'round'], [8.7, -7.2, 1.0, 'pine'], [6.6, -8.9, 0.75, 'cherry'], [0.6, -8.9, 1.1, 'oak'], [-0.6, -8.7, 0.7, 'autumn'], [8.9, -2.6, 0.7, 'autumn']]
+    .forEach(([x, z, s, k]) => tree(x, z, s, k));
+  for (const [x, z, s] of [[-3.0, 8.9, 0.4], [3.9, 8.9, 0.38], [8.9, 6.2, 0.4], [-8.9, 6.0, 0.42], [8.9, 2.6, 0.35], [-2.2, -8.9, 0.4], [-8.9, 0.9, 0.38], [8.8, -5.2, 0.36]]) bushAt(x, z, s);
+
   // ---------- Juntar lo estático ----------
   for (const [material, { list }] of statics) {
     const merged = new THREE.Mesh(mergeGeometries(list, false), material);
@@ -1074,14 +1239,15 @@ export function startScene(canvas, { still = false } = {}) {
   }
 
   // ---------- Mapa para andar: rejilla de 20 cm con lo que estorba marcado ----------
-  const G = 0.2, EDGE = H - 0.32, GX0 = ISLET.x - ISLET.r - 0.2, GZ1 = Math.max(EDGE, ISLET.z + ISLET.r + 0.2);
-  const NX = Math.round((EDGE - GX0) / G) + 1, NZ = Math.round((GZ1 + EDGE) / G) + 1, N = NX;   // N: celdas por fila
+  const G = 0.2, EDGE = H - 0.32, GX0 = ISLET.x - ISLET.r - 0.2, GZ0 = Math.min(-EDGE, ISLE2.z - ISLE2.r - 0.2), GZ1 = Math.max(EDGE, ISLET.z + ISLET.r + 0.2);
+  const NX = Math.round((EDGE - GX0) / G) + 1, NZ = Math.round((GZ1 - GZ0) / G) + 1, N = NX;   // N: celdas por fila
   const blocked = new Uint8Array(NX * NZ);
-  const cellX = (v) => clamp(Math.round((v - GX0) / G), 0, NX - 1), cellZ = (v) => clamp(Math.round((v + EDGE) / G), 0, NZ - 1);
-  const cxX = (i) => GX0 + i * G, cxZ = (j) => -EDGE + j * G;
+  const cellX = (v) => clamp(Math.round((v - GX0) / G), 0, NX - 1), cellZ = (v) => clamp(Math.round((v - GZ0) / G), 0, NZ - 1);
+  const cxX = (i) => GX0 + i * G, cxZ = (j) => GZ0 + j * G;
   // Se puede pisar: la isla (menos el borde), el puente de cuerda y la isleta (menos su borde)
   // (el paso del puente de cuerda llega hasta dentro de la isleta: si no, quedaba un hueco sin suelo y la isleta se quedaba aislada)
-  const ground0 = (x, z) => (Math.abs(x) <= EDGE && Math.abs(z) <= EDGE) || (x >= ISLET.x + ISLET.r - 0.9 && x <= ROPE.x1 + 0.2 && Math.abs(z - ROPE.z) < ROPE.w - 0.12) || Math.hypot(x - ISLET.x, z - ISLET.z) < ISLET.r - 0.32;
+  const ground0 = (x, z) => (Math.abs(x) <= EDGE && Math.abs(z) <= EDGE) || (x >= ISLET.x + ISLET.r - 0.9 && x <= ROPE.x1 + 0.2 && Math.abs(z - ROPE.z) < ROPE.w - 0.12) || Math.hypot(x - ISLET.x, z - ISLET.z) < ISLET.r - 0.32
+    || (Math.abs(x - RAMP.x) < RAMP.w - 0.12 && z <= -H + 0.6 && z >= RAMP.z1 - 0.9) || Math.hypot(x - ISLE2.x, z - ISLE2.z) < ISLE2.r - 0.32;   // la rampa y el islote alto
   const isBlocked = (x, z) => !ground0(x, z) || blocked[cellZ(z) * NX + cellX(x)];
   const block = (test) => { for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) if (test(cxX(i), cxZ(j))) blocked[j * NX + i] = 1; };
   block((x, z) => !ground0(x, z));
@@ -1108,6 +1274,14 @@ export function startScene(canvas, { still = false } = {}) {
   round(2.3, 1.35, 0.2); rect(2.75, 2.97, -6.1, -4.1, 0.1);                 // poste de la guirnalda y girasoles
   round(EASEL.x, EASEL.z, 0.35); round(PIC.x + 0.15, PIC.z - 0.1, 0.2);
   block((x, z) => { const [ax, az] = HAM.a, [bx, bz] = HAM.b, dx = bx - ax, dz = bz - az, f = clamp(((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz), 0.12, 0.88); return Math.hypot(x - ax - dx * f, z - az - dz * f) < 0.32; });
+  // zonas nuevas: la mesa y sus bancos, el horno, el gallinero (las personas se quedan fuera de la valla), los postes del tendedero, las paredes del invernadero (menos la puerta), el taller y el observatorio
+  rect(TABLE.x - TABLE.len / 2, TABLE.x + TABLE.len / 2, TABLE.z - 0.4, TABLE.z + 0.4, 0.1); round(OVEN.x, OVEN.z, 0.7);
+  rect(PEN.x0, PEN.x1, PEN.z0, PEN.z1, 0.15); round(LINE.x0, LINE.z, 0.15); round(LINE.x1, LINE.z, 0.15);
+  rect(GH.x0, GH.x1, GH.z1 - 0.05, GH.z1 + 0.05, 0.12); rect(GH.x0, GH.x1, GH.z0 - 0.05, GH.z0 + 0.05, 0.12); rect(GH.x1 - 0.05, GH.x1 + 0.05, GH.z0, GH.z1, 0.12);
+  rect(GH.x0 - 0.05, GH.x0 + 0.05, GH.z0, (GH.z0 + GH.z1) / 2 - 0.45, 0.12); rect(GH.x0 - 0.05, GH.x0 + 0.05, (GH.z0 + GH.z1) / 2 + 0.45, GH.z1, 0.12);
+  rect(GH.x0 + 0.25, GH.x1 - 0.15, GH.z0 + 0.2, GH.z0 + 0.6, 0.05); rect(GH.x0 + 0.25, GH.x1 - 0.15, GH.z1 - 0.6, GH.z1 - 0.2, 0.05);
+  rect(SHOP.x - 1.1, SHOP.x + 1.1, SHOP.z - 0.85, SHOP.z - 0.25, 0.1); round(SHOP.x + 0.75, SHOP.z + 0.25, 0.3); for (const [px, pz] of [[-1.2, -0.8], [1.2, -0.8], [-1.2, 0.8], [1.2, 0.8]]) round(SHOP.x + px, SHOP.z + pz, 0.15);
+  round(OBS.x, OBS.z, 1.05); round(ISLE2.x - 0.6, ISLE2.z + 0.6, 0.28);
   const free = (x, z) => !isBlocked(x, z);
   const offPath = new Uint8Array(NX * NZ); for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) offPath[j * NX + i] = pathDist(cxX(i), cxZ(j)) < 0.35 || onRope(cxX(i), cxZ(j)) ? 0 : 1;
 
@@ -1276,6 +1450,15 @@ export function startScene(canvas, { still = false } = {}) {
     juggle:   { len: [7, 11],  give: { fun: 0.5 },                   when: (h, w) => (daylight(h) && !w.rain ? 1 : 0) },
     paint:    { len: [16, 26], give: { focus: 0.3, fun: 0.4 },       when: (h, w) => (daylight(h) && !w.rain ? (h > 14 ? 2 : 1) : 0) },
     picnic:   { len: [14, 22], give: { food: 0.7, social: 0.3 },     when: (h, w) => (!w.rain && h > 11.5 && h < 16 ? 2.6 : 0) },
+    // zonas nuevas: la comida y la cena en la mesa larga (a su hora apetece muchísimo), el horno antes, las gallinas por la mañana, la colada, el invernadero (también con lluvia), el taller y el telescopio de noche
+    meal:     { len: [16, 26], give: { food: 0.8, social: 0.5 },     when: (h, w) => (!w.rain && ((h > 12.8 && h < 14.8) || (h > 20.2 && h < 21.8)) ? 6 : 0) },
+    bake:     { len: [10, 16], give: { food: 0.4, focus: 0.2 },      when: (h, w) => ((h > 11.6 && h < 13.2) || (h > 19.2 && h < 20.6) ? 3 : daylight(h) ? 0.3 : 0) },
+    chickens: { len: [8, 12],  give: { nature: 0.4, fun: 0.3 },      when: (h, w) => (daylight(h) ? (h < 10.5 ? 2 : 0.8) : 0) * (w.rain ? 0.3 : 1) },
+    laundry:  { len: [10, 16], give: { focus: 0.2, nature: 0.2 },    when: (h, w) => (w.rain ? 0 : h > 8 && h < 12.5 ? 1.5 : daylight(h) ? 0.4 : 0) },
+    greenhouse: { len: [10, 16], give: { nature: 0.6, food: 0.2 },   when: (h, w) => (daylight(h) ? (w.rain ? 1.8 : 0.9) : 0) },
+    craft:    { len: [14, 24], give: { focus: 0.5, fun: 0.3 },       when: (h, w) => (daylight(h) ? 1 : evening(h) && !night(h) ? 0.4 : 0) },
+    pottery:  { len: [14, 22], give: { fun: 0.5, focus: 0.3 },       when: (h, w) => (daylight(h) ? 0.9 : 0) },
+    telescope: { len: [16, 26], give: { nature: 0.5, fun: 0.4 },     when: (h, w) => (w.rain || w.cloud > 0.6 ? 0 : night(h) ? 2.4 : evening(h) ? 0.6 : 0) },
     hammock:  { len: [14, 24], give: { energy: 0.6 },                when: (h, w) => (daylight(h) && !w.rain ? (h > 13 && h < 17.5 ? 2.4 : 1) : 0) },
     swing:    { len: [8, 14],  give: { fun: 0.6 },                   when: (h, w) => (w.rain ? 0 : daylight(h) ? 1.3 : evening(h) && !night(h) ? 1 : 0) },
     kite:     { len: [12, 18], give: { fun: 0.5, nature: 0.2 },      when: (h, w) => (daylight(h) && !w.rain && w.cloud < 0.6 ? 1.3 : 0) },
@@ -1287,11 +1470,11 @@ export function startScene(canvas, { still = false } = {}) {
   const playing = () => agents.find((b) => b.guitar && b.state === 'act' && !b.inside);   // alguien toca la guitarra
   const LOOKS = [
     { shirt: '#c8322f', pants: '#2b3140', style: 'short', skin: '#8d5a3b', hair: '#111111', brolly: '#ffd23f',
-      likes: { desk: 1.7, board: 1.3, coffee: 1.5, chop: 1.4, jog: 1.8, picnic: 1.2, fish: 0.8, garden: 0.6, stargaze: 0.6, hives: 0.6, paint: 0.6 }, owl: 0.2, bed: 23.0, wake: 6.9 },
+      likes: { desk: 1.7, board: 1.3, coffee: 1.5, chop: 1.4, jog: 1.8, picnic: 1.2, bake: 1.7, craft: 1.8, meal: 1.3, fish: 0.8, garden: 0.6, stargaze: 0.6, hives: 0.6, paint: 0.6 }, owl: 0.2, bed: 23.0, wake: 6.9 },
     { shirt: '#f2c230', pants: '#3a4a6b', style: 'long', shorts: true, skin: '#f1c7a5', hair: '#4a2f1d', brolly: '#c8322f',
-      likes: { garden: 1.9, hives: 1.7, ducks: 1.5, lookout: 1.3, tree: 1.3, read: 1.2, paint: 1.9, hammock: 1.7, kite: 1.5, swing: 1.3, picnic: 1.3, desk: 0.8, chop: 0.6 }, owl: 0.15, bed: 22.6, wake: 7.2 },
+      likes: { garden: 1.9, hives: 1.7, ducks: 1.5, chickens: 1.9, greenhouse: 1.8, laundry: 1.3, pottery: 1.6, lookout: 1.3, tree: 1.3, read: 1.2, paint: 1.9, hammock: 1.7, kite: 1.5, swing: 1.3, picnic: 1.3, desk: 0.8, chop: 0.6 }, owl: 0.15, bed: 22.6, wake: 7.2 },
     { shirt: '#f3f1ea', pants: '#1d1d1d', style: 'cap', sleeves: 'long', shoes: '#c8322f', skin: '#5b3726', hair: '#111111', brolly: '#2d4f9e',
-      likes: { chat: 1.8, phone: 1.4, campfire: 1.7, stargaze: 1.8, fish: 1.5, cat: 1.6, view: 1.3, dance: 1.9, juggle: 1.7, puddle: 1.9, swing: 1.6, kite: 1.2, desk: 0.9 }, owl: 0.65, bed: 23.7, wake: 7.9 },
+      likes: { chat: 1.8, phone: 1.4, campfire: 1.7, telescope: 2.0, meal: 1.6, pottery: 1.2, stargaze: 1.8, fish: 1.5, cat: 1.6, view: 1.3, dance: 1.9, juggle: 1.7, puddle: 1.9, swing: 1.6, kite: 1.2, desk: 0.9 }, owl: 0.65, bed: 23.7, wake: 7.9 },
   ];
   const agents = LOOKS.map((look, i) => {
     const p = person(look); add(p);
@@ -1327,7 +1510,7 @@ export function startScene(canvas, { still = false } = {}) {
     const last = a.history.lastIndexOf(kind), ago = last < 0 ? 99 : a.history.length - 1 - last;
     const novelty = ago === 0 ? 0.04 : ago < 3 ? 0.3 : ago < 6 ? 0.7 : 1;   // lo que acaba de hacer, casi nunca
     if (DAY_WORK.has(kind) && a.needs.focus > 0.8) s *= 0.4;
-    if ((kind === 'coffee' || kind === 'picnic' || kind === 'campfire') && agents.some((b) => b !== a && !b.inside && (b.kind === kind || b.plan?.kind === kind))) s *= kind === 'campfire' ? 3.6 : 2.6;   // desayunar, comer y cenar juntos: si otro ya está, apetece ir
+    if ((kind === 'coffee' || kind === 'picnic' || kind === 'campfire' || kind === 'meal') && agents.some((b) => b !== a && !b.inside && (b.kind === kind || b.plan?.kind === kind))) s *= kind === 'campfire' ? 3.6 : 2.6;   // desayunar, comer y cenar juntos: si otro ya está, apetece ir
     return s * need * (a.look.likes[kind] || 1) * novelty * (0.6 + rand() * 0.8);
   }
   function choose(a) {
@@ -1348,7 +1531,7 @@ export function startScene(canvas, { still = false } = {}) {
     }
     const options = [];
     for (const kind in ACT) {
-      if (a.owl && !['campfire', 'stargaze', 'lookout', 'view', 'cat', 'porch', 'fish', 'swing'].includes(kind)) continue;
+      if (a.owl && !['campfire', 'stargaze', 'lookout', 'view', 'cat', 'porch', 'fish', 'swing', 'telescope'].includes(kind)) continue;
       if (kind === 'chat') { if (agents.some((b) => b !== a && canTalk(b))) options.push([kind, score(a, kind, h, w)]); continue; }
       if (kind === 'cat') { if (cat.state !== 'walk' && !cat.petted) options.push([kind, score(a, kind, h, w) * 0.6]); continue; }
       if (kind === 'home') { options.push([kind, score(a, kind, h, w)]); continue; }
@@ -1549,6 +1732,14 @@ export function startScene(canvas, { still = false } = {}) {
         if (a.bite && t > a.bite + 1.6) { a.bite = t + 6 + rand() * 9; ripple(a.x + Math.sin(a.yaw) * 1.7, a.z + Math.cos(a.yaw) * 1.7); }
         a.carry = 'rod'; break;
       }
+      case 'meal': { const bite = Math.sin(local * 1.4 + a.seed) > 0.55; Object.assign(P, { ar: bite ? -1.9 : -0.9, er: bite ? -1.9 : -0.6, al: -0.8, el: -0.7, sp: 0.05, hx: bite ? -0.05 : 0.15, hy: Math.sin(ph * 0.35) * 0.5 }); break; }
+      case 'bake': { const k2 = Math.sin(local * 1.3); Object.assign(P, { al: -1.3 + k2 * 0.2, ar: -1.3 + k2 * 0.2, el: -0.3, er: -0.3, sp: 0.25, hx: 0.2 }); break; }
+      case 'chickens': { const toss = Math.sin(local * 2.4) > 0.6; Object.assign(P, { ar: toss ? -1.5 : -0.3, er: -0.2, arz: toss ? 0.3 : 0, al: -0.7, el: -1.3, hx: 0.35 }); break; }
+      case 'laundry': { const k2 = Math.sin(local * 1.6); Object.assign(P, { al: -2.5 + k2 * 0.2, ar: -2.5 - k2 * 0.2, el: -0.4, er: -0.4, hx: -0.25 }); break; }
+      case 'greenhouse': { const dig = Math.sin(ph * 4); Object.assign(P, { ar: -1.2 + dig * 0.2, er: -0.4, al: -0.9, el: -0.6, sp: 0.35, hx: 0.4 }); break; }
+      case 'craft': { const hit = Math.abs(Math.sin(local * 5)); Object.assign(P, { ar: -1.6 - hit * 0.9, er: -0.5 + hit * 0.4, al: -0.9, el: -0.7, sp: 0.2, hx: 0.35 }); break; }
+      case 'pottery': Object.assign(P, { al: -1.1, ar: -1.1, el: -0.7 + Math.sin(ph * 3) * 0.08, er: -0.7, sp: 0.25, hx: 0.4 }); break;
+      case 'telescope': Object.assign(P, { ar: -2.1, er: -0.9, al: -0.7, el: -1.0, hx: -0.6, sp: -0.12 }); break;
       case 'ducks': { const toss = Math.sin(local * 2.2) > 0.7; Object.assign(P, { ar: toss ? -1.4 : -0.3, er: -0.3, al: -0.6, el: -1.2, hx: 0.3 }); break; }
       case 'campfire': {
         const roast = Math.sin(local * 0.25 + a.seed) > 0;
@@ -1597,7 +1788,7 @@ export function startScene(canvas, { still = false } = {}) {
 
   // ---------- Cada fotograma: personas ----------
   const turnTo = (from, to, k) => from + Math.atan2(Math.sin(to - from), Math.cos(to - from)) * k;
-  const roofed = (x, z) => (x > SHED.x0 - 0.1 && x < SHED.x1 + 0.1 && z > SHED.z0 && z < SHED.z1 + 0.3) || (x > HOUSE.x0 - 0.3 && x < HOUSE.x1 + 0.3 && z > HOUSE.z1 && z < HOUSE.z1 + 0.6);
+  const roofed = (x, z) => (x > GH.x0 && x < GH.x1 && z > GH.z0 && z < GH.z1) || (Math.abs(x - SHOP.x) < 1.3 && Math.abs(z - SHOP.z) < 0.9) || (x > SHED.x0 - 0.1 && x < SHED.x1 + 0.1 && z > SHED.z0 && z < SHED.z1 + 0.3) || (x > HOUSE.x0 - 0.3 && x < HOUSE.x1 + 0.3 && z > HOUSE.z1 && z < HOUSE.z1 + 0.6);
   function step(a, dt) {
     for (const n of NEEDS) a.needs[n] = clamp(a.needs[n] - dt * (n === 'energy' ? 0.002 : n === 'focus' && night(logicHour()) ? 0 : 0.008), 0, 1);
     if (a.inside) {
@@ -1721,6 +1912,26 @@ export function startScene(canvas, { still = false } = {}) {
     cat.head.position.set(0, cat.state === 'sleep' ? 0.12 : cat.state === 'sit' ? 0.4 : 0.32, cat.state === 'sleep' ? 0.2 : 0.25);
     cat.tail.rotation.x = cat.state === 'sleep' ? 1.5 : 0.7 + Math.sin(t * 2) * 0.25; cat.tail.position.y = cat.state === 'sleep' ? 0.1 : 0.3;
     cat.g.position.set(cat.x, heightAt(cat.x, cat.z), cat.z); cat.g.rotation.y = cat.yaw;
+  }
+  // Zonas nuevas: las gallinas pasean y picotean (de noche, a la caseta), la ropa se mueve con el viento, el torno gira si alguien hace cerámica,
+  // la cúpula del observatorio gira despacio de noche y la boca del horno brilla mientras se hornea y por la noche
+  function stepZones(dt) {
+    const h = logicHour(), dark = night(h);
+    for (const c of chickens) {
+      if (dark) { c.g.visible = false; c.x = COOP.x + 0.2; c.z = COOP.z + 0.8; continue; }
+      c.g.visible = true;
+      const dx = c.tx - c.x, dz = c.tz - c.z, d = Math.hypot(dx, dz);
+      if (t > c.until) { c.tx = PEN.x0 + 0.95 + rand() * (PEN.x1 - PEN.x0 - 1.25); c.tz = PEN.z0 + 0.3 + rand() * (PEN.z1 - PEN.z0 - 0.6); c.until = t + 3 + rand() * 6; }
+      if (d > 0.05) { const sp = Math.min(d, dt * 0.45); c.x += dx / d * sp; c.z += dz / d * sp; c.yaw = turnTo(c.yaw, Math.atan2(dx, dz), 1 - Math.exp(-8 * dt)); c.head.position.y = 0.3; }
+      else { c.peck = (c.peck + dt * 4) % 6.28; c.head.position.y = 0.3 - Math.max(0, Math.sin(c.peck * 2)) * 0.12; }   // picotea
+      c.g.position.set(c.x, heightAt(c.x, c.z) + (d > 0.05 ? Math.abs(Math.sin(t * 14 + c.yaw)) * 0.02 : 0), c.z); c.g.rotation.y = c.yaw;
+    }
+    const wind = 0.1 + sky.cloud * 0.2 + sky.rain * 0.35;
+    for (const c of clothes) c.piv.rotation.x = Math.sin(t * 1.9 + c.ph) * wind + Math.sin(t * 3.7 + c.ph * 2) * wind * 0.3;
+    if (agents.some((a) => a.kind === 'pottery' && a.state === 'act' && a.sitting)) potWheel.rotation.y += dt * 9;
+    if (dark) dome.rotation.y += dt * 0.06;
+    const baking = agents.some((a) => a.kind === 'bake' && a.state === 'act') || evening(h);
+    ovenGlow.material.opacity = baking ? 0.65 + Math.sin(t * 9) * 0.12 + Math.sin(t * 23) * 0.06 : 0;
   }
   function stepDucks(dt) {
     const feeder = agents.find((a) => a.kind === 'ducks' && a.state === 'act' && !a.inside);
@@ -1905,7 +2116,7 @@ export function startScene(canvas, { still = false } = {}) {
     shownHour = (shownHour + diff * (1 - Math.exp(-1.6 * dt)) + 24) % 24; if (Math.abs(diff) < 0.01) shownHour = goal;
     for (const a of agents) step(a, dt);
     separate(); nightOwl(dt); stepCat(dt); stepDucks(dt);
-    stepAmbient(dt, shownHour); stepToys(dt); applyLight(shownHour, dt);
+    stepAmbient(dt, shownHour); stepToys(dt); stepZones(dt); applyLight(shownHour, dt);
     pan.lerp(panTo, 1 - Math.exp(-12 * dt)); placeCamera(); updateSee();
   }
   // Ver a través del follaje: dónde está cada persona en la imagen (centro del cuerpo), qué tamaño tiene y a qué profundidad (ver SEE)
@@ -2053,8 +2264,8 @@ export function startScene(canvas, { still = false } = {}) {
     Object.assign(canvas.style, { width: renderW * m / dpr + 'px', height: renderH * m / dpr + 'px', marginLeft: (cssW - renderW * m / dpr) / 2 + 'px', marginTop: (cssH - renderH * m / dpr) / 2 + 'px' });
     const aspect = cssW / cssH, diag = 2 * H * Math.SQRT2;
     // Cabe la isla entera, con los árboles y las rocas de debajo. A pantalla completa cabe también la isleta de la izquierda (de -13,4 a 9,9 de ancho, con margen): así en un móvil en vertical se ve entera
-    viewH = Math.max((isFull ? 13.6 : diag * 1.04 / 2) / aspect, (diag * 0.5 * 0.5 + 5.4) * 1.04);
-    if (isFull) viewH *= 1.16;                                        // a pantalla completa, la isla entera algo más pequeña, con aire alrededor
+    viewH = Math.max((isFull ? 15.4 : diag * 1.04 / 2) / aspect, (diag * 0.5 * 0.5 + 5.4) * 1.04);   // a pantalla completa caben la isla, la isleta (izquierda) y el islote alto (detrás)
+    if (isFull) viewH *= 1.1;                                        // a pantalla completa, la isla entera algo más pequeña, con aire alrededor
     if (!isFull) viewH *= 1.55;                                       // en la tarjeta, pequeña y en el centro, como el emblema del dorso de una carta
     unitPx = 2 * viewH * base / (cssH * dpr);                         // metros por píxel de la escena (no cambia al acercar)
     Object.assign(camera, { left: -renderW * unitPx / 2, right: renderW * unitPx / 2, top: renderH * unitPx / 2, bottom: -renderH * unitPx / 2, zoom: 1 });
