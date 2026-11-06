@@ -81,6 +81,8 @@ Cada pieza del archivo es un `.webp` recortado a su forma, con fondo transparent
 Súbelas a `assets/projects/<proyecto>/` y cambia la ruta (`src`) y la descripción (`alt`) en el HTML. Consejo: `.webp`, hasta 1600 px de ancho, y una versión de 800 px para las miniaturas (así la web carga rápido).
 
 ### Cambiar los textos de la habitación o la canción de "Now playing"
+En la página About, la tarjeta «Now playing» / «Last watched» lleva al lado de cada título la fecha «Updated Nov 6»: es texto a mano en `about/index.html` (`np-date`), cámbiala cuando cambies el disco o la película.
+
 Están en `js/room.js` (objetos `nowPlaying` y `lastWatched`, y lista `destinations`). La imagen de la pegatina es `assets/room/now-playing-sticker.webp`; el póster de la última película vista, que aparece al acercarse al póster de la pared, es `assets/room/film-poster.webp` (vertical, unos 840×1200).
 
 Los tres juegos de Recently played están en `assets/room/discs/games.json`. Las carátulas se suben a esa misma carpeta y se indica su nombre en `artwork`; mientras sea `null`, se ve un disco con una etiqueta provisional. La animación de la Wii está separada en `js/room/wii-player.js`. Más detalles en `assets/room/README.md`.
