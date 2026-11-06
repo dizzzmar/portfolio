@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Island · Playground · Mario Diz</title>
+<meta name="description" content="Island, in the Playground: a tiny isometric pixel-art world by Mario Diz where three people work, garden, fish and chat. Change the time of day and the weather, zoom and drag to look around.">
+<link rel="canonical" href="https://www.dizmar.xyz/playground/island/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="dizmar — Mario Diz">
+<meta property="og:title" content="Island · Playground · Mario Diz">
+<meta property="og:description" content="Island, in the Playground: a tiny isometric pixel-art world by Mario Diz where three people work, garden, fish and chat. Change the time of day and the weather, zoom and drag to look around.">
+<meta property="og:url" content="https://www.dizmar.xyz/playground/island/">
+<meta property="og:image" content="https://www.dizmar.xyz/assets/images/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.dizmar.xyz/"}, {"@type": "ListItem", "position": 2, "name": "Playground", "item": "https://www.dizmar.xyz/playground/"}, {"@type": "ListItem", "position": 3, "name": "Island", "item": "https://www.dizmar.xyz/playground/island/"}]}
+</script>
+<link rel="alternate" type="text/html" href="/machine/" title="Machine mode: the same content as plain text">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/assets/images/favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/tokens.css?v=20261113mustard1">
+<link rel="stylesheet" href="/css/case.css?v=20261031a">
+
+<link rel="stylesheet" href="/css/island.css?v=20261201isle1">
+<link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
+<link rel="stylesheet" href="/css/nav-links.css?v=20261112navdiff1">
+<link rel="stylesheet" href="/css/menu.css?v=20261126curtain2">
+  <link rel="stylesheet" href="/css/link-roll.css?v=20261110roll1">
+<link rel="stylesheet" href="/css/typography.css?v=20261031a">
+<link rel="stylesheet" href="/css/cursor.css?v=20261115pic2">
+<link rel="stylesheet" href="/css/transitions.css?v=20261127sheet1">
+<script>document.documentElement.classList.add('js','has-menu');</script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "/assets/vendor/three/build/three.module.min.js",
+      "three/addons/": "/assets/vendor/three/examples/jsm/"
+    }
+  }
+</script>
+<script src="/js/transitions.js?v=20261127sheet1"></script>
+  <link rel="stylesheet" href="/css/contact-sachet.css?v=20261116audit2">
+  <link rel="stylesheet" href="/css/terminal.css?v=20261024b">
+<script type="speculationrules">{"prefetch":[{"urls":["/about/","/archive/","/playground/","/faq/","/room.html","/posters/"],"eagerness":"eager"},{"where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
+</head>
+<body id="top" class="island-page">
+<a class="case-logo" href="/" aria-label="Home"><img src="/assets/images/tomato.webp" width="44" height="47" alt=""></a>
+<nav class="case-nav" aria-label="Main">
+  <ul>
+    <li><a href="/#work">Projects</a></li>
+    <li><a href="/about/">About</a></li>
+    <li><a href="mailto:contact@dizmar.xyz?subject=Hello%20from%20dizmar.xyz">Contact</a></li>
+    <li><a href="/room.html">Room</a></li>
+    <li class="menu-li"><a class="menu-toggle" href="#menu" role="button" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false">Menu</a></li>
+  </ul>
+</nav>
+
+<!-- PLAYGROUND › ISLAND · el pequeño mundo isométrico en pixel art (js/about-scene.js) a pantalla completa, con tres personas que viven allí; se llega desde el menú de /playground/.
+     Controles (js/island.js): hora del día, tiempo y zoom como píldoras; la rueda o el pellizco acercan, arrastrar recorre la isla. Los nombres para lectores de pantalla van en aria-label. -->
+<div class="case-head">
+  <h1 class="case-name"><a class="case-back" href="/playground/" aria-label="Island — back to Playground">Island</a></h1>
+</div>
+
+<main class="island-stage" data-island>
+  <canvas class="scene-canvas" role="img" aria-label="Pixel-art isometric scene: a floating island with a cottage, a vegetable garden, a pond with ducks and a waterfall, a terrace with beehives, a campfire and an outdoor office, where three people work, garden, fish, chat and go to bed as the day goes by."></canvas>
+  <noscript><p class="island-note">The island needs JavaScript.</p></noscript>
+</main>
+<div class="scene-ui" role="group" aria-label="Scene controls">
+  <div class="sui-dock">
+    <div class="sui-row" role="group" aria-label="Time of day">
+      <button class="sui-pill" type="button" data-time="0" aria-pressed="false">Morning</button>
+      <button class="sui-pill" type="button" data-time="1" aria-pressed="false">Day</button>
+      <button class="sui-pill" type="button" data-time="2" aria-pressed="false">Sunset</button>
+      <button class="sui-pill" type="button" data-time="3" aria-pressed="false">Night</button>
+      <button class="sui-pill sui-live" type="button" data-follow aria-pressed="true" aria-label="Follow the time in Madrid">Now</button>
+    </div>
+    <div class="sui-row" role="group" aria-label="Weather">
+      <button class="sui-pill" type="button" data-weather="0" aria-pressed="false">Clear</button>
+      <button class="sui-pill" type="button" data-weather="1" aria-pressed="false">Cloudy</button>
+      <button class="sui-pill" type="button" data-weather="2" aria-pressed="false">Rain</button>
+      <button class="sui-pill sui-live" type="button" data-auto aria-pressed="true" aria-label="Let the weather change by itself">Auto</button>
+    </div>
+  </div>
+  <div class="sui-zoom" role="group" aria-label="Zoom">
+    <button class="sui-pill sui-round" type="button" data-zoom="-1" aria-label="Zoom out"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9"/></svg></button>
+    <button class="sui-pill sui-round" type="button" data-zoom="1" aria-label="Zoom in"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9M8 3.5v9"/></svg></button>
+  </div>
+</div>
+
+<script type="module" src="/js/island.js?v=20261201isle1"></script>
+</body>
+</html>
