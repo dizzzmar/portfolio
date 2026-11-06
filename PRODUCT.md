@@ -30,7 +30,7 @@ Director de arte que integra la IA dentro de la dirección de arte: no la usa so
 - Idioma: inglés.
 - «Pokémon collection» en The room: álbum de 35 cartas (escaneos oficiales) sobre negro, sin textos ni ampliación al pulsar. Detalle en `docs/design/room.md`.
 - Digital Archive (/archive/): colecciones de objetos gráficos cotidianos, cada una un muro infinito sin textos (como La Barra de Nicolò Lombardi); hoy «Fruit stickers» y «Fave album covers» (los datos de cada portada los busca Claude a partir de lo que da Mario). Enlazada en el menú. Detalle en `docs/design/archive.md`.
-- Plant Lab (/project/plant-lab/, en Projects → Personal) y Playground (/playground/ es un menú de experimentos con el diseño del índice del Digital Archive; el sandbox a pantalla completa está en /playground/plant-lab/): sandbox de nodos que dibuja plantas con un lápiz de puntitos, todo procedural y en el navegador (sin subir nada ni servicios de terceros; motor en js/playground/). Detalle en `docs/design/playground.md`.
+- Plant Lab (/project/plant-lab/, en Projects → Personal) y Playground (oculto por ahora: sin enlaces y con noindex; /playground/ es un menú de experimentos con el diseño del índice del Digital Archive; el sandbox a pantalla completa está en /playground/plant-lab/): sandbox de nodos que dibuja plantas con un lápiz de puntitos, todo procedural y en el navegador (sin subir nada ni servicios de terceros; motor en js/playground/). Detalle en `docs/design/playground.md`.
 
 ## Brand Commitments
 - El tomate es el símbolo: logo, tomate 3D y la identidad que ya tiene la web.
