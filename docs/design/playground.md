@@ -1,5 +1,7 @@
 # Design detail: Plant Lab, Playground and the dot field
 
+> **Playground is hidden for now (Nov 2026):** `/playground/`, `/playground/island/` and `/playground/plant-lab/` still exist and work by their address, but nothing links to them any more (no menu entry, no terminal command, no sitemap, `llms.txt`, `machine/` or prefetch) and they carry `noindex`. To show it again: put back a «Playground» item in `js/menu.js`, remove the `noindex` line from the three pages, add them to `sitemap.xml`, `llms.txt` and `machine/index.html`, and add `"/playground/"` to the prefetch list of each page. The Plant Lab project page (`/project/plant-lab/`) is separate and public; its «full screen» button still goes to `/playground/plant-lab/`.
+
 Detail for this area of the design system. `DESIGN.md` holds the system and a summary; read this file only when working on this area, and keep new per-page detail here, not in `DESIGN.md`.
 
 ### The Playground menu (/playground/)

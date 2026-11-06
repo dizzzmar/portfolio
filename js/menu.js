@@ -15,24 +15,18 @@
   const originals = [...list.querySelectorAll('li:not(.menu-li) a')];
   const find = (label) => originals.find((a) => a.textContent.trim() === label);
 
-  // Enlaces grandes (en este orden)
-  // Playground no está en la barra de las páginas (la barra tiene Projects, About, Contact y Room): su enlace se crea aquí
-  const playground = { fake: true, textContent: 'Playground', href: new URL('/playground/', location.origin).href, getAttribute: () => '/playground/' };
-  const big = ['Projects', 'About', 'Room', 'Playground', 'Contact'].map((l) => find(l) || (l === 'Playground' ? playground : null)).filter(Boolean);
+  // Enlaces grandes (en este orden). Digital Archive ocupa el sitio que tenía Playground (la página Playground está oculta por ahora: sin enlaces y con noindex)
+  const archiveLink = { fake: true, textContent: 'Digital Archive', href: new URL('/archive/', location.origin).href, getAttribute: () => '/archive/' };
+  const big = ['Projects', 'About', 'Room', 'Digital Archive', 'Contact'].map((l) => find(l) || (l === 'Digital Archive' ? archiveLink : null)).filter(Boolean);
 
   const current = location.pathname.replace(/index\.html$/, '');
   const items = big.map((orig, i) => {
     const a = el('a', { href: orig.getAttribute('href') }, [el('span', { textContent: orig.textContent.trim() })]);
     a.style.setProperty('--i', i);
     if (!orig.fake) a._orig = orig;
-    if (orig.getAttribute('aria-current') === 'page' || (orig.fake && current.startsWith('/playground/'))) a.setAttribute('aria-current', 'page');
+    if (orig.getAttribute('aria-current') === 'page' || (orig.fake && current.startsWith('/archive/'))) a.setAttribute('aria-current', 'page');
     return el('li', { className: 'menu-item' }, [a]);
   });
-  // Digital Archive: un enlace más pequeño bajo los cinco grandes (en el móvil, al final de la lista). Mismo panel, misma animación (--i = 5)
-  const archive = el('a', { href: '/archive/' }, [el('span', { textContent: 'Digital Archive' })]);
-  archive.style.setProperty('--i', big.length);
-  if (current.startsWith('/archive/')) archive.setAttribute('aria-current', 'page');
-  items.push(el('li', { className: 'menu-item menu-item--archive' }, [archive]));
   const logoImg = el('img', { src: '/assets/images/tomato.webp', alt: '', width: 44, height: 47 });
   const logo = el('a', { className: 'menu-logo', href: '/' }, [logoImg]);
   logo.setAttribute('aria-label', 'Home');
