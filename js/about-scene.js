@@ -11,10 +11,13 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
-// Un solo tamaño de píxel para todo: cada «píxel» de la escena mide de 1 a 2 píxeles de pantalla (unos 380 de ancho en la tarjeta, unos 900 a pantalla completa),
-// y todas las texturas tienen la misma densidad (DENS píxeles por metro), así la hierba, la madera, las tejas y la roca se ven del mismo grano.
+// Un solo tamaño de píxel para todo: cada «píxel» de la escena mide de 1 a 2 píxeles de pantalla (unos 1300 de ancho a pantalla completa: unos 2,7 cm del mundo
+// por píxel en el ordenador y en el móvil, así se aprecia el detalle), y todas las texturas tienen la misma densidad (DENS píxeles por metro), así la hierba,
+// la madera, las tejas y la roca se ven del mismo grano.
 // Al acercar, los píxeles crecen (como al ampliar un dibujo en pixel art): nunca se mezclan píxeles de tamaños distintos.
-const WIDE_CARD = 380, WIDE_FULL = 900, DENS = 32;
+const WIDE_CARD = 380, WIDE_FULL = 1300, DENS = 36;
+// Los racimos de hojas se dibujan a unos 8 píxeles (un píxel de su dibujo = un píxel de la escena): más pequeños que antes, y por eso hay más
+const LEAF_K = 0.62;
 const seeded = (seed) => { let s = seed; return () => ((s = (s * 16807) % 2147483647) / 2147483647); };
 const rnd = seeded(7);                           // el mundo (árboles, flores, piedras) es siempre el mismo
 const rand = Math.random;                        // lo que hacen las personas, no: cada visita es distinta
@@ -274,6 +277,22 @@ const FOLIAGE = [];                                        // todos sus material
 // Ver a través: donde el follaje tapa a una persona, se vuelve un tramado de píxeles más ralo (como la vegetación en Zelda: Breath of the Wild).
 // Una entrada por persona: x, y (en píxeles de la escena), radio (en píxeles) y profundidad. Las pone el bucle de la escena antes de dibujar.
 const SEE = { value: [new THREE.Vector4(0, 0, 0, 0), new THREE.Vector4(0, 0, 0, 0), new THREE.Vector4(0, 0, 0, 0)] };
+const SEE_GLSL = `uniform vec4 uSee[3];
+  float bayer(vec2 p) { vec2 q = mod(floor(p), 4.0); float a = mod(q.x + q.y * 2.0, 4.0); float b = mod(q.x * 2.0 + q.y * 3.0 + floor(q.y * 0.5), 4.0); return (a * 4.0 + b + 0.5) / 16.0; }
+  bool seeThrough(float depth) {
+    for (int k = 0; k < 3; k++) { vec4 e = uSee[k]; if (e.z <= 0.0) continue; vec2 d = (gl_FragCoord.xy - e.xy) / e.z; d.y *= 0.8; float r = length(d);
+      if (r < 1.0 && depth < e.w - 0.25) { float keep = mix(0.2, 1.0, smoothstep(0.55, 1.0, r)); if (bayer(gl_FragCoord.xy) >= keep) return true; } }
+    return false;
+  }`;
+// Lo mismo para los puntitos de color (frutos y flores de las copas): si no, al aclararse la copa quedaban flotando
+function seeThroughPoints(m) {
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uSee = SEE;
+    sh.vertexShader = 'varying float vSeeDepth;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vSeeDepth = -mvPosition.z;');
+    sh.fragmentShader = 'varying float vSeeDepth;\n' + SEE_GLSL + '\n' + sh.fragmentShader.replace('void main() {', 'void main() {\n  if (seeThrough(vSeeDepth)) discard;');
+  };
+  return m;
+}
 // palette: cinco tonos, del más oscuro al más claro; la luz del sol elige el tono y los dibujos añaden brillos y huecos
 function foliageMaterial(sprite, palette, worldSize) {
   const m = new THREE.ShaderMaterial({
@@ -283,11 +302,10 @@ function foliageMaterial(sprite, palette, worldSize) {
         vKind = floor(fract(aVar * 13.7) * uCount); vFlip = step(0.5, fract(aVar * 7.3));
         vec4 mv = viewMatrix * modelMatrix * vec4(position, 1.0); vDepth = -mv.z;
         gl_Position = projectionMatrix * mv; gl_PointSize = uSize * (0.9 + fract(aVar * 3.1) * 0.25); }`,
-    fragmentShader: `uniform sampler2D uTex; uniform vec3 uPal[5]; uniform vec3 uTint; uniform float uCount; uniform vec4 uSee[3]; varying float vL; varying float vKind; varying float vFlip; varying float vDepth;
-      float bayer(vec2 p) { vec2 q = mod(floor(p), 4.0); float a = mod(q.x + q.y * 2.0, 4.0); float b = mod(q.x * 2.0 + q.y * 3.0 + floor(q.y * 0.5), 4.0); return (a * 4.0 + b + 0.5) / 16.0; }
+    fragmentShader: `uniform sampler2D uTex; uniform vec3 uPal[5]; uniform vec3 uTint; uniform float uCount; varying float vL; varying float vKind; varying float vFlip; varying float vDepth;
+      ${SEE_GLSL}
       void main() {
-        for (int k = 0; k < 3; k++) { vec4 e = uSee[k]; if (e.z <= 0.0) continue; vec2 d = (gl_FragCoord.xy - e.xy) / e.z; d.y *= 0.8; float r = length(d);
-          if (r < 1.0 && vDepth < e.w - 0.25) { float keep = mix(0.2, 1.0, smoothstep(0.55, 1.0, r)); if (bayer(gl_FragCoord.xy) >= keep) discard; } }   // tapa a alguien: se aclara en tramado
+        if (seeThrough(vDepth)) discard;   // tapa a alguien: se aclara en tramado
         vec2 pc = gl_PointCoord; if (vFlip > 0.5) pc.x = 1.0 - pc.x;
         vec4 s = texture2D(uTex, vec2((vKind + pc.x) / uCount, 1.0 - pc.y)); if (s.r < 0.5) discard;
         float l = vL + (s.g - 0.5) * 0.3; int i = l < 0.3 ? 0 : l < 0.47 ? 1 : l < 0.64 ? 2 : l < 0.82 ? 3 : 4;
@@ -296,7 +314,7 @@ function foliageMaterial(sprite, palette, worldSize) {
         #include <colorspace_fragment>
       }`,
   });
-  m.worldSize = worldSize; FOLIAGE.push(m); return m;
+  m.worldSize = worldSize * LEAF_K; FOLIAGE.push(m); return m;
 }
 function pointsOf(pos, nor) {
   const vars = []; for (let k = 0; k < pos.length / 3; k++) vars.push(rnd());
@@ -308,7 +326,7 @@ function pointsOf(pos, nor) {
 function foliage(spheres, material, density, { flat = -Infinity, upOnly = false } = {}) {
   const pos = [], nor = [];
   for (const [x, y, z, r] of spheres) {
-    const n = Math.round(4 * Math.PI * r * r * density);
+    const n = Math.round(4 * Math.PI * r * r * density / (LEAF_K * LEAF_K));   // racimos más pequeños: más racimos para cubrir lo mismo
     for (let k = 0; k < n; k++) {
       const u = rnd() * 2 - 1, a = rnd() * Math.PI * 2, s = Math.sqrt(1 - u * u), dx = s * Math.cos(a), dy = u, dz = s * Math.sin(a);
       const d = r * (0.8 + rnd() * 0.24), px = x + dx * d, py = y + dy * d * 0.9, pz = z + dz * d;
@@ -341,8 +359,8 @@ const PAL = {
   moss: ['#2a4a1c', '#3d6526', '#557f30', '#77a043', '#a3c562'],
 };
 
-// ---------- Personas: cajas con articulaciones (cadera, rodilla, hombro, codo, cintura, cuello) ----------
-const S = 1.2, HIP = 0.62 * S;
+// ---------- Personas: esqueleto de cajas con articulaciones (cadera, rodilla, hombro, codo, cintura, cuello); no se ve: lo dibuja pixelPerson ----------
+const S = 1.05, HIP = 0.62 * S;
 const joint = (x, y, z) => { const g = new THREE.Group(); g.position.set(x, y, z); return g; };
 function person({ shirt, pants, skin, hair, style = 'short', shorts = false, sleeves = 'short', shoes = '#f2f2ee', brolly }) {
   const p = new THREE.Group(), body = new THREE.Group();
@@ -398,6 +416,54 @@ function person({ shirt, pants, skin, hair, style = 'short', shorts = false, sle
   p.pose = { tl: 0, tr: 0, kl: 0, kr: 0, al: 0, ar: 0, alz: 0, arz: 0, el: 0, er: 0, sp: 0, spy: 0, hx: 0, hy: 0, lift: 0, lie: 0, fall: 0 };
   return p;
 }
+// ---------- Personas en pixel art, como en Stardew Valley ----------
+// El esqueleto de cajas (person) sigue moviéndose con todas sus posturas y da la sombra, pero no se ve: en cada fotograma se dibuja encima,
+// píxel a píxel y al tamaño exacto de los píxeles de la escena, un muñeco plano: cabeza redondeada con cara y ojos (o el pelo, si mira hacia
+// atrás), brazos y piernas como trazos gruesos, el cuerpo con luz y sombra, lo que lleva en las manos, y un contorno oscuro de un píxel alrededor.
+const PXW = 128, PXH = 136, FOOT_Y = 104;                          // lienzo de cada persona (en píxeles de la escena) y dónde caen los pies
+const OUTLINE = [43, 29, 22];
+const rgbOf = (hex) => { const h = hex.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };   // colores en sRGB (la textura también)
+const tone = (c, k) => c.map((v) => Math.max(0, Math.min(255, Math.round(v * k))));
+function pixelPerson(look) {
+  const canvas = document.createElement('canvas'); canvas.width = PXW; canvas.height = PXH;
+  const ctx = canvas.getContext('2d'), img = ctx.createImageData(PXW, PXH), D = img.data;
+  const tex = new THREE.CanvasTexture(canvas); tex.magFilter = tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false; tex.colorSpace = THREE.SRGBColorSpace;
+  const material = new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.5, depthWrite: true });
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material); mesh.frustumCulled = false; mesh.renderOrder = 2;
+  const C = { shirt: rgbOf(look.shirt), pants: rgbOf(look.pants), skin: rgbOf(look.skin), hair: rgbOf(look.hair), shoe: rgbOf(look.shoes || '#f2f2ee'), brolly: rgbOf(look.brolly || '#ffd23f') };
+  const set = (x, y, c) => { x = Math.round(x); y = Math.round(y); if (x < 0 || y < 0 || x >= PXW || y >= PXH) return; const i = (y * PXW + x) * 4; D[i] = c[0]; D[i + 1] = c[1]; D[i + 2] = c[2]; D[i + 3] = 255; };
+  const disk = (cx, cy, r, c) => { for (let y = Math.floor(cy - r); y <= Math.ceil(cy + r); y++) for (let x = Math.floor(cx - r); x <= Math.ceil(cx + r); x++) if ((x - cx) ** 2 + (y - cy) ** 2 <= r * r + 0.25) set(x, y, c); };
+  const line = (a, b, w, c, c2) => {                               // trazo grueso con las puntas redondas; c2: el borde de abajo, algo más oscuro (volumen)
+    const n = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) * 2));
+    for (let k = 0; k <= n; k++) { const x = a[0] + (b[0] - a[0]) * k / n, y = a[1] + (b[1] - a[1]) * k / n; if (c2) disk(x + 0.5, y + 0.6, w / 2, c2); }
+    for (let k = 0; k <= n; k++) { const x = a[0] + (b[0] - a[0]) * k / n, y = a[1] + (b[1] - a[1]) * k / n; disk(x, y, w / 2, c); }
+  };
+  const poly = (pts, c) => {                                         // polígono convexo relleno (por el centro de cada píxel)
+    if (pts.length < 3) return;
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity; for (const [x, y] of pts) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+    for (let y = Math.floor(y0); y <= Math.ceil(y1); y++) for (let x = Math.floor(x0); x <= Math.ceil(x1); x++) {
+      let pos = 0, neg = 0;
+      for (let k = 0; k < pts.length; k++) { const [ax, ay] = pts[k], [bx, by] = pts[(k + 1) % pts.length], cr = (bx - ax) * (y + 0.5 - ay) - (by - ay) * (x + 0.5 - ax); if (cr > 0) pos++; else if (cr < 0) neg++; }
+      if (!pos || !neg) set(x, y, c);
+    }
+  };
+  const hull = (pts) => {                                            // envolvente convexa (para dibujar planos los objetos que llevan)
+    const p = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]), cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const lo = [], hi = [];
+    for (const q of p) { while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+    for (const q of p.reverse()) { while (hi.length > 1 && cr(hi[hi.length - 2], hi[hi.length - 1], q) <= 0) hi.pop(); hi.push(q); }
+    return lo.slice(0, -1).concat(hi.slice(0, -1));
+  };
+  const outline = () => {
+    const a = new Uint8Array(PXW * PXH); for (let i = 0; i < PXW * PXH; i++) a[i] = D[i * 4 + 3] ? 1 : 0;
+    for (let y = 0; y < PXH; y++) for (let x = 0; x < PXW; x++) {
+      if (a[y * PXW + x]) continue;
+      if ((x > 0 && a[y * PXW + x - 1]) || (x < PXW - 1 && a[y * PXW + x + 1]) || (y > 0 && a[(y - 1) * PXW + x]) || (y < PXH - 1 && a[(y + 1) * PXW + x])) set(x, y, OUTLINE);
+    }
+  };
+  return { mesh, material, tex, C, set, disk, line, poly, hull, outline, clear: () => D.fill(0), flush: () => { ctx.putImageData(img, 0, 0); tex.needsUpdate = true; } };
+}
+
 function applyPose(p, pose, k) {
   const c = p.pose;
   for (const key in c) c[key] += ((pose[key] || 0) - c[key]) * k;
@@ -493,10 +559,28 @@ export function startScene(canvas, { still = false } = {}) {
   const sideMats = (w, d, hgt) => [cliff(d, hgt), cliff(d, hgt), mat('#5d8f2e'), mat('#2e2018'), cliff(w, hgt), cliff(w, hgt)];
   { const base = new THREE.Mesh(new THREE.BoxGeometry(2 * H, DEPTH, 2 * H), sideMats(2 * H, 2 * H, DEPTH).map((mm, i) => (i === 2 ? new THREE.MeshBasicMaterial({ visible: false }) : mm))); base.position.y = -DEPTH / 2 - 0.02; add(base); }   // sin tapa (el suelo ya lo es; la tapa tapaba el estanque y el arroyo, que están más hondos). Los acantilados no reciben sombras: las copas del borde dibujaban manchas raras
   // Bajo la isla, bloques de roca escalonados: así flota y tiene volumen por debajo
+  const steps = [];
   for (const [x, z, w, d, hh, below] of [[0, 0, 11, 11, 1.4, 0], [-1, 0.5, 8, 8.5, 1.3, 1.4], [-1.5, 1, 5, 5.5, 1.2, 2.7], [1.8, -1.5, 4.5, 4, 1.4, 1.4], [-2, 1.2, 2.4, 2.6, 1.1, 3.9], [2.2, -1.8, 2, 1.8, 1.0, 2.8]]) {
     const y0 = -DEPTH - below;
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, hh, d), sideMats(w, d, hh).map((mm, i) => (i === 2 ? mat('#4a3422') : mm)));
     m.position.set(x, y0 - hh / 2, z); add(m);
+    steps.push([x, z, w, d, y0 - hh]);
+  }
+  // Por debajo, terrones de tierra y roca que cuelgan de cada escalón: así el borde de abajo no es una caja recta (como la vegetación, hechos de racimos)
+  {
+    const dirt = foliageMaterial('puff', ['#22170f', '#33231a', '#4a3324', '#5f4330', '#7a5a40'], 0.2), clumps = [];
+    for (const [x, z, w, d, yb] of [[0, 0, 2 * H, 2 * H, -DEPTH - 0.02], ...steps]) {
+      const per = 2 * (w + d), n = Math.round(per / 0.32);
+      for (let k = 0; k < n; k++) {
+        let u = k / n * per, px, pz;
+        if (u < w) { px = x - w / 2 + u; pz = z + d / 2; } else if ((u -= w) < d) { px = x + w / 2; pz = z + d / 2 - u; } else if ((u -= d) < w) { px = x + w / 2 - u; pz = z - d / 2; } else { u -= w; px = x - w / 2; pz = z - d / 2 + u; }
+        if (rnd() < 0.3) continue;
+        // unos pegados al borde y otros colgando en cadena, cada vez más pequeños (como raíces con tierra)
+        let r = 0.07 + rnd() * rnd() * 0.26, y = yb + r * 0.2, cx = px + (rnd() - 0.5) * 0.2, cz = pz + (rnd() - 0.5) * 0.2;
+        for (let c = 0, len = rnd() < 0.35 ? 2 + Math.floor(rnd() * 2) : 1; c < len; c++) { clumps.push([cx, y, cz, r]); y -= r * 1.3; r *= 0.62; cx += (rnd() - 0.5) * 0.06; cz += (rnd() - 0.5) * 0.06; }
+      }
+    }
+    add(foliage(clumps, dirt, 70));
   }
   // La terraza alta: un bloque con las mismas capas, encima su propio césped
   const TW = TERR.x1 + H, TD = TERR.z1 + H;
@@ -577,8 +661,9 @@ export function startScene(canvas, { still = false } = {}) {
   for (const [x, z] of [[SHED.x0 + 0.08, SHED.z1 - 0.08], [SHED.x1 - 0.08, SHED.z1 - 0.08]]) B(0.12, 1.75, 0.12, beam, x, 0.88, z);
   { const r = box(SHED.x1 - SHED.x0 + 0.4, 0.12, SHED.z1 - SHED.z0 + 0.5, roof); r.position.set(sx, 1.85, sz + 0.05); r.rotation.x = 0.28; keep(r); }
   for (let row = 0; row < 4; row++) for (let k = 0; k < 6; k++) B(0.22, 0.2, 0.7, mat(['#8a5a32', '#7a4d2a', '#96643a'][(row + k) % 3]), SHED.x0 + 0.25 + k * 0.23, 0.11 + row * 0.2, SHED.z0 + 0.45);
-  B(0.42, 0.42, 0.42, mat('#7a4d2a'), -4.7, 0.21, -0.85);                       // tocón para partir leña
-  B(0.36, 0.04, 0.36, mat('#c49a6c'), -4.7, 0.43, -0.85);
+  { const st = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.25, 0.42, 14), mat('#7a4d2a')); st.position.set(-4.7, 0.21, -0.85); st.castShadow = st.receiveShadow = true; keep(st);   // tocón (redondo) para partir leña
+    const ring = new THREE.Mesh(new THREE.CircleGeometry(0.2, 14).rotateX(-Math.PI / 2), mat('#c49a6c')); ring.position.set(-4.7, 0.425, -0.85); keep(ring);
+    const core = new THREE.Mesh(new THREE.CircleGeometry(0.09, 10).rotateX(-Math.PI / 2), mat('#a87b4f')); core.position.set(-4.7, 0.43, -0.85); keep(core); }
 
   // ---------- Huerto: dos bancales con filas de verduras ----------
   const soil = mapMat(noiseTex(['#5a3e28', '#4d3422', '#664730'], 32));
@@ -624,9 +709,13 @@ export function startScene(canvas, { still = false } = {}) {
   };
   const chair = (x, z, r) => {
     const g = new THREE.Group();
-    const seat = box(0.42, 0.06, 0.42, mat('#2f3a52')); seat.position.y = 0.45; g.add(seat);
-    const back = box(0.42, 0.42, 0.06, mat('#2f3a52')); back.position.set(0, 0.7, 0.2); g.add(back);
-    const post = box(0.05, 0.42, 0.05, mat('#333333')); post.position.y = 0.21; g.add(post);
+    // silla de jardín de madera: asiento, cuatro patas y un respaldo de listones (antes, un bloque azul de oficina)
+    const wood = mat('#a8743f'), dark = mat('#7a5030');
+    const seat = box(0.42, 0.05, 0.4, wood); seat.position.y = 0.45; g.add(seat);
+    for (const [lx, lz] of [[-0.18, -0.17], [0.18, -0.17], [-0.18, 0.17], [0.18, 0.17]]) { const l = box(0.04, 0.45, 0.04, dark); l.position.set(lx, 0.22, lz); g.add(l); }
+    for (const lx of [-0.18, 0.18]) { const r = box(0.04, 0.42, 0.04, dark); r.position.set(lx, 0.68, 0.18); g.add(r); }
+    for (const sx of [-0.1, 0, 0.1]) { const sl = box(0.06, 0.32, 0.03, wood); sl.position.set(sx, 0.68, 0.18); g.add(sl); }
+    const top = box(0.42, 0.05, 0.04, wood); top.position.set(0, 0.88, 0.18); g.add(top);
     keep(at(g, x, z, heightAt(x, z), r));
   };
   const DX = -3.9;
@@ -665,10 +754,13 @@ export function startScene(canvas, { still = false } = {}) {
   bench(-4.4, -6.3, 0);
   for (const x of [-4.8, -4.0]) slots.push({ kind: 'lookout', x, z: -6.3, face: 0, seat: 0.46, from: [x, -5.7] });
   // Colmenas en la terraza
+  // (cestas de paja redondeadas, hechas de racimos como la vegetación: nada de cajas)
+  const strawMat = foliageMaterial('puff', ['#7a5a22', '#a07a32', '#c79a45', '#e2bd62', '#f5dc8e'], 0.14);
   for (const [x, z] of [[-6.2, -4.7], [-5.5, -5.5]]) {
     B(0.5, 0.12, 0.5, mat('#6b4a2c'), x, TERR.h + 0.06, z);
-    for (let k = 0; k < 3; k++) B(0.46, 0.2, 0.46, mat(k % 2 ? '#f2d58a' : '#e8c46a'), x, TERR.h + 0.22 + k * 0.2, z);
-    B(0.56, 0.08, 0.56, mat('#9b4a2c'), x, TERR.h + 0.86, z);
+    const y = TERR.h + 0.12, sk = [[x, y + 0.22, z, 0.27], [x, y + 0.44, z, 0.23], [x, y + 0.62, z, 0.16], [x, y + 0.74, z, 0.08]];
+    add(foliage(sk, strawMat, 150, { flat: y })); add(shadowCaster(sk));
+    B(0.1, 0.07, 0.04, mat('#2a1a0e'), x + 0.18, y + 0.08, z + 0.18, Math.PI / 4);   // la entrada de las abejas
   }
   slots.push({ kind: 'hives', x: -5.3, z: -4.3, face: Math.atan2(-0.6, -0.3) }, { kind: 'hives', x: -4.7, z: -5.3, face: -Math.PI / 2 });
 
@@ -753,7 +845,10 @@ export function startScene(canvas, { still = false } = {}) {
   // Girasoles junto a la casa
   for (const [z, hh] of [[-4.25, 1.35], [-4.8, 1.6], [-5.4, 1.45], [-5.95, 1.2]]) {
     const x = 2.86; B(0.05, hh, 0.05, mat('#4f8a3a'), x, hh / 2, z); B(0.18, 0.04, 0.08, mat('#4f8a3a'), x, hh * 0.55, z, Math.PI / 4);
-    B(0.3, 0.3, 0.05, mat('#f2c230'), x, hh, z, Math.PI / 4); B(0.13, 0.13, 0.06, mat('#6b4423'), x + 0.012, hh, z + 0.012, Math.PI / 4);
+    // la flor: pétalos y centro hechos de puntitos de color, mirando a la cámara (antes eran dos cuadrados)
+    const ux = Math.cos(Math.PI / 4), uz = -Math.sin(Math.PI / 4), fx = 0.02, fz = 0.02;
+    for (let a = 0; a < Math.PI * 2; a += 0.3) for (const rr of [0.1, 0.135, 0.16]) { if (rr > 0.15 && rnd() < 0.4) continue; const r2 = rr * (0.9 + rnd() * 0.15); accent(x + ux * Math.cos(a) * r2, hh + Math.sin(a) * r2, z + uz * Math.cos(a) * r2, rnd() < 0.3 ? '#ffe06a' : rnd() < 0.5 ? '#f2c230' : '#e0a51e'); }
+    for (let u = -0.07; u <= 0.07; u += 0.022) for (let v = -0.07; v <= 0.07; v += 0.022) if (u * u + v * v < 0.0049) accent(x + ux * u + fx, hh + v, z + uz * u + fz, (u + v) < -0.03 ? '#8a5a2c' : rnd() < 0.5 ? '#5b3a1e' : '#43291a');
   }
   // Nenúfares en el estanque
   for (let k = 0; k < 8; k++) {
@@ -839,7 +934,7 @@ export function startScene(canvas, { still = false } = {}) {
     }
     for (let k = 0; k < 160; k++) { const a = rnd() * 6.28, d = Math.sqrt(rnd()) * (ISLET.r - 0.15), x = ISLET.x + Math.cos(a) * d, z = ISLET.z + Math.sin(a) * d; accent(x, heightAt(x, z) + 0.06 + rnd() * 0.1, z, FC[Math.floor(rnd() * FC.length)]); }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(accentPos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(accentCol, 3));
-    flowersMat = new THREE.PointsMaterial({ size: 2, sizeAttenuation: false, vertexColors: true }); const f = new THREE.Points(g, flowersMat); f.frustumCulled = false; add(f);
+    flowersMat = seeThroughPoints(new THREE.PointsMaterial({ size: 2, sizeAttenuation: false, vertexColors: true })); const f = new THREE.Points(g, flowersMat); f.frustumCulled = false; add(f);
     const ground = (list, material) => {
       const pos = [], nor = [];
       for (const [x, z, lift = 0.08] of list) { pos.push(x, heightAt(x, z) + lift, z); nor.push(0, 1, 0); }
@@ -1156,8 +1251,11 @@ export function startScene(canvas, { still = false } = {}) {
   ];
   const agents = LOOKS.map((look, i) => {
     const p = person(look); add(p);
+    // El esqueleto no se ve (solo da la sombra); guarda el color de cada pieza para dibujar planos los objetos que lleva en la mano
+    p.traverse((o) => { if (o.isMesh) { o.userData.col = rgbOf('#' + o.material.color.getHexString()); o.material = SHADOW_ONLY; o.castShadow = true; } if (o.isPoints) o.visible = false; });
+    const spr = pixelPerson(look); add(spr.mesh);
     const needs = {}; NEEDS.forEach((n) => { needs[n] = 0.4 + rand() * 0.5; });
-    return { i, p, look, needs, history: [], x: 0, z: 0, yaw: 0, state: 'act', slot: null, kind: 'idle', until: 0, path: [], t0: 0, seed: rand() * 6.28,
+    return { i, p, spr, look, needs, history: [], x: 0, z: 0, yaw: 0, state: 'act', slot: null, kind: 'idle', until: 0, path: [], t0: 0, seed: rand() * 6.28,
       talk: null, talkUntil: 0, carry: null, inside: false, asleep: false, owl: false, bed: look.bed + rand() * 0.5, wake: look.wake + rand() * 0.8 };
   });
   let t = 0;
@@ -1743,7 +1841,7 @@ export function startScene(canvas, { still = false } = {}) {
   }
   // Ver a través del follaje: dónde está cada persona en la imagen (centro del cuerpo), qué tamaño tiene y a qué profundidad (ver SEE)
   const seeA = new THREE.Vector3(), seeB = new THREE.Vector3();
-  const FOCUS = { campfire: { x: FIRE.x, z: FIRE.z, r: 2.2 }, picnic: { x: PIC.x, z: PIC.z, r: 1.7 }, board: { x: BX, z: BZ, r: 1.7 },
+  const FOCUS = { campfire: { x: FIRE.x, z: FIRE.z, r: 2.2 }, picnic: { x: PIC.x, z: PIC.z, r: 1.4 }, board: { x: BX, z: BZ, r: 1.2 },
     hammock: { x: HAM.mid[0], z: HAM.mid[1], r: 1.8 }, swing: { x: SWING.x, z: SWING.z, r: 1.8 } };
   function updateSee() {
     camera.updateMatrixWorld();
@@ -1759,6 +1857,108 @@ export function startScene(canvas, { still = false } = {}) {
       const px = (seeA.x * 0.5 + 0.5) * renderW, py = (seeA.y * 0.5 + 0.5) * renderH, rad = Math.abs(seeB.y - seeA.y) * 0.5 * renderH * 1.35;
       e.set(px, py, rad, depth);
     });
+  }
+
+  // ---------- Dibujar a las personas en pixel art (ver pixelPerson) ----------
+  const _v = new THREE.Vector3(), _w = new THREE.Vector3(), PROP_BOX = new Map();
+  function drawPeople() {
+    camera.updateMatrixWorld();
+    const inv = camera.matrixWorldInverse, tint = LEAF_MATS.oak.uniforms.uTint.value;
+    for (const a of agents) {
+      const { p, spr } = a, R = spr;
+      if (!p.visible) { R.mesh.visible = false; continue; }
+      R.mesh.visible = true; p.updateMatrixWorld(true);
+      // La rejilla de píxeles del lienzo cae justo sobre la de la pantalla (si no, los píxeles se duplicarían o se perderían)
+      const F = _v.copy(p.position).applyMatrix4(inv), fz = F.z;
+      const Lx = camera.left + Math.round((F.x - PXW / 2 * unitPx - camera.left) / unitPx) * unitPx;
+      const By = camera.bottom + Math.round((F.y - (PXH - FOOT_Y) * unitPx - camera.bottom) / unitPx) * unitPx;
+      const cam = (obj, x, y, z) => _w.set(x, y, z).applyMatrix4(obj.matrixWorld).applyMatrix4(inv);
+      const P = (obj, x, y, z) => { const c = cam(obj, x, y, z); return [(c.x - Lx) / unitPx - 0.5, PXH - (c.y - By) / unitPx - 0.5, c.z]; };
+      R.clear();
+      const k = S / unitPx, limb = Math.max(3, Math.round(0.13 * k)), C = R.C;
+      const sp = p.spine, items = [];
+      const torsoZ = P(sp, 0, 0.25, 0)[2];
+      const legItem = (leg) => {
+        const hip = P(leg, 0, 0, 0), knee = P(leg.shin, 0, 0, 0), foot = P(leg.shin, 0, -0.25, 0), toe = P(leg.shin, 0, -0.29, 0.12);
+        const z = (hip[2] + foot[2]) / 2, far = z < torsoZ - 0.02, f = far ? 0.8 : 1;
+        items.push([z, () => {
+          R.line(hip, knee, limb + 1, tone(C.pants, f), tone(C.pants, f * 0.8));
+          const shin = a.look.shorts ? C.skin : C.pants;
+          R.line(knee, foot, limb, tone(shin, f), tone(shin, f * 0.8));
+          R.line(foot, toe, limb, tone(C.shoe, f));
+        }]);
+      };
+      const armItem = (arm, side) => {
+        const sh = P(arm, 0, 0, 0), el = P(arm.elbow, 0, 0, 0), hand = P(arm.elbow, 0, -0.25, 0);
+        const z = (sh[2] + hand[2]) / 2, far = z < torsoZ - 0.02, f = far ? 0.8 : 1, fore = a.look.sleeves === 'long' ? C.shirt : C.skin;
+        items.push([z + 0.001 * side, () => { R.line(sh, el, limb, tone(C.shirt, f), tone(C.shirt, f * 0.78)); R.line(el, hand, limb - 1, tone(fore, f)); R.disk(hand[0], hand[1], (limb - 1) / 2 + 0.3, tone(C.skin, f)); }]);
+      };
+      legItem(p.legL); legItem(p.legR); armItem(p.armL, -1); armItem(p.armR, 1);
+      // Cuerpo: un trapecio de hombros a caderas, con sombra abajo a la derecha y luz arriba a la izquierda
+      const tl = P(sp, -0.19, 0.46, 0), tr = P(sp, 0.19, 0.46, 0), br = P(sp, 0.17, -0.06, 0), bl = P(sp, -0.17, -0.06, 0);
+      items.push([torsoZ, () => {
+        const hips = [P(sp, -0.17, -0.02, 0), P(sp, 0.17, -0.02, 0), P(sp, 0.16, -0.12, 0), P(sp, -0.16, -0.12, 0)];
+        R.poly(hips.map(([x, y]) => [x, y]), C.pants);
+        R.poly([tl, tr, br, bl].map(([x, y]) => [x + 0.6, y + 0.6]), tone(C.shirt, 0.78));
+        R.poly([tl, tr, br, bl].map(([x, y]) => [x, y]), C.shirt);
+        const n = P(sp, 0, 0.5, 0); R.disk(n[0], n[1], limb / 2 - 0.5, tone(C.skin, 0.85));
+      }]);
+      // Cabeza: redondeada (más grande que la del esqueleto, como en los juegos), con la cara hacia donde mira
+      const hc = P(p.head, 0, 0.15, 0), ahead = P(p.head, 0, 0.15, 1), dir = [ahead[0] - hc[0], ahead[2] - hc[2]];
+      const len = Math.hypot(ahead[0] - hc[0], ahead[1] - hc[1], ahead[2] - hc[2]) || 1, sinT = (ahead[0] - hc[0]) / len, cosT = (ahead[2] - hc[2]) / len;
+      const Rh = Math.max(4, 0.17 * 1.12 * k);
+      const drawHead = () => {
+        const hair = C.hair, skin = C.skin, cap = a.look.style === 'cap';
+        for (let y = Math.floor(-Rh); y <= Math.ceil(Rh); y++) for (let x = Math.floor(-Rh); x <= Math.ceil(Rh); x++) {
+          const nx = x / Rh, ny = y / Rh; if (nx ** 4 + ny ** 4 > 1) continue;
+          const fcx = sinT * 0.45, fw = 0.62 * (0.55 + 0.45 * Math.abs(cosT));
+          let c = cosT > -0.25 && Math.abs(nx - fcx) < fw && ny > -0.38 ? skin : hair;
+          if (c === hair && a.look.style !== 'long' && ny > 0.05 && cosT > -0.25) c = skin;   // pelo corto: no baja por los lados de la cara
+          if (cap && ny < -0.2) c = C.shirt;
+          if (c === skin && (nx - fcx) > fw * 0.55) c = tone(skin, 0.86);   // sombra en un lado de la cara
+          if (c !== skin && ny < -0.6 && nx < -0.1) c = tone(c, 1.25);       // brillo en el pelo
+          R.set(hc[0] + x, hc[1] + y, c);
+        }
+        if (cap && cosT > -0.4) { const dx = Math.round(sinT * Rh * 0.9); for (let x = -Math.round(Rh * 0.8); x <= Math.round(Rh * 0.8); x++) R.set(hc[0] + x + dx, hc[1] - Rh * 0.2, tone(C.shirt, 0.8)); }
+        if (cosT > -0.25) {                                            // ojos (dos de frente, uno de lado) y un poco de color en la mejilla
+          const ex = sinT * Rh * 0.5, ey = Rh * 0.12, gap = Rh * 0.38 * Math.max(0, cosT);
+          const eye = [32, 24, 20];
+          if (cosT > 0.45) { R.set(hc[0] + ex - gap, hc[1] + ey, eye); R.set(hc[0] + ex - gap, hc[1] + ey + 1, eye); R.set(hc[0] + ex + gap, hc[1] + ey, eye); R.set(hc[0] + ex + gap, hc[1] + ey + 1, eye); }
+          else { const sx = hc[0] + sinT * Rh * 0.62; R.set(sx, hc[1] + ey, eye); R.set(sx, hc[1] + ey + 1, eye); }
+          if (cosT > 0.3) { const blush = tone(skin, 1.0).map((v, i) => Math.min(255, v + [40, -5, 0][i])); R.set(hc[0] + ex - gap - 1, hc[1] + ey + 2, blush); R.set(hc[0] + ex + gap + 1, hc[1] + ey + 2, blush); }
+        }
+      };
+      const longHair = a.look.style === 'long';
+      if (longHair) items.push([cosT > -0.25 ? torsoZ - 0.05 : torsoZ + 0.05, () => { R.poly([[hc[0] - Rh * 0.95, hc[1]], [hc[0] + Rh * 0.95, hc[1]], [hc[0] + Rh * 1.05, hc[1] + Rh * 2.1], [hc[0] - Rh * 1.05, hc[1] + Rh * 2.1]], tone(C.hair, 0.85)); }]);
+      items.push([hc[2] + 0.2, drawHead]);
+      // Lo que lleva en las manos: cada pieza, plana, con su color (taza, móvil, libro, hacha, guitarra, caña, regadera...)
+      for (const key in p.props) {
+        const g = p.props[key]; if (!g.visible || key === 'brolly') continue;
+        g.traverse((m) => {
+          if (!m.isMesh || !m.visible) return;
+          if (!PROP_BOX.has(m.geometry)) { m.geometry.computeBoundingBox(); PROP_BOX.set(m.geometry, m.geometry.boundingBox); }
+          const bb = PROP_BOX.get(m.geometry), pts = [];
+          for (const x of [bb.min.x, bb.max.x]) for (const y of [bb.min.y, bb.max.y]) for (const z of [bb.min.z, bb.max.z]) pts.push(P(m, x, y, z));
+          const z = pts.reduce((s, q) => s + q[2], 0) / 8, col = m.userData.col;
+          items.push([z + 0.05, () => { const h = R.hull(pts.map(([x, y]) => [x, y])); if (h.length >= 3) R.poly(h, col); else R.line(pts[0], pts[7], 1, col); }]);
+        });
+      }
+      items.sort((x, y) => x[0] - y[0]).forEach(([, f]) => f());
+      // Paraguas: una cúpula de tela por encima de la cabeza, con el mango hasta la mano
+      if (p.props.brolly.visible) {
+        const top = P(p.head, 0, 0.72, 0), hand = P(p.armL.elbow, 0, -0.25, 0), w = 0.62 * k;
+        R.line(hand, top, 1, [43, 43, 43]);
+        for (let y = -Math.ceil(w * 0.55); y <= 0; y++) for (let x = -Math.ceil(w); x <= Math.ceil(w); x++) {
+          if ((x / w) ** 2 + (y / (w * 0.55)) ** 2 > 1) continue;
+          R.set(top[0] + x, top[1] + y, tone(C.brolly, y < -w * 0.3 ? 1.15 : (Math.floor((x + w) / (w / 2)) % 2 ? 0.85 : 1)));
+        }
+      }
+      R.outline(); R.flush();
+      // El lienzo se coloca donde toca, mirando a la cámara y un poco adelantado (no cambia dónde se ve, pero así no lo corta una ladera que tenga detrás)
+      _w.set(Lx + PXW * unitPx / 2, By + PXH * unitPx / 2, fz + 0.35).applyMatrix4(camera.matrixWorld);
+      R.mesh.position.copy(_w); R.mesh.quaternion.copy(camera.quaternion); R.mesh.scale.set(PXW * unitPx, PXH * unitPx, 1);
+      R.material.color.copy(tint);
+    }
   }
 
   // ---------- Tamaño: la escena se dibuja a muy baja resolución y se amplía sin suavizar ----------
@@ -1779,28 +1979,29 @@ export function startScene(canvas, { still = false } = {}) {
     const aspect = cssW / cssH, diag = 2 * H * Math.SQRT2;
     // Cabe la isla entera, con los árboles y las rocas de debajo. A pantalla completa cabe también la isleta de la izquierda (de -13,4 a 9,9 de ancho, con margen): así en un móvil en vertical se ve entera
     viewH = Math.max((isFull ? 13.6 : diag * 1.04 / 2) / aspect, (diag * 0.5 * 0.5 + 5.4) * 1.04);
+    if (isFull) viewH *= 1.16;                                        // a pantalla completa, la isla entera algo más pequeña, con aire alrededor
     if (!isFull) viewH *= 1.55;                                       // en la tarjeta, pequeña y en el centro, como el emblema del dorso de una carta
     unitPx = 2 * viewH * base / (cssH * dpr);                         // metros por píxel de la escena (no cambia al acercar)
     Object.assign(camera, { left: -renderW * unitPx / 2, right: renderW * unitPx / 2, top: renderH * unitPx / 2, bottom: -renderH * unitPx / 2, zoom: 1 });
     camera.updateProjectionMatrix();
     for (const mm of FOLIAGE) mm.uniforms.uSize.value = Math.max(2, Math.round(mm.worldSize / unitPx));   // los racimos miden siempre lo mismo
-    if (flowersMat) flowersMat.size = Math.max(1, Math.round(0.07 / unitPx));
+    if (flowersMat) flowersMat.size = Math.max(1, Math.round(0.05 / unitPx));
     if (bulbsMat) bulbsMat.size = Math.max(2, Math.round(0.09 / unitPx));
     placeCamera();
   }
-  const ro = new ResizeObserver(() => { size(); if (ready) renderer.render(scene, camera); }); ro.observe(box0);
+  const ro = new ResizeObserver(() => { size(); if (ready) { drawPeople(); renderer.render(scene, camera); } }); ro.observe(box0);
 
   function frame(now) {
     raf = 0;
     if (!running) return;
     const dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
-    animate(dt); if (ready) renderer.render(scene, camera);
+    animate(dt); if (ready) { drawPeople(); renderer.render(scene, camera); }
     raf = requestAnimationFrame(frame);
   }
   const renderOnce = () => {
     if (running) return;
     shownHour = logicHour(); const tg = skyTarget(); sky.cloud = tg.cloud; sky.rain = tg.rain; pan.copy(panTo);
-    animate(0.016); applyLight(shownHour, 10); size(); if (ready) renderer.render(scene, camera);
+    animate(0.016); applyLight(shownHour, 10); size(); if (ready) { drawPeople(); renderer.render(scene, camera); }
   };
 
   settleAtStart();
@@ -1810,7 +2011,7 @@ export function startScene(canvas, { still = false } = {}) {
   for (let k = 0; k < 12; k++) animate(0.016);
   applyLight(shownHour, 10);
   let ready = false;
-  const whenReady = () => { ready = true; renderer.render(scene, camera); };
+  const whenReady = () => { ready = true; drawPeople(); renderer.render(scene, camera); };
   (renderer.compileAsync ? renderer.compileAsync(scene, camera) : Promise.resolve()).then(whenReady, whenReady);
 
   // ---------- Panel y gestos (los usa js/about.js) ----------
