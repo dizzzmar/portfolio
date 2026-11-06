@@ -464,6 +464,42 @@ function pixelPerson(look) {
   return { mesh, material, tex, C, set, disk, line, poly, hull, outline, clear: () => D.fill(0), flush: () => { ctx.putImageData(img, 0, 0); tex.needsUpdate = true; } };
 }
 
+// Iconos sobre la cabeza (como los de Stardew Valley): dicen qué sienten o qué hacen sin una sola palabra. 7 × 7 píxeles dentro de un bocadillo blanco.
+// '#' color del icono, '+' su brillo, '.' fondo del bocadillo
+const EMOTES = {
+  music:  { c: [58, 74, 160], rows: ['...##..', '...#+#.', '...#..#', '...#...', '.###...', '####...', '.##....'] },
+  heart:  { c: [216, 54, 74], rows: ['.##.##.', '#+#####', '#######', '#######', '.#####.', '..###..', '...#...'] },
+  alert:  { c: [214, 60, 40], rows: ['..###..', '..###..', '..###..', '..###..', '...#...', '.......', '..###..'] },
+  zzz:    { c: [80, 96, 170], rows: ['....###', '.....#.', '###.###', '..#....', '.#.....', '###....', '.......'] },
+  sweat:  { c: [70, 150, 220], rows: ['...#...', '..##...', '.#+##..', '.#+##..', '#####..', '.###...', '.......'] },
+  dots:   { c: [70, 70, 70], rows: ['.......', '.......', '.......', '#.#.#..', '.......', '.......', '.......'] },
+  idea:   { c: [235, 180, 30], rows: ['..###..', '.#+###.', '.#####.', '.#####.', '..###..', '..#.#..', '..###..'] },
+  happy:  { c: [235, 150, 40], rows: ['.#####.', '#######', '#.###.#', '#######', '#.###.#', '##...##', '.#####.'] },
+  sparkle:{ c: [240, 175, 40], rows: ['...#...', '...#...', '..#+#..', '###+###', '..#+#..', '...#...', '...#...'] },
+  question:{ c: [60, 120, 200], rows: ['.####..', '#....#.', '....#..', '...#...', '...#...', '.......', '...#...'] },
+};
+// Qué iconos salen solos, de vez en cuando, mientras hacen cada cosa
+const EMOTE_OF = {
+  desk: ['dots', 'idea', 'dots'], board: ['idea', 'question', 'dots'], garden: ['sparkle', 'heart'], chop: ['sweat'], fish: ['dots', 'zzz'], read: ['heart', 'dots'],
+  coffee: ['heart', 'sparkle'], picnic: ['heart', 'happy'], campfire: ['happy', 'heart', 'music'], stargaze: ['sparkle', 'heart'], lookout: ['sparkle', 'heart'],
+  hammock: ['zzz'], tree: ['zzz', 'heart'], ducks: ['heart', 'happy'], hives: ['sparkle'], paint: ['idea', 'heart', 'sparkle'], kite: ['happy', 'sparkle'],
+  swing: ['happy', 'heart'], dance: ['music', 'heart'], juggle: ['happy'], porch: ['heart', 'dots'], phone: ['dots', 'happy', 'question'], hill: ['sparkle', 'heart'],
+  shelter: ['dots'], puddle: ['happy', 'sparkle'], view: ['sparkle', 'dots'], cat: ['heart'], chat: ['dots', 'happy', 'idea', 'question', 'heart'],
+};
+function drawEmote(R, cx, cy, name, pop) {
+  const e = EMOTES[name]; if (!e) return;
+  const W = 11, x0 = Math.round(cx - W / 2), y0 = Math.round(cy - W - 4 - pop);
+  const ink = [58, 52, 48], paper = [255, 252, 244];
+  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {                          // bocadillo de esquinas redondeadas
+    const corner = (x === 0 || x === W - 1) && (y === 0 || y === W - 1);
+    if (corner) continue;
+    const edge = x === 0 || y === 0 || x === W - 1 || y === W - 1 || ((x === 1 || x === W - 2) && (y === 1 || y === W - 2));
+    R.set(x0 + x, y0 + y, edge && !((x === 1 || x === W - 2) && (y === 1 || y === W - 2)) ? ink : paper);
+  }
+  R.set(x0 + 4, y0 + W, ink); R.set(x0 + 5, y0 + W, paper); R.set(x0 + 6, y0 + W, ink); R.set(x0 + 5, y0 + W + 1, ink);   // el pico hacia la cabeza
+  e.rows.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.') R.set(x0 + 2 + x, y0 + 2 + y, ch === '+' ? tone(e.c, 1.45) : e.c); }));
+}
+
 function applyPose(p, pose, k) {
   const c = p.pose;
   for (const key in c) c[key] += ((pose[key] || 0) - c[key]) * k;
@@ -1264,9 +1300,11 @@ export function startScene(canvas, { still = false } = {}) {
     const spr = pixelPerson(look); add(spr.mesh);
     const needs = {}; NEEDS.forEach((n) => { needs[n] = 0.4 + rand() * 0.5; });
     return { i, p, spr, look, needs, history: [], x: 0, z: 0, yaw: 0, state: 'act', slot: null, kind: 'idle', until: 0, path: [], t0: 0, seed: rand() * 6.28,
-      talk: null, talkUntil: 0, carry: null, inside: false, asleep: false, owl: false, bed: look.bed + rand() * 0.5, wake: look.wake + rand() * 0.8 };
+      talk: null, talkUntil: 0, carry: null, emote: null, nextEmote: 4 + rand() * 10, greeted: {}, v: 0, walkPh: 0, lookYaw: 0, lookAt: 0, inside: false, asleep: false, owl: false, bed: look.bed + rand() * 0.5, wake: look.wake + rand() * 0.8 };
   });
   let t = 0;
+  // Un icono sobre la cabeza durante un rato (ver EMOTES); no repite el mismo si ya lo tiene puesto
+  const emote = (a, name, dur = 2.4) => { if (a.inside || (a.emote && t < a.emote.until && a.emote.name === name)) return; a.emote = { name, t0: t, until: t + dur }; a.nextEmote = t + dur + 8 + rand() * 12; };
 
   // ---------- Hora y tiempo ----------
   const state = { follow: true, preset: 1, weather: 0, auto: true, hour: madridNow() };
@@ -1289,6 +1327,7 @@ export function startScene(canvas, { still = false } = {}) {
     const last = a.history.lastIndexOf(kind), ago = last < 0 ? 99 : a.history.length - 1 - last;
     const novelty = ago === 0 ? 0.04 : ago < 3 ? 0.3 : ago < 6 ? 0.7 : 1;   // lo que acaba de hacer, casi nunca
     if (DAY_WORK.has(kind) && a.needs.focus > 0.8) s *= 0.4;
+    if ((kind === 'coffee' || kind === 'picnic' || kind === 'campfire') && agents.some((b) => b !== a && !b.inside && (b.kind === kind || b.plan?.kind === kind))) s *= kind === 'campfire' ? 3.6 : 2.6;   // desayunar, comer y cenar juntos: si otro ya está, apetece ir
     return s * need * (a.look.likes[kind] || 1) * novelty * (0.6 + rand() * 0.8);
   }
   function choose(a) {
@@ -1302,6 +1341,10 @@ export function startScene(canvas, { still = false } = {}) {
     if (a.owl && a.sleepwalk) {                                        // sonámbulo: da un paseo con los brazos por delante y vuelve a la cama
       const s = pick(slots.filter((x) => (x.kind === 'view' || x.kind === 'phone') && !x.by && !onIslet(x.x, x.z)));
       a.sleepwalk = false; go(a, s.x, s.z, { kind: 'sleepwalk' }); return;
+    }
+    if (a.breakfast) {                                                 // la rutina de la mañana: lo primero, el café (con quien ya esté allí)
+      a.breakfast = false; const s = slots.find((x) => x.kind === 'coffee' && !x.by);
+      if (s && h < 11.5 && !w.rain) { a.history.push('coffee'); s.by = a; if (go(a, s.x, s.z, { kind: 'coffee', slot: s })) emote(a, 'sparkle', 2); return; }
     }
     const options = [];
     for (const kind in ACT) {
@@ -1365,6 +1408,7 @@ export function startScene(canvas, { still = false } = {}) {
       release(a); if (a.sitting && a.lastSeat) { a.slot = a.lastSeat; a.slot.by = a; }   // sigue sentado donde estaba
       a.plan = { kind: 'idle', slot: a.slot }; a.kind = 'idle'; a.path = []; a.state = 'act'; a.until = t + 1 + rand() * 1.5; return false;
     }
+    if (a.state !== 'walk') a.v = 0;                                   // arranca desde parado
     a.path = path; a.state = a.sitting ? 'standup' : 'walk'; a.blend = 0;
     if (a.carry && a.carry !== 'log' && a.carry !== 'laptop') a.carry = null;
     return true;
@@ -1397,8 +1441,8 @@ export function startScene(canvas, { still = false } = {}) {
       } else { a.kind = 'view'; a.until = t + 2; }
       a.state = 'act'; return;
     }
-    if (kind === 'cat') { a.faceTo = cat; a.state = 'act'; return; }
-    if (kind === 'jog' || kind === 'flee') { a.state = 'act'; a.until = t + 2.5 + rand() * 1.5; return; }              // recupera el aliento
+    if (kind === 'cat') { a.faceTo = cat; a.state = 'act'; emote(a, 'heart', 2.5); return; }
+    if (kind === 'jog' || kind === 'flee') { a.state = 'act'; a.until = t + 2.5 + rand() * 1.5; emote(a, 'sweat', 2); return; }              // recupera el aliento
     if (kind === 'sleepwalk') { a.state = 'act'; a.until = t + 2 + rand() * 2; a.owl = false; return; }                // se queda un rato quieto y vuelve a la cama
     if (kind === 'dance') { a.state = 'act'; a.faceTo = a.plan.with || null; if (!a.plan.with) a.yawTo = rand() * 6.28; return; }
     const evening0 = evening(logicHour());
@@ -1409,7 +1453,7 @@ export function startScene(canvas, { still = false } = {}) {
     if (kind === 'hill') a.variant = pick(['sit', 'stretch', 'yoga', 'sit']);
     if (kind === 'garden') a.variant = !weatherNow().rain && (logicHour() < 11 || logicHour() > SUN.set - 2.5 || rand() < 0.4) ? 'water' : 'tend';
     if (kind === 'tree') a.variant = rand() < 0.5 ? 'read' : 'doze';
-    if (kind === 'fish') a.bite = t + 4 + rand() * 6;
+    if (kind === 'fish') { a.bite = t + 4 + rand() * 6; a.biteShown = false; }
     if (kind === 'chop') { a.next = rand() < 0.6 ? { kind: 'deliver', x: 0.2, z: HOUSE.z1 + 0.65, carry: 'log' } : null; }
     if (kind === 'hives') a.bees = rand() < 0.3 ? t + 2.5 + rand() * 3 : 0;          // a veces las abejas se enfadan
     if (kind === 'kite') { kite.visible = kiteLine.visible = true; a.kiteOn = true; }
@@ -1443,13 +1487,13 @@ export function startScene(canvas, { still = false } = {}) {
     const ph = t + a.seed, local = t - a.t0, P = {};
     const talking = a.talk && t < a.talkUntil;
     if (a.state === 'walk') {
-      const s = Math.sin(t * 9 + a.seed);
+      const s = Math.sin(a.walkPh + a.seed);
       Object.assign(P, { tl: s * 0.55, tr: -s * 0.55, kl: Math.max(0, -s) * 0.7, kr: Math.max(0, s) * 0.7, al: -s * 0.45, ar: s * 0.45, el: -0.25, er: -0.25, sp: 0.06 });
       if (a.carry === 'cup') Object.assign(P, { ar: -0.35, er: -1.3 });
       if (a.carry === 'log' || a.carry === 'laptop') Object.assign(P, { al: -1.1, ar: -1.1, el: -0.9, er: -0.9 });
-      P.lift = Math.abs(Math.cos(t * 9 + a.seed)) * 0.035;
+      P.lift = Math.abs(Math.cos(a.walkPh + a.seed)) * 0.035 * Math.min(1, a.v / 0.8); P.hy = clamp(a.turn || 0, -0.7, 0.7) * 0.9;
       const k = a.plan?.kind;
-      if (k === 'jog') { const r = Math.sin(t * 14 + a.seed); Object.assign(P, { tl: r * 0.8, tr: -r * 0.8, kl: Math.max(0, -r) * 1.3, kr: Math.max(0, r) * 1.3, al: -r * 0.7, ar: r * 0.7, el: -1.5, er: -1.5, sp: 0.18, lift: Math.abs(Math.cos(t * 14 + a.seed)) * 0.09 }); }
+      if (k === 'jog') { const r = Math.sin(a.walkPh * 0.8 + a.seed); Object.assign(P, { tl: r * 0.8, tr: -r * 0.8, kl: Math.max(0, -r) * 1.3, kr: Math.max(0, r) * 1.3, al: -r * 0.7, ar: r * 0.7, el: -1.5, er: -1.5, sp: 0.18, lift: Math.abs(Math.cos(a.walkPh * 0.8 + a.seed)) * 0.09 }); }
       if (k === 'flee') { const r = Math.sin(t * 16); Object.assign(P, { tl: r * 0.9, tr: -r * 0.9, kl: Math.max(0, -r) * 1.3, kr: Math.max(0, r) * 1.3, al: -2.8 + Math.sin(t * 22) * 0.5, ar: -2.8 - Math.sin(t * 22) * 0.5, el: -0.4, er: -0.4, sp: 0.1, hy: Math.sin(t * 9) * 0.6, lift: Math.abs(Math.cos(t * 16)) * 0.1 }); }
       if (k === 'sleepwalk') Object.assign(P, { al: -1.5, ar: -1.5, el: 0, er: 0, hx: 0.35, tl: P.tl * 0.5, tr: P.tr * 0.5 });
       if (a.trip) { const f = t - a.trip; Object.assign(P, { fall: f < 0.25 ? f / 0.25 : f < 1.0 ? 1 : Math.max(0, 1 - (f - 1.0) / 0.4), al: -2.6, ar: -2.6, el: 0, er: 0, tl: 0.2, tr: 0.2, lift: 0.1 }); }
@@ -1559,7 +1603,7 @@ export function startScene(canvas, { still = false } = {}) {
     if (a.inside) {
       if (a.state === 'act' && ACT[a.kind]) for (const n in ACT.home.give) a.needs[n] = clamp(a.needs[n] + ACT.home.give[n] * dt / 15, 0, 1);
       const h = logicHour();
-      if (a.asleep && !asleepTime(a, h) && !a.owl) { a.asleep = false; a.until = t + rand() * 5; }   // se despierta: sale en un rato
+      if (a.asleep && !asleepTime(a, h) && !a.owl) { a.asleep = false; a.until = t + rand() * 5; a.breakfast = true; }   // se despierta: al salir, desayuna   // se despierta: sale en un rato
       if (!a.asleep && !a.owl && asleepTime(a, h)) { a.asleep = true; a.until = Infinity; }         // estaba en casa y se hace tarde: a dormir
       if (!a.asleep && t >= a.until) { a.history.push('home'); choose(a); a.stretchAt = t; }
       return;
@@ -1571,10 +1615,18 @@ export function startScene(canvas, { still = false } = {}) {
       if (a.trip) { if (t - a.trip > 1.4) a.trip = 0; }                // se ha caído: se levanta antes de seguir
       else if (d < 0.06) { a.path.shift(); if (!a.path.length) arrive(a); }
       else {
-        if (k !== 'jog' && k !== 'sleepwalk' && rand() < dt * 0.004 && !onStairs(a.x, a.z) && !onRope(a.x, a.z) && !onBridge(a.x, a.z)) a.trip = t;   // ¡zas! (de vez en cuando)
-        const sp = Math.min(d, dt * (k === 'jog' ? 2.0 : k === 'flee' ? 2.6 : k === 'sleepwalk' ? 0.5 : weatherNow().rain ? 1.25 : 1.05));
-        a.x += dx / d * sp; a.z += dz / d * sp;
-        a.yaw = turnTo(a.yaw, Math.atan2(dx, dz), 1 - Math.exp(-12 * dt));
+        if (k !== 'jog' && k !== 'sleepwalk' && rand() < dt * 0.004 && !onStairs(a.x, a.z) && !onRope(a.x, a.z) && !onBridge(a.x, a.z)) { a.trip = t; emote(a, 'alert', 1.4); }   // ¡zas! (de vez en cuando)
+        // Arrancan y frenan poco a poco (no a velocidad fija de golpe): aceleran al salir y van más despacio en los últimos pasos
+        const top = k === 'jog' ? 2.0 : k === 'flee' ? 2.6 : k === 'sleepwalk' ? 0.5 : weatherNow().rain ? 1.25 : 1.05, slow = a.path.length === 1 ? clamp(d / 0.45, 0.35, 1) : 1;
+        a.v += (top * slow - a.v) * (1 - Math.exp(-7 * dt));
+        const sp = Math.min(d, dt * a.v);
+        a.x += dx / d * sp; a.z += dz / d * sp; a.walkPh += dt * 9 * a.v / 1.05;
+        const want = Math.atan2(dx, dz); a.turn = Math.atan2(Math.sin(want - a.yaw), Math.cos(want - a.yaw));   // la cabeza gira antes que el cuerpo
+        a.yaw = turnTo(a.yaw, want, 1 - Math.exp(-9 * dt));
+        for (const b of agents) if (b !== a && !b.inside && Math.hypot(b.x - a.x, b.z - a.z) < 1.4 && t - (a.greeted[b.i] || -99) > 90) {   // al cruzarse, se saludan
+          a.greeted[b.i] = b.greeted[a.i] = t; a.wave = t; emote(a, 'happy', 1.8); b.wave = t + 0.4; b.pendingEmote = { name: rand() < 0.5 ? 'happy' : 'heart', at: t + 0.5 };
+        }
+        if (k === 'sleepwalk' && (!a.emote || t > a.emote.until)) emote(a, 'zzz', 2);
       }
       if (a.plan.carry) a.carry = a.plan.carry;
     } else if (a.state === 'sitdown' || a.state === 'standup') {
@@ -1590,7 +1642,7 @@ export function startScene(canvas, { still = false } = {}) {
       if (a.kind === 'chat' && a.plan.with && (a.plan.with.state !== 'act' || a.plan.with.inside)) a.until = Math.min(a.until, t + 0.5);
       if (a.kind === 'hives' && a.bees && t > a.bees) {                 // ¡abejas! sale corriendo con los brazos en alto
         a.bees = 0; const far = slots.filter((s) => s.kind === 'view' && !s.by && Math.hypot(s.x - a.x, s.z - a.z) > 4 && !onIslet(s.x, s.z));
-        if (far.length) { const s = pick(far); release(a); go(a, s.x, s.z, { kind: 'flee' }); }
+        if (far.length) { const s = pick(far); release(a); go(a, s.x, s.z, { kind: 'flee' }); emote(a, 'alert', 2.2); }
       }
       if (a.kind === 'dance' && a.plan.with && !a.plan.with.guitar) a.until = Math.min(a.until, t + 1);   // se acabó la música
       const h = logicHour(), w = weatherNow();
@@ -1599,6 +1651,15 @@ export function startScene(canvas, { still = false } = {}) {
       if (t >= a.until) { a.lastSeat = a.sitting ? a.slot : null; a.talk = null; a.faceTo = null; a.yawTo = undefined; if (a.owl && a.owlUntil < t) { a.owl = false; } choose(a); }
     }
     const P = pose(a);
+    // Vida cuando están quietos: respiran, miran alrededor de vez en cuando y, a veces, les sale un icono de lo que sienten
+    if (a.pendingEmote && t > a.pendingEmote.at) { emote(a, a.pendingEmote.name, 1.8); a.pendingEmote = null; }
+    if (a.state === 'act' && !a.inside) {
+      if (!(P.lie > 0)) P.sp = (P.sp || 0) + Math.sin(t * 1.7 + a.seed) * 0.02;
+      if (P.hy === undefined && !a.talk && !a.faceTo) { if (t > a.lookAt) { a.lookAt = t + 2.5 + rand() * 4; a.lookYaw = rand() < 0.4 ? 0 : (rand() - 0.5) * 1.3; } P.hy = a.lookYaw; }
+      if (a.kind === 'fish' && a.bite && t > a.bite && !a.biteShown) { a.biteShown = true; emote(a, 'alert', 1.2); }   // ¡pica!
+      if (t > a.nextEmote && (!a.emote || t > a.emote.until)) { const list = a.guitar ? ['music'] : a.talk ? EMOTE_OF.chat : EMOTE_OF[a.kind]; if (list) emote(a, pick(list)); else a.nextEmote = t + 4; }
+    }
+    if (a.wave && t - a.wave > 0 && t - a.wave < 1.2 && !a.sitting && !(P.lie > 0)) Object.assign(P, { ar: -2.9, er: -0.2, arz: 0.3 + Math.sin(t * 14) * 0.25 });   // saluda
     if (a.stretchAt && t - a.stretchAt < 2.5 && a.state === 'walk') Object.assign(P, { al: -2.9, ar: -2.9, el: -0.3, er: -0.3, hx: -0.3 });  // bosteza y se estira al salir
     const brolly = sky.rain > 0.3 && !roofed(a.x, a.z) && !a.sitting && a.kind !== 'stargaze';
     if (brolly) Object.assign(P, { al: -0.9, el: -1.5, alz: 0.1 });
@@ -1651,7 +1712,7 @@ export function startScene(canvas, { still = false } = {}) {
     } else if (t > cat.until && !cat.petted) {
       const friend = rand() < 0.4 ? pick(agents.filter((a) => !a.inside)) : null;    // a veces va detrás de alguien
       const [x, z] = night(h) ? [DOOR.x + 0.5, DOOR.z + 0.25] : friend ? talkSpot(friend.x, friend.z, cat, 0.55) : pick(CAT_SPOTS);
-      cat.path = findPath(cat.x, cat.z, x, z); cat.state = 'walk';
+      cat.path = findPath(cat.x, cat.z, x, z) || []; if (cat.path.length) cat.state = 'walk'; else cat.until = t + 3;   // si no hay camino, se queda un poco más
     }
     const walk = cat.state === 'walk', s = Math.sin(t * 12);
     cat.legs.forEach((l, i) => { l.rotation.x = walk ? s * (i % 2 ? 0.6 : -0.6) * (i < 2 ? 1 : -1) : 0; l.visible = cat.state !== 'sleep'; });
@@ -1960,6 +2021,12 @@ export function startScene(canvas, { still = false } = {}) {
           if ((x / w) ** 2 + (y / (w * 0.55)) ** 2 > 1) continue;
           R.set(top[0] + x, top[1] + y, tone(C.brolly, y < -w * 0.3 ? 1.15 : (Math.floor((x + w) / (w / 2)) % 2 ? 0.85 : 1)));
         }
+      }
+      // Icono sobre la cabeza (o sobre el paraguas): aparece con un saltito
+      if (a.emote && t < a.emote.until) {
+        const e = a.emote, age = t - e.t0, pop = age < 0.3 ? Math.round(Math.sin(age / 0.3 * Math.PI) * 3) : Math.round(Math.sin(age * 2.2) * 0.6 + 0.4);
+        const above = p.props.brolly.visible ? P(p.head, 0, 0.72, 0)[1] - 0.62 * k * 0.55 : hc[1] - Rh;
+        drawEmote(R, hc[0], above - 1, e.name, pop);
       }
       R.flush();   // sin contorno oscuro: las figuras se separan del fondo por su propio color y su sombra
       // El lienzo se coloca donde toca, mirando a la cámara y un poco adelantado (no cambia dónde se ve, pero así no lo corta una ladera que tenga detrás)
