@@ -6,7 +6,7 @@ const canvas = stage.querySelector('.scene-canvas');
 const ui = document.querySelector('.scene-ui');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-import('/js/about-scene.js?v=20261203isleta').then((m) => {
+import('/js/about-scene.js?v=20261204fase3').then((m) => {
   const scene = m.startScene(canvas, { still: reduced });
   scene.setFull(true);
   scene.onSky((color, dark) => {
