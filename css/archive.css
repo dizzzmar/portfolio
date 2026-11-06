@@ -41,6 +41,15 @@ img { display: block; max-width: 100%; height: auto; }
 .archive-name { font-family: var(--font-display); font-size: clamp(22px, 2.4vw, 40px);   /* bastante más pequeño que el título, para que este se distinga bien */ font-weight: var(--fw-title); letter-spacing: -.04em; line-height: 1; }
 .archive-name sup { margin-left: .12em; font-family: var(--font-ui); font-size: max(12px, .4em); font-weight: var(--fw-regular); letter-spacing: 0; vertical-align: top; position: relative; top: .1em; }
 
+/* En pantallas anchas, las entradas van centradas (en horizontal, en el hueco de la derecha, y en vertical, a media altura de la pantalla) y bien separadas del título,
+   que se queda arriba a la izquierda. En móvil siguen debajo del título, a la izquierda. */
+@media (min-width: 761px) {
+  .archive-index { align-content: stretch; padding-bottom: calc(var(--nav-h) + clamp(8px, 1.2vw, 18px)); }   /* el mismo espacio arriba y abajo: las entradas quedan justo a media altura */
+  .archive-side { align-self: start; }
+  .archive-list { align-self: center; padding-top: 0; text-align: center; }
+  .archive-row { justify-content: center; }
+}
+
 /* ---------- Muro: ocupa toda la pantalla; las piezas pasan por debajo de la barra ---------- */
 .archive-wall { height: 100vh; height: 100svh; overflow: hidden; overscroll-behavior: none; }
 .archive-surface { position: fixed; inset: 0; overflow: hidden; touch-action: none; cursor: grab; }
