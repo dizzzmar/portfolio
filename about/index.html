@@ -24,7 +24,7 @@
 <link rel="preload" href="/assets/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css?v=20261113mustard1">
-<link rel="stylesheet" href="/css/about.css?v=20261201np1">
+<link rel="stylesheet" href="/css/about.css?v=20261201noflip1">
 <link rel="stylesheet" href="/css/footer.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-logo.css?v=20261025k">
 <link rel="stylesheet" href="/css/nav-links.css?v=20261112navdiff1">
@@ -66,42 +66,13 @@
   <!-- La foto se queda quieta a la izquierda (con su efecto holográfico, js/about.js) y la tarjeta con el texto entra por la derecha y se recorre por dentro (css/about.css) -->
   <div class="about-photo">
     <!-- Foto holográfica: la carta entera (.tilt) se inclina en 3D siguiendo el ratón y un brillo holográfico recorre sus dos caras, como una carta coleccionable (js/about.js) -->
-    <!-- Al pulsar la foto, la tarjeta se da la vuelta y por detrás hay un pequeño mundo isométrico en pixel art donde viven tres personas (js/about-scene.js, se carga al girarla) -->
-    <div class="portrait holo" data-holo data-cursor="view" data-cursor-label="Flip">
+    <div class="portrait holo" data-holo>
       <div class="tilt">
-      <div class="flip-inner">
         <div class="holo-card">
           <span class="px" style="--lq: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAANCAIAAAAfVWhSAAABh0lEQVR42gXBS0/UQAAA4Hl1+tilTd1dSGBFNFFCeiHxoCFoPJmYcNGbN/03Jp78HZzwpolw1oMciIgLiCBhwS3T7gydaafTjt8H377/sLw4F/tuDVDVNnNhcF3XxJKUF6OjKzKIur5Hog5RLZoc/rGXzcJK4iJfaXNnvkfmexEAlrrB9ubm149bK8PZ4smzBxsvvS7ttzWJO57jwevGsCx/9+ZVsvpwa/eHT51ea/aZRNJobdvbgZcsDs9Oz4HWz9ceh5hqYXxMEROctjZEztMXG5mSPnVOu4Ob2nY8r2kQwrICtU2lOvj56/tlepIzw1NWqbSsLEbkgsk0G33b+cIn49friQDNaO/zOVP9u48svoV795PdnU8d2izfCyVUR//+qtLd25/8Pj6JZpewnolBNl5aGPoUDfqY5SDnwVQ0EOASEFRxzpg6uxAHx2NK4VQU1DEZr6F1BcuIo4t4EBYyiyOT87qQynWQLKZXRiADiWAcBtQ2EgI05e0k1WV5I1WpjevPqP9hVNYAz+3gZAAAAABJRU5ErkJggg==)"><img src="/assets/images/mario-600.webp" srcset="/assets/images/mario-600.webp 600w, /assets/images/mario-956.webp 956w" sizes="(max-width: 760px) 55vw, 25vw" width="956" height="1280" alt="Portrait of Mario Diz, smiling, in a green knitted sweater against a blue-green painted backdrop"></span>
           <span class="holo-shine" aria-hidden="true"></span>
           <span class="holo-glare" aria-hidden="true"></span>
         </div>
-        <div class="scene-back" aria-hidden="true"><canvas class="scene-canvas" role="img" aria-label="Pixel-art isometric scene: a floating island with a cottage, a vegetable garden, a pond with ducks and a waterfall, a terrace with beehives, a campfire and an outdoor office, where three people work, garden, fish, chat and go to sleep at night, following the time and weather in Madrid"></canvas><span class="holo-shine" aria-hidden="true"></span><span class="holo-glare" aria-hidden="true"></span></div>
-      </div>
-      </div>
-      <button class="flip-btn" type="button" aria-pressed="false" aria-label="Turn the photo over"></button>
-    </div>
-    <!-- Controles de la escena a pantalla completa (js/about.js): hora, tiempo, zoom y cerrar. Sin cajas ni textos de ayuda: píldoras como el resto de la web.
-         Solo se ven con la escena a pantalla completa; los nombres para lectores de pantalla van en aria-label -->
-    <div class="scene-ui" role="group" aria-label="Scene controls" hidden>
-      <button class="sui-close" type="button">Close</button>
-      <div class="sui-dock">
-        <div class="sui-row" role="group" aria-label="Time of day">
-          <button class="sui-pill" type="button" data-time="0" aria-pressed="false">Morning</button>
-          <button class="sui-pill" type="button" data-time="1" aria-pressed="false">Day</button>
-          <button class="sui-pill" type="button" data-time="2" aria-pressed="false">Sunset</button>
-          <button class="sui-pill" type="button" data-time="3" aria-pressed="false">Night</button>
-          <button class="sui-pill sui-live" type="button" data-follow aria-pressed="true" aria-label="Follow the time in Madrid">Now</button>
-        </div>
-        <div class="sui-row" role="group" aria-label="Weather">
-          <button class="sui-pill" type="button" data-weather="0" aria-pressed="false">Clear</button>
-          <button class="sui-pill" type="button" data-weather="1" aria-pressed="false">Cloudy</button>
-          <button class="sui-pill" type="button" data-weather="2" aria-pressed="false">Rain</button>
-          <button class="sui-pill sui-live" type="button" data-auto aria-pressed="true" aria-label="Let the weather change by itself">Auto</button>
-        </div>
-      </div>
-      <div class="sui-zoom" role="group" aria-label="Zoom">
-        <button class="sui-pill sui-round" type="button" data-zoom="-1" aria-label="Zoom out"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9"/></svg></button>
-        <button class="sui-pill sui-round" type="button" data-zoom="1" aria-label="Zoom in"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9M8 3.5v9"/></svg></button>
       </div>
     </div>
   </div>
@@ -135,19 +106,20 @@
     <!-- Lo mismo que la estantería de The room: actualízalo a la vez que js/room.js -->
     <a class="fact now-playing" href="/room.html" data-reveal>
       <div class="np-item">
-      <h2>Now playing <span class="np-date">Updated Nov 6</span></h2>
+      <h2>Now playing</h2>
       <div class="np-row">
         <span class="px np-cover" style="--lq: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAABOUlEQVR42gXBwStDcRwA8O/v+/2+vTe/996eZi5mJGJckUjKJC7KgZty9ecoKTk4SLk6cJKQw4oiqbWl5W3JJMOYPXt77+fzEbx+QMSICAIVITALZtL0UIsqZrYdyUgM0BH/TaaqCrRyJfn2J+tEtkCeMCKbvd2dln9acnfzqYoRU7qxQl8LZB1jyGvQ1lf7BhVZHkjP5i+3HrP9prU6l4FCA3MP/Gp60CiDMoOrnO3IDU1p8NPKFp9vLk56EnhuqWqzFVbucSjR+CxSq5Z9dY9yh36sjqPjiJrY7u3zIPpevPPa+cmERBwHY7GduGPHJXbZds0x9iYmm07H9Uuh4LmRUJ7VfSczL7mFEcNXolGicH9qxh6edj7oT1r+0qJpgE5NVoEnSUgKdBHcjqXbRlJuVLeIQPgC4B/P/HJaELxjWwAAAABJRU5ErkJggg==)"><img src="/assets/room/vinyl-cover.webp" width="400" height="400" alt="Romance, by Fontaines D.C." loading="lazy"></span>
         <p><strong>Bug</strong><br>Fontaines D.C. — Romance</p>
       </div>
       </div>
       <div class="np-item">
-      <h2>Last watched <span class="np-date">Updated Nov 6</span></h2>
+      <h2>Last watched</h2>
       <div class="np-row">
         <span class="px np-cover np-film" style="--lq: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAIAAACZwRr8AAABh0lEQVR42gXB4W6TQAAA4DuO69E7yhUY2Brbbp1bXdBoU2uyB/DtjTNG96NGY5yuoVAYHFfoQcHvgx8/zMf+8FDIqiy9Zz4d2PJQIA0ipMei1ilsri9mCJOBxauDbGp1Nn5DKE2i8CHc61KWSZTkQoK27gBCGkx2W8ZNyx29uArQYuqBVoV/HwDEjuPgnpZmRS6K+U3gTC911QJicsYPjmtC1AKoGQSrpiuqU7T5gW7Xr4N3y7Yuh57nsRFh9NQpiBCzbP58phFmGSYfz877A+5xl2Jq+6NeD4PulMc7bTy96FOKSR9C7akSlmk2TdMBUMp8+/unNrDdplYAgCyTCgI2mWRpVpXVfhenUYyCq1kahd7kvKqqP782Ws94+f4W6WSxXGdCopvFHAEgchGH8eZ+c1Ly/vPd9XIlsmwf7dF6FZy5PE+fGCPHskqTYnI5//bpDmHy/ctXuHr7ihGsAahjzKiRZblBqRRSNbUsjxAA4Ni273uWZT1utwghdVTDIf/3uBVC/Ac2sLhKLFYEVQAAAABJRU5ErkJggg==)"><img src="/assets/room/film-poster.webp" width="400" height="571" alt="La Bola Negra poster" loading="lazy"></span>
         <p><strong>La Bola Negra</strong><br><span class="np-more">See the room →</span></p>
       </div>
       </div>
+      <p class="np-date">Updated Nov 6</p>
     </a>
   </section>
 
@@ -201,7 +173,7 @@
   </div>
 </section>
 
-<script src="/js/about.js?v=20261128fit1" defer></script>
+<script src="/js/about.js?v=20261201noflip1" defer></script>
 <script src="/js/pixel-load.js?v=20261126pxfix1" defer></script>
 <script type="module" src="/js/nav-tomato.js?v=20261026a"></script>
 <script src="/js/cursor.js?v=20261105label1" defer></script>

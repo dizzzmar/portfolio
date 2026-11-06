@@ -174,7 +174,7 @@ Close and a little funny: precise when used daily, playful where visitors do not
 - **Bar and menu** (`docs/design/chrome.md`): 64 px bar, tomato left, one word «Menu» right, always `mix-blend-mode: difference` with no background (the tomato sits outside `<nav>`); the menu is a full-screen Menu Red curtain with the five big links plus Digital Archive; a flat colour curtain (`--curtain`) between pages; keyboard and reduced-motion paths for all of it.
 - **Text links, buttons, cursor, sounds, footer** (`docs/design/chrome.md`): links roll letter by letter on hover (no underline; plain underline on touch); buttons are a 999 px pill; the cursor is a 16 px dot in difference blend (mouse only); link sounds are on by default with a switch in the big footer; the big DIZMAR footer is the only footer on pages that scroll.
 - **Projects and project pages** (`docs/design/projects.md`): two-column pages (sticky facts left, media right), per-project palettes, Posters, Studies, More works.
-- **About** (`docs/design/about.md`): green page, sticky holographic portrait that flips to a pixel-art isometric scene (full screen on pink).
+- **About** (`docs/design/about.md`): green page, sticky holographic portrait (the pixel-art island now lives in the Playground).
 - **Plant Lab and Playground** (`docs/design/playground.md`): the node sandbox in a typographic-poster look, and the dot field.
 - **Digital Archive** (`docs/design/archive.md`): black, endless walls without text, piece viewer, white pixel trail.
 - **Contact** (`docs/design/contact.md`): mustard window, a conversation in red bars (message → name → email → send), and the DIZ sachet.

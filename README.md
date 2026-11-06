@@ -8,6 +8,7 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 index.html · room.html · 404.html      Home (el tomate gira con su nombre y baja a la lista Projects), The room (habitación 3D) y «no encontrada»
 about/ · faq/ · privacy/               About, FAQs y Privacidad (cada una, un index.html)
 playground/index.html                  Playground: el menú de experimentos (mismo diseño que el índice del Digital Archive). El sandbox de nodos (Plant Lab y Brush Lab) a pantalla completa está en playground/plant-lab/index.html; el dibujo se hace en el navegador
+playground/island/index.html             Island: el mundo isométrico en pixel art a pantalla completa (js/island.js + css/island.css, escena en js/about-scene.js)
 posters/index.html                     Collage de trabajos personales y ficticios; cada pieza abre un visor con todo su mini-proyecto (js/posters.js)
 js/sounds.js · assets/sounds/   Sonidos de los enlaces (tic al pasar, clic al pulsar; encendidos por defecto, se apagan con «Sound on» en el pie grande; salvo en machine/, suena en todas las páginas). Son de Kenney (CC0, ver assets/sounds/CREDITS.txt); el volumen y los archivos se editan arriba de sounds.js
 js/dot-field.js · js/dot-bg.js   Fondo de puntos (motor de React Bits en JavaScript puro + montaje): Posters y Playground; se activa con data-dot-bg="white|ink" en <body> y los valores se editan arriba de dot-bg.js
@@ -42,7 +43,7 @@ js/                                    Comportamiento (sin dependencias ni compi
   case.js · case-index.js · posters.js Fichas (aparición, reproductor, volver, índice de ENMAD) y visor de posters
   room.js · room/                      La habitación 3D; room/ agrupa la Wii, la «Pokémon collection», la iluminación y la carga
   menu.js · link-roll.js · cursor.js · smooth-scroll.js · transitions.js · terminal.js · nav-tomato.js · contact-sachet.js · sachet.js   Comunes a casi todas las páginas
-  about.js · about-scene.js (dorso de la foto: escena isométrica en pixel art, three.js, se carga al darle la vuelta) · pixel-load.js (carga en mosaico: .px) · not-found-*.js · mode-switch.js   Páginas sueltas; mode-switch.js es la píldora HUMAN | MACHINE, aparcada (ver «Modo máquina»)
+  about.js · about-scene.js + island.js (la isla en pixel art de /playground/island/, three.js) · pixel-load.js (carga en mosaico: .px) · not-found-*.js · mode-switch.js   Páginas sueltas; mode-switch.js es la píldora HUMAN | MACHINE, aparcada (ver «Modo máquina»)
 
 assets/                                Imágenes, vídeos y modelos 3D
   fonts/ · images/ · brands/ · loading/   Tipografías, imágenes comunes, logos de clientes y animaciones de la pantalla de carga
