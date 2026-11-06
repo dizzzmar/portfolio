@@ -7,7 +7,7 @@ Web estática: HTML, CSS y JavaScript sencillos, **sin instalar nada ni compilar
 ```
 index.html · room.html · 404.html      Home (el tomate gira con su nombre y baja a la lista Projects), The room (habitación 3D) y «no encontrada»
 about/ · faq/ · privacy/               About, FAQs y Privacidad (cada una, un index.html)
-playground/index.html                  Playground: el sandbox de nodos (Plant Lab y Brush Lab) a pantalla completa; el dibujo se hace en el navegador
+playground/index.html                  Playground: el menú de experimentos (mismo diseño que el índice del Digital Archive). El sandbox de nodos (Plant Lab y Brush Lab) a pantalla completa está en playground/plant-lab/index.html; el dibujo se hace en el navegador
 posters/index.html                     Collage de trabajos personales y ficticios; cada pieza abre un visor con todo su mini-proyecto (js/posters.js)
 js/sounds.js · assets/sounds/   Sonidos de los enlaces (tic al pasar, clic al pulsar; encendidos por defecto, se apagan con «Sound on» en el pie grande; salvo en machine/, suena en todas las páginas). Son de Kenney (CC0, ver assets/sounds/CREDITS.txt); el volumen y los archivos se editan arriba de sounds.js
 js/dot-field.js · js/dot-bg.js   Fondo de puntos (motor de React Bits en JavaScript puro + montaje): Posters y Playground; se activa con data-dot-bg="white|ink" en <body> y los valores se editan arriba de dot-bg.js
