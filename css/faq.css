@@ -53,6 +53,18 @@
   .faq h1, .faq-ask, .faq-item { animation: pv-in .6s var(--ease-out) both; }
   .faq-item:nth-of-type(n) { animation-delay: calc(.06s + var(--i, 0) * 50ms); }
 }
+/* Con js/faq.js (html.faq-js) la animación la hace el script: se apagan las transiciones del cajón y de la respuesta de arriba, y el botón, la intensidad
+   del resto y el cierre siguen a .is-open / .is-closing (que cambian al pulsar), no a [open] (que se quita al terminar de cerrar) */
+.faq-js .faq-item::details-content, .faq-js .faq-item[open]::details-content { transition: none; block-size: auto; }
+.faq-js .faq-a, .faq-js .faq-item[open] .faq-a { opacity: 1; transform: none; transition: none; }
+.faq-js .faq-item[open] .faq-plus { transform: none; }
+.faq-js .faq-item.is-open .faq-plus { transform: rotate(135deg); }
+@media (hover: hover) and (pointer: fine) { .faq-js .faq-item[open] summary:hover .faq-plus { transform: scale(1.12); } .faq-js .faq-item.is-open summary:hover .faq-plus { transform: rotate(135deg) scale(1.12); } }
+.faq-js .faq-item[open]:not(.is-open) summary:active .faq-plus { transform: scale(.94); }
+.faq-js .faq-list .faq-item:not(.is-open) { opacity: 1; }
+.faq-js .faq-list:has(.faq-item.is-open) .faq-item:not(.is-open) { opacity: .8; }
+@media (hover: hover) { .faq-js .faq-list:has(.faq-item.is-open) .faq-item:not(.is-open):hover { opacity: 1; } }
+
 @media (prefers-reduced-motion: reduce) {
   .faq-item[open] .faq-a { animation: faq-fade .15s linear both; }
   .faq-plus { transition: none; }
