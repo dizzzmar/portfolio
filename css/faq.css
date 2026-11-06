@@ -17,7 +17,7 @@
 .faq-item h2 { font-family: var(--font-display); font-size: clamp(24px, 2.8vw, 44px);   /* el «Title» del sistema */ font-weight: var(--fw-title); letter-spacing: -.04em; line-height: 1.05; text-wrap: balance; }
 
 /* El botón: un círculo lima con un + en el verde de la página; al abrir, el + gira 45° y es una × */
-.faq-plus { position: relative; width: clamp(36px, 3.2vw, 48px); aspect-ratio: 1; border-radius: 999px; background: var(--ink); transition: transform .35s var(--ease-out); }
+.faq-plus { position: relative; width: clamp(36px, 3.2vw, 48px); aspect-ratio: 1; border-radius: 999px; background: var(--ink); transition: transform .3s var(--ease-out); }
 .faq-plus::before, .faq-plus::after { content: ""; position: absolute; left: 50%; top: 50%; width: 38%; height: 2px; margin: -1px 0 0 -19%; background: var(--bg); }
 .faq-plus::after { transform: rotate(90deg); }
 .faq-item[open] .faq-plus { transform: rotate(135deg); }
@@ -33,14 +33,30 @@
 .faq-ask a { font-weight: var(--fw-bold); text-underline-offset: 6px; text-decoration-thickness: 2px; }
 
 /* Con una abierta, las demás bajan un poco de intensidad (nunca por debajo de 80 %: 5,1:1 sobre el verde) */
-.faq-list:has(.faq-item[open]) .faq-item:not([open]) { opacity: .8; transition: opacity .3s; }
+/* (la transición va en .faq-item, abajo: así también vuelven a su intensidad con suavidad) */
+.faq-list:has(.faq-item[open]) .faq-item:not([open]) { opacity: .8; }
 @media (hover: hover) { .faq-list:has(.faq-item[open]) .faq-item:not([open]):hover { opacity: 1; } }
 
+/* ANIMACIÓN DE ABRIR Y CERRAR (guía de emil-design-eng): todo es transform, opacidad y la altura del cajón; una sola curva de salida fuerte (la de --ease-out) y los cierres más rápidos
+   que las aperturas (se abre en ~0,3 s mientras el usuario mira; se cierra en ~0,2 s porque el sistema ya está respondiendo).
+   1) El cajón (::details-content) crece de 0 a «auto» (Chrome y Edge; en el resto se abre de golpe).
+   2) La respuesta entra con un fundido y un pequeño ascenso (−8 px → 0) con 50 ms de retraso, para que aparezca cuando ya hay hueco; al cerrar se funde enseguida (120 ms).
+   3) El botón gira 135° (+ → ×), y las otras preguntas suben o bajan de intensidad con suavidad.
+   Son transiciones, no keyframes: si se pulsa deprisa una y otra pregunta, se reorientan desde donde estén. Con «reducir movimiento» solo queda un fundido corto. */
+.faq-item { transition: opacity .25s ease; }
 @media (prefers-reduced-motion: no-preference) {
-  .faq-item::details-content { block-size: 0; overflow: clip; transition: block-size .4s var(--ease-out), content-visibility .4s allow-discrete; }
-  .faq-item[open]::details-content { block-size: auto; }
+  .faq-item::details-content { block-size: 0; overflow: clip; transition: block-size .22s var(--ease-out), content-visibility .22s allow-discrete; }
+  .faq-item[open]::details-content { block-size: auto; transition-duration: .3s; }
+  .faq-a { opacity: 0; transform: translateY(-8px); transition: opacity .12s ease-out, transform .12s ease-out; }
+  .faq-item[open] .faq-a { opacity: 1; transform: none; transition: opacity .24s var(--ease-out) .05s, transform .3s var(--ease-out) .05s; }
+  @starting-style { .faq-item[open] .faq-a { opacity: 0; transform: translateY(-8px); } }
   .faq h1, .faq-ask, .faq-item { animation: pv-in .6s var(--ease-out) both; }
   .faq-item:nth-of-type(n) { animation-delay: calc(.06s + var(--i, 0) * 50ms); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq-item[open] .faq-a { animation: faq-fade .15s linear both; }
+  .faq-plus { transition: none; }
+  @keyframes faq-fade { from { opacity: 0; } }
 }
 
 @media (max-width: 760px) {
