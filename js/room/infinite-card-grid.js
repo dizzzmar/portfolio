@@ -48,7 +48,7 @@ function arrange(cards, columns, rows) {
 
 // Lo usan el álbum de Pokémon (cartas 63 × 88, clases «pokemon-…») y el archivo digital (pegatinas cuadradas, clases «archive-…»):
 // `prefix` da los nombres de las clases (<prefix>-item, <prefix>-card, <prefix>-turn), `aspect` es alto / ancho de cada pieza y `size` la escala de su tamaño.
-export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced, entrance = true, prefix = 'pokemon', aspect = 88 / 63, size = 1 }) {
+export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced, entrance = true, prefix = 'pokemon', aspect = 88 / 63, size = 1, drift = null }) {
   const tiles = [];
   const position = { x: 0, y: 0 };
   const target = { x: 0, y: 0 };
@@ -57,7 +57,7 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
   let columns = 0, rows = 0, stepX = 0, stepY = 0, cardWidth = 0, cardHeight = 0;
   let A = { x: 0, y: 0 }, B = { x: 0, y: 0 }, det = 1, uLow = 0, vLow = 0;   // lattice vectors, their determinant and the wrap origin
   let width = 0, height = 0, raf = 0, lastTime = 0, drag = null, focused = null, first = entrance;
-  let destroyed = false;
+  let destroyed = false, paused = false;   // drift: { x, y } en px/s, un vaivén lento de toda la rejilla cuando nadie la toca (solo si se pide; el álbum de Pokémon no lo usa)
 
   function wake() {
     if (!raf && !destroyed && !document.hidden) raf = requestAnimationFrame(frame);
@@ -123,12 +123,14 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
       if (Math.abs(velocity.x) < 2) velocity.x = 0;
       if (Math.abs(velocity.y) < 2) velocity.y = 0;
     }
+    const drifting = Boolean(drift) && !drag && !paused && !reduced.matches;
+    if (drifting) { target.x += drift.x * dt; target.y += drift.y * dt; }
     const rate = drag ? MOTION.follow : MOTION.glide;
     position.x = reduced.matches ? target.x : approach(position.x, target.x, rate, dt);
     position.y = reduced.matches ? target.y : approach(position.y, target.y, rate, dt);
     place();
     const posing = poseCards(dt);
-    if (position.x !== target.x || position.y !== target.y || velocity.x || velocity.y || posing) wake();
+    if (position.x !== target.x || position.y !== target.y || velocity.x || velocity.y || posing || drifting) wake();
     else lastTime = 0;
   }
 
@@ -267,7 +269,7 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
     }
     place();
   }
-  function visibility() { if (document.hidden) settle(); }
+  function visibility() { if (document.hidden) settle(); else wake(); }
   function preferences() { if (reduced.matches) settle(); else wake(); }
   surface.addEventListener('wheel', wheel, { passive: false });
   surface.addEventListener('pointerdown', down);
@@ -280,7 +282,9 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
   document.addEventListener('visibilitychange', visibility);
   reduced.addEventListener('change', preferences);
   const observer = new ResizeObserver(layout); observer.observe(surface); layout();
+  wake();
   return {
+    pause(value) { paused = Boolean(value); if (!paused) wake(); },   // el visor abierto tapa la rejilla: que no siga moviéndose por debajo
     destroy() {
       destroyed = true; observer.disconnect(); settle();
       surface.removeEventListener('wheel', wheel); surface.removeEventListener('pointerdown', down);
