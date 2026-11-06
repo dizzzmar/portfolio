@@ -2,7 +2,7 @@
 // Pokémon (mismo motor: js/room/infinite-card-grid.js). Las piezas salen de assets/archive/<colección>/items.json; no llevan pie (el nombre es el texto
 // alternativo de la imagen). Pulsar una pieza (o Enter) abre su visor: título grande, la pieza al centro que se inclina hacia el ratón por toda la
 // pantalla y sus datos abajo (referencia: nicolo-lombardi.com/archive/la-barra). La dirección lleva la pieza (#pink-lady). Sin JavaScript queda el título de la colección y un aviso.
-import { createInfiniteCardGrid } from '/js/room/infinite-card-grid.js?v=20261111archive1';
+import { createInfiniteCardGrid } from '/js/room/infinite-card-grid.js?v=20261201drift1';
 
 const surface = document.querySelector('.archive-surface');
 const list = surface.querySelector('.archive-cards');
@@ -33,7 +33,8 @@ async function load() {
     status.hidden = true;
     items = data.items;
     grid?.destroy();
-    grid = createInfiniteCardGrid({ surface, list, cards: data.items, makeCard, reduced: motion, entrance: !motion.matches, prefix: 'archive', aspect: 1, size: 1.1 });
+    grid = createInfiniteCardGrid({ surface, list, cards: data.items, makeCard, reduced: motion, entrance: !motion.matches, prefix: 'archive', aspect: 1, size: 1.1, drift: { x: -7, y: -3.5 } });   // deriva muy lenta (unos 8 px por segundo)
+    grid.pause(Boolean(current));
     if (location.hash) fromHash();                 // dirección con pieza (#pink-lady): se abre esa pieza al cargar
   } catch (error) {
     status.textContent = 'The collection could not load. Please try again.'; retry.hidden = false;
@@ -50,7 +51,7 @@ const imgEl = pieceEl.querySelector('img');
 const factsEl = viewer.querySelector('.archive-facts');
 const closeBtn = viewer.querySelector('[data-viewer-close]');
 const TILT = { x: 16, y: 20 };                    // grados máximos hacia el ratón (arriba/abajo, izquierda/derecha)
-let current = null, returnFocus = null, pushed = false, raf = 0, last = 0;
+let openedAt = 0, current = null, returnFocus = null, pushed = false, raf = 0, last = 0;
 const PAIRS = [['rx', 'tx'], ['ry', 'ty'], ['gx', 'tgx'], ['gy', 'tgy'], ['gloss', 'tgloss']];   // valor actual y hacia dónde va
 const tilt = { rx: 0, ry: 0, tx: 0, ty: 0, gx: 50, gy: 30, tgx: 50, tgy: 30, gloss: 0, tgloss: 0 };
 
@@ -99,25 +100,35 @@ viewer.addEventListener('pointermove', aim);
 viewer.addEventListener('pointerdown', aim);
 viewer.addEventListener('pointerleave', rest);
 viewer.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') rest(); });
+// Pulsar fuera de la pieza (el fondo, el título, los datos) cierra el visor; arrastrar para inclinarla con el dedo no cuenta como pulsar
+let tap = null;
+viewer.addEventListener('pointerdown', (e) => { tap = { x: e.clientX, y: e.clientY }; });
+viewer.addEventListener('click', (e) => {
+  const moved = tap ? Math.hypot(e.clientX - tap.x, e.clientY - tap.y) : 0; tap = null;
+  if (!current || moved > 8 || performance.now() - openedAt < 300) return;
+  if (e.target.closest('.archive-piece, [data-viewer-close]')) return;
+  close();
+});
 
 function show(item) {
   current = item; fillViewer(item);
   viewer.hidden = false; void viewer.offsetWidth;
   viewer.classList.add('is-open'); document.body.classList.add('archive-viewing');
   surface.inert = true; document.querySelector('.nav')?.setAttribute('inert', '');
+  grid?.pause(true); openedAt = performance.now();
   viewer.focus({ preventScroll: true }); rest(); wake();   // el foco entra en el visor, no en «Close»: así no se dibuja un aro al abrir con el ratón
 }
 function hide() {
   if (!current) return;
-  current = null;
+  current = null; grid?.pause(false);
   viewer.classList.remove('is-open'); document.body.classList.remove('archive-viewing');
   surface.inert = false; document.querySelector('.nav')?.removeAttribute('inert');
   setTimeout(() => { if (!current) viewer.hidden = true; }, motion.matches ? 220 : 520);
   if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
 }
-function open(id, card) {
+function open(id, card, byKey = false) {
   const item = items.find((x) => x.id === id); if (!item) return;
-  returnFocus = card || null;
+  returnFocus = byKey ? card : null;   // el foco solo vuelve a la pieza si se abrió con el teclado: con el ratón dejaría un aro blanco alrededor al cerrar
   if (location.hash !== '#' + id) { history.pushState(null, '', '#' + id); pushed = true; }
   show(item);
 }
@@ -148,10 +159,10 @@ surface.addEventListener('pointerup', (e) => {
   const limit = press.touch ? 12 : 5; press = null;
   if (moved > limit || !quick) return;
   const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.archive-card');
-  if (card) open(card.dataset.card, card);
+  if (card) open(card.dataset.card, card, false);
 });
 surface.addEventListener('keydown', (e) => {
   if (e.key !== 'Enter' && e.key !== ' ') return;
   const card = e.target.closest?.('.archive-card'); if (!card) return;
-  e.preventDefault(); open(card.dataset.card, card);
+  e.preventDefault(); open(card.dataset.card, card, true);
 });
