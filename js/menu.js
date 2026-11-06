@@ -25,7 +25,7 @@
     const a = el('a', { href: orig.getAttribute('href') }, [el('span', { textContent: orig.textContent.trim() })]);
     a.style.setProperty('--i', i);
     if (!orig.fake) a._orig = orig;
-    if (orig.getAttribute('aria-current') === 'page' || (orig.fake && current === '/playground/')) a.setAttribute('aria-current', 'page');
+    if (orig.getAttribute('aria-current') === 'page' || (orig.fake && current.startsWith('/playground/'))) a.setAttribute('aria-current', 'page');
     return el('li', { className: 'menu-item' }, [a]);
   });
   // Digital Archive: un enlace más pequeño bajo los cinco grandes (en el móvil, al final de la lista). Mismo panel, misma animación (--i = 5)
