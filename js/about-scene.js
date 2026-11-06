@@ -271,16 +271,24 @@ for (const k in SPRITES) {                                // una tira con todos 
   const tx = new THREE.DataTexture(data, W, 8, THREE.RGBAFormat); tx.minFilter = tx.magFilter = THREE.NearestFilter; tx.needsUpdate = true; spriteTex[k] = { tx, n: list.length };
 }
 const FOLIAGE = [];                                        // todos sus materiales: la luz y el tamaño en píxeles se ponen al día juntos
+// Ver a través: donde el follaje tapa a una persona, se vuelve un tramado de píxeles más ralo (como la vegetación en Zelda: Breath of the Wild).
+// Una entrada por persona: x, y (en píxeles de la escena), radio (en píxeles) y profundidad. Las pone el bucle de la escena antes de dibujar.
+const SEE = { value: [new THREE.Vector4(0, 0, 0, 0), new THREE.Vector4(0, 0, 0, 0), new THREE.Vector4(0, 0, 0, 0)] };
 // palette: cinco tonos, del más oscuro al más claro; la luz del sol elige el tono y los dibujos añaden brillos y huecos
 function foliageMaterial(sprite, palette, worldSize) {
   const m = new THREE.ShaderMaterial({
-    uniforms: { uTex: { value: spriteTex[sprite].tx }, uCount: { value: spriteTex[sprite].n }, uPal: { value: palette.map((c) => new THREE.Color(c)) }, uSun: { value: new THREE.Vector3(-1, 1, 0.3) }, uTint: { value: new THREE.Color(1, 1, 1) }, uSize: { value: 6 } },
-    vertexShader: `attribute float aVar; uniform vec3 uSun; uniform float uSize; uniform float uCount; varying float vL; varying float vKind; varying float vFlip;
+    uniforms: { uTex: { value: spriteTex[sprite].tx }, uCount: { value: spriteTex[sprite].n }, uPal: { value: palette.map((c) => new THREE.Color(c)) }, uSun: { value: new THREE.Vector3(-1, 1, 0.3) }, uTint: { value: new THREE.Color(1, 1, 1) }, uSee: SEE, uSize: { value: 6 } },
+    vertexShader: `attribute float aVar; uniform vec3 uSun; uniform float uSize; uniform float uCount; varying float vL; varying float vKind; varying float vFlip; varying float vDepth;
       void main() { float ndl = dot(normalize(normal), normalize(uSun)); vL = ndl * 0.5 + 0.5 + (aVar - 0.5) * 0.28;
         vKind = floor(fract(aVar * 13.7) * uCount); vFlip = step(0.5, fract(aVar * 7.3));
-        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0); gl_PointSize = uSize * (0.9 + fract(aVar * 3.1) * 0.25); }`,
-    fragmentShader: `uniform sampler2D uTex; uniform vec3 uPal[5]; uniform vec3 uTint; uniform float uCount; varying float vL; varying float vKind; varying float vFlip;
-      void main() { vec2 pc = gl_PointCoord; if (vFlip > 0.5) pc.x = 1.0 - pc.x;
+        vec4 mv = viewMatrix * modelMatrix * vec4(position, 1.0); vDepth = -mv.z;
+        gl_Position = projectionMatrix * mv; gl_PointSize = uSize * (0.9 + fract(aVar * 3.1) * 0.25); }`,
+    fragmentShader: `uniform sampler2D uTex; uniform vec3 uPal[5]; uniform vec3 uTint; uniform float uCount; uniform vec4 uSee[3]; varying float vL; varying float vKind; varying float vFlip; varying float vDepth;
+      float bayer(vec2 p) { vec2 q = mod(floor(p), 4.0); float a = mod(q.x + q.y * 2.0, 4.0); float b = mod(q.x * 2.0 + q.y * 3.0 + floor(q.y * 0.5), 4.0); return (a * 4.0 + b + 0.5) / 16.0; }
+      void main() {
+        for (int k = 0; k < 3; k++) { vec4 e = uSee[k]; if (e.z <= 0.0) continue; vec2 d = (gl_FragCoord.xy - e.xy) / e.z; d.y *= 0.8; float r = length(d);
+          if (r < 1.0 && vDepth < e.w - 0.25) { float keep = mix(0.2, 1.0, smoothstep(0.55, 1.0, r)); if (bayer(gl_FragCoord.xy) >= keep) discard; } }   // tapa a alguien: se aclara en tramado
+        vec2 pc = gl_PointCoord; if (vFlip > 0.5) pc.x = 1.0 - pc.x;
         vec4 s = texture2D(uTex, vec2((vKind + pc.x) / uCount, 1.0 - pc.y)); if (s.r < 0.5) discard;
         float l = vL + (s.g - 0.5) * 0.3; int i = l < 0.3 ? 0 : l < 0.47 ? 1 : l < 0.64 ? 2 : l < 0.82 ? 3 : 4;
         i += s.b > 0.8 ? 1 : s.b < 0.2 ? -1 : 0; i = clamp(i, 0, 4);
@@ -483,7 +491,7 @@ export function startScene(canvas, { still = false } = {}) {
     const t = CLIFF_TEX.get(key).clone(); t.needsUpdate = true; t.repeat.set(len * DENS / 64, 1); return mapMat(t);
   };
   const sideMats = (w, d, hgt) => [cliff(d, hgt), cliff(d, hgt), mat('#5d8f2e'), mat('#2e2018'), cliff(w, hgt), cliff(w, hgt)];
-  { const base = new THREE.Mesh(new THREE.BoxGeometry(2 * H, DEPTH, 2 * H), sideMats(2 * H, 2 * H, DEPTH)); base.position.y = -DEPTH / 2 - 0.02; add(base); }   // los acantilados no reciben sombras: las copas del borde dibujaban manchas raras
+  { const base = new THREE.Mesh(new THREE.BoxGeometry(2 * H, DEPTH, 2 * H), sideMats(2 * H, 2 * H, DEPTH).map((mm, i) => (i === 2 ? new THREE.MeshBasicMaterial({ visible: false }) : mm))); base.position.y = -DEPTH / 2 - 0.02; add(base); }   // sin tapa (el suelo ya lo es; la tapa tapaba el estanque y el arroyo, que están más hondos). Los acantilados no reciben sombras: las copas del borde dibujaban manchas raras
   // Bajo la isla, bloques de roca escalonados: así flota y tiene volumen por debajo
   for (const [x, z, w, d, hh, below] of [[0, 0, 11, 11, 1.4, 0], [-1, 0.5, 8, 8.5, 1.3, 1.4], [-1.5, 1, 5, 5.5, 1.2, 2.7], [1.8, -1.5, 4.5, 4, 1.4, 1.4], [-2, 1.2, 2.4, 2.6, 1.1, 3.9], [2.2, -1.8, 2, 1.8, 1.0, 2.8]]) {
     const y0 = -DEPTH - below;
@@ -543,9 +551,11 @@ export function startScene(canvas, { still = false } = {}) {
   for (const [x, z] of [[HOUSE.x0, HOUSE.z1], [HOUSE.x1, HOUSE.z1], [HOUSE.x1, HOUSE.z0], [HOUSE.x0, HOUSE.z0]]) B(0.14, W, 0.14, beam, x, W / 2 + 0.25, z);
   B(hw + 0.06, 0.12, 0.06, beam, hx, 1.3, HOUSE.z1 + 0.02); B(0.06, 0.12, hd + 0.06, beam, HOUSE.x1 + 0.02, 1.3, hz);
   const roof = mapMat(roofTex()), RISE = 1.35, overhang = 0.35;
-  const slope = Math.hypot(hd / 2 + overhang, RISE), ang = Math.atan2(RISE, hd / 2 + overhang);
+  // Cada vertiente apoya en el borde de la pared y en el hastial (mismo ángulo) y sigue de largo para el alero: así no queda hueco entre pared y tejado
+  const ang = Math.atan2(RISE, hd / 2), run = hd / 2 + overhang, drop = overhang * Math.tan(ang), slope = Math.hypot(run, RISE + drop), TH = 0.14;
   for (const s of [1, -1]) {
-    const m = box(hw + 0.7, 0.14, slope, roof); m.position.set(hx, W + 0.25 + RISE / 2, hz + s * (hd / 4 + overhang / 2)); m.rotation.x = s * ang; keep(m);
+    const lift = TH / 2 / Math.cos(ang);                                // la cara de abajo de la teja (no su centro) toca la pared
+    const m = box(hw + 0.7, TH, slope, roof); m.position.set(hx, W + 0.25 + (RISE - drop) / 2 + lift, hz + s * run / 2); m.rotation.x = s * ang; keep(m);
   }
   const gable = new THREE.Shape([new THREE.Vector2(-hd / 2, 0), new THREE.Vector2(hd / 2, 0), new THREE.Vector2(0, RISE)]);   // el hastial triangular a cada lado
   for (const x of [HOUSE.x0, HOUSE.x1]) { const g = new THREE.Mesh(new THREE.ShapeGeometry(gable), plaster); g.rotation.y = Math.PI / 2; g.position.set(x + (x > hx ? 0.001 : -0.001), W + 0.25, hz); g.material.side = THREE.DoubleSide; keep(g); }
@@ -709,8 +719,8 @@ export function startScene(canvas, { still = false } = {}) {
     if (kind !== 'cherry') for (let k = 0; k < (kind === 'pine' ? 6 : 9); k++) { const a = rnd() * 6.28, r = (0.35 + rnd() * 0.5) * s; ferns.push([x + Math.cos(a) * r, z + Math.sin(a) * r]); }
     trees.push({ x, z, r: (kind === 'pine' ? 0.25 : 0.32) * s, sway, s, phase: rnd() * 6 });
   }
-  [[-6.2, -6.2, 1.25, 'oak'], [-2.3, -6.4, 0.95, 'oak'], [-3.4, -4.6, 0.75, 'cherry'], [3.55, -6.3, 1.0, 'willow'], [6.4, -6.4, 1.0, 'pine'], [6.35, -0.7, 0.95, 'oak'],
-   [6.2, 4.6, 1.25, 'oak'], [4.4, 6.35, 0.85, 'pine'], [-6.3, 6.2, 1.0, 'pine'], [-6.45, 3.0, 0.9, 'oak'], [-0.8, 6.4, 0.85, 'oak'], [-0.2, 3.1, 0.7, 'cherry'], [0.9, 3.7, 0.6, 'round'],
+  [[-6.2, -6.2, 1.25, 'oak'], [-2.3, -6.4, 0.95, 'oak'], [-6.1, -3.9, 0.75, 'cherry'], [3.55, -6.3, 1.0, 'willow'], [6.4, -6.4, 1.0, 'pine'],
+   [6.2, 4.6, 1.25, 'oak'], [4.4, 6.35, 0.85, 'pine'], [-4.6, 6.6, 1.0, 'pine'], [-6.45, 3.0, 0.9, 'oak'], [-0.8, 6.4, 0.85, 'oak'], [-0.2, 3.1, 0.7, 'cherry'], [0.9, 3.7, 0.6, 'round'],
    [5.9, 2.7, 0.7, 'cherry'], [2.9, 6.5, 0.7, 'autumn'], [-5.6, -6.6, 0.8, 'pine'], [-3.9, 6.45, 0.6, 'autumn'],
    [ISLET.x - 0.85, ISLET.z - 0.55, 0.7, 'round'], [ISLET.x + 0.75, ISLET.z + 0.6, 0.65, 'cherry'], [ISLET.x - 0.2, ISLET.z + 1.8, 0.95, 'oak']]
     .forEach(([x, z, s, k]) => tree(x, z, s, k));
@@ -721,7 +731,7 @@ export function startScene(canvas, { still = false } = {}) {
     const b = foliage(spheres, bushMat, 110, { flat: y + 0.02 }); add(b); add(shadowCaster(spheres));
     for (let k = 0; k < b.spots.length; k += 3 * 7) if (b.spots[k + 1] > y + s * 0.5) accent(b.spots[k], b.spots[k + 1] + 0.03, b.spots[k + 2], bloom);
   };
-  for (const [x, z, s] of [[-2.4, 6.5, 0.5], [3.5, 4.8, 0.45], [6.5, 1.6, 0.4], [-6.5, 1.6, 0.4], [-2.1, -3.4, 0.45], [-6.6, -3.4, 0.4], [3.4, -2.2, 0.35], [0.3, 1.5, 0.35]]) bushAt(x, z, s);
+  for (const [x, z, s] of [[-2.4, 6.5, 0.5], [3.5, 4.8, 0.45], [6.5, 1.6, 0.4], [-6.5, 1.6, 0.4], [-2.1, -3.4, 0.45], [-6.6, -3.4, 0.4], [3.4, -2.2, 0.35], [0.3, 1.5, 0.35], [6.45, -0.9, 0.42], [6.5, -2.2, 0.38]]) bushAt(x, z, s);   // (los dos últimos, bajos: dejan ver el estanque y los patos)
   // Macetas en el porche
   for (const [x, z] of [[0.6, HOUSE.z1 + 0.28], [2.85, HOUSE.z1 + 0.3]]) { B(0.24, 0.24, 0.24, mat('#b5643c'), x, 0.12, z); bushAt(x, z, 0.22, 0.24, '#ff7a6b'); }
   // Enredadera por la fachada y el lateral de la casa, y glicinia colgando del alero
@@ -738,7 +748,7 @@ export function startScene(canvas, { still = false } = {}) {
     climb(HOUSE.x1, -4.0, false, 1, 0, 2.3); climb(HOUSE.x1, -5.9, false, 1, 0, 2.0);
     climb(SHED.x1 - 0.08, SHED.z1 + 0.02, true, 0, 1, 1.75);
     const v = new THREE.Points(pointsOf(pos, nor), vineMat); v.frustumCulled = false; add(v);
-    for (let x = HOUSE.x0 + 0.1; x < HOUSE.x1; x += 0.11) if (rnd() < 0.7) { const len = 0.1 + rnd() * 0.35; for (let d = 0; d < len; d += 0.05) accent(x + (rnd() - 0.5) * 0.04, W + 0.2 - d, HOUSE.z1 + 0.12, rnd() < 0.6 ? '#a98be0' : '#cdb6f5'); }
+    for (let x = HOUSE.x0 + 0.1; x < HOUSE.x1; x += 0.11) if (rnd() < 0.7) { const len = 0.1 + rnd() * 0.35; for (let d = 0; d < len; d += 0.05) accent(x + (rnd() - 0.5) * 0.04, W + 0.08 - d, HOUSE.z1 + 0.12, rnd() < 0.6 ? '#a98be0' : '#cdb6f5'); }
   }
   // Girasoles junto a la casa
   for (const [z, hh] of [[-4.25, 1.35], [-4.8, 1.6], [-5.4, 1.45], [-5.95, 1.2]]) {
@@ -810,7 +820,7 @@ export function startScene(canvas, { still = false } = {}) {
     for (let x = HOUSE.x0 - 0.35; x < HOUSE.x1 + 0.35; x += 0.06) {
       for (const f of [0.92 + rnd() * 0.08, rnd() < 0.25 ? rnd() : -1, rnd() < 0.4 ? rnd() * 0.08 : -1]) {
         if (f < 0) continue;
-        mpos.push(x, HOUSE.wall + 0.25 + RISE2 * (1 - f) + 0.09, hzz + half * f); mnor.push(0, 0.8, 0.6);
+        mpos.push(x, HOUSE.wall + 0.25 + RISE2 * (1 - half * f / (half - ov)) + 0.2, hzz + half * f);   // sobre la teja (misma pendiente que el tejado) mnor.push(0, 0.8, 0.6);
       }
     }
     for (let x = SHED.x0 - 0.2; x < SHED.x1 + 0.2; x += 0.07) if (rnd() < 0.8) { mpos.push(x, 1.82, SHED.z1 + 0.25); mnor.push(0, 0.8, 0.6); }
@@ -931,7 +941,8 @@ export function startScene(canvas, { still = false } = {}) {
   const cellX = (v) => clamp(Math.round((v - GX0) / G), 0, NX - 1), cellZ = (v) => clamp(Math.round((v + EDGE) / G), 0, NZ - 1);
   const cxX = (i) => GX0 + i * G, cxZ = (j) => -EDGE + j * G;
   // Se puede pisar: la isla (menos el borde), el puente de cuerda y la isleta (menos su borde)
-  const ground0 = (x, z) => (Math.abs(x) <= EDGE && Math.abs(z) <= EDGE) || (onRope(x, z) && Math.abs(z - ROPE.z) < ROPE.w - 0.12) || Math.hypot(x - ISLET.x, z - ISLET.z) < ISLET.r - 0.32;
+  // (el paso del puente de cuerda llega hasta dentro de la isleta: si no, quedaba un hueco sin suelo y la isleta se quedaba aislada)
+  const ground0 = (x, z) => (Math.abs(x) <= EDGE && Math.abs(z) <= EDGE) || (x >= ISLET.x + ISLET.r - 0.9 && x <= ROPE.x1 + 0.2 && Math.abs(z - ROPE.z) < ROPE.w - 0.12) || Math.hypot(x - ISLET.x, z - ISLET.z) < ISLET.r - 0.32;
   const isBlocked = (x, z) => !ground0(x, z) || blocked[cellZ(z) * NX + cellX(x)];
   const block = (test) => { for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) if (test(cxX(i), cxZ(j))) blocked[j * NX + i] = 1; };
   block((x, z) => !ground0(x, z));
@@ -968,8 +979,21 @@ export function startScene(canvas, { still = false } = {}) {
     return true;
   };
   const cost = new Float32Array(NX * NZ), prev = new Int32Array(NX * NZ), done = new Uint8Array(NX * NZ);
+  // La celda libre más cercana a un punto (si el punto cae dentro de un mueble o de un árbol), a menos de un metro y a la misma altura
+  function nearestFree(x, z) {
+    const c = cellZ(z) * N + cellX(x); if (!blocked[c]) return c;
+    const h0 = heightAt(x, z); let best = -1, bd = Infinity;
+    for (let dj = -5; dj <= 5; dj++) for (let di = -5; di <= 5; di++) {
+      const i = cellX(x) + di, j = cellZ(z) + dj; if (i < 0 || j < 0 || i >= NX || j >= NZ) continue;
+      const n = j * N + i, d = Math.hypot(di, dj); if (blocked[n] || d >= bd || Math.abs(heightAt(cxX(i), cxZ(j)) - h0) > 0.35) continue;
+      best = n; bd = d;
+    }
+    return best;
+  }
+  // Devuelve los puntos del camino, o null si no se puede llegar andando (entonces no van en línea recta atravesando cosas: eligen otra cosa)
   function findPath(sx, sz, gx, gz) {
-    const start = cellZ(sz) * N + cellX(sx), goal = cellZ(gz) * N + cellX(gx);
+    const start = nearestFree(sx, sz), goal = nearestFree(gx, gz);
+    if (start < 0 || goal < 0) return null;
     cost.fill(Infinity); prev.fill(-1); done.fill(0);
     const heap = [], push = (c, f) => { heap.push([f, c]); let i = heap.length - 1; while (i) { const p = (i - 1) >> 1; if (heap[p][0] <= heap[i][0]) break; [heap[p], heap[i]] = [heap[i], heap[p]]; i = p; } };
     const pop = () => { const top = heap[0], last = heap.pop(); if (heap.length) { heap[0] = last; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i; if (l < heap.length && heap[l][0] < heap[m][0]) m = l; if (r < heap.length && heap[r][0] < heap[m][0]) m = r; if (m === i) break; [heap[m], heap[i]] = [heap[i], heap[m]]; i = m; } } return top[1]; };
@@ -983,15 +1007,16 @@ export function startScene(canvas, { still = false } = {}) {
       for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) {
         if (!di && !dj) continue;
         const i = ci + di, j = cj + dj; if (i < 0 || j < 0 || i >= NX || j >= NZ) continue;
-        const n = j * N + i; if (blocked[n] && n !== goal) continue;
+        const n = j * N + i; if (blocked[n]) continue;
         if (di && dj && (blocked[cj * N + i] || blocked[j * N + ci])) continue;
         const nc = cost[c] + (di && dj ? 1.414 : 1) + offPath[n] * 0.35;   // prefieren ir por el camino de losas
         if (nc < cost[n]) { cost[n] = nc; prev[n] = c; push(n, nc + h(n)); }
       }
     }
-    if (prev[goal] < 0 && goal !== start) return [[gx, gz]];
+    if (prev[goal] < 0 && goal !== start) return null;
     const pts = []; for (let c = goal; c >= 0 && c !== start; c = prev[c]) pts.unshift([cxX(c % N), cxZ(Math.floor(c / N))]);
-    pts[pts.length - 1] = [gx, gz];
+    if (start !== cellZ(sz) * N + cellX(sx)) pts.unshift([cxX(start % N), cxZ(Math.floor(start / N))]);   // primero sale del mueble por el lado libre
+    if (!pts.length || Math.hypot(pts[pts.length - 1][0] - gx, pts[pts.length - 1][1] - gz) > 0.01) pts.push([gx, gz]);   // y al final, el último paso hasta el sitio exacto
     const out = []; let ax = sx, az = sz;
     for (let k = 0; k < pts.length; k++) if (k === pts.length - 1 || !clearLine(ax, az, pts[k + 1][0], pts[k + 1][1]) || Math.abs(heightAt(ax, az) - heightAt(pts[k + 1][0], pts[k + 1][1])) > 0.5) { out.push(pts[k]); [ax, az] = pts[k]; }
     return out;
@@ -1227,8 +1252,16 @@ export function startScene(canvas, { still = false } = {}) {
   function go(a, x, z, plan) {
     a.plan = plan; if (plan.slot) a.slot = plan.slot;
     if (a.inside) { a.inside = false; a.asleep = false; a.p.visible = true; a.x = DOOR.x; a.z = DOOR.z; a.yaw = 0; }
-    a.path = findPath(a.x, a.z, x, z); a.state = a.sitting ? 'standup' : 'walk'; a.blend = 0;
+    const seat = a.sitting && a.lastSeat?.from;                       // sentado: se levanta hacia delante y sale desde ahí, no desde dentro del banco
+    const path = seat ? findPath(seat[0], seat[1], x, z) : findPath(a.x, a.z, x, z);
+    if (!path) {                                                       // no se puede llegar andando: se queda un momento y elige otra cosa
+      if (plan.laptop && plan.laptop.by === a) plan.laptop.by = null;
+      release(a); if (a.sitting && a.lastSeat) { a.slot = a.lastSeat; a.slot.by = a; }   // sigue sentado donde estaba
+      a.plan = { kind: 'idle', slot: a.slot }; a.kind = 'idle'; a.path = []; a.state = 'act'; a.until = t + 1 + rand() * 1.5; return false;
+    }
+    a.path = path; a.state = a.sitting ? 'standup' : 'walk'; a.blend = 0;
     if (a.carry && a.carry !== 'log' && a.carry !== 'laptop') a.carry = null;
+    return true;
   }
   function goHome(a, sleep) { go(a, DOOR.x, DOOR.z, { kind: 'home', sleep }); }
   function arrive(a) {
@@ -1706,7 +1739,26 @@ export function startScene(canvas, { still = false } = {}) {
     for (const a of agents) step(a, dt);
     separate(); nightOwl(dt); stepCat(dt); stepDucks(dt);
     stepAmbient(dt, shownHour); stepToys(dt); applyLight(shownHour, dt);
-    pan.lerp(panTo, 1 - Math.exp(-12 * dt)); placeCamera();
+    pan.lerp(panTo, 1 - Math.exp(-12 * dt)); placeCamera(); updateSee();
+  }
+  // Ver a través del follaje: dónde está cada persona en la imagen (centro del cuerpo), qué tamaño tiene y a qué profundidad (ver SEE)
+  const seeA = new THREE.Vector3(), seeB = new THREE.Vector3();
+  const FOCUS = { campfire: { x: FIRE.x, z: FIRE.z, r: 2.2 }, picnic: { x: PIC.x, z: PIC.z, r: 1.7 }, board: { x: BX, z: BZ, r: 1.7 },
+    hammock: { x: HAM.mid[0], z: HAM.mid[1], r: 1.8 }, swing: { x: SWING.x, z: SWING.z, r: 1.8 } };
+  function updateSee() {
+    camera.updateMatrixWorld();
+    agents.forEach((a, k) => {
+      const e = SEE.value[k]; if (!e) return;
+      if (a.inside || !a.p.visible) { e.set(0, 0, 0, 0); return; }
+      // En la hoguera, el pícnic, la pizarra, la hamaca o el columpio se aclara también lo de alrededor, para que se entienda la escena entera
+      const focus = FOCUS[a.state === 'act' ? a.kind : ''];
+      a.p.getWorldPosition(seeA); if (focus) { seeA.x = (seeA.x + focus.x) / 2; seeA.z = (seeA.z + focus.z) / 2; }
+      seeA.y += 0.75; seeB.copy(seeA); seeB.y += focus ? focus.r : 1.0;
+      const depth = -seeA.clone().applyMatrix4(camera.matrixWorldInverse).z;
+      seeA.project(camera); seeB.project(camera);
+      const px = (seeA.x * 0.5 + 0.5) * renderW, py = (seeA.y * 0.5 + 0.5) * renderH, rad = Math.abs(seeB.y - seeA.y) * 0.5 * renderH * 1.35;
+      e.set(px, py, rad, depth);
+    });
   }
 
   // ---------- Tamaño: la escena se dibuja a muy baja resolución y se amplía sin suavizar ----------
