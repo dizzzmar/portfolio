@@ -147,7 +147,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **Menu link** (700, 30–64 px from 821 px wide, 52–84 px below, 1, −0.045 em; −0.035 em below 1100 px): the five big links in the menu (`--fs-menu`). Cream on red gets one step more weight than the 600 titles so it does not look thinner. **Digital Archive** is half that size (600, `max(18px, 0.5 × --fs-menu)`, 24 px on a phone), on its own line under Projects, inside the same centred block.
 
 ### Named Rules
-**The Weights Rule.** Text has two weights: 700 orients (first paragraph, block headings) and 400 is what you read. Large titles in Funnel Display sit one step lighter, at 600 (`--fw-title`). No 300 or 500. The one exception is a deliberate moment: hovering an entry of the Digital Archive or Playground menus sweeps its letters between 320 and 800 with the cursor (`js/text-pressure.js`, mouse only).
+**The Weights Rule.** Text has two weights: 700 orients (first paragraph, block headings) and 400 is what you read. Large titles in Funnel Display sit one step lighter, at 600 (`--fw-title`). No 300 or 500.
 
 **The One Source Rule.** Every size comes from `css/tokens.css`. If a size is missing, add it there and here; never write `15px` in another file.
 
