@@ -1,7 +1,7 @@
+import { fadeViewer } from '../viewer-motion.js?v=20261107motion1';
 import { createInfiniteCardGrid } from './infinite-card-grid.js?v=20261201drift1';
 
 // A finite DOM pool keeps the Room's WebGL renderer asleep. Cards are just the scan (its name is the image's alt text); clicking one opens nothing.
-const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)'; // var(--ease-out), the site's curve for arrivals and exits
 
 export function createPokemonAlbum({ onOpen, onClose }) {
   const dialog = document.getElementById('pokemon-album');
@@ -97,7 +97,7 @@ export function createPokemonAlbum({ onOpen, onClose }) {
     if (!dialog.open || closing) return;
     closing = true;
     const token = ++closeRequest;
-    if (!motion.matches) await dialog.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: EASE_OUT }).finished;
+    if (!await fadeViewer(dialog, false)) return;
     if (token === closeRequest && closing && dialog.open) dialog.close();
   }
   dialog.querySelector('[data-album-close]').addEventListener('click', close);
@@ -119,7 +119,7 @@ export function createPokemonAlbum({ onOpen, onClose }) {
       if (dialog.open || closing) return;
       returnFocus = trigger instanceof HTMLElement ? trigger : document.activeElement;
       dialog.showModal(); dialog.focus({ preventScroll: true }); document.body.classList.add('pokemon-open'); onOpen();
-      if (!motion.matches) dialog.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: EASE_OUT });
+      fadeViewer(dialog, true);
       if (data) mountGrid(); else load();
     },
   };

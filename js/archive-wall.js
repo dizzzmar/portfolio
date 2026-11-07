@@ -1,3 +1,4 @@
+import { viewerTiming } from './viewer-motion.js?v=20261107motion1';
 // DIGITAL ARCHIVE · muro de una colección (/archive/<colección>/): las piezas cuelgan en una rejilla inclinada que se repite sin fin, como en el álbum de
 // Pokémon (mismo motor: js/room/infinite-card-grid.js). Las piezas salen de assets/archive/<colección>/items.json; no llevan pie (el nombre es el texto
 // alternativo de la imagen). Pulsar una pieza (o Enter) abre su visor: título grande, la pieza al centro que se inclina hacia el ratón por toda la
@@ -123,7 +124,7 @@ function hide() {
   current = null; grid?.pause(false);
   viewer.classList.remove('is-open'); document.body.classList.remove('archive-viewing');
   surface.inert = false; document.querySelector('.nav')?.removeAttribute('inert');
-  setTimeout(() => { if (!current) viewer.hidden = true; }, motion.matches ? 220 : 520);
+  setTimeout(() => { if (!current) viewer.hidden = true; }, viewerTiming(viewer).duration + 20);
   if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
 }
 function open(id, card, byKey = false) {
