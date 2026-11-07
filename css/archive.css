@@ -109,5 +109,16 @@ body.archive-viewing { overflow: hidden; }
   .archive-gloss { display: none; }
 }
 
-@media (max-width: 760px) { .archive-index { grid-template-columns: minmax(0, 1fr); } .archive-side { position: static; padding: 8px 0 28px; } .archive-heading { font-size: clamp(56px, 18vw, 96px); } .archive-list { padding-top: 0; } .archive-sub { max-width: 36ch; } }
+/* Móvil: el título arriba y las colecciones abajo, a la altura del pulgar (como los enlaces del menú), mucho más grandes: así la pantalla no queda vacía, y se pulsa
+   con comodidad. El título también crece (casi todo el ancho). Solo en pantallas de hasta 760 px; el escritorio no cambia. */
+@media (max-width: 760px) {
+  .archive-index { display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding-bottom: max(32px, env(safe-area-inset-bottom)); }
+  .archive-side { position: static; padding: 8px 0 0; }
+  .archive-heading { font-size: min(23vw, 120px); }
+  .archive-sub { max-width: 36ch; margin-top: 20px; }
+  .archive-list { padding-top: 0; display: grid; gap: 6px; }
+  .archive-row { padding: 8px 0; }
+  .archive-name { font-size: min(9.2vw, 40px); }
+  .archive-name sup { font-size: max(13px, .36em); }
+}
 @media (max-width: 700px) { .archive-sub { font-size: var(--fs-s); } }   /* en el móvil, más pequeño */
