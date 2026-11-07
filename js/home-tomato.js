@@ -13,9 +13,12 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Llegada desde el tomate de otra página (js/transitions.js pone land-fly): empieza en la barra y vuela al centro
 const FLY_FROM_NAV = document.documentElement.classList.contains('land-fly') && !reduced;
 
-const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-// En el móvil (3× de píxeles) un lienzo a pantalla completa con 2× cuesta el doble que con 1,5× y el tomate no gana nitidez que se vea
-renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
+// Píxel grande, como la estantería de The room (ROOM_PIXEL_SIZE en js/room.js): se dibuja a la mitad de resolución, sin suavizar bordes,
+// y el navegador lo estira sin difuminar (image-rendering: pixelated). Así el tomate es igual de pixelado en la portada y en la barra (js/nav-tomato.js)
+const PIXEL = 2;
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+renderer.setPixelRatio(1 / PIXEL);
+canvas.style.imageRendering = 'pixelated';
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
