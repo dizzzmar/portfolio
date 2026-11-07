@@ -1,0 +1,29 @@
+/* THINK PIECES (/archive/think-pieces/ y cada ensayo) · el formato «crudo» de los ensayos: fondo blanco, letra con serifa y todo el texto en rojo.
+   Se carga después de archive.css (que pone la barra, el índice y el pie) y le cambia los colores y la letra. Es la única parte de la web con serifa, a propósito:
+   los ensayos tienen que parecer texto escrito sin diseñar. Sin estela de píxeles, sin nada que adorne la lectura.
+   El rojo es el rojo del menú (--menu-red, #df1f1f): sobre blanco da 4,8:1, que pasa AA hasta en el texto pequeño. */
+:root { --bg: #fff; --ink: var(--menu-red); --font-serif: "Times New Roman", Times, "Liberation Serif", serif; }
+html, body { background: #fff; }
+body.essay-page { color: var(--menu-red); font-family: var(--font-serif); }
+.essay-page ::selection { background: var(--menu-red); color: #fff; }
+
+/* El índice de ensayos usa el mismo diseño que el índice del archivo, pero en serifa normal (400) y con la fecha pequeña bajo cada título */
+.essay-page .archive-heading { font-family: var(--font-serif); font-weight: 400; letter-spacing: -.03em; }
+.essay-page .archive-name { font-family: var(--font-serif); font-weight: 400; letter-spacing: -.015em; line-height: 1.1; }
+.essay-page .archive-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+.essay-date { font-family: var(--font-serif); font-size: var(--fs-read); line-height: 1.3; font-weight: 400; }
+
+/* El ensayo: una columna de texto a la izquierda, con mucho aire, a un cuerpo grande y con interlineado amplio, como una carta */
+.essay { padding: calc(var(--nav-h) + clamp(32px, 8vw, 120px)) var(--gutter) clamp(64px, 10vw, 160px); }
+.essay-body { max-width: var(--measure); margin: 0 auto; }
+.essay h1 { font-family: var(--font-serif); font-size: clamp(32px, 4vw, 56px); font-weight: 400; letter-spacing: -.02em; line-height: 1.1; text-wrap: balance; }
+.essay .essay-date { margin-top: 16px; }
+.essay-text { margin-top: clamp(32px, 5vw, 64px); font-size: clamp(18px, 1.4vw + 8px, 22px); line-height: 1.75; }
+.essay-text p + p { margin-top: 1.5em; }
+.essay-text a { text-underline-offset: 4px; }
+.essay-text figure { margin: 2.5em 0; }
+.essay-text img { width: 100%; }
+.essay-text code { font-family: inherit; font-style: italic; }
+.essay-text em { font-style: italic; }
+.essay-text .sign { margin-top: 2.5em; }
+@media (max-width: 760px) { .essay-body { max-width: none; } }
