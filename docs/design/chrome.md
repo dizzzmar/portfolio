@@ -21,3 +21,5 @@ No fixed underline and no line on hover: on hover, as on donut-studio.com, the l
 - **Favicon:** a solid circle in a vivid red (#ff2d1f, brighter than the menu red), on transparent for the tab icons (`favicon.ico`, `assets/images/favicon-192.png`) and on white for the home-screen icon (`apple-touch-icon.png`, which iOS would fill black if transparent).
 
 - **Zonas táctiles (auditoría nov 2026):** en móvil los enlaces del footer grande miden 44 px de alto (`.bf-links a`); los enlaces sueltos («FAQs →», «Write to me →», «← Back to the portfolio») usan `padding-block` con `margin-block` negativo para llegar a 44 px sin moverse.
+
+- **Tomate pixelado (nov 2026):** el tomate 3D de la portada (`js/home-tomato.js`) y el de la barra (`js/nav-tomato.js`) se dibujan a la mitad de resolución, sin suavizar bordes y con `image-rendering: pixelated`: píxel de 2 px de pantalla, como la estantería de The room. Para cambiar el tamaño del píxel, `PIXEL` en home-tomato.js y `setPixelRatio(1 / 2)` en nav-tomato.js (deben coincidir).
