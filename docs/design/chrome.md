@@ -1,5 +1,7 @@
 # Design detail: Chrome: menu, bars, links, footer, cursor, sounds
 
+**Typography and colour direction (7 Nov 2026):** `visual-language.md` governs future changes. Existing layout descriptions below record the current implementation; the two-voice typography and flexible palette rules have not yet been applied in CSS.
+
 Detail for this area of the design system. `DESIGN.md` holds the system and a summary; read this file only when working on this area, and keep new per-page detail here, not in `DESIGN.md`.
 
 ### Navigation
