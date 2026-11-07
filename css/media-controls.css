@@ -1,0 +1,64 @@
+/* Shared control geometry for media and full-screen collections. */
+:root {
+  --control-target: 44px;
+  --control-underline-offset: 4px;
+}
+.pzv-top { padding-inline: var(--bar-gutter); }
+.pzv-nav button,
+.pokemon-close,
+.archive-viewer-close,
+.player-bar button,
+.player .player-toggle {
+  box-sizing: border-box;
+  min-width: var(--control-target);
+  min-height: var(--control-target);
+  font-family: var(--font-ui);
+  font-size: var(--fs-s);
+  line-height: 1.3;
+  text-transform: none;
+  text-underline-offset: var(--control-underline-offset);
+  -webkit-tap-highlight-color: transparent;
+}
+.pzv-close,
+.pokemon-close,
+.archive-viewer-close { padding-inline: 0; text-align: right; }
+.pzv-nav button:focus-visible,
+.pokemon-close:focus-visible,
+.archive-viewer-close:focus-visible,
+.player button:focus-visible,
+.player-track:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+.player-track { min-width: var(--control-target); min-height: var(--control-target); touch-action: none; }
+.player .player-toggle { bottom: calc(var(--control-target) + 48px); }
+.player-bar { min-height: var(--control-target); }
+.player-time,
+.pzv-count { font-variant-numeric: tabular-nums; }
+@media (hover: hover) and (pointer: fine) {
+  .pzv-nav button:hover,
+  .pokemon-close:hover,
+  .archive-viewer-close:hover,
+  .player-bar button:hover { text-decoration: underline; }
+}
+@media (max-width: 760px) {
+  /* Close keeps its top-right anchor even when the poster title wraps. */
+  .pzv-top {
+    position: relative;
+    display: block;
+    padding-block: 12px;
+    padding-right: calc(var(--bar-gutter) + 60px);
+  }
+  .pzv-title { overflow-wrap: anywhere; }
+  .pzv-nav { margin-top: 8px; }
+  .pzv-close {
+    position: absolute;
+    top: calc((var(--nav-h) - var(--control-target)) / 2);
+    right: var(--bar-gutter);
+  }
+}
+@media (max-width: 700px) {
+  /* The image keeps its ratio; the figure also needs room for controls below it. */
+  .st-item.player, .st-video.player { aspect-ratio: auto; overflow: visible; }
+  .st-item.player video, .st-video.player video { height: auto; }
+}
