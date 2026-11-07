@@ -15,7 +15,7 @@
   overflow: hidden;
   background: var(--mustard);
   color: var(--menu-red);
-  --ink-red: #a80e0e;   /* rojo oscuro para el texto pequeño sobre el mostaza (4,75:1; el rojo de la web da 3:1, solo vale para texto grande) */
+  --ink-red: var(--brand-red-ink);   /* rojo oscuro para el texto pequeño sobre el mostaza (5,25:1; el rojo de la web da 3:1, solo vale para texto grande) */
   --typed: #ffd23f;     /* lo que se escribe en la barra roja: un amarillo algo más claro que el fondo (3,3:1 sobre el rojo; con el mostaza daba 2,98:1) */
   font-family: var(--font-ui);
   font-size: var(--fs-s); /* en About y Privacy el texto del cuerpo es más grande y se heredaría */
