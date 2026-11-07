@@ -1,4 +1,4 @@
-/* Personal editorial voice: Source Serif 4; shared interface remains Funnel. */
+/* Think pieces only: Source Serif 4; the rest of the site remains Funnel. */
 @font-face {
   font-family: "Source Serif 4";
   src: url("/assets/fonts/source-serif-4/regular.woff2") format("woff2");
@@ -18,9 +18,6 @@
   --fs-personal-read: clamp(18px, 1.4vw + 8px, 22px);
   --lh-personal-read: 1.5;
 }
-.archive-heading,
-.archive-viewer-name,
-.intro-head h1,
 .essay-page .archive-heading,
 .essay-page .archive-name,
 .essay h1 {
@@ -30,7 +27,6 @@
   letter-spacing: -.02em;
   line-height: 1.08;
 }
-.archive-sub,
 .essay-sub,
 .essay-text {
   font-family: var(--font-personal);
@@ -43,8 +39,7 @@
 /* Dates, navigation, metadata and controls are factual UI, including within essays. */
 body.essay-page,
 .essay-date,
-.essay-text figcaption,
-.archive-facts dd {
+.essay-text figcaption {
   font-family: var(--font-ui);
 }
 .essay-page .archive-name { line-height: 1.2; }
