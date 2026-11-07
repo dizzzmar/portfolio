@@ -1,7 +1,7 @@
 /* THINK PIECES (/archive/think-pieces/ y cada ensayo) · el formato «crudo» de los ensayos: fondo blanco, letra con serifa y todo el texto en rojo.
    Se carga después de archive.css (que pone la barra, el índice y el pie) y le cambia los colores y la letra. La voz editorial usa Source Serif 4 (personal-type.css):
    los ensayos tienen que parecer texto escrito sin diseñar. Sin estela de píxeles, sin nada que adorne la lectura.
-   El rojo es el rojo del menú (--menu-red, #df1f1f): sobre blanco da 4,8:1, que pasa AA hasta en el texto pequeño. */
+   El rojo es el rojo del menú (--menu-red, #e40000): sobre blanco da 4,8:1, que pasa AA hasta en el texto pequeño. */
 :root { --bg: #fff; --ink: var(--menu-red); --font-serif: var(--font-personal, Georgia, serif); }
 html, body { background: #fff; }
 body.essay-page { color: var(--menu-red); font-family: var(--font-serif); }

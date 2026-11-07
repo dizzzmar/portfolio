@@ -61,10 +61,12 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(.77, 0, .175, 1);
 
-  /* Acento (botón «View project», selección y foco en Work): negro. Cambiar de color es cambiar esta línea. Menú: --menu-red es el panel del menú (con --cream da 4,51:1) */
+  /* Acento (botón «View project», selección y foco en Work): negro. Cambiar de color es cambiar esta línea. Menú: --menu-red es el panel del menú (con --cream da 4,56:1) */
   --accent: #0c0c0b;
-  --cursor: #f83d0c; /* el punto del cursor sigue siendo rojo tomate */
-  --menu-red: #df1f1f;
+  --brand-red: #e40000; /* rojo puro y saturado: 4,89:1 sobre blanco, 4,56:1 con crema */
+  --brand-red-ink: #9f0000; /* variante de lectura sobre rosa o mostaza */
+  --cursor: var(--brand-red);
+  --menu-red: var(--brand-red);
   --mustard: #ffc214;   /* amarillo mostaza (de wearepanico.com): la ventana de Contact; con el rojo de la web da 3:1 (solo para texto grande) */
   --cream: #fff6ea;
 
