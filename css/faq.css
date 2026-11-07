@@ -30,7 +30,7 @@
 .faq-a a { text-decoration-thickness: 1px; text-underline-offset: 4px; }
 .faq-a a:hover { text-decoration-thickness: 2px; }
 .faq-ask { max-width: 22ch; text-wrap: balance; margin-top: clamp(32px, 6vw, 88px); font-size: clamp(24px, 2.6vw, 40px); font-weight: var(--fw-regular); letter-spacing: -.03em; line-height: 1.1; }
-.faq-ask a { font-weight: var(--fw-bold); text-underline-offset: 6px; text-decoration-thickness: 2px; }
+.faq-ask a { display: inline-block; padding-block: 10px; margin-block: -10px; font-weight: var(--fw-bold); text-underline-offset: 6px; text-decoration-thickness: 2px; }
 
 /* Con una abierta, las demás bajan un poco de intensidad (nunca por debajo de 80 %: 5,1:1 sobre el verde) */
 /* (la transición va en .faq-item, abajo: así también vuelven a su intensidad con suavidad) */

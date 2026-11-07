@@ -19,7 +19,10 @@
     t = Math.max(0, Math.floor(t || 0));
     return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
   };
+  // En móvil o con «ahorro de datos» el vídeo se sirve en 720p (film-720.mp4, 3–4 MB en vez de 17–24 MB); el original sigue en escritorio
+  const lite = matchMedia('(max-width: 700px)').matches || (navigator.connection && navigator.connection.saveData);
   document.querySelectorAll('video[data-player]').forEach((video) => {
+    if (lite && /\/film\.mp4$/.test(video.getAttribute('src') || '')) video.src = video.getAttribute('src').replace('film.mp4', 'film-720.mp4');
     const box = video.parentElement;
     video.controls = false;
     box.classList.add('player');

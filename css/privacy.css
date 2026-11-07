@@ -42,7 +42,7 @@ main { padding: 0 var(--gutter); }
 .pv-row p a:hover { text-decoration-thickness: 2px; }
 
 .pv-back { padding: clamp(28px, 3.4vw, 52px) 0; font-weight: var(--fw-bold); }
-.pv-back a { text-decoration: none; }
+.pv-back a { display: inline-block; padding-block: 12px; margin-block: -12px; text-decoration: none; }   /* zona táctil de 44 px */
 .pv-back a:hover { text-decoration: underline; }
 .pv-back a[href^="mailto:"] { text-decoration: underline; text-underline-offset: 4px; } /* «Write to me →» en las FAQs: se ve que es un enlace */
 

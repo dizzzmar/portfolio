@@ -5,6 +5,7 @@
       "id": "lost-weekend",
       "name": "Lost Weekend",
       "src": "lost-weekend.webp",
+      "thumb": "lost-weekend-thumb.webp",
       "width": 700,
       "height": 700,
       "facts": [
@@ -30,6 +31,7 @@
       "id": "rubber-soul",
       "name": "Rubber Soul",
       "src": "rubber-soul.webp",
+      "thumb": "rubber-soul-thumb.webp",
       "width": 1000,
       "height": 1000,
       "facts": [
@@ -55,6 +57,7 @@
       "id": "ram",
       "name": "Ram",
       "src": "ram.webp",
+      "thumb": "ram-thumb.webp",
       "width": 894,
       "height": 894,
       "facts": [
@@ -80,6 +83,7 @@
       "id": "romance",
       "name": "Romance",
       "src": "romance.webp",
+      "thumb": "romance-thumb.webp",
       "width": 894,
       "height": 894,
       "facts": [
@@ -105,6 +109,7 @@
       "id": "dopamine-chamber",
       "name": "Dopamine Chamber",
       "src": "dopamine-chamber.webp",
+      "thumb": "dopamine-chamber-thumb.webp",
       "width": 2000,
       "height": 2000,
       "facts": [
@@ -130,6 +135,7 @@
       "id": "mccartney",
       "name": "McCartney",
       "src": "mccartney.webp",
+      "thumb": "mccartney-thumb.webp",
       "width": 500,
       "height": 500,
       "facts": [
@@ -155,6 +161,7 @@
       "id": "minecraft-volume-alpha",
       "name": "Minecraft – Volume Alpha",
       "src": "minecraft-volume-alpha.webp",
+      "thumb": "minecraft-volume-alpha-thumb.webp",
       "width": 1900,
       "height": 1900,
       "facts": [
@@ -180,6 +187,7 @@
       "id": "sgt-peppers-lonely-hearts-club-band",
       "name": "Sgt. Pepper's Lonely Hearts Club Band",
       "src": "sgt-peppers-lonely-hearts-club-band.webp",
+      "thumb": "sgt-peppers-lonely-hearts-club-band-thumb.webp",
       "width": 2000,
       "height": 2000,
       "facts": [
@@ -205,6 +213,7 @@
       "id": "beatles-1",
       "name": "1",
       "src": "beatles-1.webp",
+      "thumb": "beatles-1-thumb.webp",
       "width": 721,
       "height": 721,
       "facts": [
@@ -230,6 +239,7 @@
       "id": "ambient-1-music-for-airports",
       "name": "Ambient 1: Music for Airports",
       "src": "ambient-1-music-for-airports.webp",
+      "thumb": "ambient-1-music-for-airports-thumb.webp",
       "width": 1043,
       "height": 1050,
       "facts": [
@@ -255,6 +265,7 @@
       "id": "music-for-nine-post-cards",
       "name": "Music for Nine Post Cards",
       "src": "music-for-nine-post-cards.webp",
+      "thumb": "music-for-nine-post-cards-thumb.webp",
       "width": 1900,
       "height": 1900,
       "facts": [

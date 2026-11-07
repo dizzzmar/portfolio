@@ -36,6 +36,7 @@
   .bf-top { justify-content: flex-start; }
   .bf-bottom { flex-direction: column-reverse; align-items: flex-start; gap: 28px; }
   .bf-up { margin-left: 0; align-self: flex-end; }
-  .bf-links { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .bf-links { flex-direction: column; align-items: flex-start; gap: 0; }
+  .bf-links a, .bf-links .bf-sound { min-height: 44px; }   /* zona táctil de 44 px (antes 20 px) sin cambiar el aspecto */
   .bf-word { font-size: var(--bf-size, 23vw); }
 }

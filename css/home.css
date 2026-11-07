@@ -292,7 +292,7 @@ body.white-on { background-color: #fff; }
   letter-spacing: -.005em;
 }
 .work-top p > strong { display: block; font-weight: inherit; }
-.work-top p > span { display: block; color: rgba(255, 255, 255, .6); }
+.work-top p > span { display: block; color: rgba(255, 255, 255, .9); text-shadow: 0 1px 10px rgba(0, 40, 110, .45); }
 .work-top p { grid-column: 2; }
 .work-top .wt-creative { grid-column: 1; }
 .work-top .wt-creative > strong { color: #fff; white-space: nowrap; }
@@ -329,7 +329,7 @@ body.white-on { background-color: #fff; }
 /* Nombre y etiquetas a la izquierda, año a la derecha */
 .wi-info { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name date" "tags tags"; column-gap: 16px; row-gap: 2px; margin-top: 14px; }
 .wi-name { grid-area: name; font-family: var(--font-ui); font-size: clamp(20px, 1.9vw, 28px); font-weight: var(--fw-title); letter-spacing: -.025em; line-height: 1.15; transition: color .35s var(--ease-out); }
-.wi-date, .wi-tags { font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.32; color: rgba(255, 255, 255, .62); transition: color .5s ease; }
+.wi-date, .wi-tags { font-size: var(--fs-s); font-weight: var(--fw-regular); line-height: 1.32; color: rgba(255, 255, 255, .8); text-shadow: 0 1px 10px rgba(0, 40, 110, .45); transition: color .5s ease; }   /* sobre las nubes el 62 % no llegaba a 4,5:1: casi blanco y con sombra azul suave */
 .wi-date { grid-area: date; align-self: start; padding-top: .35em; font-variant-numeric: lining-nums tabular-nums; }
 .wi-tags { grid-area: tags; display: flex; flex-wrap: wrap; list-style: none; }
 .wi-tags li + li::before { content: ", "; white-space: pre; }
@@ -394,7 +394,7 @@ body.white-on { background-color: #fff; }
 .light-on .work-top .wt-creative > strong { color: #0c0c0b; }
 .white-on .work-top, .white-on .work-top .wt-creative > strong { color: #fff; }
 .white-on .work-top p > span { color: rgba(255, 255, 255, .55); } /* la hora y "Selected work": en gris, como antes (el gris se ve igual de legible sobre blanco y sobre negro) */
-.light-on .wi-date, .light-on .wi-tags { color: rgba(12, 12, 11, .62); } /* 5,7:1 sobre blanco (con .4 eran 2,8:1) */
+.light-on .wi-date, .light-on .wi-tags { color: rgba(12, 12, 11, .62); text-shadow: none; } /* 5,7:1 sobre blanco (con .4 eran 2,8:1) */
 /* En Work no hay color de acento sobre el texto: la fila encendida (ratón encima, foco de teclado o la del centro en el móvil) se lee porque las demás se atenúan (regla :has de arriba). */
 .light-on .work-item > a:focus-visible { outline-color: var(--accent); }
 .light-on ::selection { background: var(--accent); color: #fff; }

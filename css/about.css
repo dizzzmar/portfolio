@@ -200,7 +200,7 @@ main { padding: 0 var(--margin); }
 
 /* Enlace a las FAQs, al final de la página */
 .faq-link { margin: clamp(48px, 9vh, 96px) 0 clamp(24px, 4vh, 48px); font-weight: var(--fw-bold); }
-.faq-link a { text-underline-offset: 4px; }
+.faq-link a { display: inline-block; padding-block: 12px; margin-block: -12px; text-underline-offset: 4px; }   /* zona táctil de 44 px */
 
 /* ---------- Móvil ---------- */
 @media (max-width: 760px) {

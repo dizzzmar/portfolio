@@ -88,3 +88,6 @@
 /* El post de Instagram (Lexus): a su ancho natural, alineado con las imágenes */
 .case-embed-body { max-width: 540px; }
 .case-embed-body blockquote.instagram-media { padding: 24px; background: var(--panel); font-size: var(--fs-s); }
+
+/* Índice de secciones en móvil: filas de 44 px (antes 33 px) */
+@media (max-width: 700px) { .st-index ol { gap: 0; } .st-index a { padding-block: 10px; } }
