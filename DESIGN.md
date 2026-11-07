@@ -110,7 +110,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **Menu Red** (#df1f1f): the full-screen menu panel, the bars of the Contact form and the big footer. A vivid pure red (the reference site's #ff1a1f is brighter but gives cream text only 3.6:1); this is the brightest red that keeps cream text at 4.51:1 (WCAG AA for small text).
 
 ### Secondary
-- **Lincoln Green** (#125603): background of About, Privacy, FAQs and Machine, paired with Lime.
+- **Lincoln Green** (#125603): background of About, Privacy and Machine, paired with Lime.
 - **Lime** (#c3f380): all text and the cursor on green pages (6.98:1 on Lincoln Green). Secondary text on green runs at 80 % opacity (5.1:1).
 - **Night Green** (#0b2f04): the Room only, where the 3D scene sits in a darker green; its list is lime at 70 % (6.4:1).
 
@@ -206,3 +206,5 @@ A dark panel opened with the ` key from any page (no visible link: it is a wink 
 - **Don't** mix fonts decoratively within sentences, add unrelated font families, or use shadows, gradients or borders to separate editorial content.
 - **Don't** add third-party code, fonts, embeds or analytics without deciding it first (today none: three.js is self-hosted in `assets/vendor/three/`), and never put keys, passwords or personal data in the repository (see `CLAUDE.md`).
 - **Don't** animate sizes, margins or shadows.
+
+**FAQs palette:** white background with menu-red text and controls; About and Privacy retain their own palettes.

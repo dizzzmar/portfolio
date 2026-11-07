@@ -18,7 +18,7 @@
     work: [
       '2025  AUDIOVISUAL      Lexus Electrified          lexus       (Lexus Singapore)',
       '2026  AUDIOVISUAL      Schweppes                  schweppes   (AI film)',
-      '2026  KEY VISUALS      Soap & Glory Vanillalicious soap       (Vanillalicious)',
+      '2026  KEY VISUALS      Vanilla-licious             soap       (Soap & Glory)',
       '2023  STUDIES          ENMAD                      enmad       (university project)',
       '2021  PERSONAL         Posters                    posters     (fictional work)',
       'Type `cd <name>` to open a project, for example: cd lexus',
@@ -541,7 +541,7 @@
     info.append(
       who, el('div', 'term-rule'),
       infoBox('Profile', [['Name', 'Mario Diz'], ['Role', 'Art director · visual designer'], ['Based', 'Madrid, Spain'], ['Focus', 'Key visuals · AI · 3D · film']]),
-      infoBox('Projects', [['2025', 'Lexus Electrified'], ['2026', 'Schweppes'], ['2026', 'Soap & Glory']]),
+      infoBox('Projects', [['2025', 'Lexus Electrified'], ['2026', 'Schweppes'], ['2026', 'Vanilla-licious']]),
       session, swatch,
     );
     root.append(artBox, info);
