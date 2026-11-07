@@ -5,6 +5,10 @@
 :root { --bg: #fff; --ink: var(--menu-red); --font-serif: "Times New Roman", Times, "Liberation Serif", serif; }
 html, body { background: #fff; }
 body.essay-page { color: var(--menu-red); font-family: var(--font-serif); }
+/* La barra de arriba, en rojo: sin la mezcla «difference» (que la dejaba negra sobre el blanco), con el enlace «Back» y el botón «Menu» en el rojo del texto, y sobre el blanco de la página
+   para que el texto del ensayo, que también es rojo, no se amontone detrás de ella al pasar por debajo */
+body.essay-page:not([data-intro]) .nav { mix-blend-mode: normal; background: #fff; }
+body.essay-page:not([data-intro]) .nav .nav-links a, .essay-page .archive-back, .essay-page .archive-back:hover, .essay-page .archive-back:focus-visible { color: var(--menu-red); }
 .essay-page ::selection { background: var(--menu-red); color: #fff; }
 
 /* El índice de ensayos usa el mismo diseño que el índice del archivo, pero en serifa normal (400) y con la fecha pequeña bajo cada título */
