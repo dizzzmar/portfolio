@@ -16,11 +16,13 @@ async function start() {
   canvas.setAttribute('aria-hidden', 'true');
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
   } catch (e) {
     return; // sin WebGL: se queda la imagen plana
   }
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  // Píxel de 2 px de pantalla, igual que el tomate de la portada y la estantería de The room (ver js/home-tomato.js)
+  renderer.setPixelRatio(1 / 2);
+  canvas.style.imageRendering = 'pixelated';
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   // Altura del cuadro de la cámara a 10 unidades, con 35 grados de apertura (igual que la portada)
