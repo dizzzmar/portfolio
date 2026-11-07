@@ -1,6 +1,6 @@
 ---
 name: dizmar.xyz
-description: Portfolio of Mario Diz, art director in Madrid. One family, two weights, a tomato at the centre.
+description: Portfolio of Mario Diz, art director in Madrid. Two typographic voices, shared navigation, a tomato at the centre.
 colors:
   accent: "#0c0c0b"
   cursor: "#f83d0c"
@@ -87,15 +87,15 @@ components:
 
 **Creative North Star: "The Ripe Tomato"**
 
-One piece of fruit at the centre and everything else arranged around it: the tomato is the logo, the 3D object on the landing page and the colour of the menu panel. The rest is deliberately plain so the fruit and the work (Lexus, Soap & Glory, Schweppes) stay the loudest things on screen. One typeface, two weights, flat colour, no shadows.
+One piece of fruit at the centre and everything else arranged around it: the tomato is the logo, the 3D object on the landing page and the colour of the menu panel. The rest is deliberately plain so the fruit and the work (Lexus, Soap & Glory, Schweppes) stay the loudest things on screen. Funnel for professional work, a serif for personal editorial content, shared interface rules and freely chosen page palettes.
 
 The tone is close and a little funny. Daily paths (reading, navigating) are precise and quiet; the humour lives in the rare places: the envelope you tear to write an email, the terminal, the FAQs, the cursor that bounces. Nothing explains itself with slogans or helper text; if a screen needs a label to make sense, the layout gets fixed instead.
 
-Rejected on purpose (with one exception, the raw essays of the Digital Archive's «Think pieces», in system serif and red on white: see `docs/design/archive.md`): serif faces, more than two weights, decorative gradients and shadows, third-party fonts or embeds, and any text whose only job is to explain the interface.
+Typography and colour direction: see `docs/design/visual-language.md` (7 November 2026). Its professional/personal roles supersede the previous blanket serif ban. Font selection and page migration are pending; the implementation descriptions below record the current site unless noted.
 
 **Key Characteristics:**
-- One family, Funnel, in two cuts: Funnel Display for large titles only, Funnel Sans for everything that is read; text at two weights (700 orients, 400 is read) and large titles one step lighter at 600.
-- Flat colour fields: black or sky for the work, Lincoln green with lime for the personal pages, tomato red for the menu.
+- Two voices: Funnel for professional content, one serif for personal editorial content; interface controls stay Funnel. See `docs/design/visual-language.md` for mixed pages and font selection.
+- Section and project palettes may vary independently of font roles. The current green/lime, sky and project palettes are themes, not fixed professional/personal categories.
 - A 64 px bar with the tomato left and links right, the same everywhere.
 - Motion is transform and opacity only, one shared ease-out, and it always has a reduced-motion path.
 - Scrolling with a mouse or trackpad glides with inertia (js/smooth-scroll.js, no library): every notch sets a destination and the page eases into it on one constant curve. Touch and keyboard stay native.
@@ -125,11 +125,13 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 `--accent` (#0c0c0b), `--cursor` (#f83d0c), `--menu-red` (#df1f1f) and `--cream` (#fff6ea) live in `css/tokens.css`; so do the two curves, `--ease-out` for arrivals and `--ease-in-out` (`cubic-bezier(.77, 0, .175, 1)`) for moving across the screen. Do not write these values in other files.
 
 ### Named Rules
-**The Green Pair Rule.** On green pages the only text colour is lime, never white or red. The red cursor would fall to 2.4:1 there, so it turns lime too.
+**The Green Pair Rule (current green theme only).** On green pages the only text colour is lime, never white or red. The red cursor would fall to 2.4:1 there, so it turns lime too.
 
 **The No New Colours Rule.** A colour that is not in this list is decided here first, then written into `css/tokens.css`.
 
 ## Typography
+
+**Direction for future changes:** professional content uses Funnel; personal editorial content uses one serif; shared UI stays Funnel. The mapping and mixed About rules are in `docs/design/visual-language.md`. Values below describe current Funnel roles; the personal serif family and metrics await visual selection.
 
 **Display Font:** Funnel Display (variable, OFL licence), only for large titles: page titles, project names, the menu links, the 404 and the landing's tomato name. Its flared, decorative terminals are the point there and too busy for paragraphs.
 **Body Font:** Funnel Sans (variable, OFL licence), the calmer sibling with the same bones, for running text, lists, labels and every small size. Both are self-hosted in `assets/fonts/` and preloaded; Helvetica Neue or Arial while they load.
@@ -191,7 +193,7 @@ A dark panel opened with the ` key from any page (no visible link: it is a wink 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use only Funnel (Display for large titles via `--font-display`, Sans for the rest via `--font-ui`) at 400 and 700 (large titles at 600), sizes from `css/tokens.css`.
+- **Do** use Funnel for professional content and shared UI, and the selected serif for personal editorial content, as mapped in `docs/design/visual-language.md`; keep sizes and font roles in shared tokens.
 - **Do** animate only `transform` and `opacity`, with `var(--ease-out)` (`cubic-bezier(0.23, 1, 0.32, 1)`) for arrivals; UI 150–300 ms, underline 400 ms, section entrances up to 700 ms, the menu up to 0.7 s because it is a deliberate moment.
 - **Do** give every animation a reduced-motion path that keeps opacity and colour changes.
 - **Do** keep text on Lincoln Green in Lime, and check any new pair for 4.5:1 (3:1 for large text).
@@ -201,6 +203,6 @@ A dark panel opened with the ` key from any page (no visible link: it is a wink 
 
 ### Don't:
 - **Don't** add slogans, helper text or secondary labels; fix the layout instead. Only legal text, screen-reader names and informative errors or loading states stay.
-- **Don't** use a serif, a third weight, shadows, gradients or borders to separate content.
+- **Don't** mix fonts decoratively within sentences, add unrelated font families, or use shadows, gradients or borders to separate editorial content.
 - **Don't** add third-party code, fonts, embeds or analytics without deciding it first (today none: three.js is self-hosted in `assets/vendor/three/`), and never put keys, passwords or personal data in the repository (see `CLAUDE.md`).
 - **Don't** animate sizes, margins or shadows.
