@@ -87,14 +87,14 @@ components:
 
 **Creative North Star: "The Ripe Tomato"**
 
-One piece of fruit at the centre and everything else arranged around it: the tomato is the logo, the 3D object on the landing page and the colour of the menu panel. The rest is deliberately plain so the fruit and the work (Lexus, Soap & Glory, Schweppes) stay the loudest things on screen. Funnel for professional work, a serif for personal editorial content, shared interface rules and freely chosen page palettes.
+One piece of fruit at the centre and everything else arranged around it: the tomato is the logo, the 3D object on the landing page and the colour of the menu panel. The rest is deliberately plain so the fruit and the work (Lexus, Soap & Glory, Schweppes) stay the loudest things on screen. Funnel for professional work, Source Serif 4 for personal editorial content, shared interface rules and freely chosen page palettes.
 
 The tone is close and a little funny. Daily paths (reading, navigating) are precise and quiet; the humour lives in the rare places: the envelope you tear to write an email, the terminal, the FAQs, the cursor that bounces. Nothing explains itself with slogans or helper text; if a screen needs a label to make sense, the layout gets fixed instead.
 
-Typography and colour direction: see `docs/design/visual-language.md` (7 November 2026). Its professional/personal roles supersede the previous blanket serif ban. Font selection and page migration are pending; the implementation descriptions below record the current site unless noted.
+Typography and colour direction: see `docs/design/visual-language.md` (7 November 2026). Its professional/personal roles supersede the previous blanket serif ban. Source Serif 4 is selected; page migration is pending; the implementation descriptions below record the current site unless noted.
 
 **Key Characteristics:**
-- Two voices: Funnel for professional content, one serif for personal editorial content; interface controls stay Funnel. See `docs/design/visual-language.md` for mixed pages and font selection.
+- Two voices: Funnel for professional content, Source Serif 4 for personal editorial content; interface controls stay Funnel. See `docs/design/visual-language.md` for mixed pages and font selection.
 - Section and project palettes may vary independently of font roles. The current green/lime, sky and project palettes are themes, not fixed professional/personal categories.
 - A 64 px bar with the tomato left and links right, the same everywhere.
 - Motion is transform and opacity only, one shared ease-out, and it always has a reduced-motion path.
@@ -131,7 +131,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 
 ## Typography
 
-**Direction for future changes:** professional content uses Funnel; personal editorial content uses one serif; shared UI stays Funnel. The mapping and mixed About rules are in `docs/design/visual-language.md`. Values below describe current Funnel roles; the personal serif family and metrics await visual selection.
+**Direction for future changes:** professional content uses Funnel; personal editorial content uses Source Serif 4; shared UI stays Funnel. The mapping and About exception are in `docs/design/visual-language.md`. Values below describe current Funnel roles; Source Serif 4 is selected; personal metrics and implementation are pending. About stays Funnel after visual review.
 
 **Display Font:** Funnel Display (variable, OFL licence), only for large titles: page titles, project names, the menu links, the 404 and the landing's tomato name. Its flared, decorative terminals are the point there and too busy for paragraphs.
 **Body Font:** Funnel Sans (variable, OFL licence), the calmer sibling with the same bones, for running text, lists, labels and every small size. Both are self-hosted in `assets/fonts/` and preloaded; Helvetica Neue or Arial while they load.
@@ -193,7 +193,7 @@ A dark panel opened with the ` key from any page (no visible link: it is a wink 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use Funnel for professional content and shared UI, and the selected serif for personal editorial content, as mapped in `docs/design/visual-language.md`; keep sizes and font roles in shared tokens.
+- **Do** use Funnel for professional content and shared UI, and Source Serif 4 for personal editorial content, as mapped in `docs/design/visual-language.md`; keep sizes and font roles in shared tokens.
 - **Do** animate only `transform` and `opacity`, with `var(--ease-out)` (`cubic-bezier(0.23, 1, 0.32, 1)`) for arrivals; UI 150–300 ms, underline 400 ms, section entrances up to 700 ms, the menu up to 0.7 s because it is a deliberate moment.
 - **Do** give every animation a reduced-motion path that keeps opacity and colour changes.
 - **Do** keep text on Lincoln Green in Lime, and check any new pair for 4.5:1 (3:1 for large text).
