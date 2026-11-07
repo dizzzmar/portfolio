@@ -49,8 +49,7 @@ img, video { display: block; }
 .player { position: relative; isolation: isolate; }
 .player video { cursor: pointer; }
 .player button { border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
-/* Los textos usan "difference": sobre un vídeo claro se ven negros y sobre uno oscuro, blancos.
-   Van más grandes y en negrita para que se lean bien sin fondo ni recuadro. */
+/* Los textos van en blanco y negrita, con sombra suave y un degradado oscuro bajo la barra: se leen sobre cualquier fotograma. */
 .player .player-toggle {
   position: absolute;
   bottom: 48px;
@@ -64,8 +63,7 @@ img, video { display: block; }
   font-weight: var(--fw-bold);
   letter-spacing: 0;
   text-transform: none;
-  mix-blend-mode: difference;
-  text-shadow: none;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .55);   /* blanco con sombra: legible sobre cualquier fotograma (el «difference» bajaba a 1,5:1) */
   opacity: 0;
   transition: opacity .25s;
 }
@@ -76,18 +74,17 @@ img, video { display: block; }
   display: flex;
   align-items: center;
   gap: 18px;
-  padding: 0 14px 12px;
+  padding: 36px 14px 12px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .5));
   color: #fff;
   font-size: var(--fs-s);
   font-weight: var(--fw-bold);
   letter-spacing: 0;
   text-transform: none;
-  mix-blend-mode: difference;
-  text-shadow: none;
 }
 .player-bar button { padding: 6px 0; font-size: var(--fs-s); font-weight: var(--fw-bold); letter-spacing: 0; text-transform: none; }
 .player-bar button:hover { text-decoration: underline; text-underline-offset: 4px; }
-/* La línea: blanca (negra sobre vídeo claro, por el "difference"), más gruesa; lo ya visto, más marcado */
+/* La línea: blanca, más gruesa; lo ya visto, más marcado */
 .player-track { position: relative; flex: 1; height: 16px; cursor: pointer; }
 .player-track::before, .player-track i { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; }
 .player-track::before { background: #fff; opacity: .55; }
@@ -129,7 +126,7 @@ img, video { display: block; }
   @media (max-width: 700px) { .case-name.is-long { right: calc(var(--bar-gutter) + 64px); white-space: normal; font-size: 19px; line-height: 1.05; margin-top: -1.7px; } }
   .case-nav { display: none; } /* en el móvil hay solo la X y el tomate: Work, About, Contact y Room están en la portada */
   /* El reproductor: la barra y el estado van debajo del vídeo, no encima (en un vídeo de 190 px de alto tapaban media imagen) */
-  .player .player-toggle, .player-bar { position: static; mix-blend-mode: normal; color: var(--ink); opacity: 1; }
+  .player .player-toggle, .player-bar { position: static; background: none; text-shadow: none; color: var(--ink); opacity: 1; }
   .player .player-toggle { display: flex; align-items: center; gap: 14px; padding: 6px 0 0; }
   .player-bar { padding: 0 0 8px; gap: 16px; }
   .player-track::before { background: var(--ink); opacity: .25; } /* ya no va sobre el vídeo con «difference»: la línea es tinta sobre el blanco de la página */
