@@ -22,7 +22,8 @@ body.essay-page:not([data-intro]) .nav .nav-links a, .essay-page .archive-back, 
 .essay { padding: calc(var(--nav-h) + clamp(32px, 8vw, 120px)) var(--gutter) clamp(64px, 10vw, 160px); }
 .essay-body { max-width: var(--measure); margin: 0 auto; }
 .essay h1 { font-family: var(--font-serif); font-size: clamp(32px, 4vw, 56px); font-weight: 400; letter-spacing: -.02em; line-height: 1.1; text-wrap: balance; }
-.essay .essay-date { margin-top: 16px; }
+.essay .essay-date { margin-top: 12px; }
+.essay-sub { margin-top: 14px; font-size: clamp(18px, 1.4vw + 8px, 22px); font-style: italic; line-height: 1.4; }   /* el subtítulo (la definición de «saudade») */
 .essay-text { margin-top: clamp(32px, 5vw, 64px); font-size: clamp(18px, 1.4vw + 8px, 22px); line-height: 1.75; }
 .essay-text p + p { margin-top: 1.5em; }
 .essay-text a { text-underline-offset: 4px; }
@@ -31,4 +32,6 @@ body.essay-page:not([data-intro]) .nav .nav-links a, .essay-page .archive-back, 
 .essay-text code { font-family: inherit; font-style: italic; }
 .essay-text em { font-style: italic; }
 .essay-text .sign { margin-top: 2.5em; }
+.essay-text .verse { margin-top: 2em; margin-bottom: 2em; font-style: italic; }   /* una cita (versos): en cursiva y con aire alrededor */
+.essay-text figure + p { margin-top: 2em; }
 @media (max-width: 760px) { .essay-body { max-width: none; } }
