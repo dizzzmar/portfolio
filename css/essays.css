@@ -24,8 +24,8 @@ body.essay-page:not([data-intro]) .nav .nav-links a, .essay-page .archive-back, 
 .essay h1 { font-family: var(--font-serif); font-size: clamp(32px, 4vw, 56px); font-weight: 400; letter-spacing: -.02em; line-height: 1.1; text-wrap: balance; }
 .essay .essay-date { margin-top: 12px; }
 .essay-sub { margin-top: 14px; font-size: clamp(18px, 1.4vw + 8px, 22px); font-style: italic; line-height: 1.4; }   /* el subtítulo (la definición de «saudade») */
-.essay-text { margin-top: clamp(32px, 5vw, 64px); font-size: clamp(18px, 1.4vw + 8px, 22px); line-height: 1.75; }
-.essay-text p + p { margin-top: 1.5em; }
+.essay-text { margin-top: clamp(32px, 5vw, 64px); font-size: clamp(18px, 1.4vw + 8px, 22px); line-height: 1.5; }
+.essay-text p + p { margin-top: 1.2em; }
 .essay-text a { text-underline-offset: 4px; }
 .essay-text figure { margin: 2.5em 0; }
 .essay-text img { width: 100%; }
