@@ -17,7 +17,7 @@ function makeCard(item) {
   figure.className = 'archive-card'; figure.dataset.card = item.id;
   const turn = document.createElement('span'); turn.className = 'archive-turn';
   const img = document.createElement('img');
-  img.src = new URL(item.src, location.origin + base).href; img.alt = item.name; img.width = item.width || 640; img.height = item.height || 640;
+  img.src = new URL(item.thumb || item.src, location.origin + base).href; img.alt = item.name; img.width = item.width || 640; img.height = item.height || 640;
   img.draggable = false; img.decoding = 'async';
   turn.append(img); figure.append(turn);
   return figure;
@@ -26,7 +26,7 @@ function makeCard(item) {
 async function load() {
   retry.hidden = true; status.hidden = false; status.textContent = 'Loading…';
   try {
-    const response = await fetch(base + 'items.json?v=20261111archive3');
+    const response = await fetch(base + 'items.json?v=20261207thumbs1');
     if (!response.ok) throw new Error('Collection unavailable');
     const data = await response.json();
     if (!Array.isArray(data.items) || !data.items.length) throw new Error('Empty collection');
