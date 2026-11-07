@@ -1,0 +1,36 @@
+/* Personal editorial voice. Loaded only by pages using it. */
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/instrument-serif/regular.ttf") format("truetype");
+}
+:root {
+  --font-personal: "Instrument Serif", Georgia, serif;
+  --fs-personal-read: clamp(22px, 1.5vw + 4px, 26px);
+  --lh-personal-read: 1.3;
+}
+/* About mixes voices by block; factual labels and global controls stay Funnel. */
+.about-card .name {
+  font-family: var(--font-personal);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin-left: 0;
+}
+.about-card .statement,
+.about-card .facts[aria-label="About Mario"] > .fact-values {
+  font-family: var(--font-personal);
+  font-size: var(--fs-personal-read);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0;
+  line-height: var(--lh-personal-read);
+}
+.about-card .facts[aria-label="About Mario"] > .fact-values h2 {
+  font-family: var(--font-ui);
+  font-size: var(--fs-read);
+  font-weight: var(--fw-bold);
+}
