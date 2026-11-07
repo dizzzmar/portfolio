@@ -15,9 +15,10 @@ const FLY_FROM_NAV = document.documentElement.classList.contains('land-fly') && 
 
 // Píxel grande, como la estantería de The room (ROOM_PIXEL_SIZE en js/room.js): se dibuja a la mitad de resolución, sin suavizar bordes,
 // y el navegador lo estira sin difuminar (image-rendering: pixelated). Así el tomate es igual de pixelado en la portada y en la barra (js/nav-tomato.js)
-const PIXEL = 2;
+// En la portada el píxel es de 4 px de pantalla; ya acoplado en la barra, de 2 px (el mismo que js/nav-tomato.js)
+const PIXEL = 4, PIXEL_DOCKED = 2;
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
-renderer.setPixelRatio(1 / PIXEL);
+renderer.setPixelRatio(1 / PIXEL);   // setCrop lo cambia a 1 / PIXEL_DOCKED al acoplarse
 canvas.style.imageRendering = 'pixelated';
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
@@ -256,6 +257,7 @@ function journeyLayout(j, J) {
 // renders exactly that part of the full-screen picture, so it looks the same.
 let cropped = false;
 function setCrop(on) {
+  renderer.setPixelRatio(1 / (on ? PIXEL_DOCKED : PIXEL));
   if (on) {
     const dockPx = width < 700 ? 36 : 44;
     const margin = width < 700 ? 14 : 24;
