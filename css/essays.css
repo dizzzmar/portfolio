@@ -15,6 +15,7 @@ body.essay-page:not([data-intro]) .nav .nav-links a, .essay-page .archive-back, 
 .essay-page .archive-heading { font-family: var(--font-serif); font-weight: 400; letter-spacing: -.03em; }
 .essay-page .archive-name { font-family: var(--font-serif); font-weight: 400; letter-spacing: -.015em; line-height: 1.1; }
 .essay-page .archive-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+.essay-page .archive-name { max-width: 18em; text-wrap: balance; }   /* un título muy largo se parte en dos líneas en vez de llegar al borde de la pantalla */
 .essay-date { font-family: var(--font-serif); font-size: var(--fs-read); line-height: 1.3; font-weight: 400; }
 
 /* El ensayo: una columna de texto a la izquierda, con mucho aire, a un cuerpo grande y con interlineado amplio, como una carta */
