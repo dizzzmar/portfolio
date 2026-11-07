@@ -5,6 +5,8 @@
 Detail for this area of the design system. `DESIGN.md` holds the system and a summary; read this file only when working on this area, and keep new per-page detail here, not in `DESIGN.md`.
 
 ### The Playground menu (/playground/)
+On a phone (up to 760 px) it uses the same layout as the Digital Archive index (`css/archive.css`; see `docs/design/archive.md`): the title «Playground» at the top, on one line (`archive-heading--word`, 18.5 vw, 110 px max, because it is one long word) and the entries «Island» and «Plant Lab» at the bottom, large, at thumb height. The page stays hidden (no links, `noindex`).
+
 The Playground is a menu of small experiments with **the same design as the Digital Archive index** (it uses `css/archive.css` and the pixel trail of `js/archive-trail.js`; see `docs/design/archive.md`): page black with cream text, the title «Playground» in a left column and one row per experiment in the right one (the same two-column structure as «Selected projects» on the landing page), with no subtitle, no count and no lines between rows. There are two entries, **Island** and **Plant Lab**, which opens the full-screen sandbox. To add an entry, copy a `<li>` of `playground/index.html` and create its folder in `playground/`.
 
 ### Plant Lab and the Playground sandbox (/project/plant-lab/, /playground/plant-lab/)
