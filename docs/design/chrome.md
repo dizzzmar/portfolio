@@ -23,3 +23,15 @@ No fixed underline and no line on hover: on hover, as on donut-studio.com, the l
 - **Favicon:** a solid circle in a vivid red (#ff2d1f, brighter than the menu red), on transparent for the tab icons (`favicon.ico`, `assets/images/favicon-192.png`) and on white for the home-screen icon (`apple-touch-icon.png`, which iOS would fill black if transparent).
 
 - **Zonas táctiles (auditoría nov 2026):** en móvil los enlaces del footer grande miden 44 px de alto (`.bf-links a`); los enlaces sueltos («FAQs →», «Write to me →», «← Back to the portfolio») usan `padding-block` con `margin-block` negativo para llegar a 44 px sin moverse.
+
+## Shared page structure (7 November 2026)
+
+Projects, About, Archive and the essay index share heading scale, outer gutters, heading gaps and column spacing via `css/page-structure.css`. The existing type voices and palettes remain. Projects’ identity line scrolls with content rather than occupying fixed navigation. Archive category lists align to the top of the right column on desktop and follow the introduction with a bounded gap on mobile; their previous bottom-of-viewport placement is superseded. About retains its portrait/content composition, with content gutters aligned to the shared page margins. Project case-study layouts and functional Back links are unchanged.
+
+## Shared media controls
+
+`css/media-controls.css` gives Posters, Archive, Pokémon and project video controls the same 44 px minimum targets, Funnel labels, focus outline and Close alignment. Existing viewer layouts, palettes, escape behaviour and collection gestures are preserved. Video controls expose sound state and readable playback position, update the fullscreen action on entry/exit, and reset seeking on pointer cancellation. The shared player still keeps native controls when JavaScript is unavailable; unsupported fullscreen controls are hidden.
+
+## Shared motion rhythm
+
+`css/motion.css` defines 200 ms viewer fades (150 ms with reduced motion), 450 ms content entrances and a 16 px arrival distance. Native gallery dialogs share cancellable fades via `js/viewer-motion.js`; Archive uses the same timing. About now arrives with one quiet fade rather than separate sliding layers. Archive’s bright opening flash and delayed metadata are removed. Artwork tilt, infinite gallery movement, the tomato, Room and the shared page/menu transitions keep their distinct functions. Functional labels remain Menu/Close/Back, Play/Pause, Sound and Full screen; the player changes its action to Exit full screen while expanded.

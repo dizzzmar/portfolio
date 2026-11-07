@@ -1,0 +1,58 @@
+/* Shared editorial rhythm; each surface keeps its palette and content composition. */
+:root {
+  --page-gutter: var(--bar-gutter);
+  --page-heading-size: clamp(48px, 6.6vw, 104px);
+  --page-heading-gap: clamp(24px, 3vw, 40px);
+  --page-start-gap: clamp(24px, 3vw, 40px);
+  --page-column-gap: clamp(24px, 3.2vw, 48px);
+}
+.work-title,
+.about-card .name,
+.archive-index .archive-heading {
+  font-size: var(--page-heading-size);
+  line-height: 1.08;
+  letter-spacing: -.02em;
+}
+/* Projects' identity line belongs to the content, leaving the fixed navigation clear. */
+.work-top { position: relative; top: auto; z-index: 1; }
+.work-layout { column-gap: var(--page-column-gap); }
+/* Archive categories now start beside their introduction, rather than floating mid-screen. */
+.archive-index {
+  padding-inline: var(--page-gutter);
+  padding-top: calc(var(--nav-h) + var(--page-start-gap));
+  column-gap: var(--page-column-gap);
+  align-content: start;
+}
+.archive-side { padding-top: 0; }
+.archive-list {
+  align-self: start;
+  justify-self: stretch;
+  width: auto;
+  padding-top: 0;
+}
+.archive-sub { margin-top: var(--page-heading-gap); }
+.about-card .statement { margin-top: var(--page-heading-gap); }
+@media (min-width: 761px) {
+  .about { padding-right: 0; }
+  .about-card {
+    padding-inline: var(--page-gutter);
+    padding-top: var(--page-start-gap);
+  }
+  .about-card .facts { column-gap: var(--page-column-gap); }
+}
+@media (max-width: 760px) {
+  :root { --page-heading-size: clamp(48px, 14vw, 64px); }
+  .archive-index {
+    min-height: auto;
+    justify-content: flex-start;
+    gap: clamp(40px, 8vw, 64px);
+    padding-bottom: 64px;
+  }
+  .archive-side { padding-top: 0; }
+  .archive-list { width: 100%; }
+  .work-top { padding-inline: var(--page-gutter); }
+  .about-card {
+    margin-inline: 0;
+    padding-inline: var(--page-gutter);
+  }
+}

@@ -1,0 +1,29 @@
+/* One rhythm for shared UI; artifacts keep their own expressive animation. */
+:root {
+  --motion-viewer-time: 200ms;
+  --motion-content-time: 450ms;
+  --motion-reading-time: 200ms;
+  --motion-enter-distance: 16px;
+}
+/* Archive keeps perspective interaction, with a quieter opening around the artwork. */
+.archive-viewer { transition: opacity var(--motion-viewer-time) var(--ease-out), visibility 0s linear var(--motion-viewer-time); }
+.archive-viewer.is-open { transition: opacity var(--motion-viewer-time) var(--ease-out), visibility 0s; }
+.archive-piece { filter: none; transition: opacity var(--motion-content-time) var(--ease-out), scale var(--motion-content-time) var(--ease-out); }
+.archive-facts > div { transition: opacity var(--motion-content-time) var(--ease-out), translate var(--motion-content-time) var(--ease-out); }
+.archive-viewer-name .mask > span { transition: translate var(--motion-content-time) var(--ease-out); }
+/* Shared JS drives native dialog fades, including interrupted open/close. */
+.pz-viewer[open] { animation: none; }
+.archive-card, .pokemon-card { translate: 0 var(--motion-enter-distance); transition-duration: var(--motion-content-time); }
+.archive-card.is-in, .pokemon-card.is-in { translate: none; }
+.pz-ready .pz-item { transition-duration: var(--motion-content-time); }
+/* Reading pages arrive once with a fade; no separate sliding card or delayed text. */
+html .about-photo,
+html .about-card { animation: reading-arrival var(--motion-reading-time) var(--ease-out) both; }
+html .about-card > * { animation: none; }
+@keyframes reading-arrival { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-viewer-time: 150ms; }
+  .archive-card, .pokemon-card { translate: none; transition: opacity 150ms linear; }
+  .archive-viewer-name .mask > span, .archive-piece, .archive-facts > div { transition: none; translate: none; scale: 1; filter: none; opacity: 1; }
+  html .about-photo, html .about-card, html .about-card > * { animation: none; }
+}

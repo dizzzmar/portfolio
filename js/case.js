@@ -38,18 +38,28 @@
     const track = box.querySelector('.player-track');
     const fill = track.querySelector('i');
     const sound = box.querySelector('.player-sound');
+    const toggleButton = box.querySelector('.player-toggle');
+    const full = box.querySelector('.player-full');
 
     const paint = () => {
-      const d = video.duration || 0;
+      const d = Number.isFinite(video.duration) ? video.duration : 0;
       const p = d ? video.currentTime / d : 0;
       fill.style.transform = `scaleX(${p})`;
       track.setAttribute('aria-valuenow', Math.round(p * 100));
+      track.setAttribute('aria-valuetext', fmt(video.currentTime) + ' of ' + fmt(d));
+      track.setAttribute('aria-disabled', String(!d));
       time.textContent = fmt(video.currentTime) + ' / ' + fmt(d);
       state.textContent = video.paused ? 'Play' : 'Pause';
+      toggleButton.setAttribute('aria-label', video.paused ? 'Play video' : 'Pause video');
       sound.textContent = 'Sound : ' + (video.muted ? 'off' : 'on');
+      sound.setAttribute('aria-pressed', String(!video.muted));
+      const expanded = document.fullscreenElement === box || video.webkitDisplayingFullscreen;
+      full.textContent = expanded ? 'Exit full screen' : 'Full screen';
+      full.setAttribute('aria-label', expanded ? 'Exit full screen' : 'Enter full screen');
       box.classList.toggle('is-paused', video.paused);
     };
-    ['timeupdate', 'loadedmetadata', 'play', 'pause', 'volumechange'].forEach((e) => video.addEventListener(e, paint));
+    ['timeupdate', 'loadedmetadata', 'durationchange', 'play', 'pause', 'volumechange', 'webkitbeginfullscreen', 'webkitendfullscreen'].forEach((e) => video.addEventListener(e, paint));
+    document.addEventListener('fullscreenchange', paint);
     paint();
 
     const toggle = () => (video.paused ? video.play().catch(() => {}) : video.pause());
@@ -71,22 +81,31 @@
     video.addEventListener('pointerleave', () => box.classList.remove('pointer-inside'));
 
     sound.addEventListener('click', () => { video.muted = !video.muted; if (!video.muted && video.paused) video.play().catch(() => {}); });
-    box.querySelector('.player-full').addEventListener('click', () => {
-      if (document.fullscreenElement) document.exitFullscreen();
-      else if (box.requestFullscreen) box.requestFullscreen();
-      else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen(); // iPhone
+    full.hidden = !box.requestFullscreen && !video.webkitEnterFullscreen;
+    full.addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement === box) await document.exitFullscreen();
+        else if (box.requestFullscreen) await box.requestFullscreen();
+        else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+      } catch { /* A browser may deny fullscreen; keep the existing player usable. */ }
+      paint();
     });
     const seek = (x) => {
       const r = track.getBoundingClientRect();
       if (video.duration) video.currentTime = Math.min(1, Math.max(0, (x - r.left) / r.width)) * video.duration;
     };
+    let seekPointer = null;
     track.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 || !Number.isFinite(video.duration)) return;
+      seekPointer = e.pointerId;
       seek(e.clientX);
       track.setPointerCapture(e.pointerId);
-      const move = (ev) => seek(ev.clientX);
-      track.addEventListener('pointermove', move);
-      track.addEventListener('pointerup', () => track.removeEventListener('pointermove', move), { once: true });
     });
+    track.addEventListener('pointermove', (e) => {
+      if (e.pointerId === seekPointer) seek(e.clientX);
+    });
+    const stopSeeking = (e) => { if (e.pointerId === seekPointer) seekPointer = null; };
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(event => track.addEventListener(event, stopSeeking));
     track.addEventListener('keydown', (e) => {
       if (!video.duration) return;
       const k = { ArrowLeft: -5, ArrowDown: -5, ArrowRight: 5, ArrowUp: 5 }[e.key];

@@ -15,3 +15,11 @@ Detail for this area of the design system. `DESIGN.md` holds the system and a su
 ## Typography scope (revised)
 
 Source Serif 4 is reserved for the Think pieces index and its essays. The main Digital Archive, collection titles and viewers, and the Room heading use Funnel as before. About stays Funnel. Only Think pieces loads `css/personal-type.css`; its dates, captions, navigation and controls remain Funnel. Palettes and layouts are unchanged by this typography correction.
+
+## Shared media controls
+
+`css/media-controls.css` gives Posters, Archive, Pokémon and project video controls the same 44 px minimum targets, Funnel labels, focus outline and Close alignment. Existing viewer layouts, palettes, escape behaviour and collection gestures are preserved. Video controls expose sound state and readable playback position, update the fullscreen action on entry/exit, and reset seeking on pointer cancellation. The shared player still keeps native controls when JavaScript is unavailable; unsupported fullscreen controls are hidden.
+
+## Shared motion rhythm
+
+`css/motion.css` defines 200 ms viewer fades (150 ms with reduced motion), 450 ms content entrances and a 16 px arrival distance. Native gallery dialogs share cancellable fades via `js/viewer-motion.js`; Archive uses the same timing. About now arrives with one quiet fade rather than separate sliding layers. Archive’s bright opening flash and delayed metadata are removed. Artwork tilt, infinite gallery movement, the tomato, Room and the shared page/menu transitions keep their distinct functions. Functional labels remain Menu/Close/Back, Play/Pause, Sound and Full screen; the player changes its action to Exit full screen while expanded.
