@@ -32,3 +32,5 @@ Projects, About, Archive and the essay index share heading scale, outer gutters,
 ## Vanilla-licious naming
 
 Project name: **Vanilla-licious**. Client: **Soap & Glory**. The project bar, marquee, Client field, home card, metadata, Machine view and terminal use those roles consistently. The existing `/project/soap-and-glory-vanilla/` URL and asset filenames are preserved.
+
+**Unified red:** principal UI red is `--brand-red` (#e40000), shared by menu/footer, FAQs/essays, Contact bars and large lettering; Studies/ENMAD use the shared dark ink on pink. Text on pink and small reading text on mustard uses `--brand-red-ink` (#9f0000). Artwork and existing palettes outside these red roles remain unchanged.

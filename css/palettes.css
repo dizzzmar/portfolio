@@ -42,8 +42,8 @@ html[data-palette] .site-foot { background: var(--hero-bg); }
 [data-palette] .case-credit p { color: var(--ink); }
 
 /* ---------- Paletas ---------- */
-/* ENMAD (Studies): rosa y rojo del propio proyecto. El rojo de los dossieres (#ff2711) sobre el rosa solo da 2:1: títulos en #c41a08 (3,3:1, texto grande) y texto en #8f1003 (5,1:1) */
-html[data-palette="enmad"] { --hero-bg: #ffa2d4; --hero-ink: #c41a08; --bar-ink: #8f1003; --bg: #ffa2d4; --ink: #8f1003; --label: #8f1003; }
+/* ENMAD: el rosa conserva el rojo oscuro común de lectura (4,60:1); el rojo principal no alcanza 3:1 aquí. */
+html[data-palette="enmad"] { --hero-bg: #ffa2d4; --hero-ink: var(--brand-red-ink); --bar-ink: var(--brand-red-ink); --bg: #ffa2d4; --ink: var(--brand-red-ink); --label: var(--brand-red-ink); }
 
 /* Lexus Electrified: el cobre del coche sobre el verde oscuro de las montañas */
 html[data-palette="lexus"] { --hero-bg: #ff7a3d; --hero-ink: #0f2a22; --bg: #0f2a22; --ink: #ffe9d2; --label: #ff9d66; }

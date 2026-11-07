@@ -3,8 +3,8 @@ name: dizmar.xyz
 description: Portfolio of Mario Diz, art director in Madrid. Two typographic voices, shared navigation, a tomato at the centre.
 colors:
   accent: "#0c0c0b"
-  cursor: "#f83d0c"
-  menu-red: "#df1f1f"
+  cursor: "#e40000"
+  menu-red: "#e40000"
   cream: "#fff6ea"
   lincoln-green: "#125603"
   lime: "#c3f380"
@@ -106,8 +106,8 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 
 ### Primary
 - **Accent** (#0c0c0b, `--accent`): near-black. The "View project" button, text selection and focus rings in Projects. There is no coloured accent on text or buttons.
-- **Cursor** (#f83d0c, `--cursor`): tomato red, used for the tomato itself. The cursor dot follows donut-studio.com instead: 16 px of #fff70d in `mix-blend-mode: difference` (blue on white, yellow on black), glued to the mouse with no lag, shrinking on press and opening into a "View" / "View project" pill over projects.
-- **Menu Red** (#df1f1f): the full-screen menu panel, the bars of the Contact form and the big footer. A vivid pure red (the reference site's #ff1a1f is brighter but gives cream text only 3.6:1); this is the brightest red that keeps cream text at 4.51:1 (WCAG AA for small text).
+- **Cursor** (#e40000, `--cursor`): tomato red, used for the tomato itself. The cursor dot follows donut-studio.com instead: 16 px of #fff70d in `mix-blend-mode: difference` (blue on white, yellow on black), glued to the mouse with no lag, shrinking on press and opening into a "View" / "View project" pill over projects.
+- **Menu Red** (#e40000): the full-screen menu panel, the bars of the Contact form and the big footer. A vivid pure red (the reference site's #ff1a1f is brighter but gives cream text only 3.6:1); this is the brightest red that keeps cream text at 4.51:1 (WCAG AA for small text).
 
 ### Secondary
 - **Lincoln Green** (#125603): background of About, Privacy and Machine, paired with Lime.
@@ -122,7 +122,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **Sky Blue** (#4f8fd8): fallback for the sky photograph (`assets/images/sky.webp`) behind the landing page and Contact.
 
 ### Tokens
-`--accent` (#0c0c0b), `--cursor` (#f83d0c), `--menu-red` (#df1f1f) and `--cream` (#fff6ea) live in `css/tokens.css`; so do the two curves, `--ease-out` for arrivals and `--ease-in-out` (`cubic-bezier(.77, 0, .175, 1)`) for moving across the screen. Do not write these values in other files.
+`--accent` (#0c0c0b), `--cursor` (#e40000), `--menu-red` (#e40000) and `--cream` (#fff6ea) live in `css/tokens.css`; so do the two curves, `--ease-out` for arrivals and `--ease-in-out` (`cubic-bezier(.77, 0, .175, 1)`) for moving across the screen. Do not write these values in other files.
 
 ### Named Rules
 **The Green Pair Rule (current green theme only).** On green pages the only text colour is lime, never white or red. The red cursor would fall to 2.4:1 there, so it turns lime too.
@@ -208,3 +208,7 @@ A dark panel opened with the ` key from any page (no visible link: it is a wink 
 - **Don't** animate sizes, margins or shadows.
 
 **FAQs palette:** white background with menu-red text and controls; About and Privacy retain their own palettes.
+
+## Shared red
+
+The principal interface red is `--brand-red: #e40000`, a pure saturated red shared by `--menu-red` and the tomato-red token alias. Menu, big footer, FAQs, Think pieces, Contact’s large lettering/bars derive from it. It gives 4.89:1 on white and 4.56:1 against cream. `--brand-red-ink: #9f0000` is the single darker variant for text on pink and small text on mustard. Colour inside client artwork, photographs, 3D models, favicons and the terminal’s themed ASCII art is not recoloured by this interface change. The difference-blended cursor keeps its existing behaviour.
