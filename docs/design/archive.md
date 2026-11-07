@@ -17,3 +17,7 @@ Detail for this area of the design system. `DESIGN.md` holds the system and a su
 ## Source Serif 4 implementation
 
 Personal editorial headings now use locally hosted Source Serif 4 at 600 with optical sizing; Archive introductions and essay text use 400 with real italic. Navigation, category links, facts, dates, captions and controls remain Funnel. Room changes only its editorial page heading; scene and album artwork remain untouched. About stays Funnel. Shared roles are in `css/personal-type.css`; Latin-subset variable font files and OFL are in `assets/fonts/source-serif-4/`. Existing layouts and palettes are preserved.
+
+## Shared page structure (7 November 2026)
+
+Projects, About, Archive and the essay index share heading scale, outer gutters, heading gaps and column spacing via `css/page-structure.css`. The existing type voices and palettes remain. Projects’ identity line scrolls with content rather than occupying fixed navigation. Archive category lists align to the top of the right column on desktop and follow the introduction with a bounded gap on mobile; their previous bottom-of-viewport placement is superseded. About retains its portrait/content composition, with content gutters aligned to the shared page margins. Project case-study layouts and functional Back links are unchanged.
