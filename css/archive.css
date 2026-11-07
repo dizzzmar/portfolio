@@ -115,6 +115,7 @@ body.archive-viewing { overflow: hidden; }
   .archive-index { display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding-bottom: max(32px, env(safe-area-inset-bottom)); }
   .archive-side { position: static; padding: 8px 0 0; }
   .archive-heading { font-size: min(23vw, 120px); }
+  .archive-heading--word { font-size: min(18.5vw, 110px); }   /* una sola palabra larga (Playground): tiene que caber en una línea */
   .archive-sub { max-width: 36ch; margin-top: 20px; }
   .archive-list { padding-top: 0; display: grid; gap: 6px; }
   .archive-row { padding: 8px 0; }
