@@ -1,10 +1,10 @@
-/* FAQS — estilos de faq/index.html (se carga después de privacy.css, que pone el verde, la barra y el pie).
+/* FAQS — estilos de faq/index.html (se carga después de privacy.css, que pone la base, la barra y el pie; aquí se cambia a blanco y rojo).
    Dos columnas: el título a la izquierda (fijo al hacer scroll) y a la derecha las preguntas, una debajo de otra, sin líneas ni números:
-   las separa el aire. Cada pregunta es un título grande en Funnel Display con un botón redondo (lima, con un +) a la derecha; al pulsarla se abre la respuesta
-   debajo, el + gira hasta ser una × y las demás preguntas bajan un poco de intensidad (a 80 %, 5,1:1 sobre el verde) para que la abierta destaque.
+   las separa el aire. Cada pregunta es un título grande en Funnel Display con un botón redondo (rojo, con un + blanco) a la derecha; al pulsarla se abre la respuesta
+   debajo, el + gira hasta ser una × y las demás preguntas conservan el rojo pleno para mantener el contraste sobre blanco.
    Solo hay una abierta a la vez (name="faq" en los <details>). Funciona sin JavaScript y con teclado (Enter o espacio). */
 
-:root { interpolate-size: allow-keywords; } /* permite animar de altura 0 a «auto» (Chrome y Edge; en el resto se abre sin animar) */
+:root { --bg: #fff; --ink: var(--menu-red); --dim: 1; interpolate-size: allow-keywords; } /* permite animar de altura 0 a «auto» (Chrome y Edge; en el resto se abre sin animar) */
 
 .faq { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: clamp(24px, 4vw, 72px); align-items: start; padding-bottom: clamp(48px, 7vw, 120px); }
 .faq-side { position: sticky; top: calc(var(--nav-h) + clamp(24px, 4vw, 56px)); padding-top: clamp(40px, 7vw, 110px); }
@@ -16,7 +16,7 @@
 .faq-item summary:focus-visible { outline: 2px solid currentColor; outline-offset: 6px; }
 .faq-item h2 { font-family: var(--font-display); font-size: clamp(24px, 2.8vw, 44px);   /* el «Title» del sistema */ font-weight: var(--fw-title); letter-spacing: -.04em; line-height: 1.05; text-wrap: balance; }
 
-/* El botón: un círculo lima con un + en el verde de la página; al abrir, el + gira 45° y es una × */
+/* El botón: un círculo rojo con un + blanco; al abrir, el + gira 45° y es una × */
 .faq-plus { position: relative; width: clamp(36px, 3.2vw, 48px); aspect-ratio: 1; border-radius: 999px; background: var(--ink); transition: transform .3s var(--ease-out); }
 .faq-plus::before, .faq-plus::after { content: ""; position: absolute; left: 50%; top: 50%; width: 38%; height: 2px; margin: -1px 0 0 -19%; background: var(--bg); }
 .faq-plus::after { transform: rotate(90deg); }
@@ -32,9 +32,9 @@
 .faq-ask { max-width: 22ch; text-wrap: balance; margin-top: clamp(32px, 6vw, 88px); font-size: clamp(24px, 2.6vw, 40px); font-weight: var(--fw-regular); letter-spacing: -.03em; line-height: 1.1; }
 .faq-ask a { display: inline-block; padding-block: 10px; margin-block: -10px; font-weight: var(--fw-bold); text-underline-offset: 6px; text-decoration-thickness: 2px; }
 
-/* Con una abierta, las demás bajan un poco de intensidad (nunca por debajo de 80 %: 5,1:1 sobre el verde) */
+/* Con una abierta, se conserva el rojo pleno en las demás preguntas */
 /* (la transición va en .faq-item, abajo: así también vuelven a su intensidad con suavidad) */
-.faq-list:has(.faq-item[open]) .faq-item:not([open]) { opacity: .8; }
+.faq-list:has(.faq-item[open]) .faq-item:not([open]) { opacity: 1; }
 @media (hover: hover) { .faq-list:has(.faq-item[open]) .faq-item:not([open]):hover { opacity: 1; } }
 
 /* ANIMACIÓN DE ABRIR Y CERRAR (guía de emil-design-eng): todo es transform, opacidad y la altura del cajón; una sola curva de salida fuerte (la de --ease-out) y los cierres más rápidos
@@ -62,7 +62,7 @@
 @media (hover: hover) and (pointer: fine) { .faq-js .faq-item[open] summary:hover .faq-plus { transform: scale(1.12); } .faq-js .faq-item.is-open summary:hover .faq-plus { transform: rotate(135deg) scale(1.12); } }
 .faq-js .faq-item[open]:not(.is-open) summary:active .faq-plus { transform: scale(.94); }
 .faq-js .faq-list .faq-item:not(.is-open) { opacity: 1; }
-.faq-js .faq-list:has(.faq-item.is-open) .faq-item:not(.is-open) { opacity: .8; }
+.faq-js .faq-list:has(.faq-item.is-open) .faq-item:not(.is-open) { opacity: 1; }
 @media (hover: hover) { .faq-js .faq-list:has(.faq-item.is-open) .faq-item:not(.is-open):hover { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
@@ -79,3 +79,8 @@
   .faq-item h2 { font-size: 24px; }
   .faq-plus { width: 40px; }
 }
+
+/* FAQ palette: white and menu red; keep navigation readable over the article. */
+html, body.faq-page { background: var(--bg); }
+body.faq-page:not([data-intro]) .nav { mix-blend-mode: normal; background: var(--bg); }
+body.faq-page:not([data-intro]) .nav .nav-links a { color: var(--ink); }
