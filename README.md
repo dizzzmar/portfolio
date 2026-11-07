@@ -13,7 +13,7 @@ posters/index.html                     Collage de trabajos personales y ficticio
 js/sounds.js · assets/sounds/   Sonidos de los enlaces (tic al pasar, clic al pulsar; encendidos por defecto, se apagan con «Sound on» en el pie grande; salvo en machine/, suena en todas las páginas). Son de Kenney (CC0, ver assets/sounds/CREDITS.txt); el volumen y los archivos se editan arriba de sounds.js
 js/dot-field.js · js/dot-bg.js   Fondo de puntos (motor de React Bits en JavaScript puro + montaje): Posters y Playground; se activa con data-dot-bg="white|ink" en <body> y los valores se editan arriba de dot-bg.js
 js/pixel-trail.js · js/archive-trail.js   Estela de píxeles blancos del Digital Archive (motor de React Bits en JavaScript puro + montaje; los valores se editan arriba de archive-trail.js)
-archive/think-pieces/                  Ensayos del Digital Archive (blanco, serifa y rojo; css/essays.css): un índice y una carpeta por ensayo (ahora, solo «una-oda-a-la-nostalgia»)
+archive/think-pieces/                  Ensayos del Digital Archive (blanco, serifa y rojo; css/essays.css): un índice y una carpeta por ensayo (ahora «la-esencia-de-lo-haptico» y «una-oda-a-la-nostalgia»)
 archive/index.html · archive/<colección>/index.html   Digital Archive: el índice de colecciones y el muro de cada colección (ahora fruit-stickers y fave-album-covers); piezas en assets/archive/<colección>/items.json
 machine/index.html                     Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 project/<nombre>/index.html            Una ficha por proyecto → www.dizmar.xyz/project/<nombre>/
