@@ -16,3 +16,7 @@ Detail for this area of the design system. `DESIGN.md` holds the system and a su
 ## Shared page structure (7 November 2026)
 
 Projects, About, Archive and the essay index share heading scale, outer gutters, heading gaps and column spacing via `css/page-structure.css`. The existing type voices and palettes remain. Projects’ identity line scrolls with content rather than occupying fixed navigation. Archive category lists align to the top of the right column on desktop and follow the introduction with a bounded gap on mobile; their previous bottom-of-viewport placement is superseded. About retains its portrait/content composition, with content gutters aligned to the shared page margins. Project case-study layouts and functional Back links are unchanged.
+
+## Shared motion rhythm
+
+`css/motion.css` defines 200 ms viewer fades (150 ms with reduced motion), 450 ms content entrances and a 16 px arrival distance. Native gallery dialogs share cancellable fades via `js/viewer-motion.js`; Archive uses the same timing. About now arrives with one quiet fade rather than separate sliding layers. Archive’s bright opening flash and delayed metadata are removed. Artwork tilt, infinite gallery movement, the tomato, Room and the shared page/menu transitions keep their distinct functions. Functional labels remain Menu/Close/Back, Play/Pause, Sound and Full screen; the player changes its action to Exit full screen while expanded.

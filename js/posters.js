@@ -1,3 +1,4 @@
+import { fadeViewer } from './viewer-motion.js?v=20261107motion1';
 // POSTERS — el collage y el visor (estilos en css/posters.css).
 // Cada pieza del collage es un enlace #nombre; al abrirlo, el visor (<dialog>) enseña todas las imágenes de ese mini-proyecto.
 // Las piezas con varias versiones de color (is-cycle) van cambiando de una a otra solas, solo mientras se ven en pantalla.
@@ -81,12 +82,13 @@
     }));
     // al abrir desde el collage se empieza por la versión que se estaba viendo
     if (i === 0 && p.tile.classList.contains('is-cycle')) { const on = [...p.tile.querySelectorAll('.pz-frame img')].findIndex((im) => im.classList.contains('is-on')); if (on > 0) i = on; }
-    if (!dlg.open) { dlg.showModal(); root.classList.add('pz-open'); dlg.focus({ preventScroll: true }); } // el foco en el visor, no en la flecha de atrás
+    if (!dlg.open) { dlg.showModal(); root.classList.add('pz-open'); dlg.focus({ preventScroll: true }); fadeViewer(dlg, true); } else fadeViewer(dlg, true); // el foco en el visor, no en la flecha de atrás
     show(i, false);
     history.replaceState(null, '', hashFor());
   }
-  function close(fromHash) {
+  async function close(fromHash) {
     if (!dlg.open) return;
+    if (!await fadeViewer(dlg, false)) return;
     dlg.close(); root.classList.remove('pz-open');
     if (!fromHash) history.replaceState(null, '', location.pathname + location.search);
     if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
