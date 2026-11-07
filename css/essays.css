@@ -32,6 +32,10 @@ body.essay-page:not([data-intro]) .nav .nav-links a, .essay-page .archive-back, 
 .essay-text code { font-family: inherit; font-style: italic; }
 .essay-text em { font-style: italic; }
 .essay-text .sign { margin-top: 2.5em; }
+.essay-text .pull { margin: 2em 0; }
+.essay-text .pull .verse { margin: 0; font-weight: 700; }   /* los versos de apertura (en negrita y cursiva, como en el original) */
+.essay-text .pull .cite { margin-top: .5em; font-size: .85em; }
+.essay-text figcaption { margin-top: .75em; font-size: .85em; font-style: italic; line-height: 1.4; }
 .essay-text .verse { margin-top: 2em; margin-bottom: 2em; font-style: italic; }   /* una cita (versos): en cursiva y con aire alrededor */
 .essay-text figure + p { margin-top: 2em; }
 @media (max-width: 760px) { .essay-body { max-width: none; } }
