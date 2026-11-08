@@ -24,10 +24,10 @@ Si algo es seguro y reversible (cambios de diseño en una rama, PRs sin fusionar
 
 ## Documentación: qué leer y dónde escribir
 - Lo que se carga solo es poco: este archivo, `PRODUCT.md` (qué es la web) y `DESIGN.md` (el sistema: colores, tipografía, layout, reglas). Mantenlos cortos.
-- El detalle de cada zona está en `docs/design/` (`chrome` menú/barra/enlaces/footer/cursor/sonidos, `projects`, `about`, `playground`, `archive`, `contact`, `room`). Léelo solo cuando trabajes en esa zona.
-- Al cambiar algo de una página, documéntalo en su archivo de `docs/design/`, no en `DESIGN.md`. En `DESIGN.md` solo entra lo que valga para todo el sitio (un token, una regla).
+- El detalle de cada zona está en `.claude/notes/design/` (`chrome` menú/barra/enlaces/footer/cursor/sonidos, `projects`, `about`, `playground`, `archive`, `contact`, `room`). Léelo solo cuando trabajes en esa zona.
+- Al cambiar algo de una página, documéntalo en su archivo de `.claude/notes/design/`, no en `DESIGN.md`. En `DESIGN.md` solo entra lo que valga para todo el sitio (un token, una regla).
 
 ## Convenciones del proyecto
 - Explica los cambios al usuario en español y sin jerga técnica.
 - Trabaja en una rama y abre una PR; enseña capturas de escritorio y móvil cuando cambie algo visual.
-- Al cambiar un `.css` o un `.js`, actualiza el número `?v=` de sus enlaces en todas las páginas (ver README).
+- Al cambiar un `.css` o un `.js`, actualiza el número `?v=` de sus enlaces en todas las páginas (ver `.claude/notes/guia.md`).
