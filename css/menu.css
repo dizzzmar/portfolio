@@ -38,7 +38,7 @@ html.menu-open { overflow: hidden; scrollbar-gutter: stable; background: var(--m
 
 /* Cabecera: el tomate y «Close» en el mismo sitio que el tomate y «Menu» de la página (js/menu.js mide dónde están) */
 .menu-logo { position: absolute; left: var(--logo-x, 24px); top: var(--logo-y, 10px); width: var(--logo-w, 44px); height: var(--logo-h, 47px); }
-.menu-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.menu-logo img { display: block; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
 .menu-close {
   position: absolute;
   right: var(--btn-right, 8px);
