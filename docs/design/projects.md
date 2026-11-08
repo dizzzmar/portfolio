@@ -38,5 +38,5 @@ Project name: **Vanilla-licious**. Client: **Soap & Glory**. The project bar, ma
 ## Imagen en grande (nov 2026)
 - `js/lightbox.js` (cargado tras `case.js` en todas las páginas de proyecto y en la plantilla): al pulsar una imagen de `.st-item` o uno de los vídeos pequeños de la cabecera (`.st-video`) se abre en un `<dialog>` a pantalla completa. Esc, un toque fuera o la X lo cierran; flechas del teclado, botones laterales (escritorio) o deslizar el dedo (móvil) pasan a la anterior y a la siguiente.
 - Las imágenes se abren con la mayor candidata del `srcset`. Los vídeos pequeños (sin sonido) se abren con los controles del navegador: reproducir, barra, pantalla completa.
-- Los vídeos grandes con reproductor propio (`data-player`: Lexus, Schweppes, Soap & Glory) no entran en el visor: ya tienen sus controles (Play, barra, Sound, Full screen; en móvil debajo del vídeo).
+- Los vídeos grandes con reproductor propio (`data-player`: Lexus, Schweppes, Soap & Glory) no entran en el visor: ya tienen sus controles (Play, barra, Sound, Full screen), encima del vídeo también en móvil.
 - Dentro del visor se usa el cursor del sistema (el punto amarillo de `cursor.js` quedaría por debajo del diálogo).

@@ -15,8 +15,8 @@ const FLY_FROM_NAV = document.documentElement.classList.contains('land-fly') && 
 
 // Píxel grande, como la estantería de The room (ROOM_PIXEL_SIZE en js/room.js): el tomate se dibuja en una textura pequeña (cada PIXEL px de pantalla
 // es un píxel, sin suavizar) y se estira sin difuminar. El anillo «MARIO DIZ» se dibuja aparte, a resolución completa, para que el nombre se lea nítido:
-// atrás del anillo → tomato pixelado → delante del anillo (ver draw() al final). En la portada el píxel es de 8 px; acoplado en la barra, de 2 px (como js/nav-tomato.js)
-const PIXEL = 8, PIXEL_DOCKED = 2;
+// atrás del anillo → tomato pixelado → delante del anillo (ver draw() al final). En la portada el píxel es de 6 px; acoplado en la barra, de 1,5 px (como js/nav-tomato.js)
+const PIXEL = 6, PIXEL_DOCKED = 1.5;
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
 // En el móvil (3× de píxeles) un lienzo a pantalla completa con 2× cuesta el doble que con 1,5× y el tomate no gana nitidez que se vea
 renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
