@@ -7,50 +7,37 @@
 web
 
 ## Users
-Todo lo que se busca en la web: marcas y agencias que buscan director de arte o contratarte, reclutadores y equipos creativos, y público general y colegas que descubren el trabajo por curiosidad, redes o recomendación. Llegan sin encargo concreto en muchos casos y se quedan a ver los proyectos.
+Marcas, agencias y equipos creativos, y público general que llega por enlace, redes o recomendación.
 
 ## Product Purpose
-Portfolio personal de Mario Diz (dizmar), director de arte y diseñador visual en Madrid. Muestra su trabajo (imagen clave, producto, audiovisual y cine generado con IA) y a él mismo (biografía, clientes, un espacio 3D con sus cosas favoritas).
-
-Éxito: que la gente lo recuerde y vuelva o lo recomiende. El contacto es un efecto secundario, no el objetivo principal.
+Portfolio personal de Mario Diz (dizmar), director de arte y diseñador visual en Madrid: su trabajo, una breve biografía y un espacio 3D con sus cosas favoritas. Éxito: que se recuerde y se vuelva a visitar.
 
 ## Positioning
-Director de arte que integra la IA dentro de la dirección de arte: no la usa solo como herramienta de producción, sino como parte del proceso creativo y del criterio. Un vecino no puede copiar esto diciendo «uso IA», porque lo que lo diferencia es que la IA está al servicio de una idea visual concreta y de un trabajo que se ve en los proyectos.
+Dirección de arte que integra la IA como parte del criterio creativo, al servicio de una idea visual que se ve en los proyectos.
 
 ## Operating Context
-- El trabajo se evalúa en la web, en desktop y en móvil, y se comparte por enlace.
-- Los proyectos son piezas reales de clientes (Lexus, Soap & Glory, Schweppes) con su vídeo, imágenes y crédito.
-- Se visita de forma puntual: una vez, y a veces se vuelve para ver si hay novedades.
-
-## Capabilities and Constraints
-- Sitio estático (HTML, CSS y JavaScript sin framework), alojado en GitHub Pages en www.dizmar.xyz.
-- Tres proyectos publicados.
-- Sala 3D (The room) con three.js, alojado en el propio repositorio (assets/vendor/three).
-- Sin cookies, sin analítica, sin servicios de terceros que reciban datos de visitantes (ver la página de privacidad), salvo el formulario de Contact: lo que el visitante escribe y envía va a Formspree, que me lo reenvía por email.
+- Sitio estático (HTML, CSS y JavaScript sin framework) en GitHub Pages, www.dizmar.xyz.
+- Se ve en escritorio y en móvil, y se comparte por enlace.
+- Sin cookies, sin analítica y sin servicios de terceros que reciban datos de visitantes (ver la página de privacidad), salvo el formulario de Contact.
 - Idioma: inglés.
-- «Pokémon collection» en The room: álbum de 35 cartas (escaneos oficiales) sobre negro, sin textos ni ampliación al pulsar. Detalle en `docs/design/room.md`.
-- Digital Archive (/archive/): colecciones de objetos gráficos cotidianos, cada una un muro infinito sin textos (como La Barra de Nicolò Lombardi); hoy «Fruit stickers» y «Fave album covers» (los datos de cada portada los busca Claude a partir de lo que da Mario). Enlazada en el menú. Detalle en `docs/design/archive.md`.
-- Plant Lab (/project/plant-lab/, en Projects → Personal) y Playground (oculto por ahora: sin enlaces y con noindex; /playground/ es un menú de experimentos con el diseño del índice del Digital Archive; el sandbox a pantalla completa está en /playground/plant-lab/): sandbox de nodos que dibuja plantas con un lápiz de puntitos, todo procedural y en el navegador (sin subir nada ni servicios de terceros; motor en js/playground/). Detalle en `docs/design/playground.md`.
+- El detalle de cada zona está en `.claude/notes/design/`.
 
 ## Brand Commitments
-- El tomate es el símbolo: logo, tomate 3D y la identidad que ya tiene la web.
-- La web se mantiene en inglés.
-- Los nombres públicos son «Mario Diz» y «dizmar»; se permiten variantes del nombre completo (Mario Díaz Aguado) en datos estructurados y en la página de privacidad.
+- El tomate es el símbolo: logo, tomate 3D y la identidad de la web.
+- Los nombres públicos son «Mario Diz» y «dizmar».
 
 ## Evidence on Hand
-- Proyectos: `project/lexus-electrified/`, `project/soap-and-glory-vanilla/`, `project/schweppes/` (con imágenes y vídeos en `assets/projects/`).
-- Retrato y biografía de About (`assets/images/mario-*.webp`); clientes con logos en `assets/brands/`.
-- Modelo 3D del tomate (`assets/models/tomato.glb`) y la sala 3D (`assets/room/`).
-- No hay testimonios, premios, cifras de resultados ni prensa en la web; no deben inventarse.
+- Proyectos en `project/` (imágenes y vídeos en `assets/projects/`), retrato y logos de clientes en `assets/`, modelo del tomate y sala 3D.
+- No hay testimonios, premios ni cifras en la web; no deben inventarse.
 
 ## Product Principles
-1. Lo que se recuerda es el trabajo y la idea visual, no el formato de la web: la web tiene que ser memorable por sí misma sin ser un espectáculo.
-2. La IA se muestra como parte del criterio de dirección de arte, no como truco ni como fin en sí misma.
-3. El tomate y la sala son la firma: hay que reconocerlos en cada página.
-4. Sin datos de visitantes ni servicios de terceros sin decidirlo (es parte de la promesa de la página de privacidad).
+1. Lo que se recuerda es el trabajo, no el formato de la web.
+2. La IA se muestra como criterio de dirección de arte, no como truco.
+3. El tomate y la sala son la firma.
+4. Sin datos de visitantes ni servicios de terceros sin decidirlo.
 5. Todo en inglés y con la misma voz: segura, directa, sin jerga.
 
 ## Accessibility & Inclusion
 - Cumplir WCAG 2.1 AA en texto y controles.
 - Respetar «reducir movimiento» y ofrecer alternativas a cualquier animación que transmita información.
-- Compatibilidad con teclado y lectores de pantalla en la navegación y en los proyectos.
+- Compatibilidad con teclado y lectores de pantalla.

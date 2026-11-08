@@ -91,10 +91,10 @@ One piece of fruit at the centre and everything else arranged around it: the tom
 
 The tone is close and a little funny. Daily paths (reading, navigating) are precise and quiet; the humour lives in the rare places: the envelope you tear to write an email, the terminal, the FAQs, the cursor that bounces. Nothing explains itself with slogans or helper text; if a screen needs a label to make sense, the layout gets fixed instead.
 
-Typography and colour direction: see `docs/design/visual-language.md` (7 November 2026). Its professional/personal roles supersede the previous blanket serif ban. Source Serif 4 is selected only for Think pieces; the implementation descriptions below record the current site unless noted.
+Typography and colour direction: see `.claude/notes/design/visual-language.md` (7 November 2026). Its professional/personal roles supersede the previous blanket serif ban. Source Serif 4 is selected only for Think pieces; the implementation descriptions below record the current site unless noted.
 
 **Key Characteristics:**
-- Two voices: Funnel for professional content, Source Serif 4 only for Think pieces; interface controls stay Funnel. See `docs/design/visual-language.md` for mixed pages and font selection.
+- Two voices: Funnel for professional content, Source Serif 4 only for Think pieces; interface controls stay Funnel. See `.claude/notes/design/visual-language.md` for mixed pages and font selection.
 - Section and project palettes may vary independently of font roles. The current green/lime, sky and project palettes are themes, not fixed professional/personal categories.
 - A 64 px bar with the tomato left and links right, the same everywhere.
 - Motion is transform and opacity only, one shared ease-out, and it always has a reduced-motion path.
@@ -131,7 +131,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 
 ## Typography
 
-**Direction for future changes:** professional content uses Funnel; Think pieces uses Source Serif 4; shared UI stays Funnel. The mapping and About exception are in `docs/design/visual-language.md`. Values below describe current Funnel roles; Source Serif 4 is implemented only in Think pieces. About, Archive and Room stay Funnel.
+**Direction for future changes:** professional content uses Funnel; Think pieces uses Source Serif 4; shared UI stays Funnel. The mapping and About exception are in `.claude/notes/design/visual-language.md`. Values below describe current Funnel roles; Source Serif 4 is implemented only in Think pieces. About, Archive and Room stay Funnel.
 
 **Display Font:** Funnel Display (variable, OFL licence), only for large titles: page titles, project names, the menu links, the 404 and the landing's tomato name. Its flared, decorative terminals are the point there and too busy for paragraphs.
 **Body Font:** Funnel Sans (variable, OFL licence), the calmer sibling with the same bones, for running text, lists, labels and every small size. Both are self-hosted in `assets/fonts/` and preloaded; Helvetica Neue or Arial while they load.
@@ -163,7 +163,7 @@ The menu uses the whole viewport: on desktop the five big links sit on one row, 
 
 ## Elevation & Depth
 
-Flat. There are no shadows at rest and none are added on interaction. Depth comes from colour fields and movement: when you change page, the new page rises from below as a sheet over the old one, which recedes (scale 0.94, 55 % brightness), and going back reverses it (0.38 s, one iOS-drawer curve; detail in `docs/design/chrome.md`); the menu panel is a curtain that covers the page.
+Flat. There are no shadows at rest and none are added on interaction. Depth comes from colour fields and movement: when you change page, the new page rises from below as a sheet over the old one, which recedes (scale 0.94, 55 % brightness), and going back reverses it (0.38 s, one iOS-drawer curve; detail in `.claude/notes/design/chrome.md`); the menu panel is a curtain that covers the page.
 
 ## Shapes
 
@@ -171,16 +171,16 @@ Straight corners on project imagery; a full pill (999 px) on buttons. The tomato
 
 ## Components
 
-Close and a little funny: precise when used daily, playful where visitors do not go every day. This is the summary; the full detail of each area is in `docs/design/` (read only the one you are working on, and add new per-page detail there, never here):
+Close and a little funny: precise when used daily, playful where visitors do not go every day. This is the summary; the full detail of each area is in `.claude/notes/design/` (read only the one you are working on, and add new per-page detail there, never here):
 
-- **Bar and menu** (`docs/design/chrome.md`): 64 px bar, tomato left, one word «Menu» right, always `mix-blend-mode: difference` with no background (the tomato sits outside `<nav>`); the menu is a full-screen Menu Red curtain with the five big links plus Digital Archive; a flat colour curtain (`--curtain`) between pages; keyboard and reduced-motion paths for all of it.
-- **Text links, buttons, cursor, sounds, footer** (`docs/design/chrome.md`): links roll letter by letter on hover (no underline; plain underline on touch); buttons are a 999 px pill; the cursor is a 16 px dot in difference blend (mouse only); link sounds are on by default with a switch in the big footer; the big DIZMAR footer is the only footer on pages that scroll.
-- **Projects and project pages** (`docs/design/projects.md`): two-column pages (sticky facts left, media right), per-project palettes, Posters, Studies, More works.
-- **About** (`docs/design/about.md`): green page, sticky holographic portrait (the pixel-art island now lives in the Playground).
-- **Plant Lab and Playground** (`docs/design/playground.md`): the node sandbox in a typographic-poster look, and the dot field.
-- **Digital Archive** (`docs/design/archive.md`): black, endless walls without text, piece viewer, white pixel trail.
-- **Contact** (`docs/design/contact.md`): mustard window, a conversation in red bars (message → name → email → send), and the DIZ sachet.
-- **The Room** (`docs/design/room.md`): 3D shelf rendering and the Pokémon album.
+- **Bar and menu** (`.claude/notes/design/chrome.md`): 64 px bar, tomato left, one word «Menu» right, always `mix-blend-mode: difference` with no background (the tomato sits outside `<nav>`); the menu is a full-screen Menu Red curtain with the five big links plus Digital Archive; a flat colour curtain (`--curtain`) between pages; keyboard and reduced-motion paths for all of it.
+- **Text links, buttons, cursor, sounds, footer** (`.claude/notes/design/chrome.md`): links roll letter by letter on hover (no underline; plain underline on touch); buttons are a 999 px pill; the cursor is a 16 px dot in difference blend (mouse only); link sounds are on by default with a switch in the big footer; the big DIZMAR footer is the only footer on pages that scroll.
+- **Projects and project pages** (`.claude/notes/design/projects.md`): two-column pages (sticky facts left, media right), per-project palettes, Posters, Studies, More works.
+- **About** (`.claude/notes/design/about.md`): green page, sticky holographic portrait (the pixel-art island now lives in the Playground).
+- **Plant Lab and Playground** (`.claude/notes/design/playground.md`): the node sandbox in a typographic-poster look, and the dot field.
+- **Digital Archive** (`.claude/notes/design/archive.md`): black, endless walls without text, piece viewer, white pixel trail.
+- **Contact** (`.claude/notes/design/contact.md`): mustard window, a conversation in red bars (message → name → email → send), and the DIZ sachet.
+- **The Room** (`.claude/notes/design/room.md`): 3D shelf rendering and the Pokémon album.
 
 ### Buttons
 - **Shape:** a full pill (999 px).
@@ -193,7 +193,7 @@ A dark panel opened with the ` key from any page (no visible link: it is a wink 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use Funnel for professional content and shared UI, and Source Serif 4 only for Think pieces, as mapped in `docs/design/visual-language.md`; keep sizes and font roles in shared tokens.
+- **Do** use Funnel for professional content and shared UI, and Source Serif 4 only for Think pieces, as mapped in `.claude/notes/design/visual-language.md`; keep sizes and font roles in shared tokens.
 - **Do** animate only `transform` and `opacity`, with `var(--ease-out)` (`cubic-bezier(0.23, 1, 0.32, 1)`) for arrivals; UI 150–300 ms, underline 400 ms, section entrances up to 700 ms, the menu up to 0.7 s because it is a deliberate moment.
 - **Do** give every animation a reduced-motion path that keeps opacity and colour changes.
 - **Do** keep text on Lincoln Green in Lime, and check any new pair for 4.5:1 (3:1 for large text).
