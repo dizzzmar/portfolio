@@ -11,7 +11,7 @@
   height: 47px;
   margin: 0;
 }
-.nav-logo img, .case-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.nav-logo img, .case-logo img { display: block; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }   /* tomate plano ya pixelado (tomato-nav-pixel.webp): se ve igual que el 3D (js/nav-tomato.js) mientras este carga */
 
 @media (max-width: 700px) {
   .nav-logo, .case-logo { top: calc((var(--nav-h) - 39px) / 2); width: 36px; height: 39px; }
