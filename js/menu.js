@@ -27,7 +27,7 @@
     if (orig.getAttribute('aria-current') === 'page' || (orig.fake && current.startsWith('/archive/'))) a.setAttribute('aria-current', 'page');
     return el('li', { className: 'menu-item' }, [a]);
   });
-  const logoImg = el('img', { src: '/assets/images/tomato.webp', alt: '', width: 44, height: 47 });
+  const logoImg = el('img', { src: '/assets/images/tomato-nav-pixel.webp', alt: '', width: 44, height: 47 });
   const logo = el('a', { className: 'menu-logo', href: '/' }, [logoImg]);
   logo.setAttribute('aria-label', 'Home');
   const close = el('button', { type: 'button', className: 'menu-close' }, [el('span', { textContent: 'Close' })]);

@@ -169,6 +169,7 @@ body.white-on { background-color: #fff; }
   width: auto;
   transform: translate(-50%, -50%);
   pointer-events: none;
+  image-rendering: pixelated;   /* tomato-hero-pixel.webp: el tomate plano ya está pixelado, como el 3D (js/home-tomato.js) */
   transition: opacity .6s ease;
   animation: placeholder-float 3s ease-in-out infinite;
 }
@@ -176,7 +177,7 @@ body.white-on { background-color: #fff; }
 .work-engaged .tomato-placeholder { opacity: 0; }
 /* Llegando desde el tomate de otra página (land-fly): mientras carga el 3D, el tomate plano ya está en la barra (no el grande del centro) */
 .land-fly .tomato-placeholder { opacity: 0; animation: none; }
-.land-fly .nav-logo { background: url("/assets/images/tomato.webp") center / contain no-repeat; }
+.land-fly .nav-logo { background: url("/assets/images/tomato-nav-pixel.webp") center / contain no-repeat; image-rendering: pixelated; }
 .land-fly.tomato-ready .nav-logo { background: none; }
 @keyframes placeholder-float {
   50% { transform: translate(-50%, calc(-50% - 10px)) rotate(-3deg); }
