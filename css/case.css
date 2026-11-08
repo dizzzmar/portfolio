@@ -125,12 +125,11 @@ img, video { display: block; }
   /* Nombre largo (class="case-name is-long"): en móvil baja a dos líneas y un poco más pequeño, para no pisar el botón Menu (a la derecha, ~64 px) */
   @media (max-width: 700px) { .case-name.is-long { right: calc(var(--bar-gutter) + 64px); white-space: normal; font-size: 19px; line-height: 1.05; margin-top: -1.7px; } }
   .case-nav { display: none; } /* en el móvil hay solo la X y el tomate: Work, About, Contact y Room están en la portada */
-  /* El reproductor: la barra y el estado van debajo del vídeo, no encima (en un vídeo de 190 px de alto tapaban media imagen) */
-  .player .player-toggle, .player-bar { position: static; background: none; text-shadow: none; color: var(--ink); opacity: 1; }
-  .player .player-toggle { display: flex; align-items: center; gap: 14px; padding: 6px 0 0; }
-  .player-bar { padding: 0 0 8px; gap: 16px; }
-  .player-track::before { background: var(--ink); opacity: .25; } /* ya no va sobre el vídeo con «difference»: la línea es tinta sobre el blanco de la página */
-  .player-track i { background: var(--ink); }
+  /* El reproductor en móvil: los mismos controles que en escritorio, encima del vídeo (barra abajo con degradado; el «Play» solo se ve en pausa; un toque en el vídeo reproduce o pausa) */
+  .player .player-toggle { bottom: 58px; opacity: 1; }
+  .player:not(.is-paused) .player-toggle:not(:focus-visible) { opacity: 0; pointer-events: none; }
+  .player .player-time { display: none; }
+  .player-bar { gap: 16px; padding: 28px 14px 6px; }
   .case-credit { grid-template-columns: 1fr; row-gap: 20px; }
   .case-credit p { grid-column: 1; }
 }

@@ -20,8 +20,8 @@ async function start() {
   } catch (e) {
     return; // sin WebGL: se queda la imagen plana
   }
-  // Píxel de 2 px de pantalla, igual que el tomate de la portada y la estantería de The room (ver js/home-tomato.js)
-  renderer.setPixelRatio(1 / 2);
+  // Píxel de 1,5 px de pantalla, igual que el tomate de la portada y la estantería de The room (ver js/home-tomato.js)
+  renderer.setPixelRatio(1 / 1.5);
   canvas.style.imageRendering = 'pixelated';
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
