@@ -34,3 +34,9 @@ Projects, About, Archive and the essay index share heading scale, outer gutters,
 Project name: **Vanilla-licious**. Client: **Soap & Glory**. The project bar, marquee, Client field, home card, metadata, Machine view and terminal use those roles consistently. The existing `/project/soap-and-glory-vanilla/` URL and asset filenames are preserved.
 
 **Unified red:** principal UI red is `--brand-red` (#e40000), shared by menu/footer, FAQs/essays, Contact bars and large lettering; Studies/ENMAD use the shared dark ink on pink. Text on pink and small reading text on mustard uses `--brand-red-ink` (#9f0000). Artwork and existing palettes outside these red roles remain unchanged.
+
+## Imagen en grande (nov 2026)
+- `js/lightbox.js` (cargado tras `case.js` en todas las páginas de proyecto y en la plantilla): al pulsar una imagen de `.st-item` o uno de los vídeos pequeños de la cabecera (`.st-video`) se abre en un `<dialog>` a pantalla completa. Esc, un toque fuera o la X lo cierran; flechas del teclado, botones laterales (escritorio) o deslizar el dedo (móvil) pasan a la anterior y a la siguiente.
+- Las imágenes se abren con la mayor candidata del `srcset`. Los vídeos pequeños (sin sonido) se abren con los controles del navegador: reproducir, barra, pantalla completa.
+- Los vídeos grandes con reproductor propio (`data-player`: Lexus, Schweppes, Soap & Glory) no entran en el visor: ya tienen sus controles (Play, barra, Sound, Full screen; en móvil debajo del vídeo).
+- Dentro del visor se usa el cursor del sistema (el punto amarillo de `cursor.js` quedaría por debajo del diálogo).
