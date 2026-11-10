@@ -20,7 +20,7 @@ body {
    js/home-intro.js escribe directamente en tres elementos (sin variables CSS, que se heredan y obligan a recalcular toda la página
    en cada fotograma): el zoom en .sky (scale), el desenfoque en .sky-soft (opacity de una capa ya desenfocada) y el fundido en .fade (opacity).
    La capa blanca es fija, así que todos los proyectos se acumulan sobre el mismo fondo limpio. */
-.fade { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #fff; opacity: 0; will-change: opacity; }
+.fade { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #fff; opacity: .001; will-change: opacity; }   /* .001 por lo mismo que .sky-soft (más abajo): la capa blanca ya está preparada antes del primer scroll */
 
 /* Foto del cielo, más grande que la pantalla para poder moverse despacio sin que se vean sus bordes.
    Son dos capas iguales: la nítida y encima una desenfocada (el desenfoque se calcula una sola vez); al bajar, la desenfocada
@@ -44,7 +44,7 @@ body.white-on { background-color: #fff; }
     url("/assets/images/sky.webp") center / cover,
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
 }
-.sky-soft { filter: blur(10px); opacity: 0; will-change: opacity; }
+.sky-soft { filter: blur(10px); opacity: .001; will-change: opacity; }   /* .001 y no 0: con 0 el navegador no pinta la capa hasta el primer scroll y ese primer desenfoque, enorme, hacía un corte en el cielo (solo la primera vez tras recargar). Con .001 ya está pintada y lista, y no se ve */
 /* Las tres capas fijas del fondo (cielo, blanco y grano) miden siempre lo mismo: 100vw de ancho (cuenta la barra de desplazamiento, aparezca o no)
    y 100lvh de alto (la pantalla con la barra del navegador recogida). Con % cambiaban de tamaño a mitad del viaje de la portada a Work:
    · en Chrome con barra de desplazamiento visible (ratón, Windows), al desbloquear la página aparece la barra y el ancho útil pierde ~15 px;
