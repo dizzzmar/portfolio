@@ -312,8 +312,9 @@ document.addEventListener('click', (e) => { if (e.target instanceof Element && e
     const fade = smooth(clamp01((q - 0.3) / 0.65));       // al atravesarlas, todo se funde en blanco (a lo largo de casi todo el recorrido, sin un golpe de blanco)
     // Se escribe directamente en cada elemento (nada de variables CSS en body: se heredan y recalcularían toda la página)
     window.homeJourney.zoom = zoom; // el cielo lo pinta window.homeJourney.paintSky (suma este zoom y el del viaje)
-    skySoft.style.opacity = zoom.toFixed(3);
-    fadeEl.style.opacity = fade.toFixed(3);
+    // Nunca 0 del todo (mínimo .001, invisible): con 0 el navegador no pinta la capa hasta el primer scroll y ese primer pintado hacía un corte en el cielo
+    skySoft.style.opacity = Math.max(0.001, zoom).toFixed(3);
+    fadeEl.style.opacity = Math.max(0.001, fade).toFixed(3);
     document.body.classList.toggle('light-on', fade > 0.5); // el menú y los textos pasan a oscuro cuando el fondo ya es claro
     document.body.classList.toggle('white-on', fade > 0.999); // la página ya es del todo blanca: ahora sí la barra se mezcla con "difference" (si fuera antes, el blanco de la sección taparía el cielo)
     // Al llegar a Work se marca work-on (el CSS lo usa para la barra y el pie)
