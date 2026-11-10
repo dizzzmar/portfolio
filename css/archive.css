@@ -125,3 +125,16 @@ body.archive-viewing { overflow: hidden; }
   .archive-name sup { font-size: max(13px, .36em); }
 }
 @media (max-width: 700px) { .archive-sub { font-size: var(--fs-s); } }   /* en el móvil, más pequeño */
+
+/* Índice del Digital Archive (solo /archive/): las colecciones, más grandes, más separadas y centradas en vertical en la pantalla */
+.archive-index--collections .archive-name { font-size: clamp(22px, 2.3vw, 36px); }
+.archive-index--collections .archive-row { padding: clamp(10px, 1.2vw, 18px) 0; }
+@media (min-width: 761px) {
+  .archive-index--collections { align-content: stretch; grid-template-rows: minmax(0, 1fr); }
+  .archive-index--collections .archive-list { align-self: center; padding-bottom: calc(var(--nav-h) * .5); }   /* centrada en la pantalla, no en el hueco bajo la barra */
+}
+@media (max-width: 760px) {
+  .archive-index--collections .archive-list { flex: 1; align-content: center; gap: 8px; }
+  .archive-index--collections .archive-name { font-size: min(8vw, 34px); }
+  .archive-index--collections .archive-row { padding: 12px 0; }
+}
