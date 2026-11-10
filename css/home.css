@@ -13,7 +13,7 @@ body {
   overflow-x: clip; /* que nada ensanche la página más allá de la pantalla */
   color: #fff;
   font-family: var(--font-ui);
-  background-color: #8cc0ef;
+  background-color: #2f6fd0;   /* el azul medio del cielo: si el navegador se deja un fotograma sin pintar el cielo, no se ve un fogonazo de azul pálido */
 }
 
 /* Del cielo al blanco: al bajar, el cielo se acerca (las nubes crecen y se difuminan) y al atravesarlas todo se funde en blanco.
@@ -29,8 +29,7 @@ body {
   position: fixed;
   inset: -8%;
   z-index: -1;
-  animation: drift 40s ease-in-out 1 both; /* una sola pasada y se queda: con el grano a pantalla completa encima (mezcla overlay), un cielo que se mueve para siempre obliga a recomponer toda la pantalla cada fotograma */
-  will-change: transform, scale;
+  will-change: transform, scale;   /* el zoom lo escribe js/home-intro.js (scale); la deriva lenta va en las dos capas de dentro, no aquí: un animation de transform y un scale cambiado desde JS en el mismo elemento se estorban (ver .sky-sharp) */
 }
 /* Con la página ya blanca, el fondo que asoma al rebotar al final (trackpad, móvil) también es blanco, no el azul del cielo */
 body.white-on { background-color: #fff; }
@@ -43,6 +42,11 @@ body.white-on { background-color: #fff; }
   background:
     url("/assets/images/sky.webp") center / cover,
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
+  /* Una sola pasada y se queda: con el grano a pantalla completa encima (mezcla overlay), un cielo que se mueve para siempre obliga a recomponer toda la pantalla cada fotograma.
+     Va en las capas de dentro y no en .sky porque el primer cambio de scale en .sky (el zoom, desde JS) con un animation de transform en marcha reconstruía la capa y,
+     en Chrome, el cielo desaparecía un fotograma (el «corte» de la primera bajada). */
+  animation: drift 40s ease-in-out 1 both;
+  will-change: transform;
 }
 /* La capa desenfocada es una foto YA desenfocada (sky-soft.webp), no un filter: blur(): con el filtro, el navegador montaba en el primer scroll una superficie nueva
    para todo el cielo y, durante un fotograma, el cielo desaparecía y se veía el color liso de fondo (el «corte» de la primera bajada). Sin filtro no hay nada que montar. */
@@ -50,8 +54,8 @@ body.white-on { background-color: #fff; }
   background:
     url("/assets/images/sky-soft.webp") center / cover,
     linear-gradient(to bottom, #4f8fd8 0%, #8cc0ef 55%, #d8ecfb 100%);
-  opacity: .001; will-change: opacity;   /* .001 y no 0: así la capa ya está pintada antes del primer scroll */
-}   /* .001 y no 0: con 0 el navegador no pinta la capa hasta el primer scroll y ese primer desenfoque, enorme, hacía un corte en el cielo (solo la primera vez tras recargar). Con .001 ya está pintada y lista, y no se ve */
+  opacity: .001; will-change: opacity, transform;   /* .001 y no 0: así la capa ya está pintada antes del primer scroll */
+}
 /* Las tres capas fijas del fondo (cielo, blanco y grano) miden siempre lo mismo: 100vw de ancho (cuenta la barra de desplazamiento, aparezca o no)
    y 100lvh de alto (la pantalla con la barra del navegador recogida). Con % cambiaban de tamaño a mitad del viaje de la portada a Work:
    · en Chrome con barra de desplazamiento visible (ratón, Windows), al desbloquear la página aparece la barra y el ancho útil pierde ~15 px;
