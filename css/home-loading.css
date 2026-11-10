@@ -2,6 +2,8 @@
 .home-loader { display: none; }
 .home-loading { overflow: hidden; }
 .home-loading body > :not(.home-loader):not(script) { visibility: hidden; }
+/* El cielo sí se pinta mientras carga (queda tapado por el rosa del cargador): así el navegador lo prepara a todos sus tamaños antes del primer scroll (ver warmSky en js/home-loading.js) */
+.home-loading body > .sky { visibility: visible; }
 .home-loading .home-loader {
   display: grid;
   place-content: center;
