@@ -55,7 +55,9 @@
     }).catch(finish);
     const sky = new Image();
     sky.src = '/assets/images/sky.webp';
-    const assets = Promise.allSettled([document.fonts.ready, sky.decode()]);
+    const skySoft = new Image();   // el cielo ya desenfocado (css/home.css): se descodifica también antes de enseñar la portada
+    skySoft.src = '/assets/images/sky-soft.webp';
+    const assets = Promise.allSettled([document.fonts.ready, sky.decode(), skySoft.decode()]);
     const model = new Promise(resolve => {
       if (root.classList.contains('tomato-ready')) return resolve();
       observer = new MutationObserver(() => {
