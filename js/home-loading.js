@@ -33,6 +33,20 @@
     await exit.finished.catch(() => {});
     remove();
   }
+  // El primer scroll hacía que el cielo desapareciera un fotograma (se veía el color liso de fondo): el navegador tenía que preparar la foto al tamaño ampliado en
+  // pleno movimiento. Aquí, con el cargador tapándolo todo, se amplía el cielo al máximo (y se enseña la capa desenfocada) unos fotogramas y se devuelve a su sitio.
+  function warmSky() {
+    const sky = document.querySelector('.sky'), soft = document.querySelector('.sky-soft');
+    if (!sky || !soft) return Promise.resolve();
+    const before = [sky.style.scale, soft.style.opacity];
+    sky.style.scale = '2.8';
+    soft.style.opacity = '1';
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+      sky.style.scale = before[0];
+      soft.style.opacity = before[1];
+      resolve();
+    }))));
+  }
   // Network or WebGL failures must never trap visitors behind the loader.
   fallback = setTimeout(finish, 6000);
   addEventListener('pageshow', event => { if (event.persisted) finish(); });
@@ -66,6 +80,7 @@
       observer.observe(root, { attributes: true, attributeFilter: ['class'] });
     });
     await Promise.all([assets, model, imageReady]);
+    await warmSky();
     // Give the landing canvas a frame to paint before revealing it.
     requestAnimationFrame(() => requestAnimationFrame(finish));
   }, { once: true });
