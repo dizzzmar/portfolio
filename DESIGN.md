@@ -87,7 +87,7 @@ components:
 
 **Creative North Star: "The Ripe Tomato"**
 
-One piece of fruit at the centre and everything else arranged around it: the tomato is the logo, the 3D object on the landing page and the colour of the menu panel. The rest is deliberately plain so the fruit and the work (Lexus, Soap & Glory, Schweppes) stay the loudest things on screen. Funnel for professional work, Source Serif 4 only for Think pieces, shared interface rules and freely chosen page palettes.
+One piece of fruit at the centre and everything else arranged around it: the tomato is the logo, the 3D object on the landing page and the colour of the menu panel. The rest is deliberately plain so the fruit and the work (Lexus, Soap & Glory) stay the loudest things on screen. Funnel for professional work, Source Serif 4 only for Think pieces, shared interface rules and freely chosen page palettes.
 
 The tone is close and a little funny. Daily paths (reading, navigating) are precise and quiet; the humour lives in the rare places: the envelope you tear to write an email, the terminal, the FAQs, the cursor that bounces. Nothing explains itself with slogans or helper text; if a screen needs a label to make sense, the layout gets fixed instead.
 

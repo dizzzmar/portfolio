@@ -17,7 +17,7 @@ archive/think-pieces/                  Ensayos del Digital Archive (blanco, seri
 archive/index.html · archive/<colección>/index.html   Digital Archive: el índice de colecciones y el muro de cada colección (ahora fruit-stickers y fave-album-covers); piezas en assets/archive/<colección>/items.json
 machine/index.html                     Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 project/<nombre>/index.html            Una ficha por proyecto → www.dizmar.xyz/project/<nombre>/
-                                       (lexus-electrified · schweppes · schweppes-the-gentlemen · soap-and-glory-vanilla · enmad · plant-lab, que lleva el sandbox dentro)
+                                       (lexus-electrified · soap-and-glory-vanilla · enmad · plant-lab, que lleva el sandbox dentro)
 templates/                             Plantillas para copiar (no son páginas de la web)
   project-template/index.html          Ficha de proyecto nueva, con todo explicado
   project-card.html                    La fila de la lista Projects de la home para un proyecto nuevo (imagen o vídeo grande)
