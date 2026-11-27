@@ -29,13 +29,6 @@ Al sustituir `shelf.glb`, regenera la vista previa desde la raíz del repositori
 blender -b --python scripts/build-room-wireframe.py
 ```
 
-`js/room/lighting.js` gestiona la linterna. Un clic o toque en Tomato lamp apaga
-las luces, reflejos de entorno y emisiones de la habitación. El cursor o un
-arrastre táctil orienta un foco cálido desde la cámara, con sombras. Otro clic
-sin arrastrar, el botón Turn lights on, Escape o volver a activar el botón de
-la lámpara restauran la iluminación. La lista permite hacerlo también con teclado.
-Este modo conserva el estado de encendido de la Wii.
-
 ## Recently played
 
 The Wii interaction lives in `js/room/wii-player.js`, disc geometry and label textures in `js/room/disc.js`, and its overlay styles in `css/room-wii.css`. The room keeps one renderer: the shelf is blurred before the foreground discs are drawn. During insertion, the selected disc moves into the room scene so the actual console hides it as it enters the slot. The blue slot and green power light turn on after insertion completes.
