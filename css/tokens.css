@@ -17,7 +17,7 @@
 }
 
 /* TOKENS · la tipografía de toda la web en un solo sitio (la guía completa está en DESIGN.md).
-   Se carga la primera en todas las páginas (menos "machine", que es a propósito otro estilo). Para cambiar un tamaño de texto, cámbialo aquí:
+   Se carga la primera en todas las páginas. Para cambiar un tamaño de texto, cámbialo aquí:
    no pongas tamaños sueltos (14px, 15px…) en los demás css; usa estas variables. */
 :root {
   /* Pesos: solo dos. 700 para lo que orienta (título, entrada, títulos de bloque) y 400 para lo que se lee. */
@@ -31,7 +31,7 @@
   --tracking-display: -.05em;
   /* Tamaño de lectura: el mismo para la entrada, los títulos de bloque y el texto (16 px, como kellauren.design: todo el texto a un tamaño, y la jerarquía con el peso) */
   --fs-read: 16px;
-  /* Verde y lima (About, Privacy y Machine): 6,98:1 entre sí. Lo secundario va al 80 % sobre verde (5,1:1). */
+  /* Verde y lima (About y Privacy): 6,98:1 entre sí. Lo secundario va al 80 % sobre verde (5,1:1). */
   --green: #125603;
   --lime: #c3f380;
   /* Letra: la familia Funnel (dos archivos variables, pesos 400–800), alojada en este mismo repositorio (assets/fonts): no se pide nada a terceros.

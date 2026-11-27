@@ -1,6 +1,6 @@
 /* TRANSICIONES ENTRE PÁGINAS · View Transitions entre documentos (Chrome, Edge y Safari 18.2+; en Firefox la página cambia sin animación).
    Una sola idea para todo el sitio, con sentido de espacio: las páginas son capas apiladas, como en una app.
-   · Ir hacia delante (cualquier enlace, el menú, la terminal): la página nueva sube desde abajo, como una hoja con las esquinas redondeadas,
+   · Ir hacia delante (cualquier enlace, el menú): la página nueva sube desde abajo, como una hoja con las esquinas redondeadas,
      y la vieja se queda debajo, se encoge un poco, sube un pelín y se oscurece.
    · Volver (el botón atrás del navegador, el tomate, ir a la portada): al revés. La hoja de arriba baja y se va, y la de debajo recupera tamaño y luz.
    La portada es la capa de abajo: llegar a ella es «volver»; salir de ella, «avanzar».

@@ -190,12 +190,11 @@ document.addEventListener('click', (e) => { if (e.target instanceof Element && e
   }
   addEventListener('wheel', (e) => {
     if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY) || menuOpen()) return;
-    if (e.target instanceof Element && e.target.closest('.term')) return; // la terminal se desplaza sola, no mueve la portada
     drag(e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY, WHEEL_PX);
   }, { passive: true });
   let touchY = null, samples = [];
   addEventListener('touchstart', (e) => {
-    touchY = menuOpen() || (e.target instanceof Element && e.target.closest('.term')) ? null : e.touches[0].clientY;
+    touchY = menuOpen() ? null : e.touches[0].clientY;
     samples = [];
   }, { passive: true });
   addEventListener('touchmove', (e) => {
@@ -218,7 +217,6 @@ document.addEventListener('click', (e) => { if (e.target instanceof Element && e
   }, { passive: true });
   addEventListener('keydown', (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey || J.simple || J.hold || menuOpen()) return;
-    if (e.target instanceof Element && e.target.closest('.term')) return; // escribir en la terminal no mueve la portada
     const onControl = e.target instanceof Element && e.target.closest('a, button, input, select, textarea');
     const down = { ArrowDown: 1, PageDown: 1, ' ': 1, End: 1 }[e.key]; // cualquier tecla de bajar lanza el viaje entero
     const up = { ArrowUp: 1, PageUp: 1, Home: 1 }[e.key];
