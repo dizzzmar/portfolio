@@ -5,7 +5,7 @@
 Detail for this area of the design system. `DESIGN.md` holds the system and a summary; read this file only when working on this area, and keep new per-page detail here, not in `DESIGN.md`.
 
 ### Room rendering
-- The shelf keeps its existing 3D model, lighting and materials. Its final rendered image uses a fine, square 2 CSS px grid (480 × 480 at a 960 × 960 viewport), 64 colour steps per channel and light, stable 4 × 4 ordered dithering. This is the selected third option from the finer pixel study. It replaces animated film grain; DOM navigation, captions and the Wii's foreground discs remain sharp. The grid follows viewport size independently of device pixel ratio and adaptive render quality.
+- The shelf keeps its existing 3D model, lighting and materials. Its final image is drawn at normal resolution (the pixel treatment was removed in Nov 2026).
 
 ### Room / Pokémon album
 - **Room list on a touch screen:** each name previews its object (the camera comes closer and, for «Last watched», the new film poster unrolls) when it is tapped. The tap itself drives it, not focus or hover, because iOS Safari does not focus a button on tap and only half-emulates the mouse. The preview ends with another tap: on the same name (back to the overview), on another name, on the room or anywhere else. On desktop it is unchanged: hovering a name previews it, leaving it ends it.
@@ -23,3 +23,4 @@ Source Serif 4 is reserved for the Think pieces index and its essays. The main D
 ## Shared motion rhythm
 
 `css/motion.css` defines 200 ms viewer fades (150 ms with reduced motion), 450 ms content entrances and a 16 px arrival distance. Native gallery dialogs share cancellable fades via `js/viewer-motion.js`; Archive uses the same timing. About now arrives with one quiet fade rather than separate sliding layers. Archive’s bright opening flash and delayed metadata are removed. Artwork tilt, infinite gallery movement, the tomato, Room and the shared page/menu transitions keep their distinct functions. Functional labels remain Menu/Close/Back, Play/Pause, Sound and Full screen; the player changes its action to Exit full screen while expanded.
+- **Lámpara de tomate (nov 2026):** la lámpara sigue en la sala (modelo, luz y encendido con parpadeo al cargar), pero ya no es un objeto interactivo: se quitaron su entrada en la lista, el zoom, el apagado de luces con linterna (`js/room/lighting.js`), sus comandos de la terminal y la clase `room-dark`.

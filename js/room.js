@@ -16,7 +16,6 @@ import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
 import { createPokemonAlbum } from './room/pokemon-album.js?v=20261107motion1';
 import { createWiiPlayer } from './room/wii-player.js?v=20261029wii1';
 import { createRoomLoading } from './room/loading.js?v=20261022p';
-import { createRoomLighting } from './room/lighting.js?v=20261023a';
 import { addRoomRug } from './room/rug.js?v=20261022a';
 
 const canvas = document.getElementById('room');
@@ -40,7 +39,7 @@ const scene = new THREE.Scene();
 // Cinematic, cozy evening: very little ambient light so the shadows stay deep, a narrow warm "sunset"
 // spotlight raking across the wall from the left, a cool moonlight rim from behind for contrast
 // (warm/cool, like a film still), and the tomato lamp doing most of the work (added on load).
-// On top: soft bloom, a vignette, a warm grade and the fine pixel treatment below.
+// On top: soft bloom, a vignette and a warm grade.
 scene.background = new THREE.Color('#0b2f04'); // verde Lincoln «de noche» (css/room.css: --night)
 const reflections = new THREE.PMREMGenerator(renderer);
 scene.environment = reflections.fromScene(new RoomEnvironment(renderer)).texture;
@@ -89,7 +88,6 @@ const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.4, 0.45, 2.6);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 // Film look after tone mapping: warm shadows/highlights and a vignette.
-// The presenter below adds the selected stable pixel texture instead of moving grain.
 const grade = new ShaderPass({
   uniforms: { tDiffuse: { value: null }, vignette: { value: 0.42 } },
   vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
@@ -115,31 +113,16 @@ composer.addPass(verticalBlur);
 // The effects render into a texture, which is then copied to the screen. While the Wii's discs are being chosen, the blurred
 // room behind them doesn't change: then only the copy runs and the room isn't drawn again (bloom, outline, blur…) every frame.
 composer.renderToScreen = false;
-// Selected preview 03: a 480 × 480 grid at 960 × 960, i.e. 2 CSS px per cell.
-// Keep the lighting at full quality and pixelate only its final image; DOM text and Wii discs stay sharp.
-const ROOM_PIXEL_SIZE = 2;
 const present = new FullScreenQuad(new THREE.ShaderMaterial({
-  uniforms: { tDiffuse: { value: null }, grid: { value: new THREE.Vector2(1, 1) } },
+  uniforms: { tDiffuse: { value: null } },
   vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
   fragmentShader: `
     uniform sampler2D tDiffuse;
-    uniform vec2 grid;
     varying vec2 vUv;
-    // Build a 4 × 4 Bayer threshold from two nested 2 × 2 cells.
-    float bayer2(vec2 p) {
-      vec2 q = mod(floor(p), 2.0);
-      return 2.0*q.x + 3.0*q.y - 4.0*q.x*q.y;
-    }
-    void main() {
-      vec2 cell = floor(vUv * grid);
-      vec3 c = texture2D(tDiffuse, (cell + 0.5) / grid).rgb;
-      float threshold = (4.0*bayer2(cell) + bayer2(floor(cell/2.0)) + 0.5)/16.0 - 0.5;
-      // 64 colour steps/channel and light dithering match the finer study's third option.
-      c = floor(clamp(c + threshold*0.35/64.0, 0.0, 1.0)*64.0 + 0.5)/64.0;
-      gl_FragColor = vec4(c, 1.0);
-    }`,
+    void main() { gl_FragColor = vec4(texture2D(tDiffuse, vUv).rgb, 1.0); }`,
   depthTest: false, depthWrite: false,
 }));
+
 
 // Match normalized mesh names and their ancestors to the room's destinations.
 // Stickers that slap on when hovering an object. Swap the image (same 1600×567 size)
@@ -161,8 +144,6 @@ const destinations = [
   { label: 'Now playing', key: 'vinyls', match: /^music (vinyl collection|displayed vinyl sleeve)\b/, focus: /^music vinyl collection\b/, track: nowPlaying, href: null },
   { label: 'Pokémon collection', key: 'mimikyu', match: /^mimikyu plush root$/, href: null },
   { label: 'Last watched', key: 'volver-poster', match: /^wall upper left poster\b/, poster: lastWatched, href: null },
-  // The camera frames just the tomato, not the cord that runs down to the floor
-  { label: 'Tomato lamp', key: 'tomato-lamp', match: /^lamp\b/, focus: /^lamp (tomato diffuser|green calyx)\b/, href: null },
   { label: 'Plant', key: 'plant', match: /^(plants (eucalyptus|fluted vase)\b|plant1 fbx$)/, href: null },
   { label: 'Recently played', key: 'wii', match: /^wii\b/, focusMaterial: /Wii (pearl white|silver stand)/i, href: null },
 ];
@@ -189,19 +170,6 @@ const pokemonAlbum = createPokemonAlbum({
   onOpen() { highlight(null); hoverEvent = null; },
   onClose() { focusOn(null); },
 });
-const lighting = createRoomLighting({
-  scene, camera, renderer, canvas, reduced,
-  onChange(dark) {
-    if (lampFlicker) { lampFlicker.start = false; setLamp(dark ? 0 : 1); }
-    scene.background.set(dark ? '#020c01' : '#0b2f04');
-    outline.enabled = bloom.enabled = !dark;
-    const button = nav.querySelector('[data-object="tomato-lamp"]');
-    button?.setAttribute('aria-pressed', String(!dark));
-    button?.setAttribute('aria-label', `Tomato lamp — turn lights ${dark ? 'on' : 'off'}`);
-    if (dark) { highlight(null); focusOn(null); }
-  },
-});
-
 // The selectable thing a mesh (or any of its parents) belongs to, or null for the rest of the room
 const words = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 // Cables belong to nothing: the lamp's red cord and the Wii's cable neither select nor light up their object
@@ -315,11 +283,6 @@ function updateHover() {
   if (!hoverEvent) return;
   const event = hoverEvent;
   hoverEvent = null;
-  if (lighting.dark) {
-    canvas.style.cursor = 'crosshair';
-    document.documentElement.classList.remove('dot-hot');
-    return;
-  }
   const selection = pick(event);
   canvas.style.cursor = selection ? 'pointer' : 'default';
   document.documentElement.classList.toggle('dot-hot', Boolean(selection));
@@ -335,9 +298,7 @@ canvas.addEventListener('pointerup', event => {
   const moved = Math.hypot(event.clientX - down[0], event.clientY - down[1]);
   down = null;
   if (moved >= 8) return;
-  if (lighting.dark) { lighting.setDark(false); return; }
   const selection = pick(event);
-  if (selection?.item.key === 'tomato-lamp') { openItem(selection.item); return; }
   if (selection?.item.key === 'mimikyu' && event.pointerType !== 'mouse') { openItem(selection.item); return; } // en el móvil abre directo: el zoom lo taparía el álbum
   if (selection?.item.key === 'wii') {
     wiiPlayer.open(nav.querySelector('[data-object="wii"]'));
@@ -364,7 +325,6 @@ document.addEventListener('pointerdown', event => {
 // Clicking an object only keeps the camera zoomed on it. Only items with a page (href) navigate.
 function openItem(item) {
   if (item.key === 'mimikyu') { pokemonAlbum.open(nav.querySelector('[data-object="mimikyu"]')); return; }
-  if (item.key === 'tomato-lamp') { lighting.setDark(!lighting.dark); return; }
   if (item.key === 'wii') {
     wiiPlayer.open(nav.querySelector('[data-object="wii"]'));
     return;
@@ -492,7 +452,6 @@ roomLoader.load('/assets/room/shelf-web.glb?v=20261022a', gltf => {
   const radius = Math.max(size.x, size.y * 1.5, size.z * 2);
   key.target.position.copy(center);
   roomFrame = { size, center };
-  lighting.attach(model, bounds);
   // While it is being set, the room is cut by the loading sweep (the rug too)
   for (const root of [model, scene.getObjectByName('DIZ low-resolution rug')]) {
     root?.traverse(object => {
@@ -511,10 +470,6 @@ roomLoader.load('/assets/room/shelf-web.glb?v=20261022a', gltf => {
     button.dataset.object = item.key;
     button.textContent = item.label;
     if (['wii', 'mimikyu'].includes(item.key)) button.setAttribute('aria-haspopup', 'dialog');
-    if (item.key === 'tomato-lamp') {
-      button.setAttribute('aria-pressed', 'true');
-      button.setAttribute('aria-label', 'Tomato lamp — turn lights off');
-    }
     // Touching the Pokémon button opens the album at once, so the camera does not come closer (nobody would see it, and it costs a frame)
     const opensAtOnce = item.key === 'mimikyu' && matchMedia('(pointer: coarse)').matches;
     button.addEventListener('focus', () => {
@@ -621,7 +576,6 @@ function resetFocus() {
 
 function focusOn(item) {
   if (pokemonAlbum.active) return;
-  if (lighting.dark && item && !(item === wiiDestination && wiiPlayer.active)) return;
   if (wiiPlayer.active && item !== wiiDestination) return;
   returnRate = 16;
   focused = item;
@@ -651,7 +605,6 @@ function focusOn(item) {
 function resize() {
   const width = innerWidth, height = innerHeight;
   renderer.setSize(width, height, false);
-  present.material.uniforms.grid.value.set(Math.max(1, Math.round(width / ROOM_PIXEL_SIZE)), Math.max(1, Math.round(height / ROOM_PIXEL_SIZE)));
   composer.setSize(width, height);
   bloom.setSize(width, height);
   camera.aspect = width / height;
@@ -717,17 +670,16 @@ function updatePoster(now) {
 // La terminal de la web (enlace «Terminal» del pie, o la tecla `) puede mover la sala: encender y apagar la luz, acercar la cámara a un objeto, abrir la Wii…
 // Solo se expone esto, nada más; terminal.js lo usa con `look`, `inspect`, `lights`, `play`, `flicker`, `sunset` y `zoom out`.
 window.dizRoom = {
-  lights(on) { if (lighting.dark === on) lighting.setDark(!on); },
   focus(key) {
     const item = destinations.find((d) => d.key === key);
-    if (!item || lighting.dark || wiiPlayer.active) return false;
+    if (!item || wiiPlayer.active) return false;
     highlight({ item, object: meshes.find((m) => destinationFor(m) === item) });
     focusOn(item);
     return true;
   },
   reset() { if (!wiiPlayer.active) resetFocus(); },
-  wii() { if (!lighting.dark) wiiPlayer.open(nav.querySelector('[data-object="wii"]')); },
-  flicker() { if (lampFlicker && !lighting.dark && !reduced) lampFlicker.start = null; },
+  wii() { wiiPlayer.open(nav.querySelector('[data-object="wii"]')); },
+  flicker() { if (lampFlicker && !reduced) lampFlicker.start = null; },
   sunset(on) { sunset.visible = on === undefined ? !sunset.visible : on; renderer.shadowMap.needsUpdate = true; },
 };
 
@@ -741,12 +693,12 @@ function frame() {
   lastFrame = now;
   // The opaque album covers the whole scene. Keep the clock current, but do no GPU work.
   if (pokemonAlbum.active || document.hidden) { requestAnimationFrame(frame); return; }
-  if (lampFlicker && !lighting.dark && !reduced && lampFlicker.start !== false && !loading.busy) {
+  if (lampFlicker && !reduced && lampFlicker.start !== false && !loading.busy) {
     lampFlicker.t = lampFlicker.start === null ? 0 : lampFlicker.t + dt;
     lampFlicker.start = true;
     setLamp(flickerLevel(lampFlicker.t));
     if (lampFlicker.t > FLICKER[FLICKER.length - 1][0]) { setLamp(1); lampFlicker.start = false; }
-  } else if (lampFlicker && !lighting.dark && !reduced && lampFlicker.start === false) {
+  } else if (lampFlicker && !reduced && lampFlicker.start === false) {
     // Once on, the lamp breathes very slightly, like a warm bulb
     const t = now / 1000;
     setLamp(1 + Math.sin(t * 1.3) * 0.025 + Math.sin(t * 3.7) * 0.012);
@@ -761,7 +713,6 @@ function frame() {
   camera.lookAt(view.target);
   camera.updateMatrixWorld();
   wiiPlayer.update(now);
-  lighting.update(cameraStep);
   loading.update(now);
   updateHover();
   horizontalBlur.enabled = verticalBlur.enabled = wiiPlayer.blur > 0.01;
@@ -769,7 +720,7 @@ function frame() {
   verticalBlur.uniforms.v.value = wiiPlayer.blur / (innerHeight * 3);
   // Behind the discs, once the blur and the camera have settled, the last picture of the room is reused
   const settled = view.pos.distanceToSquared(goal.pos) < 1e-8 && view.target.distanceToSquared(goal.target) < 1e-8;
-  const still = wiiPlayer.active && wiiPlayer.blur >= 8.99 && settled && !lighting.dark;
+  const still = wiiPlayer.active && wiiPlayer.blur >= 8.99 && settled;
   frozenFrames = still ? frozenFrames + 1 : 0;
   if (frozenFrames < 3) composer.render(); // a couple of frames more, so the last one is complete
   present.material.uniforms.tDiffuse.value = composer.readBuffer.texture;

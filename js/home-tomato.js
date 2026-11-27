@@ -13,23 +13,9 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Llegada desde el tomate de otra página (js/transitions.js pone land-fly): empieza en la barra y vuela al centro
 const FLY_FROM_NAV = document.documentElement.classList.contains('land-fly') && !reduced;
 
-// Píxel grande, como la estantería de The room (ROOM_PIXEL_SIZE en js/room.js): el tomate se dibuja en una textura pequeña (cada PIXEL px de pantalla
-// es un píxel, sin suavizar) y se estira sin difuminar. El anillo «MARIO DIZ» se dibuja aparte, a resolución completa, para que el nombre se lea nítido:
-// atrás del anillo → tomato pixelado → delante del anillo (ver draw() al final). En la portada el píxel es de 6 px; acoplado en la barra, de 1,5 px (como js/nav-tomato.js)
-const PIXEL = 6, PIXEL_DOCKED = 1.5;
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
 // En el móvil (3× de píxeles) un lienzo a pantalla completa con 2× cuesta el doble que con 1,5× y el tomate no gana nitidez que se vea
 renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
-renderer.autoClear = false;
-let pixelSize = PIXEL;
-const pixelTarget = new THREE.WebGLRenderTarget(1, 1, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, type: THREE.HalfFloatType });
-const pixelScene = new THREE.Scene();
-const pixelCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-pixelScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ map: pixelTarget.texture, transparent: true, depthTest: false, depthWrite: false, toneMapped: false })));
-function sizePixelTarget() {
-  const s = renderer.getSize(new THREE.Vector2());
-  pixelTarget.setSize(Math.max(1, Math.round(s.x / pixelSize)), Math.max(1, Math.round(s.y / pixelSize)));
-}
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
@@ -99,8 +85,6 @@ const ringBack = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
 const ringFront = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
   map: ringTex, side: THREE.FrontSide, transparent: true, depthWrite: false,
 }));
-ringBack.layers.set(1);   // capas: 0 = tomato (y huevo), 1 = atrás del anillo, 2 = delante del anillo; draw() las pinta en ese orden
-ringFront.layers.set(2);
 ringBack.renderOrder = 0;
 ringFront.renderOrder = 2;
 ring.add(ringBack, ringFront);
@@ -144,7 +128,7 @@ function resize() {
   height = h;
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
-  if (cropped) setCrop(true); else { renderer.setSize(width, height, false); sizePixelTarget(); }
+  if (cropped) setCrop(true); else renderer.setSize(width, height, false);
 }
 addEventListener('resize', resize);
 
@@ -269,7 +253,6 @@ function journeyLayout(j, J) {
 // renders exactly that part of the full-screen picture, so it looks the same.
 let cropped = false;
 function setCrop(on) {
-  pixelSize = on ? PIXEL_DOCKED : PIXEL;
   if (on) {
     const dockPx = width < 700 ? 36 : 44;
     const margin = width < 700 ? 14 : 24;
@@ -279,13 +262,11 @@ function setCrop(on) {
     const top = Math.round((r.top + r.bottom) / 2 - dockPx * BODY_OFFSET - box / 2);
     Object.assign(canvas.style, { inset: 'auto', left: left + 'px', top: top + 'px', width: box + 'px', height: box + 'px' });
     renderer.setSize(box, box, false);
-    sizePixelTarget();
     camera.setViewOffset(width, height, left, top, box, box);
   } else {
     Object.assign(canvas.style, { inset: '', left: '', top: '', width: '', height: '' });
     camera.clearViewOffset();
     renderer.setSize(width, height, false);
-    sizePixelTarget();
   }
   cropped = on;
 }
@@ -386,22 +367,6 @@ function frame(now) {
     spinner.position.y = Math.sin(t * 1.4) * 0.06 * calm;
   }
 
-  draw();
+  renderer.render(scene, camera);
 }
 requestAnimationFrame(frame);
-
-// Tres pasadas: el tomate en la textura pixelada; luego, en el lienzo, la parte de atrás del anillo, la textura estirada y la parte de delante del anillo
-function draw() {
-  renderer.setRenderTarget(pixelTarget);
-  renderer.clear();
-  camera.layers.set(0);
-  renderer.render(scene, camera);
-  renderer.setRenderTarget(null);
-  renderer.clear();
-  camera.layers.set(1);
-  renderer.render(scene, camera);
-  renderer.render(pixelScene, pixelCam);
-  camera.layers.set(2);
-  renderer.render(scene, camera);
-  camera.layers.set(0);
-}

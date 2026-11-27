@@ -163,8 +163,7 @@
         '',
         'In the room:',
         '  look                    what is on the shelf',
-        '  inspect <thing>         zoom to it: vinyl, poster, mimikyu, lamp, plant, wii',
-        '  lights on | off         the tomato lamp (off: a flashlight follows your cursor)',
+        '  inspect <thing>         zoom to it: vinyl, poster, mimikyu, plant, wii',
         '  play                    open the Wii and choose a disc',
         '  flicker | sunset        two little light tricks',
         '  zoom out                back to the whole room',
@@ -187,7 +186,7 @@
       'screen   neofetch · fps · clear · echo <text>',
       'tomato   spin · stop · go · reverse · faster · slower · paint <color>',
       'colors   hue <0-360> · rainbow · invert · gray · sepia · reset',
-      ...(window.dizRoom ? ['room     look · inspect <thing> · lights on|off · play · flicker · sunset · zoom out'] : []),
+      ...(window.dizRoom ? ['room     look · inspect <thing> · play · flicker · sunset · zoom out'] : []),
       'keys     Tab completes · ↑ ↓ history · ` opens · Esc closes',
     ], 'term-guide'); return []; },
     neofetch: () => { showSplash(); return []; },
@@ -233,7 +232,6 @@
     vinyl: 'vinyls', record: 'vinyls', music: 'vinyls', speaker: 'vinyls',
     poster: 'volver-poster', film: 'volver-poster', movie: 'volver-poster',
     mimikyu: 'mimikyu', pokemon: 'mimikyu', plush: 'mimikyu',
-    lamp: 'tomato-lamp', tomato: 'tomato-lamp',
     plant: 'plant', eucalyptus: 'plant',
     wii: 'wii', console: 'wii', discs: 'wii',
   };
@@ -241,7 +239,6 @@
     vinyls: 'Now playing: Bug — Fontaines D.C. (Romance). The sleeve glows with the lamp.',
     'volver-poster': 'Last watched: La Bola Negra. Come close and the new poster unrolls over the old one.',
     mimikyu: 'A Mimikyu plush. It stares back. It is fine. Everything is fine.',
-    'tomato-lamp': 'The tomato lamp. Click it (or type lights off) and the room goes dark; a flashlight follows your cursor.',
     plant: 'Eucalyptus in a fluted vase. It has never been watered by a terminal.',
     wii: 'The Wii, in pearl white. Three discs: Assassin’s Creed Shadows, Pokémon Shield, Hades II. Type play.',
   };
@@ -357,24 +354,16 @@
     look: () => (window.dizRoom ? [
       'A narrow shelf in a dark, warm room. A turntable on top, next to the tomato lamp; speakers either side of a glowing sleeve.',
       'Below: records, books, a Mimikyu plush and a Wii. On the floor, a rug with a very familiar sachet.',
-      'try: inspect lamp   inspect wii   lights off',
+      'try: inspect poster   inspect wii   play',
     ] : noRoom()),
     inspect: (args) => {
       if (!window.dizRoom) return noRoom();
       const thing = (args[0] || '').toLowerCase();
       const key = own(ROOM_THINGS, thing) ? ROOM_THINGS[thing] : null;
-      if (!key) return ['inspect what? vinyl, poster, mimikyu, lamp, plant or wii.'];
+      if (!key) return ['inspect what? vinyl, poster, mimikyu, plant or wii.'];
       window.dizRoom.focus(key);
       return [ROOM_TEXT[key]];
     },
-    lights: (args) => {
-      if (!window.dizRoom) return noRoom();
-      const mode = (args[0] || '').toLowerCase();
-      if (mode !== 'on' && mode !== 'off') return ['usage: lights on | lights off'];
-      window.dizRoom.lights(mode === 'on');
-      return [mode === 'off' ? 'lights off. move your cursor: you have a flashlight.' : 'lights on.'];
-    },
-    lamp: (args) => COMMANDS.lights(args.length ? args : ['off']),
     play: () => {
       if (!window.dizRoom) return noRoom();
       window.dizRoom.wii();
@@ -603,15 +592,14 @@
   // · Texto fantasma tras lo que escribes (Tab o → para aceptarlo; Tab con varias opciones las lista).
   // · Botones de sugerencia sobre el campo: sirven en el móvil, donde no hay Tab. Tocar uno lo ejecuta, o lo escribe si necesita un argumento.
   // Los comandos escondidos (tomato, ketchup…) nunca se sugieren.
-  const NEEDS_ARG = new Set(['cd', 'view', 'inspect', 'lights', 'sunset', 'zoom', 'echo']);
+  const NEEDS_ARG = new Set(['cd', 'view', 'inspect', 'sunset', 'zoom', 'echo']);
   const roomOn = () => !!window.dizRoom;
   const baseCommands = () => ['help', 'ls', 'cd', 'view', 'about', 'work', 'contact', 'whoami', 'date', 'echo', 'guide', 'fps', 'neofetch', 'clear', 'exit',
-    ...(roomOn() ? ['look', 'inspect', 'lights', 'play', 'flicker', 'sunset', 'zoom'] : [])];
+    ...(roomOn() ? ['look', 'inspect', 'play', 'flicker', 'sunset', 'zoom'] : [])];
   const ARGS = () => ({
     cd: ['home', 'work', 'about', 'faq', 'room', 'machine', 'archive', 'plantlab', 'lexus', 'soap', 'enmad', 'contact'],
     view: ['human', 'machine'],
-    inspect: ['vinyl', 'poster', 'mimikyu', 'lamp', 'plant', 'wii'],
-    lights: ['on', 'off'],
+    inspect: ['vinyl', 'poster', 'mimikyu', 'plant', 'wii'],
     sunset: ['on', 'off'],
     zoom: ['out'],
   });
@@ -634,7 +622,7 @@
   // Sugerencias para los botones: comandos completos (o la palabra que falta si hay que escribir un argumento)
   function chipsFor(value) {
     const text = value.replace(/^\s+/, '');
-    if (!text) return roomOn() ? ['look', 'lights off', 'inspect lamp', 'play', 'help'] : ['help', 'ls', 'view machine', 'about', 'work'];
+    if (!text) return roomOn() ? ['look', 'inspect poster', 'play', 'help'] : ['help', 'ls', 'view machine', 'about', 'work'];
     const { head, candidates, word } = completions(value);
     if (head) return candidates.slice(0, 6).map((c) => head + c);
     const out = candidates.slice(0, 6);

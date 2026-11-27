@@ -45,7 +45,6 @@ body { background: var(--night); color: var(--lime); font-family: var(--font-ui)
 .room-loading-meter i { display: block; height: 100%; background: var(--lime); transform-origin: left; animation: room-loading 1.8s ease-in-out infinite; }
 .has-progress .room-loading-meter i { animation: none; transform: scaleX(var(--room-progress, 0)); transition: transform .15s; }
 .status button { font: inherit; color: inherit; background: transparent; border: 0; border-bottom: 1px solid currentColor; cursor: pointer; }
-.room-dark .sticker-slot { display: none; }
 @keyframes room-loading { 0%, 100% { transform: translateX(-70%) scaleX(.3); } 50% { transform: translateX(70%) scaleX(.6); } }
 @media (max-width: 900px) {
   .status { bottom: 150px; }
