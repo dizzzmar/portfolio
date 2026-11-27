@@ -1,6 +1,6 @@
 // MENÚ · el botón «Menu» de la barra (todas las páginas con barra) abre un panel a pantalla completa con los enlaces grandes; el panel no lleva pie (el único pie de la web es el footer grande).
 // Estilos y animación (entrada y salida iguales, una al revés de la otra): css/menu.css. Referencia: pesqueradiez.com.
-// Los enlaces del panel salen de los de la barra de cada página, y los que tienen un comportamiento propio (Projects en la portada, el sobre de Contact, la terminal)
+// Los enlaces del panel salen de los de la barra de cada página, y los que tienen un comportamiento propio (Projects en la portada, el sobre de Contact)
 // lo mantienen: el panel se cierra y se pulsa el enlace original.
 (() => {
   const root = document.documentElement;

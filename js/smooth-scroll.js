@@ -4,7 +4,7 @@
 // Se aparta (deja la rueda al navegador o a quien ya la use) cuando:
 //   · otro script ya la ha usado (preventDefault): el viaje del tomate en la portada, la galería de los proyectos;
 //   · la página está bloqueada (overflow hidden: portada con el tomate, menú abierto);
-//   · el ratón está sobre algo con scroll propio (la terminal, una lista larga) que aún puede moverse;
+//   · el ratón está sobre algo con scroll propio (una lista larga) que aún puede moverse;
 //   · se pulsa Ctrl (zoom) o el gesto es de lado.
 // Con «reducir movimiento» no se instala.
 (() => {

@@ -3,7 +3,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { min-height: 100%; }
-/* La sala va en el verde Lincoln «de noche» (--night, el mismo que el fondo de la escena en js/room.js) con texto lima, como About, FAQs y Machine */
+/* La sala va en el verde Lincoln «de noche» (--night, el mismo que el fondo de la escena en js/room.js) con texto lima, como About y FAQs */
 :root { --night: #0b2f04; }
 body { background: var(--night); color: var(--lime); font-family: var(--font-ui); }
 #room { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }

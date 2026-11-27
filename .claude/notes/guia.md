@@ -10,12 +10,11 @@ about/ · faq/ · privacy/               About, FAQs y Privacidad (cada una, un 
 playground/index.html                  Playground: el menú de experimentos (mismo diseño que el índice del Digital Archive). El sandbox de nodos (Plant Lab y Brush Lab) a pantalla completa está en playground/plant-lab/index.html; el dibujo se hace en el navegador
 playground/island/index.html             Island: el mundo isométrico en pixel art a pantalla completa (js/island.js + css/island.css, escena en js/about-scene.js)
 posters/index.html                     Collage de trabajos personales y ficticios; cada pieza abre un visor con todo su mini-proyecto (js/posters.js)
-js/sounds.js · assets/sounds/   Sonidos de los enlaces (tic al pasar, clic al pulsar; encendidos por defecto, se apagan con «Sound on» en el pie grande; salvo en machine/, suena en todas las páginas). Son de Kenney (CC0, ver assets/sounds/CREDITS.txt); el volumen y los archivos se editan arriba de sounds.js
+js/sounds.js · assets/sounds/   Sonidos de los enlaces (tic al pasar, clic al pulsar; encendidos por defecto, se apagan con «Sound on» en el pie grande, suena en todas las páginas). Son de Kenney (CC0, ver assets/sounds/CREDITS.txt); el volumen y los archivos se editan arriba de sounds.js
 js/dot-field.js · js/dot-bg.js   Fondo de puntos (motor de React Bits en JavaScript puro + montaje): Posters y Playground; se activa con data-dot-bg="white|ink" en <body> y los valores se editan arriba de dot-bg.js
 js/pixel-trail.js · js/archive-trail.js   Estela de píxeles blancos del Digital Archive (motor de React Bits en JavaScript puro + montaje; los valores se editan arriba de archive-trail.js)
 archive/think-pieces/                  Ensayos del Digital Archive (blanco, serifa y rojo; css/essays.css): un índice y una carpeta por ensayo (ahora «la-esencia-de-lo-haptico» y «una-oda-a-la-nostalgia»)
 archive/index.html · archive/<colección>/index.html   Digital Archive: el índice de colecciones y el muro de cada colección (ahora fruit-stickers y fave-album-covers); piezas en assets/archive/<colección>/items.json
-machine/index.html                     Modo máquina: toda la web en texto (oculto por ahora, ver abajo)
 project/<nombre>/index.html            Una ficha por proyecto → www.dizmar.xyz/project/<nombre>/
                                        (lexus-electrified · soap-and-glory-vanilla · enmad · plant-lab, que lleva el sandbox dentro)
 templates/                             Plantillas para copiar (no son páginas de la web)
@@ -34,7 +33,7 @@ css/                                   Aspecto. Un archivo por zona; los comunes
   nav-logo.css · nav-links.css · menu.css · footer.css · cursor.css · transitions.css   Piezas comunes: tomate y enlaces de la barra, panel «Menu», pie, cursor y transiciones entre páginas
   home.css · home-loading.css          La home y su pantalla de carga
   case.css · case-layout.css · palettes.css   Fichas de proyecto y posters: base (cabecera fija, reproductor, More works), estructura (título que avanza, columna fija, partes) y colores propios de cada proyecto
-  posters.css · sandbox.css · about.css · faq.css · privacy.css · not-found.css · contact-sachet.css · terminal.css
+  posters.css · sandbox.css · about.css · faq.css · privacy.css · not-found.css · contact-sachet.css
   room.css · room-wii.css · room-pokemon.css   La habitación, la Wii y la «Pokémon collection»
 
 js/                                    Comportamiento (sin dependencias ni compilación)
@@ -43,8 +42,8 @@ js/                                    Comportamiento (sin dependencias ni compi
   playground/                          El sandbox de nodos: motor del pincel y del papel (engine.js), la planta (plant-engine.js), dibujo de la hoja (render.js), editor genérico (editor.js), tipos de nodo (nodes.js), grafo inicial (sandbox.js) y mount.js, que lo monta en cada página
   case.js · case-index.js · posters.js Fichas (aparición, reproductor, volver, índice de ENMAD) y visor de posters
   room.js · room/                      La habitación 3D; room/ agrupa la Wii, la «Pokémon collection», la iluminación y la carga
-  menu.js · link-roll.js · cursor.js · smooth-scroll.js · transitions.js · terminal.js · nav-tomato.js · contact-sachet.js · sachet.js   Comunes a casi todas las páginas
-  about.js · about-scene.js + island.js (la isla en pixel art de /playground/island/, three.js) · pixel-load.js (carga en mosaico: .px) · not-found-*.js · mode-switch.js   Páginas sueltas; mode-switch.js es la píldora HUMAN | MACHINE, aparcada (ver «Modo máquina»)
+  menu.js · link-roll.js · cursor.js · smooth-scroll.js · transitions.js · nav-tomato.js · contact-sachet.js · sachet.js   Comunes a casi todas las páginas
+  about.js · about-scene.js + island.js (la isla en pixel art de /playground/island/, three.js) · pixel-load.js (carga en mosaico: .px) · not-found-*.js   Páginas sueltas
 
 assets/                                Imágenes, vídeos y modelos 3D
   fonts/ · images/ · brands/ · loading/   Tipografías, imágenes comunes, logos de clientes y animaciones de la pantalla de carga
@@ -89,16 +88,10 @@ Están en `js/room.js` (objetos `nowPlaying` y `lastWatched`, y lista `destinati
 
 Los tres juegos de Recently played están en `assets/room/discs/games.json`. Las carátulas se suben a esa misma carpeta y se indica su nombre en `artwork`; mientras sea `null`, se ve un disco con una etiqueta provisional. La animación de la Wii está separada en `js/room/wii-player.js`. Más detalles en `assets/room/README.md`.
 
-### Modo máquina (oculto por ahora)
-`machine/index.html` es una versión en texto de toda la web, ligera para conexiones lentas. Ahora mismo está **oculta**: no hay enlaces a ella, no está en `sitemap.xml` y lleva `noindex`. Para volver a activarla:
-1. Añade antes de `</body>` en cada página (home, proyectos, room, 404 y la plantilla): `<script src="/js/mode-switch.js" defer></script>` (pone la píldora HUMAN | MACHINE y el aviso de conexión lenta).
-2. Borra la línea `noindex` de `machine/index.html` y añade `/machine/` a `sitemap.xml`.
-3. Revisa que sus textos sigan al día con la web.
-
 ### Buscadores (Google): qué tiene que llevar cada página
 Cada página pública lleva en su `<head>`: `<title>`, `<meta name="description">`, `<link rel="canonical">` (con la dirección completa y la barra final, por ejemplo `https://www.dizmar.xyz/about/`), las etiquetas `og:` y `twitter:card` (lo que se ve al compartir el enlace) y, en las páginas de proyecto, los datos estructurados (`application/ld+json`). Además:
 - Toda página nueva se añade a `sitemap.xml` (y se resume en `llms.txt`).
-- Una página en borrador lleva `<meta name="robots" content="noindex">` y NO está en el sitemap (hoy: `machine/`; las plantillas están además bloqueadas en `robots.txt`). Al publicarla, se borra esa línea y se añade al sitemap.
+- Una página en borrador lleva `<meta name="robots" content="noindex">` y NO está en el sitemap (hoy: ninguna; las plantillas están además bloqueadas en `robots.txt`). Al publicarla, se borra esa línea y se añade al sitemap.
 - Los enlaces del menú llevan la barra final (`/about/`) para no pasar por una redirección.
 - Google no se entera solo: hay que dar de alta la web en Google Search Console y enviar `https://www.dizmar.xyz/sitemap.xml` (con tu cuenta de Google, en search.google.com/search-console).
 

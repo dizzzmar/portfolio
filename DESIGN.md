@@ -89,7 +89,7 @@ components:
 
 One piece of fruit at the centre and everything else arranged around it: the tomato is the logo, the 3D object on the landing page and the colour of the menu panel. The rest is deliberately plain so the fruit and the work (Lexus, Soap & Glory) stay the loudest things on screen. Funnel for professional work, Source Serif 4 only for Think pieces, shared interface rules and freely chosen page palettes.
 
-The tone is close and a little funny. Daily paths (reading, navigating) are precise and quiet; the humour lives in the rare places: the envelope you tear to write an email, the terminal, the FAQs, the cursor that bounces. Nothing explains itself with slogans or helper text; if a screen needs a label to make sense, the layout gets fixed instead.
+The tone is close and a little funny. Daily paths (reading, navigating) are precise and quiet; the humour lives in the rare places: the envelope you tear to write an email, the FAQs, the cursor that bounces. Nothing explains itself with slogans or helper text; if a screen needs a label to make sense, the layout gets fixed instead.
 
 Typography and colour direction: see `.claude/notes/design/visual-language.md` (7 November 2026). Its professional/personal roles supersede the previous blanket serif ban. Source Serif 4 is selected only for Think pieces; the implementation descriptions below record the current site unless noted.
 
@@ -110,7 +110,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 - **Menu Red** (#e40000): the full-screen menu panel, the bars of the Contact form and the big footer. A vivid pure red (the reference site's #ff1a1f is brighter but gives cream text only 3.6:1); this is the brightest red that keeps cream text at 4.51:1 (WCAG AA for small text).
 
 ### Secondary
-- **Lincoln Green** (#125603): background of About, Privacy and Machine, paired with Lime.
+- **Lincoln Green** (#125603): background of About and Privacy, paired with Lime.
 - **Lime** (#c3f380): all text and the cursor on green pages (6.98:1 on Lincoln Green). Secondary text on green runs at 80 % opacity (5.1:1).
 - **Night Green** (#0b2f04): the Room only, where the 3D scene sits in a darker green; its list is lime at 70 % (6.4:1).
 
@@ -135,7 +135,7 @@ A tomato-and-garden palette: red fruit, green plant, sky above, near-black behin
 
 **Display Font:** Funnel Display (variable, OFL licence), only for large titles: page titles, project names, the menu links, the 404 and the landing's tomato name. Its flared, decorative terminals are the point there and too busy for paragraphs.
 **Body Font:** Funnel Sans (variable, OFL licence), the calmer sibling with the same bones, for running text, lists, labels and every small size. Both are self-hosted in `assets/fonts/` and preloaded; Helvetica Neue or Arial while they load.
-**Label/Mono Font:** none, except Machine mode, which is monospace on purpose.
+**Label/Mono Font:** none.
 
 **Character:** a sharp, slightly decorative grotesk at 140 px that settles into a calm, neutral one at 14 px. Hierarchy comes from weight and size; the Display/Sans split is a size threshold (titles large enough to carry the flourishes), never decoration on small text.
 
@@ -187,9 +187,6 @@ Close and a little funny: precise when used daily, playful where visitors do not
 - **Primary:** white fill, ink text, 14 px; on the sky pages, a white outline instead.
 - **Hover / Focus:** a quick scale on press; the cursor dot shrinks on press. Over links and buttons it grows ×2.4 and turns 70 % opaque, and the real cursor (the hand) shows on top of it; nowhere else.
 
-### The Terminal
-A dark panel opened with the ` key from any page (no visible link: it is a wink for whoever looks for it), with an ASCII tomato, a scramble on its title and hidden commands. It is the clearest place for humour in the site.
-
 ## Do's and Don'ts
 
 ### Do:
@@ -197,7 +194,7 @@ A dark panel opened with the ` key from any page (no visible link: it is a wink 
 - **Do** animate only `transform` and `opacity`, with `var(--ease-out)` (`cubic-bezier(0.23, 1, 0.32, 1)`) for arrivals; UI 150–300 ms, underline 400 ms, section entrances up to 700 ms, the menu up to 0.7 s because it is a deliberate moment.
 - **Do** give every animation a reduced-motion path that keeps opacity and colour changes.
 - **Do** keep text on Lincoln Green in Lime, and check any new pair for 4.5:1 (3:1 for large text).
-- **Do** choose, between options, the one that improves visitors, maintainers and agents together (meaningful HTML, real links, `machine/`, `llms.txt` and `sitemap.xml` up to date).
+- **Do** choose, between options, the one that improves visitors, maintainers and agents together (meaningful HTML, real links, `llms.txt` and `sitemap.xml` up to date).
 - **Do** link `css/tokens.css` first on every page, then the rest; bar and footer identical to the other pages. A new page also needs the `li.menu-li` button and `has-menu` in the head script.
 - **Do** bump the `?v=` number of any changed `.css` or `.js` on every page.
 
