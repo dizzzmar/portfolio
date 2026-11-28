@@ -1,5 +1,5 @@
 import { fadeViewer } from '../viewer-motion.js?v=20261107motion1';
-import { createInfiniteCardGrid } from './infinite-card-grid.js?v=20261201drift1';
+import { createInfiniteCardGrid } from './infinite-card-grid.js?v=20261229tight1';
 
 // A finite DOM pool keeps the Room's WebGL renderer asleep. Cards are just the scan (its name is the image's alt text); clicking one opens nothing.
 
@@ -44,7 +44,7 @@ export function createPokemonAlbum({ onOpen, onClose }) {
 
   function mountGrid() {
     grid?.destroy();
-    grid = data.cards.length ? createInfiniteCardGrid({ surface, list, cards: data.cards, makeCard, reduced: motion, entrance: !motion.matches }) : null;
+    grid = data.cards.length ? createInfiniteCardGrid({ surface, list, cards: data.cards, makeCard, reduced: motion, entrance: !motion.matches, spacing: .78 }) : null;
   }
 
   // The card list, checked: used both by load() (when the album opens) and by prefetch() (before anyone asks for it)

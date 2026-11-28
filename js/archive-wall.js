@@ -3,7 +3,7 @@ import { viewerTiming } from './viewer-motion.js?v=20261107motion1';
 // Pokémon (mismo motor: js/room/infinite-card-grid.js). Las piezas salen de assets/archive/<colección>/items.json; no llevan pie (el nombre es el texto
 // alternativo de la imagen). Pulsar una pieza (o Enter) abre su visor: título grande, la pieza al centro que se inclina hacia el ratón por toda la
 // pantalla y sus datos abajo (referencia: nicolo-lombardi.com/archive/la-barra). La dirección lleva la pieza (#pink-lady). Sin JavaScript queda el título de la colección y un aviso.
-import { createInfiniteCardGrid } from '/js/room/infinite-card-grid.js?v=20261201drift1';
+import { createInfiniteCardGrid } from '/js/room/infinite-card-grid.js?v=20261229tight1';
 
 const surface = document.querySelector('.archive-surface');
 const list = surface.querySelector('.archive-cards');
