@@ -48,7 +48,7 @@ function arrange(cards, columns, rows) {
 
 // Lo usan el álbum de Pokémon (cartas 63 × 88, clases «pokemon-…») y el archivo digital (pegatinas cuadradas, clases «archive-…»):
 // `prefix` da los nombres de las clases (<prefix>-item, <prefix>-card, <prefix>-turn), `aspect` es alto / ancho de cada pieza y `size` la escala de su tamaño.
-export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced, entrance = true, prefix = 'pokemon', aspect = 88 / 63, size = 1, drift = null }) {
+export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced, entrance = true, prefix = 'pokemon', aspect = 88 / 63, size = 1, spacing = 1, drift = null }) {
   const tiles = [];
   const position = { x: 0, y: 0 };
   const target = { x: 0, y: 0 };
@@ -156,7 +156,8 @@ export function createInfiniteCardGrid({ surface, list, cards, makeCard, reduced
     cardWidth = small ? clamp(width * .34, 100, 150) : clamp(width * .115, 120, 190);
     cardWidth *= size;
     cardHeight = cardWidth * aspect;
-    A = { x: ROW_STEP.x * cardWidth, y: ROW_STEP.y * cardWidth }; B = { x: COLUMN_STEP.x * cardWidth, y: COLUMN_STEP.y * cardHeight };
+    // spacing < 1 acerca las cartas entre sí (más juntas, sin cambiar su tamaño): multiplica los pasos de la retícula
+    A = { x: ROW_STEP.x * cardWidth * spacing, y: ROW_STEP.y * cardWidth * spacing }; B = { x: COLUMN_STEP.x * cardWidth * spacing, y: COLUMN_STEP.y * cardHeight * spacing };
     det = A.x * B.y - B.x * A.y; stepX = A.x; stepY = B.y;
     // How many cells the pool needs: the screen's four corners, in cell coordinates, plus a whole cell of margin on every side
     // (the cards that wrap round are always a full cell outside the screen, so they never pop in view).
