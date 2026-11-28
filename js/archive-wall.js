@@ -27,7 +27,7 @@ function makeCard(item) {
 async function load() {
   retry.hidden = true; status.hidden = false; status.textContent = 'Loading…';
   try {
-    const response = await fetch(base + 'items.json?v=20261207thumbs1');
+    const response = await fetch(base + 'items.json?v=20261128encantada1');
     if (!response.ok) throw new Error('Collection unavailable');
     const data = await response.json();
     if (!Array.isArray(data.items) || !data.items.length) throw new Error('Empty collection');

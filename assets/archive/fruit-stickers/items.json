@@ -26,6 +26,19 @@
           "Fruit sticker"
         ]
       ]
+    },
+    {
+      "id": "encantada",
+      "name": "Encantada",
+      "src": "encantada.webp",
+      "width": 1000,
+      "height": 592,
+      "facts": [
+        [
+          "Category",
+          "Fruit sticker"
+        ]
+      ]
     }
   ]
 }
