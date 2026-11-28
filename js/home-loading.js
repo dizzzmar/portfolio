@@ -48,7 +48,7 @@
     }))));
   }
   // Network or WebGL failures must never trap visitors behind the loader.
-  fallback = setTimeout(finish, 6000);
+  fallback = setTimeout(finish, 9000);   // solo si algo falla del todo: lo normal es esperar al tomate 3D, para que se vea ya girando
   addEventListener('pageshow', event => { if (event.persisted) finish(); });
   document.addEventListener('DOMContentLoaded', async () => {
     if (finished) return;
